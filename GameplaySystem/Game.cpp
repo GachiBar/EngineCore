@@ -34,6 +34,36 @@ void Game::Run() {
 
 			// TODO: fixed update.
 		}
+		
+		static float intensity = 1.0f;
+		static int radius = 1.0f;
+		static float sigma = 1.0f;
+		static float threshold = 1.0f;
+		static int kernel = 1.0f;
+
+		renderer_.BeginFrame();
+
+		ImGui::Begin("BloomM settings.");
+
+		ImGui::SliderFloat("Intensity.", &intensity, 0.0f, 10.0f);
+
+		ImGui::SliderInt("Radius.", &radius, 0, 10);
+
+		ImGui::SliderFloat("Sigma.", &sigma, 0.01f, 5.0f);
+
+		ImGui::SliderFloat("Threshold.", &threshold, 0.0f, 1.0);
+
+		ImGui::SliderInt("Kernel.", &kernel, 1, 10);
+
+		ImGui::End();
+
+		renderer_.SetRenderData({});
+
+		while (!renderer_.Present()) {
+			renderer_.EndFrame();
+		}
+		
+		renderer_.EndFrame();		
 
 		// TODO: interpolation
 		// TODO: update.
@@ -53,6 +83,11 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		game = reinterpret_cast<Game*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
+	if (game->renderer_.ProcessMessages(hwnd, msg, wparam, lparam)) {
+		return true;
+	}
+
+	//return game->renderer_.ProcessMessages(hwnd, msg, wparam, lparam);
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
@@ -63,10 +98,22 @@ void Game::Init() {
 	LONG height = 600;
 
 	RegisterWindowClass(GetModuleHandle(nullptr), window_name);
-	handle_ = CreateWindowInstance(instance, window_name, width, height);
-	ShowWindow(handle_, SW_SHOW);
-	SetForegroundWindow(handle_);
-	SetFocus(handle_);
+	handle_1_ = CreateWindowInstance(instance, window_name, width, height);
+	handle_2_ = CreateWindowInstance(instance, window_name, width, height);
+
+	ShowWindow(handle_1_, SW_SHOW);
+	ShowWindow(handle_2_, SW_SHOW);
+	//SetForegroundWindow(handle_);
+	//SetFocus(handle_);
+
+	renderer_.InitDevice({
+		handle_1_,
+		handle_2_,
+		(size_t) width,
+		(size_t) height
+	});
+
+	renderer_.InitShaders(".\\KtripEngine\\DX11RenderEngine\\DX11RenderEngine\\Shaders");
 }
 
 void Game::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {

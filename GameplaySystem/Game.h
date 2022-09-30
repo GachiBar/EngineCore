@@ -19,7 +19,9 @@ public:
 
 // TODO: now I implement basic window creation here, but we should refactor this in future.
 private:
-	HWND handle_;
+	HWND handle_1_;
+	HWND handle_2_;
+	RenderDevice renderer_;
 	
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
