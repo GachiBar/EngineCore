@@ -162,11 +162,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CSharpAssembly.h" />
+    <ClInclude Include="CSharpDomain.h" />
+    <ClInclude Include="CSharpObject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSharpAssembly.cpp" />
+    <ClCompile Include="CSharpDomain.cpp" />
+    <ClCompile Include="CSharpObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameplaySystem.cpp" />
     <ClCompile Include="pch.cpp">

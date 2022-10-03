@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "Game.h"
+#include "CSharpDomain.h"
+#include "CSharpAssembly.h"
+#include "CSharpObject.h"
 
 #include <fstream>
 #include <iostream>
@@ -7,81 +10,6 @@
 #include <mono/metadata/assembly.h>
 
 namespace engine {
-
-MonoDomain* s_RootDomain;
-MonoDomain* s_AppDomain;
-
-void InitMono()
-{
-	mono_set_assemblies_path("mono/lib");
-
-	MonoDomain* rootDomain = mono_jit_init("MyScriptRuntime");
-	if (rootDomain == nullptr)
-	{
-		// Maybe log some error here
-		return;
-	}
-
-	// Store the root domain pointer
-	s_RootDomain = rootDomain;
-
-	// Create an App Domain
-	s_AppDomain = mono_domain_create_appdomain(const_cast<char*>("MyAppDomain"), nullptr);
-	mono_domain_set(s_AppDomain, true);
-}
-
-char* ReadBytes(const std::string& filepath, uint32_t* outSize)
-{
-	std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
-
-	if (!stream)
-	{
-		// Failed to open the file
-		return nullptr;
-	}
-
-	std::streampos end = stream.tellg();
-	stream.seekg(0, std::ios::beg);
-	uint32_t size = end - stream.tellg();
-
-	if (size == 0)
-	{
-		// File is empty
-		return nullptr;
-	}
-
-	char* buffer = new char[size];
-	stream.read((char*)buffer, size);
-	stream.close();
-
-	*outSize = size;
-	return buffer;
-}
-
-MonoAssembly* LoadCSharpAssembly(const std::string& assemblyPath)
-{
-	uint32_t fileSize = 0;
-	char* fileData = ReadBytes(assemblyPath, &fileSize);
-
-	// NOTE: We can't use this image for anything other than loading the assembly because this image doesn't have a reference to the assembly
-	MonoImageOpenStatus status;
-	MonoImage* image = mono_image_open_from_data_full(fileData, fileSize, 1, &status, 0);
-
-	if (status != MONO_IMAGE_OK)
-	{
-		const char* errorMessage = mono_image_strerror(status);
-		// Log some error message using the errorMessage data
-		return nullptr;
-	}
-
-	MonoAssembly* assembly = mono_assembly_load_from_full(image, assemblyPath.c_str(), &status, 0);
-	mono_image_close(image);
-
-	// Don't forget to free the file data
-	delete[] fileData;
-
-	return assembly;
-}
 
 void PrintAssemblyTypes(MonoAssembly* assembly)
 {
@@ -110,9 +38,10 @@ void Game::Run() {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
-	InitMono();
-	MonoAssembly* assembly = LoadCSharpAssembly("MonoPlayground.dll");
-	PrintAssemblyTypes(assembly);
+	CSharpDomain domain("../mono/lib", "MyScriptRuntime", "MyAppDomain");
+	CSharpAssembly assembly("GameplayCore.dll");
+	PrintAssemblyTypes(&assembly.GetMonoAssembly());
+	CSharpObject object(domain, assembly, "GameplayCore", "GameObject");
 
 	Init();
 
@@ -146,6 +75,8 @@ void Game::Run() {
 		// TODO: interpolation
 		// TODO: update.
 		// TODO: render.
+
+		object.CallFloatMethod("Update", 1.0f);
 
 		renderer_.BeginFrame();
 		renderer_.SetRenderData({});
