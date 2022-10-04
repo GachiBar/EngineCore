@@ -7,7 +7,7 @@ namespace engine {
 
 class CSharpAssembly {
 public:
-	MonoAssembly& GetMonoAssembly();
+	MonoAssembly* GetMonoAssembly();
 
 	CSharpAssembly(const std::string& assembly_path);
 	~CSharpAssembly();

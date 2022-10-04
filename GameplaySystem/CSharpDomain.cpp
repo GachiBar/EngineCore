@@ -7,8 +7,8 @@
 
 namespace engine {
 
-MonoDomain& CSharpDomain::GetAppMonoDomain() {
-	return *app_domain_;
+MonoDomain* CSharpDomain::GetAppMonoDomain() {
+	return app_domain_;
 }
 
 CSharpDomain::CSharpDomain(
@@ -16,7 +16,7 @@ CSharpDomain::CSharpDomain(
 	const std::string& script_runtime, 
 	const std::string& app_domain)
 {
-	mono_set_assemblies_path("../mono/lib");
+	mono_set_assemblies_path(assemblies_path.c_str());
 
 	MonoDomain* root_domain = mono_jit_init(script_runtime.c_str());
 	assert(root_domain != nullptr);
@@ -31,8 +31,8 @@ CSharpDomain::CSharpDomain(
 }
 
 CSharpDomain::~CSharpDomain() {
-	delete root_domain_;
-	delete app_domain_;
+	//delete root_domain_;
+	//delete app_domain_;
 }
 
 } // namespace engine

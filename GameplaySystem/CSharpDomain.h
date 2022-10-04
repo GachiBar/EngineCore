@@ -8,7 +8,7 @@ namespace engine {
 class CSharpDomain {
 public:
 
-	MonoDomain& GetAppMonoDomain();
+	MonoDomain* GetAppMonoDomain();
 
 	CSharpDomain(
 		const std::string& assemblies_path,

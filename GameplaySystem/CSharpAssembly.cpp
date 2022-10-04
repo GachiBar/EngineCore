@@ -7,8 +7,8 @@
 
 namespace engine {
 
-MonoAssembly& CSharpAssembly::GetMonoAssembly() {
-	return *assembly_;
+MonoAssembly* CSharpAssembly::GetMonoAssembly() {
+	return assembly_;
 }
 
 CSharpAssembly::CSharpAssembly(const std::string& assembly_path) {
@@ -29,7 +29,7 @@ CSharpAssembly::CSharpAssembly(const std::string& assembly_path) {
 }
 
 CSharpAssembly::~CSharpAssembly() {
-	delete assembly_;
+	//delete assembly_;
 }
 
 char* CSharpAssembly::ReadBytes(const std::string& filepath, uint32_t* out_size)

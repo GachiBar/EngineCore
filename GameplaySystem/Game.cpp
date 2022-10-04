@@ -11,39 +11,20 @@
 
 namespace engine {
 
-void PrintAssemblyTypes(MonoAssembly* assembly)
-{
-	MonoImage* image = mono_assembly_get_image(assembly);
+CSharpObject* Game::GetScene() {
+	return scene_;
+}
 
-	// Get Metadata table of type definitions
-	// All tables definitions - http://docs.go-mono.com/?link=xhtml%3adeploy%2fmono-api-metadata.html
-	const MonoTableInfo* typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
-	int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
-
-	for (int32_t i = 0; i < numTypes; i++)
-	{
-		// Get current row with MONO_TYPEDEF_SIZE columns number
-		uint32_t cols[MONO_TYPEDEF_SIZE];
-		mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
-
-		// Decode data
-		const char* nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-		const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
-
-		printf("%s.%s\n", nameSpace, name);
-	}
+void Game::SetScene(CSharpObject* scene) {
+	scene_ = scene;
 }
 
 void Game::Run() {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
-	CSharpDomain domain("../mono/lib", "MyScriptRuntime", "MyAppDomain");
-	CSharpAssembly assembly("GameplayCore.dll");
-	PrintAssemblyTypes(&assembly.GetMonoAssembly());
-	CSharpObject object(domain, assembly, "GameplayCore", "GameObject");
-
-	Init();
+	Initialize();
+	scene_->CallMethod("Initialize");
 
 	nanoseconds lag = 0ns;
 	auto time_start = clock::now();
@@ -69,14 +50,10 @@ void Game::Run() {
 		while (lag >= kTimestep) {
 			lag -= kTimestep;
 
-			// TODO: fixed update.
+			scene_->CallMethod("FixedUpdate");
 		}
 
-		// TODO: interpolation
-		// TODO: update.
-		// TODO: render.
-
-		object.CallFloatMethod("Update", 1.0f);
+		scene_->CallMethod("Update");
 
 		renderer_.BeginFrame();
 		renderer_.SetRenderData({});
@@ -87,6 +64,8 @@ void Game::Run() {
 		
 		renderer_.EndFrame();		
 	}
+
+	scene_->CallMethod("Terminate");
 }
 
 LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -116,7 +95,7 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 }
 
-void Game::Init() {
+void Game::Initialize() {
 	HINSTANCE instance = GetModuleHandle(nullptr);
 	LPCWSTR window_name = L"Test window";
 	LONG width = 800;
