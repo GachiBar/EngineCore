@@ -1,13 +1,30 @@
 #include "pch.h"
 #include "Game.h"
+#include "CSharpDomain.h"
+#include "CSharpAssembly.h"
+#include "CSharpObject.h"
+
+#include <fstream>
+#include <iostream>
+#include <mono/jit/jit.h>
+#include <mono/metadata/assembly.h>
 
 namespace engine {
+
+CSharpObject* Game::GetScene() {
+	return scene_;
+}
+
+void Game::SetScene(CSharpObject* scene) {
+	scene_ = scene;
+}
 
 void Game::Run() {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
-	Init();
+	Initialize();
+	scene_->CallMethod("Initialize");
 
 	nanoseconds lag = 0ns;
 	auto time_start = clock::now();
@@ -33,12 +50,10 @@ void Game::Run() {
 		while (lag >= kTimestep) {
 			lag -= kTimestep;
 
-			// TODO: fixed update.
+			scene_->CallMethod("FixedUpdate");
 		}
 
-		// TODO: interpolation
-		// TODO: update.
-		// TODO: render.
+		scene_->CallMethod("Update");
 
 		renderer_.BeginFrame();
 		renderer_.SetRenderData({});
@@ -49,6 +64,8 @@ void Game::Run() {
 		
 		renderer_.EndFrame();		
 	}
+
+	scene_->CallMethod("Terminate");
 }
 
 LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -78,7 +95,7 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 }
 
-void Game::Init() {
+void Game::Initialize() {
 	HINSTANCE instance = GetModuleHandle(nullptr);
 	LPCWSTR window_name = L"Test window";
 	LONG width = 800;
