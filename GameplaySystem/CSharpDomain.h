@@ -7,7 +7,6 @@ namespace engine {
 
 class CSharpDomain {
 public:
-
 	MonoDomain* GetAppMonoDomain();
 
 	CSharpDomain(

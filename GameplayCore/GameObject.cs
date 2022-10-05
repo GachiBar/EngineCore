@@ -5,6 +5,7 @@ namespace GameplayCore
 {
     public class GameObject
     {
+        //TODO: Handle component addition/deletation per frame. They can break iterators.
         private Dictionary<Type, Component> _componentsMap;
 
         public readonly Scene Scene;
@@ -70,7 +71,7 @@ namespace GameplayCore
 
             if (_componentsMap.TryGetValue(componentType, out var component))
             {
-                Remove(component.GetType());
+                RemoveComponent(component.GetType());
             }
 
             _componentsMap[instance.GetType()] = instance;
@@ -84,12 +85,12 @@ namespace GameplayCore
             return instance;
         }
 
-        public T Remove<T>() where T : Component
+        public T RemoveComponent<T>() where T : Component
         {
-            return (T) Remove(typeof(T));
+            return (T)RemoveComponent(typeof(T));
         }
 
-        public Component Remove(Type componentType)
+        public Component RemoveComponent(Type componentType)
         {
             if (_componentsMap.TryGetValue(componentType, out var component))
             {
@@ -105,6 +106,23 @@ namespace GameplayCore
             }
 
             return null;
-        }  
+        }
+        
+        public T GetComponent<T>() where T : Component
+        {
+            return (T)GetComponent(typeof(T));
+        }
+
+        public Component GetComponent(Type componentType)
+        {
+            return _componentsMap.TryGetValue(componentType, out var component) 
+                ? component 
+                : null;
+        }
+
+        internal void Invalidate()
+        {
+
+        }
     }
 }

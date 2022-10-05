@@ -5,12 +5,16 @@ namespace GameplayCore
     public class Scene
     {
         private List<GameObject> _gameObjects;
+        private List<GameObject> _createdGameObjects;
+        private List<GameObject> _deletedGameObjects;
 
         public bool IsInitialized { get; private set; }
 
         public Scene()
         {
             _gameObjects = new List<GameObject>();
+            _createdGameObjects = new List<GameObject>();
+            _deletedGameObjects = new List<GameObject>();
         }
 
         public void Initialize()
@@ -50,15 +54,34 @@ namespace GameplayCore
         }
 
         public GameObject CreateGameObject()
-        {
+        {            
             var go = new GameObject(this);
-            _gameObjects.Add(go);
+            _createdGameObjects.Add(go);
             return go;
         }
 
-        public void DestroyGameObject(GameObject go)
+        public void DeleteGameObject(GameObject go)
         {
-            _gameObjects.Remove(go);
+            _createdGameObjects.Remove(go);
+            _deletedGameObjects.Add(go);
+        }
+
+        internal void Invalidate()
+        {
+            foreach (var gameObject in _deletedGameObjects)
+            {
+                _gameObjects.Remove(gameObject);
+            }
+
+            foreach (var gameObject in _createdGameObjects)
+            {
+                _gameObjects.Add(gameObject);
+            }
+
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.Invalidate();
+            }
         }
     }
 }

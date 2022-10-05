@@ -9,6 +9,7 @@ engine::CSharpAssembly assembly("GameplayCore.dll");
 engine::CSharpObject CreateGameObject(engine::CSharpObject& scene) {
 	MonoObject* go_mono_object = scene.CallMethod("CreateGameObject");
 	engine::CSharpObject go(domain, assembly, go_mono_object);
+	scene.CallMethod("Invalidate");
 	return go;
 }
 
