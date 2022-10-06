@@ -3,7 +3,7 @@
 #include "../GameplaySystem/CSharpAssembly.h"
 #include "../GameplaySystem/CSharpObject.h"
 
-engine::CSharpDomain domain("..\\vendor\\mono\\lib", "KtripRuntime", "KtripDomain");
+engine::CSharpDomain domain("..\\vendor\\mono\\lib\\4.5", "KtripRuntime", "KtripDomain");
 engine::CSharpAssembly assembly("GameplayCore.dll");
 
 engine::CSharpObject CreateGameObject(engine::CSharpObject& scene) {
