@@ -31,13 +31,13 @@ engine::CSharpObject AddComponent(engine::CSharpObject& go, const std::string& n
 //TODO Move application header to another project
 #include "../Editor/Application.h"
 
-class StandaloneGameTest final : public Application
+class StandaloneGameTestApplication final : public Application
 {
 public:
 	void Setup() override;
 };
 
-void StandaloneGameTest::Setup()
+void StandaloneGameTestApplication::Setup()
 {
 	engine::CSharpObject scene(domain, assembly, "GameplayCore", "Scene");
 	engine::CSharpObject go1 = CreateGameObject(scene);
@@ -51,7 +51,7 @@ void StandaloneGameTest::Setup()
 
 
 int main() {
-	StandaloneGameTest app;
+	StandaloneGameTestApplication app;
 
 	return app.Run();
 }
