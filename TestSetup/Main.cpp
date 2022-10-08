@@ -28,18 +28,30 @@ engine::CSharpObject AddComponent(engine::CSharpObject& go, const std::string& n
 	return component;
 }
 
-int main() {
-	engine::Game game;
+//TODO Move application header to another project
+#include "../Editor/Application.h"
 
-	engine::CSharpObject scene(domain, assembly, "GameplayCore", "Scene");	
+class StandaloneGameTest final : public Application
+{
+public:
+	void Setup() override;
+};
+
+void StandaloneGameTest::Setup()
+{
+	engine::CSharpObject scene(domain, assembly, "GameplayCore", "Scene");
 	engine::CSharpObject go1 = CreateGameObject(scene);
 	engine::CSharpObject go2 = CreateGameObject(scene);
 
 	AddComponent(go1, "GameplayCore", "TestUpdateComponent");
 	AddComponent(go2, "GameplayCore", "TestFixedUpdateComponent");
 
-	game.SetScene(&scene);
-	game.Run();
+	engine_->SetScene(&scene);
+}
 
-	return 0;
+
+int main() {
+	StandaloneGameTest app;
+
+	return app.Run();
 }

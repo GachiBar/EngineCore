@@ -9,7 +9,8 @@ typedef engine::Game Engine ;
 class Application
 {
 public:
-    Application();
+	
+	Application();
 
     /// Setup before engine initialization
     virtual void Setup() { }
@@ -23,9 +24,10 @@ public:
     /// Initialize the engine and run the main loop, then return the application exit code
     int Run();
 
+    virtual ~Application() = default;
 protected:
     std::shared_ptr<Engine> engine_;
 
     /// Application exit code.
-    int exitCode_{};
+    int exit_code_;
 };
