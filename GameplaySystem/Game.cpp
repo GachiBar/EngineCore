@@ -23,14 +23,15 @@ void Game::Run() {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
-	Initialize();
-	scene_->CallMethod("Initialize");
+	//Initialize();
+	//scene_->CallMethod("Initialize");
 
 	nanoseconds lag = 0ns;
-	auto time_start = clock::now();
-	bool is_exit_requested = false;
+	time_start = clock::now();
+	is_exit_requested = false;
 
 	// Game loop.
+	
 	while (!is_exit_requested) {
 		MSG msg = {};
 
@@ -108,6 +109,54 @@ void Game::Initialize() {
 	ShowWindow(handle_old_, SW_SHOW);
 	ShowWindow(handle_new_, SW_SHOW);
 	InitRenderer(static_cast<size_t>(width), static_cast<size_t>(height));
+}
+
+void Game::InitializeScene() const
+{
+	scene_->CallMethod("Initialize");
+}
+
+void Game::RunFrame()
+{
+	using namespace std::chrono;
+	using clock = high_resolution_clock;
+
+	MSG msg = {};
+
+	while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+
+		if (msg.message == WM_QUIT) {
+			is_exit_requested = true;
+		}
+	}
+
+	auto dt = clock::now() - time_start;
+	time_start = clock::now();
+	lag += duration_cast<nanoseconds>(dt);
+
+	while (lag >= kTimestep) {
+		lag -= kTimestep;
+
+		scene_->CallMethod("FixedUpdate");
+	}
+
+	scene_->CallMethod("Update");
+
+	renderer_.BeginFrame();
+	renderer_.SetRenderData({});
+
+	while (!renderer_.Present()) {
+		renderer_.EndFrame();
+	}
+
+	renderer_.EndFrame();
+}
+
+bool Game::IsExiting() const
+{
+	return is_exit_requested;
 }
 
 void Game::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {
