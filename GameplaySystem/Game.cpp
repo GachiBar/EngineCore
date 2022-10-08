@@ -154,7 +154,7 @@ void Game::RunFrame()
 	renderer_.EndFrame();
 }
 
-bool Game::IsExiting()
+bool Game::IsExiting() const
 {
 	return is_exit_requested;
 }

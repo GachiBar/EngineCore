@@ -32,11 +32,11 @@ public:
 
 	void RunFrame();
 
-	bool IsExiting();
+	bool IsExiting() const;
 private:
-	std::chrono::time_point<std::chrono::steady_clock> time_start = std::chrono::high_resolution_clock::now();
+	time_point<steady_clock> time_start = high_resolution_clock::now();
 	bool is_exit_requested = false;
-	std::chrono::nanoseconds lag = 0ns;
+	nanoseconds lag = 0ns;
 
 	HWND handle_old_;
 	HWND handle_new_;
