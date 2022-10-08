@@ -10,6 +10,8 @@ namespace GameplayCore
 
         public readonly Scene Scene;
 
+        public bool IsInitialized { get; private set; }
+
         internal GameObject(Scene scene)
         {
             _componentsMap = new Dictionary<Type, Component>();
@@ -22,6 +24,8 @@ namespace GameplayCore
             {
                 component.Initialize();
             }
+
+            IsInitialized = true;
         }
 
         public void FixedUpdate()
@@ -46,6 +50,8 @@ namespace GameplayCore
             {
                 component.Terminate();
             }
+
+            IsInitialized = false;
         }
 
         public T AddComponent<T>() where T : Component, new()
@@ -53,7 +59,7 @@ namespace GameplayCore
             var component = new T();
             component.GameObject = this;
 
-            if (Scene.IsInitialized)
+            if (IsInitialized)
             {
                 component.Initialize();
             }
@@ -77,7 +83,7 @@ namespace GameplayCore
             _componentsMap[instance.GetType()] = instance;
             instance.GameObject = this;
 
-            if (Scene.IsInitialized)
+            if (IsInitialized)
             {
                 instance.Initialize();
             }
@@ -96,7 +102,7 @@ namespace GameplayCore
             {
                 _componentsMap.Remove(componentType);
 
-                if (Scene.IsInitialized)
+                if (IsInitialized)
                 {
                     component.Terminate();
                 }

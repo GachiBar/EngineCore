@@ -57,6 +57,12 @@ namespace GameplayCore
         {            
             var go = new GameObject(this);
             _createdGameObjects.Add(go);
+
+            if (IsInitialized)
+            {
+                go.Initialize();
+            }
+            
             return go;
         }
 
@@ -73,10 +79,14 @@ namespace GameplayCore
                 _gameObjects.Remove(gameObject);
             }
 
+            _deletedGameObjects.Clear();
+
             foreach (var gameObject in _createdGameObjects)
             {
                 _gameObjects.Add(gameObject);
             }
+
+            _createdGameObjects.Clear();
 
             foreach (var gameObject in _gameObjects)
             {
