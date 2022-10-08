@@ -146,6 +146,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Editor\Editor.vcxproj">
+      <Project>{093ee3e1-b662-4acf-bd21-f3b0484f4ef2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\GameplaySystem\GameplaySystem.vcxproj">
       <Project>{7afbd61b-fc45-42b8-9895-4a68cdcb3359}</Project>
     </ProjectReference>

@@ -34,15 +34,16 @@ engine::CSharpObject AddComponent(engine::CSharpObject& go, const std::string& n
 class StandaloneGameTestApplication final : public Application
 {
 public:
-	void Setup() override;
-};
-
-void StandaloneGameTestApplication::Setup()
-{
-	engine::CSharpObject scene(domain, assembly, "GameplayCore", "Scene");
+	engine::CSharpObject scene = { domain, assembly, "GameplayCore", "Scene" };
 	engine::CSharpObject go1 = CreateGameObject(scene);
 	engine::CSharpObject go2 = CreateGameObject(scene);
 
+	void Setup() override;
+};
+
+
+void StandaloneGameTestApplication::Setup()
+{
 	AddComponent(go1, "GameplayCore", "TestUpdateComponent");
 	AddComponent(go2, "GameplayCore", "TestFixedUpdateComponent");
 
