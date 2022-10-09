@@ -19,56 +19,6 @@ void Game::SetScene(CSharpObject* scene) {
 	scene_ = scene;
 }
 
-void Game::Run() {
-	using namespace std::chrono;
-	using clock = high_resolution_clock;
-
-	//Initialize();
-	//scene_->CallMethod("Initialize");
-
-	nanoseconds lag = 0ns;
-	time_start = clock::now();
-	is_exit_requested = false;
-
-	// Game loop.
-	
-	while (!is_exit_requested) {
-		MSG msg = {};
-
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-
-			if (msg.message == WM_QUIT) {
-				is_exit_requested = true;
-			}
-		}
-
-		auto dt = clock::now() - time_start;
-		time_start = clock::now();
-		lag += duration_cast<nanoseconds>(dt);
-
-		while (lag >= kTimestep) {
-			lag -= kTimestep;
-
-			scene_->CallMethod("FixedUpdate");
-		}
-
-		scene_->CallMethod("Update");
-
-		renderer_.BeginFrame();
-		renderer_.SetRenderData({});
-
-		while (!renderer_.Present()) {
-			renderer_.EndFrame();
-		}
-		
-		renderer_.EndFrame();		
-	}
-
-	scene_->CallMethod("Terminate");
-}
-
 LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	Game* game = nullptr;
 

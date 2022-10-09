@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "LayerStack.h"
 #include "../GameplaySystem/Game.h"
 
 typedef engine::Game Engine ;
@@ -11,6 +12,8 @@ class Application
 public:
 	
 	Application();
+
+    void PushLayer();
 
     /// Setup before engine initialization
     virtual void Setup() { }
@@ -26,6 +29,7 @@ public:
 
     virtual ~Application() = default;
 protected:
+    LayerStack m_LayerStack;
     std::shared_ptr<Engine> engine_;
 
     /// Application exit code.

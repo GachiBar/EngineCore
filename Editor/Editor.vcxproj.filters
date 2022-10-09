@@ -39,6 +39,12 @@
     <ClCompile Include="EditorApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Visual.h">
@@ -77,5 +83,17 @@
     <ClInclude Include="EditorApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Delegates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OIS\includes\OISPrereqs.h.in" />
   </ItemGroup>
 </Project>

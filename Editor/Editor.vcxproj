@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Delegates.h" />
     <ClInclude Include="EditorApplication.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -151,6 +152,8 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="Layer.h" />
+    <ClInclude Include="LayerStack.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="SliderWidget.h" />
     <ClInclude Include="Visual.h" />
@@ -159,10 +162,15 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="EditorApplication.cpp" />
+    <ClCompile Include="Layer.cpp" />
+    <ClCompile Include="LayerStack.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="SliderWidget.cpp" />
     <ClCompile Include="Visual.cpp" />
     <ClCompile Include="Widget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OIS\includes\OISPrereqs.h.in" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

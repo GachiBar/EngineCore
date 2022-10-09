@@ -1,11 +1,16 @@
 #include "Application.h"
 
+#include <iostream>
+
+#include "Delegates.h"
+
 Application::Application():engine_(new Engine()),exit_code_(0)
 {
 }
 
 int Application::Run()
 {
+
 	Setup();
 	if (exit_code_)
 		return exit_code_;
@@ -21,6 +26,8 @@ int Application::Run()
 		engine_->RunFrame();
 
 	Stop();
+
+
 
 	return exit_code_;
 }

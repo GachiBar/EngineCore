@@ -21,9 +21,6 @@ public:
 	CSharpObject* GetScene();
 	void SetScene(CSharpObject* scene);
 
-	[[deprecated]]
-	void Run();
-
 // TODO: now I implement basic window creation here, but we should refactor this in future.
 
 
