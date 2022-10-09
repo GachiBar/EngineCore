@@ -45,18 +45,18 @@ void debug_class_info(const mono::mono_assembly& assembly, const std::string& cl
 
 void debug_method_info(const mono::mono_method& method)
 {
-    std::cout << "Name: " << method.get_name() << "/n"
-    << "Full name: " << method.get_fullname()<< "/n"
-    << "Full declarative name: " << method.get_full_declname() << "/n"
-    << "Visibility: " << mono::to_string(method.get_visibility()) << "/n"
-    << "Is static: " << method.is_static() << "/n"
+    std::cout << "Name: " << method.get_name() << "\n"
+    << "Full name: " << method.get_fullname()<< "\n"
+    << "Full declarative name: " << method.get_full_declname() << "\n"
+    << "Visibility: " << mono::to_string(method.get_visibility()) << "\n"
+    << "Is static: " << method.is_static() << "\n"
     << "Parameters: ";
     for(auto& type: method.get_param_types())
     {
         std::cout << type.get_name() << " ";
     }
-    std::cout << "/n"
-    << "Return type: " << method.get_return_type().get_name() << "/n";
+    std::cout << "\n"
+    << "Return type: " << method.get_return_type().get_name() << "\n";
 }
 
 void TryCallMethods(mono::mono_type& type)
@@ -131,7 +131,7 @@ void TryFieldsAndProperties(mono::mono_type& type)
     auto setter = property.get_set_method();
     auto getter = property.get_get_method();
 
-    auto setter_invoker = mono::make_method_invoker<int(int)>(setter);
+    auto setter_invoker = mono::make_method_invoker<void(int)>(setter);
     setter_invoker(instance, value - 3);
     
     auto getter_invoker = mono::make_method_invoker<int()>(getter);
@@ -173,4 +173,5 @@ int main()
     TryFieldsAndProperties(testing_type);
 
     mono::shutdown();
+    return 0;
 }

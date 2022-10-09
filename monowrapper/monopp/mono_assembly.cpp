@@ -75,12 +75,12 @@ namespace mono
     {
         std::vector<std::string> names;
         /* Get a pointer to the AssemblyRef metadata table */
-        const auto table_info = mono_image_get_table_info(image_, MONO_TABLE_ASSEMBLYREF);
+        const MonoTableInfo* table_info = mono_image_get_table_info(image_, MONO_TABLE_TYPEDEF);
 
         /* Fetch the number of rows available in the table */
         const int rows = mono_table_info_get_rows(table_info);
 
-        for (int32_t i = 0; i < rows; i++)
+        for (int i = 0; i < rows; i++)
         {
             // Get current row with MONO_TYPEDEF_SIZE columns number
             uint32_t cols[MONO_TYPEDEF_SIZE];
