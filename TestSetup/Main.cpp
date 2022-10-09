@@ -30,6 +30,7 @@ engine::CSharpObject AddComponent(engine::CSharpObject& go, const std::string& n
 
 //TODO Move application header to another project
 #include "../Editor/Application.h"
+#include "../Editor/EditorApplication.h"
 
 class StandaloneGameTestApplication final : public Application
 {
@@ -53,6 +54,6 @@ void StandaloneGameTestApplication::Setup()
 
 int main() {
 	StandaloneGameTestApplication app;
-
+	//EditorApplication app;
 	return app.Run();
 }
