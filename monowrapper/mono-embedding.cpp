@@ -139,6 +139,15 @@ void TryFieldsAndProperties(mono::mono_type& type)
     std::cout << "Property value: " << field_value << std::endl;
 }
 
+void TryStrings(mono::mono_type& type)
+{
+    auto instance = type.new_instance();
+
+    auto method = mono::make_method_invoker<std::string(std::string, int)>(type, "OutputSomething");
+    const auto result = method(instance, "test", 5);
+
+    std::cout << "Got string from method:" << result.c_str() << std::endl;
+}
 int main()
 {
     if(!mono::init_with_mono_assembly_path("mono/lib", "RootDomain"))
@@ -172,6 +181,7 @@ int main()
     
     TryFieldsAndProperties(testing_type);
 
+    TryStrings(testing_type);
     mono::shutdown();
     return 0;
 }
