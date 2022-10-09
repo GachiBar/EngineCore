@@ -24,6 +24,11 @@ namespace GameplayCore
         private List<Component> _updatableComponents;
 
         /// <summary>
+        /// List of removed <see cref="Component"/>s. We should terminate it.
+        /// </summary>
+        private List<Component> _removedComponents;
+
+        /// <summary>
         /// <see cref="Scene"/>, which contain this <see cref="GameObject"/>
         /// </summary>
         public readonly Scene Scene;
@@ -37,6 +42,7 @@ namespace GameplayCore
         {
             _componentsMap = new Dictionary<Type, Component>();
             _updatableComponents = new List<Component>();
+            _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
             Scene = scene;           
         }
@@ -57,8 +63,6 @@ namespace GameplayCore
             {
                 component.FixedUpdate();
             }
-
-            Invalidate();
         }
 
         public void Update()
@@ -67,8 +71,6 @@ namespace GameplayCore
             {
                 component.Update();
             }
-
-            Invalidate();
         }
 
         public void Terminate()
@@ -83,16 +85,7 @@ namespace GameplayCore
 
         public T AddComponent<T>() where T : Component, new()
         {
-            var component = new T();
-            component.GameObject = this;
-
-            if (IsInitialized)
-            {
-                component.Initialize();
-            }
-
-            _isUpdatableComponentsInvalid = true;
-            return component;
+            return (T)AddComponent(typeof(T));
         }
 
         public Component AddComponent(Type componentType)
@@ -133,7 +126,7 @@ namespace GameplayCore
 
                 if (IsInitialized)
                 {
-                    component.Terminate();
+                    _removedComponents.Add(component);
                 }
 
                 component.GameObject = null;
@@ -160,6 +153,11 @@ namespace GameplayCore
         {
             if (_isUpdatableComponentsInvalid)
             {
+                foreach (var component in _removedComponents)
+                {
+                    component.Terminate();
+                }
+
                 _updatableComponents = _componentsMap.Values.ToList();
                 _isUpdatableComponentsInvalid = false;
             }

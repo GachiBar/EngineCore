@@ -28,10 +28,6 @@ CSharpAssembly::CSharpAssembly(const std::string& assembly_path) {
 	delete[] file_data;
 }
 
-CSharpAssembly::~CSharpAssembly() {
-	//delete assembly_;
-}
-
 char* CSharpAssembly::ReadBytes(const std::string& filepath, uint32_t* out_size)
 {
 	std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
