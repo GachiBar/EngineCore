@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir)vendor\mono\native_64\lib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)vendor\mono\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -125,7 +125,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vendor\mono\lib;$(SolutionDir)vendor\mono\native_64\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\mono\lib\Debug;</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -146,6 +146,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Editor\Editor.vcxproj">
+      <Project>{093ee3e1-b662-4acf-bd21-f3b0484f4ef2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\GameplaySystem\GameplaySystem.vcxproj">
       <Project>{7afbd61b-fc45-42b8-9895-4a68cdcb3359}</Project>
     </ProjectReference>

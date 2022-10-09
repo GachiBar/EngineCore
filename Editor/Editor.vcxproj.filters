@@ -27,21 +27,6 @@
     <ClCompile Include="Widget.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_draw.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_tables.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui\imgui_widgets.cpp">
-      <Filter>ImGUI</Filter>
-    </ClCompile>
     <ClCompile Include="SliderWidget.cpp">
       <Filter>UI</Filter>
     </ClCompile>

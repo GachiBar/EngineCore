@@ -3,7 +3,7 @@
 #include "../GameplaySystem/CSharpAssembly.h"
 #include "../GameplaySystem/CSharpObject.h"
 
-engine::CSharpDomain domain("..\\vendor\\mono\\lib", "KtripRuntime", "KtripDomain");
+engine::CSharpDomain domain("..\\vendor\\mono\\lib\\4.5", "KtripRuntime", "KtripDomain");
 engine::CSharpAssembly assembly("GameplayCore.dll");
 
 engine::CSharpObject CreateGameObject(engine::CSharpObject& scene) {
@@ -30,19 +30,21 @@ engine::CSharpObject AddComponent(engine::CSharpObject& go, const std::string& n
 
 //TODO Move application header to another project
 #include "../Editor/Application.h"
+#include "../Editor/EditorApplication.h"
 
 class StandaloneGameTestApplication final : public Application
 {
 public:
-	void Setup() override;
-};
-
-void StandaloneGameTestApplication::Setup()
-{
-	engine::CSharpObject scene(domain, assembly, "GameplayCore", "Scene");
+	engine::CSharpObject scene = { domain, assembly, "GameplayCore", "Scene" };
 	engine::CSharpObject go1 = CreateGameObject(scene);
 	engine::CSharpObject go2 = CreateGameObject(scene);
 
+	void Setup() override;
+};
+
+
+void StandaloneGameTestApplication::Setup()
+{
 	AddComponent(go1, "GameplayCore", "TestUpdateComponent");
 	AddComponent(go2, "GameplayCore", "TestFixedUpdateComponent");
 
@@ -52,6 +54,6 @@ void StandaloneGameTestApplication::Setup()
 
 int main() {
 	StandaloneGameTestApplication app;
-
+	//EditorApplication app;
 	return app.Run();
 }

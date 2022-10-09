@@ -364,3 +364,6 @@ FodyWeavers.xsd
 .idea/.idea.ProjectEngine/.idea/
 
 imgui.ini
+
+# Make sure to include everything in vendor.
+!vendor/**
