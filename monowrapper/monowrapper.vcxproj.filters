@@ -116,8 +116,8 @@
     <ClInclude Include="monopp\mono_visibility.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="monopp\mono_build_config.h.in" />
+    <ClInclude Include="monopp\mono_build_config.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
