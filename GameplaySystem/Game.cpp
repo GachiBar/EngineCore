@@ -128,9 +128,6 @@ void Game::Initialize() {
 			2
 		}
 		);
-	
-	renderer_.InitShaders("E:\\GachiEngine\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
-	
 }
 
 void Game::InitializeScene() const
@@ -241,7 +238,7 @@ void Game::InitRenderer(size_t width, size_t height) {
 		height
 	});
 
-	renderer_.InitShaders(".\\KtripEngine\\DX11RenderEngine\\DX11RenderEngine\\Shaders");
+	renderer_.InitShaders("..\\..\\..\\KtripEngine\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
 }
 
 } // namespace engine
