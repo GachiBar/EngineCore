@@ -8,6 +8,9 @@
 #include <iostream>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+#include "../Editor/InputSystem/InputManager.h"
+#include <algorithm>
+
 
 namespace engine {
 
@@ -31,12 +34,107 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		game = reinterpret_cast<Game*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
+	static auto GetKeyBoard = []()->Keyboard& { return InputManager::getInstance().GetKeyboardDevice(); };
+	static auto GetMouse = []()->Mouse& {return InputManager::getInstance().GetMouseDevice(); };
 	switch (msg)
 	{
-	case WM_DESTROY: {
+	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
+	case WM_KILLFOCUS:
+		InputManager::getInstance().GetKeyboardDevice().ClearState();
+		break;
+
+		// ************ KEYBOARD MESSAGES ************ //
+	case WM_KEYDOWN:
+		if (!(lparam & 0x40000000) || InputManager::getInstance().GetKeyboardDevice().IsAutorepeatEnabled()) // no thank you on the autorepeat
+		{
+			GetKeyBoard().OnKeyPressed(static_cast<unsigned char>(wparam));
+		}
+		break;
+	case WM_KEYUP:
+		GetKeyBoard().OnKeyReleased(static_cast<unsigned char>(wparam));
+		break;
+	case WM_CHAR:
+		GetKeyBoard().OnChar(static_cast<unsigned char>(wparam));
+		break;
+		// ************ END KEYBOARD MESSAGES ************ //
+
+		// ************ MOUSE MESSAGES ************ //
+	case WM_MOUSEMOVE:
+	{
+		POINTS pt = MAKEPOINTS(lparam);
+		//TODO remove magic numbers
+		if (pt.x > 0 && pt.x < 800 && pt.y > 0 && pt.y < 600)
+		{
+			GetMouse().OnMouseMove(pt.x, pt.y);
+			if (!GetMouse().IsInWindow())
+			{
+				SetCapture(hwnd);
+				GetMouse().OnMouseEnter();
+			}
+		}
+		else
+		{
+			if (wparam & (MK_LBUTTON | MK_RBUTTON))
+			{
+				pt.x = std::max(short(0), pt.x);
+				//TODO remove magic numbers
+				pt.x = std::min(short(800 - 1), pt.x);
+				pt.y = std::max(short(0), pt.y);
+				//TODO remove magic numbers
+				pt.y = std::min(short(600 - 1), pt.y);
+				GetMouse().OnMouseMove(pt.x, pt.y);
+			}
+			else
+			{
+				ReleaseCapture();
+				GetMouse().OnMouseLeave();
+				GetMouse().OnLeftReleased(pt.x, pt.y);
+				GetMouse().OnRightReleased(pt.x, pt.y);
+			}
+		}
+		break;
 	}
+	case WM_LBUTTONDOWN:
+	{
+		const POINTS pt = MAKEPOINTS(lparam);
+		GetMouse().OnLeftPressed(pt.x, pt.y);
+		SetForegroundWindow(hwnd);
+		break;
+	}
+	case WM_RBUTTONDOWN:
+	{
+		const POINTS pt = MAKEPOINTS(lparam);
+		GetMouse().OnRightPressed(pt.x, pt.y);
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+		const POINTS pt = MAKEPOINTS(lparam);
+		GetMouse().OnLeftReleased(pt.x, pt.y);
+		break;
+	}
+	case WM_RBUTTONUP:
+	{
+		const POINTS pt = MAKEPOINTS(lparam);
+		GetMouse().OnRightReleased(pt.x, pt.y);
+		break;
+	}
+	case WM_MOUSEWHEEL:
+	{
+		const POINTS pt = MAKEPOINTS(lparam);
+		if (GET_WHEEL_DELTA_WPARAM(wparam) > 0)
+		{
+			GetMouse().OnWheelUp(pt.x, pt.y);
+		}
+		else if (GET_WHEEL_DELTA_WPARAM(wparam) < 0)
+		{
+			GetMouse().OnWheelDown(pt.x, pt.y);
+		}
+		break;
+	}
+	// ************ END MOUSE MESSAGES ************ //
 	default:
 		if (game->renderer_.ProcessMessages(hwnd, msg, wparam, lparam)) {
 			return true;
