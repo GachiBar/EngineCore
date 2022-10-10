@@ -9,8 +9,8 @@ namespace engine {
 
 class CSharpObject {
 public:
-	MonoClass* GetMonoClass();
-	MonoObject* GetMonoObject();
+	MonoClass* GetMonoClass() const;
+	MonoObject* GetMonoObject() const;
 
 	CSharpObject(
 		CSharpDomain& domain, 
@@ -23,10 +23,8 @@ public:
 		CSharpAssembly& assembly,
 		MonoObject* mono_object);
 
-	~CSharpObject();
-
-	MonoObject* CallMethod(const std::string& name);
-	MonoObject* CallMethod(const std::string& name, void** params, size_t count);
+	MonoObject* CallMethod(const std::string& name) const;
+	MonoObject* CallMethod(const std::string& name, void** params, size_t count) const;
 
 private:
 	CSharpDomain& domain_;
