@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameplayCore
+namespace GameplayCore.Components
 {
     public class TestFixedUpdateComponent : Component
     {

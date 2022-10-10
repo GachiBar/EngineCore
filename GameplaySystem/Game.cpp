@@ -8,11 +8,11 @@
 #include <iostream>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+#include "MathematicsInternals.h"
 
 namespace engine {
 
 RenderDevice* Game::current_device_ = nullptr;
-bool Game::flag_ = false;
 
 CSharpObject* Game::GetScene() {
 	return scene_;
@@ -50,7 +50,6 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 }
 
 void Game::RegisterModel(size_t id) {
-	flag_ = true;
 	current_device_->RegisterModel(id, {
 		{
 			{{ 0.25,0.5,0}, {},{}},
@@ -64,7 +63,6 @@ void Game::RegisterModel(size_t id) {
 }
 
 void Game::DrawModel(size_t id) {
-	flag_ = true;
 	current_device_->DrawModel(id, 0, {}, ModelDefines::MRED);
 }
 
@@ -83,8 +81,11 @@ void Game::Initialize() {
 	InitRenderer(static_cast<size_t>(width), static_cast<size_t>(height));
 
 	current_device_ = &renderer_;
-	mono_add_internal_call("GameplayCore.Renderer::RegisterModel", RegisterModel);
-	mono_add_internal_call("GameplayCore.Renderer::DrawModel", DrawModel);
+
+	mono_add_internal_call("GameplayCore.EngineApi.Render::RegisterModel", RegisterModel);
+	mono_add_internal_call("GameplayCore.EngineApi.Render::DrawModel", DrawModel);
+
+	AddMathematicsInternalCalls();	
 
 	scene_->CallMethod("Initialize");
 }
@@ -129,8 +130,7 @@ void Game::RunFrame()
 	renderer_.BeginFrame();
 	
 	renderer_.SetRenderData({});
-	
-	bool t = Game::flag_;
+
 	scene_->CallMethod("Render");
 
 	while (!renderer_.Present()) {

@@ -1,4 +1,4 @@
-﻿namespace GameplayCore
+﻿namespace GameplayCore.Components
 {
     public abstract class Component
     {

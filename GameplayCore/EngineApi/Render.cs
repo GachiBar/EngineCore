@@ -1,8 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace GameplayCore
+namespace GameplayCore.EngineApi
 {
-    public static class Renderer
+    public static class Render
     {
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern public static void RegisterModel(ulong id);

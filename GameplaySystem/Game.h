@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <Windows.h>
+#include <SimpleMath.h>
 
 #include "RenderEngine.h"
 #include "CSharpObject.h"
@@ -29,7 +30,6 @@ public:
 	bool IsExiting() const;
 private:
 	static RenderDevice* current_device_; // For test;
-	static bool flag_;
 
 	time_point<steady_clock> time_start = high_resolution_clock::now();
 	bool is_exit_requested = false;
@@ -42,7 +42,7 @@ private:
 	
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	static void RegisterModel(size_t id);
-	static void DrawModel(size_t id);
+	static void DrawModel(size_t id);	
 
 	void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
 	HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);
