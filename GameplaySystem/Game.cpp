@@ -27,10 +27,12 @@ void Game::Run() {
 	//scene_->CallMethod("Initialize");
 
 	nanoseconds lag = 0ns;
-	time_start = clock::now();
+	time_start = high_resolution_clock::now();
 	is_exit_requested = false;
 
 	// Game loop.
+
+	
 	
 	while (!is_exit_requested) {
 		MSG msg = {};
@@ -44,7 +46,7 @@ void Game::Run() {
 			}
 		}
 
-		auto dt = clock::now() - time_start;
+		auto dt = high_resolution_clock::now() - time_start;
 		time_start = clock::now();
 		lag += duration_cast<nanoseconds>(dt);
 
@@ -56,9 +58,12 @@ void Game::Run() {
 
 		scene_->CallMethod("Update");
 
-		renderer_.BeginFrame();
-		renderer_.SetRenderData({});
 
+		renderer_.BeginFrame();
+		//renderer_.SetRenderData({});
+
+
+		
 		while (!renderer_.Present()) {
 			renderer_.EndFrame();
 		}
@@ -109,6 +114,23 @@ void Game::Initialize() {
 	ShowWindow(handle_old_, SW_SHOW);
 	ShowWindow(handle_new_, SW_SHOW);
 	InitRenderer(static_cast<size_t>(width), static_cast<size_t>(height));
+
+	renderer_.RegisterModel(
+		0,
+		{
+			{
+				{{ 0.25,0.5,0}, {},{}},
+				{{ 0.5,0.5,0}, {},{}},
+				{{ 0.5,0.25,0}, {},{}},
+			},
+			{0,1,2,1,0,2},
+			EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+			2
+		}
+		);
+	
+	renderer_.InitShaders("E:\\GachiEngine\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
+	
 }
 
 void Game::InitializeScene() const
@@ -144,12 +166,27 @@ void Game::RunFrame()
 
 	scene_->CallMethod("Update");
 
+
+	renderer_.SetRenderData(
+		{
+			std::chrono::duration<float>(dt).count(),
+			matrix::Identity,
+		matrix::Identity
+		});
+	
 	renderer_.BeginFrame();
+	
 	renderer_.SetRenderData({});
 
+	
+	renderer_.DrawModel(0,0,{}, ModelDefines::MRED);
+
+		
 	while (!renderer_.Present()) {
 		renderer_.EndFrame();
+		renderer_.InitShaders("..\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
 	}
+
 
 	renderer_.EndFrame();
 }
