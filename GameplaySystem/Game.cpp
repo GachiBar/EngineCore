@@ -11,67 +11,15 @@
 
 namespace engine {
 
+RenderDevice* Game::current_device_ = nullptr;
+bool Game::flag_ = false;
+
 CSharpObject* Game::GetScene() {
 	return scene_;
 }
 
 void Game::SetScene(CSharpObject* scene) {
 	scene_ = scene;
-}
-
-void Game::Run() {
-	using namespace std::chrono;
-	using clock = high_resolution_clock;
-
-	//Initialize();
-	//scene_->CallMethod("Initialize");
-
-	nanoseconds lag = 0ns;
-	time_start = high_resolution_clock::now();
-	is_exit_requested = false;
-
-	// Game loop.
-
-	
-	
-	while (!is_exit_requested) {
-		MSG msg = {};
-
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-
-			if (msg.message == WM_QUIT) {
-				is_exit_requested = true;
-			}
-		}
-
-		auto dt = high_resolution_clock::now() - time_start;
-		time_start = clock::now();
-		lag += duration_cast<nanoseconds>(dt);
-
-		while (lag >= kTimestep) {
-			lag -= kTimestep;
-
-			scene_->CallMethod("FixedUpdate");
-		}
-
-		scene_->CallMethod("Update");
-
-
-		renderer_.BeginFrame();
-		//renderer_.SetRenderData({});
-
-
-		
-		while (!renderer_.Present()) {
-			renderer_.EndFrame();
-		}
-		
-		renderer_.EndFrame();		
-	}
-
-	scene_->CallMethod("Terminate");
 }
 
 LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -101,6 +49,25 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 }
 
+void Game::RegisterModel(size_t id) {
+	flag_ = true;
+	current_device_->RegisterModel(id, {
+		{
+			{{ 0.25,0.5,0}, {},{}},
+			{{ 0.5,0.5,0}, {},{}},
+			{{ 0.5,0.25,0}, {},{}},
+		},
+		{0,1,2,1,0,2},
+		EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+		2
+	});
+}
+
+void Game::DrawModel(size_t id) {
+	flag_ = true;
+	current_device_->DrawModel(id, 0, {}, ModelDefines::MRED);
+}
+
 void Game::Initialize() {
 	HINSTANCE instance = GetModuleHandle(nullptr);
 	LPCWSTR window_name = L"Test window";
@@ -115,24 +82,15 @@ void Game::Initialize() {
 	ShowWindow(handle_new_, SW_SHOW);
 	InitRenderer(static_cast<size_t>(width), static_cast<size_t>(height));
 
-	renderer_.RegisterModel(
-		0,
-		{
-			{
-				{{ 0.25,0.5,0}, {},{}},
-				{{ 0.5,0.5,0}, {},{}},
-				{{ 0.5,0.25,0}, {},{}},
-			},
-			{0,1,2,1,0,2},
-			EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-			2
-		}
-		);
+	current_device_ = &renderer_;
+	mono_add_internal_call("GameplayCore.Renderer::RegisterModel", RegisterModel);
+	mono_add_internal_call("GameplayCore.Renderer::DrawModel", DrawModel);
+
+	scene_->CallMethod("Initialize");
 }
 
-void Game::InitializeScene() const
-{
-	scene_->CallMethod("Initialize");
+void Game::Terminate() {
+	scene_->CallMethod("Terminate");
 }
 
 void Game::RunFrame()
@@ -157,33 +115,27 @@ void Game::RunFrame()
 
 	while (lag >= kTimestep) {
 		lag -= kTimestep;
-
 		scene_->CallMethod("FixedUpdate");
 	}
 
 	scene_->CallMethod("Update");
 
+	//renderer_.SetRenderData({
+	//	std::chrono::duration<float>(dt).count(),
+	//	matrix::Identity,
+	//	matrix::Identity
+	//});
 
-	renderer_.SetRenderData(
-		{
-			std::chrono::duration<float>(dt).count(),
-			matrix::Identity,
-		matrix::Identity
-		});
-	
 	renderer_.BeginFrame();
 	
 	renderer_.SetRenderData({});
-
 	
-	renderer_.DrawModel(0,0,{}, ModelDefines::MRED);
+	bool t = Game::flag_;
+	scene_->CallMethod("Render");
 
-		
 	while (!renderer_.Present()) {
 		renderer_.EndFrame();
-		renderer_.InitShaders("..\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
 	}
-
 
 	renderer_.EndFrame();
 }

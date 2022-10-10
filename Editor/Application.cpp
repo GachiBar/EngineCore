@@ -11,7 +11,6 @@ int Application::Run()
 		return exit_code_;
 
 	engine_->Initialize();
-	engine_->InitializeScene();
 
 	Start();
 	if (exit_code_)
@@ -21,6 +20,8 @@ int Application::Run()
 		engine_->RunFrame();
 
 	Stop();
+
+	engine_->Terminate();
 
 	return exit_code_;
 }

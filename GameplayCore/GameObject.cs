@@ -73,6 +73,14 @@ namespace GameplayCore
             }
         }
 
+        public void Render()
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.Render();
+            }
+        }
+
         public void Terminate()
         {
             foreach (var component in _updatableComponents)

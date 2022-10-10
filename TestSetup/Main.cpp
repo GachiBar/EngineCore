@@ -48,6 +48,7 @@ void StandaloneGameTestApplication::Setup()
 {
 	AddComponent(go1, "GameplayCore", "TestUpdateComponent");
 	AddComponent(go2, "GameplayCore", "TestFixedUpdateComponent");
+	AddComponent(go1, "GameplayCore", "RenderComponent");
 
 	engine_->SetScene(&scene);
 }
