@@ -19,8 +19,12 @@ namespace GameplayCore.Mathematics
 
         public Vector3 EulerAngles
         {
-            get => Internal_MakePositive(Internal_ToEulerRad(this) * MathF.Rad2Deg);
-            set => this = Internal_FromEulerRad(value * MathF.Deg2Rad);
+            get => Internal_MakePositive(Internal_ToEulerRad(ref this) * MathF.Rad2Deg);
+            set
+            {
+                var euler = value * MathF.Deg2Rad;
+                this = Internal_FromEulerRad(ref euler);
+            }
         }
 
         public Quaternion(float x, float y, float z, float w)
@@ -50,9 +54,9 @@ namespace GameplayCore.Mathematics
 
         public static Vector3 operator *(Quaternion rotation, Vector3 point)
         {
-            float x = rotation.X * 2F;
-            float y = rotation.Y * 2F;
-            float z = rotation.Z * 2F;
+            float x = rotation.X * 2.0f;
+            float y = rotation.Y * 2.0f;
+            float z = rotation.Z * 2.0f;
             float xx = rotation.X * x;
             float yy = rotation.Y * y;
             float zz = rotation.Z * z;
@@ -64,9 +68,9 @@ namespace GameplayCore.Mathematics
             float wz = rotation.W * z;
 
             Vector3 res;
-            res.X = (1F - (yy + zz)) * point.X + (xy - wz) * point.Y + (xz + wy) * point.Z;
-            res.Y = (xy + wz) * point.X + (1F - (xx + zz)) * point.Y + (yz - wx) * point.Z;
-            res.Z = (xz - wy) * point.X + (yz + wx) * point.Y + (1F - (xx + yy)) * point.Z;
+            res.X = (1.0f - (yy + zz)) * point.X + (xy - wz) * point.Y + (xz + wy) * point.Z;
+            res.Y = (xy + wz) * point.X + (1.0f - (xx + zz)) * point.Y + (yz - wx) * point.Z;
+            res.Z = (xz - wy) * point.X + (yz + wx) * point.Y + (1.0f - (xx + yy)) * point.Z;
             return res;
         }
 
@@ -123,7 +127,7 @@ namespace GameplayCore.Mathematics
 
         public void SetLookRotation(Vector3 view, Vector3 up)
         {
-            this = Internal_LookRotation(view, up);
+            this = Internal_LookRotation(ref view, ref up);
         }
 
         public static float Angle(Quaternion a, Quaternion b)
@@ -134,23 +138,25 @@ namespace GameplayCore.Mathematics
 
         public static Quaternion Euler(float x, float y, float z)
         {
-            return Internal_FromEulerRad(new Vector3(x, y, z) * MathF.Deg2Rad);
+            var euler = new Vector3(x, y, z) * MathF.Deg2Rad;
+            return Internal_FromEulerRad(ref euler);
         }
 
         public static Quaternion Euler(Vector3 euler)
         {
-            return Internal_FromEulerRad(euler * MathF.Deg2Rad);
+            euler *= MathF.Deg2Rad;
+            return Internal_FromEulerRad(ref euler);
         }
 
-        public void ToAngleAxis(out float angle, out Vector3 axis)
-        {
-            Internal_ToAxisAngleRad(this, out axis, out angle);
-            angle *= MathF.Rad2Deg;
-        }
+        //public void ToAngleAxis(out float angle, out Vector3 axis)
+        //{
+        //    Internal_ToAxisAngleRad(this, out axis, out angle);
+        //    angle *= MathF.Rad2Deg;
+        //}
 
         public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection)
         {
-            this = Internal_FromToRotation(fromDirection, toDirection);
+            this = Internal_FromToRotation(ref fromDirection, ref toDirection);
         }
 
         public static Quaternion RotateTowards(Quaternion from, Quaternion to, float maxDegreesDelta)
@@ -162,7 +168,7 @@ namespace GameplayCore.Mathematics
                 return to;
             }
 
-            return Internal_Slerp(from, to, MathF.Min(1.0f, maxDegreesDelta / angle));
+            return Internal_Slerp(ref from, ref to, MathF.Min(1.0f, maxDegreesDelta / angle));
         }
 
         public static Quaternion Normalize(Quaternion q)
@@ -272,21 +278,21 @@ namespace GameplayCore.Mathematics
 
         public static Quaternion LookRotation(Vector3 forward)
         {
-            return Internal_LookRotation(forward, Vector3.Up);
+            Vector3 upwards = Vector3.Up;
+            return Internal_LookRotation(ref forward, ref upwards);
         }
 
-        // TODO: refs
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static Quaternion Internal_FromToRotation(Vector3 fromDirection, Vector3 toDirection);
+        extern private static Quaternion Internal_FromToRotation(ref Vector3 fromDirection, ref Vector3 toDirection);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static Quaternion Internal_Slerp(Quaternion q1, Quaternion q2, float t);
+        extern private static Quaternion Internal_Slerp(ref Quaternion q1, ref Quaternion q2, float t);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static Quaternion Internal_LookRotation(Vector3 forward, Vector3 upwards);
+        extern private static Quaternion Internal_LookRotation(ref Vector3 forward, ref Vector3 upwards);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static Vector3 Internal_ToEulerRad(Quaternion q);
+        extern private static Vector3 Internal_ToEulerRad(ref Quaternion q);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static Quaternion Internal_FromEulerRad(Vector3 euler);
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static void Internal_ToAxisAngleRad(Quaternion q1, out Vector3 axis, out float angle);
+        extern private static Quaternion Internal_FromEulerRad(ref Vector3 euler);
+        //[MethodImpl(MethodImplOptions.InternalCall)]
+        //extern private static void Internal_ToAxisAngleRad(Quaternion q1, out Vector3 axis, out float angle);
     }
 }

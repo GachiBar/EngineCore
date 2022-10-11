@@ -21,19 +21,17 @@ namespace GameplayCore.Components
 
         public override void Render()
         {
-            var lhs = new Vector3(1, 2, 3);
-            var rhs = new Vector3(3, 2, 1);
-            var result = lhs + rhs;
-            System.Console.WriteLine($"(X: {result.X}; Y: {result.Y}; Z: {result.Z})");
-            
-            var magnitude = result.Magnitude;
-            System.Console.WriteLine($"Magnitude: {magnitude}");
-
-            var sqrMagnitude = result.MagnitudeSquared;
-            System.Console.WriteLine($"Magnitude squared: {sqrMagnitude}");
-
-            var normolized = result.Normolized;
-            System.Console.WriteLine($"(X: {normolized.X}; Y: {normolized.Y}; Z: {normolized.Z})");
+            Quaternion q = Quaternion.Identity;
+            System.Console.WriteLine(q);
+            q.SetFromToRotation(Vector3.Up, Vector3.Right);
+            System.Console.WriteLine(q);
+            var qq = Quaternion.RotateTowards(Quaternion.Identity, q, 10);
+            System.Console.WriteLine(qq);
+            var qr = Quaternion.LookRotation(Vector3.One);
+            System.Console.WriteLine(qr);
+            System.Console.WriteLine(q.EulerAngles);
+            q.EulerAngles = new Vector3(30, 0, 0);
+            System.Console.WriteLine(q.EulerAngles);
 
             EngineApi.Render.Internal_DrawModel(Id);
         }

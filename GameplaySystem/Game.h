@@ -8,10 +8,10 @@
 #include "RenderEngine.h"
 #include "CSharpObject.h"
 
-
 namespace engine {
 
-	using namespace std::chrono;
+using namespace std::chrono;
+
 class Game {
 	const std::chrono::nanoseconds kTimestep =
 		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
@@ -31,9 +31,10 @@ public:
 private:
 	static RenderDevice* current_device_; // For test;
 
-	time_point<steady_clock> time_start = high_resolution_clock::now();
-	bool is_exit_requested = false;
-	nanoseconds lag = 0ns;
+	time_point<steady_clock> time_start_ = high_resolution_clock::now();
+	bool is_exit_requested_ = false;
+	nanoseconds lag_ = 0ns;
+	nanoseconds ellapsed_ = 0ns;
 
 	HWND handle_old_;
 	HWND handle_new_;
@@ -41,8 +42,8 @@ private:
 	CSharpObject* scene_;
 	
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-	static void RegisterModel(size_t id);
-	static void DrawModel(size_t id);	
+	static void Internal_RegisterModel(size_t id);
+	static void Internal_DrawModel(size_t id);
 
 	void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
 	HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);

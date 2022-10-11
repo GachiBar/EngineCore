@@ -49,7 +49,7 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 }
 
-void Game::RegisterModel(size_t id) {
+void Game::Internal_RegisterModel(size_t id) {
 	current_device_->RegisterModel(id, {
 		{
 			{{ 0.25,0.5,0}, {},{}},
@@ -62,7 +62,7 @@ void Game::RegisterModel(size_t id) {
 	});
 }
 
-void Game::DrawModel(size_t id) {
+void Game::Internal_DrawModel(size_t id) {
 	current_device_->DrawModel(id, 0, {}, ModelDefines::MRED);
 }
 
@@ -82,8 +82,8 @@ void Game::Initialize() {
 
 	current_device_ = &renderer_;
 
-	mono_add_internal_call("GameplayCore.EngineApi.Render::RegisterModel", RegisterModel);
-	mono_add_internal_call("GameplayCore.EngineApi.Render::DrawModel", DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_RegisterModel", Internal_RegisterModel);
+	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
 
 	AddMathematicsInternalCalls();	
 
@@ -106,26 +106,27 @@ void Game::RunFrame()
 		DispatchMessage(&msg);
 
 		if (msg.message == WM_QUIT) {
-			is_exit_requested = true;
+			is_exit_requested_ = true;
 		}
 	}
 
-	auto dt = clock::now() - time_start;
-	time_start = clock::now();
-	lag += duration_cast<nanoseconds>(dt);
+	auto dt = clock::now() - time_start_;
+	ellapsed_ += dt;
+	time_start_ = clock::now();
+	lag_ += duration_cast<nanoseconds>(dt);
 
-	while (lag >= kTimestep) {
-		lag -= kTimestep;
+	while (lag_ >= kTimestep) {
+		lag_ -= kTimestep;
 		scene_->CallMethod("FixedUpdate");
 	}
 
 	scene_->CallMethod("Update");
 
-	//renderer_.SetRenderData({
-	//	std::chrono::duration<float>(dt).count(),
-	//	matrix::Identity,
-	//	matrix::Identity
-	//});
+	renderer_.SetRenderData({
+		duration<float>(ellapsed_).count(),
+		matrix::Identity,
+		matrix::Identity
+	});
 
 	renderer_.BeginFrame();
 	
@@ -142,7 +143,7 @@ void Game::RunFrame()
 
 bool Game::IsExiting() const
 {
-	return is_exit_requested;
+	return is_exit_requested_;
 }
 
 void Game::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {

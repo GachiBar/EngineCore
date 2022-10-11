@@ -5,48 +5,46 @@
 
 namespace engine {
 
-#pragma region Vector3
-
-float Vector3Magnitude(DirectX::SimpleMath::Vector3 vector) {
-	return vector.Length();
-}
-
-float Vector3MagnitudeSquared(DirectX::SimpleMath::Vector3 vector) {
-	return vector.LengthSquared();
-}
-
-DirectX::SimpleMath::Vector3 Vector3Normolized(DirectX::SimpleMath::Vector3 vector) {
-	vector.Normalize();
-	return vector;
-}
-
-DirectX::SimpleMath::Vector3 Vector3Sum(DirectX::SimpleMath::Vector3 lhs, DirectX::SimpleMath::Vector3 rhs) {
-	return lhs + rhs;
-}
-
-#pragma endregion Vector3
-
 #pragma region Quaternion
-//
-//DirectX::SimpleMath::Quaternion Internal_LookRotation(DirectX::SimpleMath::Vector3 forward, DirectX::SimpleMath::Vector3 upwards) {
-//	//DirectX::SimpleMath::Matrix look_at_matrix = DirectX::SimpleMath::Matrix::CreateLookAt(forward, upwards);
-//	DirectX::SimpleMath::Quaternion r = DirectX::SimpleMath::Quaternion::Identity;
-//	//auto e = r.ToEuler;
-//
-//	return DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(look_at_matrix);
-//}
-//Internal_FromToRotation(fromDirection, toDirection);
+
+DirectX::SimpleMath::Quaternion Internal_FromToRotation(
+	const DirectX::SimpleMath::Vector3& from_irection, 
+	const DirectX::SimpleMath::Vector3& to_direction)
+{
+	return DirectX::SimpleMath::Quaternion::FromToRotation(from_irection, to_direction);
+}
+
+DirectX::SimpleMath::Quaternion Internal_Slerp(
+	const DirectX::SimpleMath::Quaternion&  q1,
+	const DirectX::SimpleMath::Quaternion&  q2,
+	float t) 
+{
+	return DirectX::SimpleMath::Quaternion::Slerp(q1, q2, t);
+}
+
+DirectX::SimpleMath::Quaternion Internal_LookRotation(
+	const DirectX::SimpleMath::Vector3& forward, 
+	const DirectX::SimpleMath::Vector3& upwards)
+{
+	return DirectX::SimpleMath::Quaternion::LookRotation(forward, upwards);
+}
+
+DirectX::SimpleMath::Vector3 Internal_ToEulerRad(const DirectX::SimpleMath::Quaternion& q) {
+	return q.ToEuler();
+}
+
+DirectX::SimpleMath::Quaternion Internal_FromEulerRad(const DirectX::SimpleMath::Vector3& euler) {
+	return DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(euler);
+}
 
 #pragma endregion Quaternion
 
 void AddMathematicsInternalCalls() {	
-	DirectX::SimpleMath::Quaternion q;
-	//DirectX::SimpleMath::Quaternion::FromToRotation
-
-	mono_add_internal_call("GameplayCore.Mathematics.Vector3::ExternalMagnitude", Vector3Magnitude);
-	mono_add_internal_call("GameplayCore.Mathematics.Vector3::ExternalMagnitudeSquared", Vector3MagnitudeSquared);
-	mono_add_internal_call("GameplayCore.Mathematics.Vector3::ExternalNormolized", Vector3Normolized);
-	mono_add_internal_call("GameplayCore.Mathematics.Vector3::ExternalSum", Vector3Sum);
+	mono_add_internal_call("GameplayCore.Mathematics.Quaternion::Internal_FromToRotation", Internal_FromToRotation);
+	mono_add_internal_call("GameplayCore.Mathematics.Quaternion::Internal_Slerp", Internal_Slerp);
+	mono_add_internal_call("GameplayCore.Mathematics.Quaternion::Internal_LookRotation", Internal_LookRotation);
+	mono_add_internal_call("GameplayCore.Mathematics.Quaternion::Internal_ToEulerRad", Internal_ToEulerRad);
+	mono_add_internal_call("GameplayCore.Mathematics.Quaternion::Internal_FromEulerRad", Internal_FromEulerRad);
 }
 
 } // namespace engine
