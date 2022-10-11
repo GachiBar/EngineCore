@@ -190,7 +190,7 @@ void Game::InitRenderer(size_t width, size_t height) {
 		height
 	});
 
-	renderer_.InitShaders("..\\..\\..\\KtripEngine\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
+	renderer_.InitShaders("..\\..\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
 }
 
 } // namespace engine

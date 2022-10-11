@@ -3,7 +3,7 @@
 
 #include <chrono>
 #include <Windows.h>
-#include <SimpleMath.h>
+#include "SimpleMath.h"
 
 #include "RenderEngine.h"
 #include "CSharpObject.h"
