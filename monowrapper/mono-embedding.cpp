@@ -3,6 +3,7 @@
 #include "monopp/mono_domain.h"
 #include "monopp/mono_field.h"
 #include "monopp/mono_field_invoker.h"
+#include "monopp/mono_internal_call.h"
 #include "monopp/mono_jit.h"
 #include "monopp/mono_method.h"
 #include "monopp/mono_method_invoker.h"
@@ -148,6 +149,44 @@ void TryStrings(mono::mono_type& type)
 
     std::cout << "Got string from method:" << result.c_str() << std::endl;
 }
+
+void TryReferences(mono::mono_type& first, mono::mono_type& second)
+{
+    // Create object of second class
+    auto instance1 = first.new_instance();
+    mono::mono_object instance2 = second.new_instance();
+    
+    // Set specific field
+    auto field = second.get_field("Message");
+    /// In order to get or set values to a field you need
+    /// to create an invoker.
+    auto mutable_field = mono::make_field_invoker<std::string>(field);
+    // Pass second object in method of first object as a reference
+    mutable_field.set_value(instance2, "Test reference!");
+
+    // Invoke method with reference to object
+    auto method = first.get_method("HandleMessage", 1);
+    auto invoker = mono::make_method_invoker<void(MonoObject*)>(method);
+    invoker(instance1, instance2.get_internal_ptr());
+}
+
+bool Draw(int mesh_id)
+{
+    std::cout << "Drawn mesh #" << mesh_id << std::endl;
+    return true;
+};
+
+void TryInternalCall(mono::mono_type& type)
+{
+    auto instance = type.new_instance();
+    
+    mono::add_internal_call("MonoPlayground.CSharpTesting::Draw", Draw);
+
+    auto void_method = type.get_method("DrawSome", 0);
+    auto thunk1 = mono::make_method_invoker<void()>(void_method);
+    thunk1(instance);
+}
+
 int main()
 {
     if(!mono::init_with_mono_assembly_path("mono/lib", "RootDomain"))
@@ -182,6 +221,11 @@ int main()
     TryFieldsAndProperties(testing_type);
 
     TryStrings(testing_type);
+    TryInternalCall(testing_type);
+
+    auto testing_type2 = assembly.get_type("MonoPlayground", "MessageHolder");
+    TryReferences(testing_type, testing_type2);
+
     mono::shutdown();
     return 0;
 }
