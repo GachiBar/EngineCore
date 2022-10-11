@@ -1,4 +1,4 @@
-﻿namespace GameplayCore
+﻿namespace GameplayCore.Components
 {
     public abstract class Component
     {
@@ -7,6 +7,7 @@
         public virtual void Initialize() { }
         public virtual void FixedUpdate() { }
         public virtual void Update() { }
+        public virtual void Render() { }
         public virtual void Terminate() { }
     }
 }

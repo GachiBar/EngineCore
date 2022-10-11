@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using GameplayCore.Components;
 
 namespace GameplayCore
 {
@@ -70,6 +71,14 @@ namespace GameplayCore
             foreach (var component in _updatableComponents)
             {
                 component.Update();
+            }
+        }
+
+        public void Render()
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.Render();
             }
         }
 
@@ -144,9 +153,12 @@ namespace GameplayCore
 
         public Component GetComponent(Type componentType)
         {
-            return _componentsMap.TryGetValue(componentType, out var component) 
-                ? component 
-                : null;
+            if (_componentsMap.TryGetValue(componentType, out var component))
+            {
+                return component;
+            }
+
+            return null;
         }
 
         internal void Invalidate()

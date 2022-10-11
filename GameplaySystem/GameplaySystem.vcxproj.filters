@@ -39,7 +39,7 @@
     <ClInclude Include="CSharpDomain.h">
       <Filter>Header Files\Mono</Filter>
     </ClInclude>
-    <ClInclude Include="Updater.h">
+    <ClInclude Include="MathematicsInternals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -61,9 +61,6 @@
     </ClCompile>
     <ClCompile Include="CSharpDomain.cpp">
       <Filter>Source Files\Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="Updater.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
