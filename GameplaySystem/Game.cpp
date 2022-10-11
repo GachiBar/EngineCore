@@ -123,14 +123,17 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	}
 	case WM_MOUSEWHEEL:
 	{
+		const MOUSEHOOKSTRUCTEX* mhs = (const MOUSEHOOKSTRUCTEX*)lparam;
+		short delta = HIWORD(mhs->mouseData);
+
 		const POINTS pt = MAKEPOINTS(lparam);
-		if (GET_WHEEL_DELTA_WPARAM(wparam) > 0)
+		if (delta > 0)
 		{
-			GetMouse().OnWheelUp(pt.x, pt.y);
+			GetMouse().OnWheelUp(pt.x, pt.y,delta);
 		}
-		else if (GET_WHEEL_DELTA_WPARAM(wparam) < 0)
+		else if (delta < 0)
 		{
-			GetMouse().OnWheelDown(pt.x, pt.y);
+			GetMouse().OnWheelDown(pt.x, pt.y,delta);
 		}
 		break;
 	}

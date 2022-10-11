@@ -22,6 +22,9 @@
     <Filter Include="InputSystem">
       <UniqueIdentifier>{0ca7dd2c-f6e5-4ad8-8f04-0adb4c48b707}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libs">
+      <UniqueIdentifier>{917df45b-4449-414a-9406-3714e91334c4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Visual.cpp">
@@ -112,6 +115,12 @@
     </ClInclude>
     <ClInclude Include="InputSystem\InputManager.h">
       <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\InputEvent.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\nameof.hpp">
+      <Filter>libs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -19,7 +19,7 @@
  *	along with The Chili DirectX Framework.  If not, see <http://www.gnu.org/licenses/>.  *
  ******************************************************************************************/
 #include "Mouse.h"
-
+#include "InputEvent.h"
 
 std::pair<int,int> Mouse::GetPos() const
 {
@@ -51,23 +51,20 @@ bool Mouse::IsInWindow() const
 	return isInWindow;
 }
 
-Mouse::Event Mouse::Read()
+std::shared_ptr<InputEvent> Mouse::Read()
 {
 	if( buffer.size() > 0u )
 	{
-		Mouse::Event e = buffer.front();
+		auto e = buffer.front();
 		buffer.pop();
 		return e;
 	}
-	else
-	{
-		return Mouse::Event();
-	}
+	return nullptr;
 }
 
 void Mouse::Flush()
 {
-	buffer = std::queue<Event>();
+	buffer = std::queue<std::shared_ptr<InputEvent>>();
 }
 
 void Mouse::OnMouseLeave()
@@ -85,7 +82,9 @@ void Mouse::OnMouseMove( int newx,int newy )
 	x = newx;
 	y = newy;
 
-	buffer.push( Mouse::Event( Mouse::Event::Type::Move,*this ) );
+	const std::shared_ptr<InputEvent> mouse_event(new MouseMovedEvent(static_cast<float>(newx), static_cast<float>(newy)));
+
+	buffer.push(mouse_event);
 	TrimBuffer();
 }
 
@@ -93,7 +92,9 @@ void Mouse::OnLeftPressed( int x,int y )
 {
 	leftIsPressed = true;
 
-	buffer.push( Mouse::Event( Mouse::Event::Type::LPress,*this ) );
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseCode::LButton));
+
+	buffer.push(mouse_event);
 	TrimBuffer();
 }
 
@@ -101,7 +102,9 @@ void Mouse::OnLeftReleased( int x,int y )
 {
 	leftIsPressed = false;
 
-	buffer.push( Mouse::Event( Mouse::Event::Type::LRelease,*this ) );
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseCode::LButton));
+	
+	buffer.push(mouse_event);
 	TrimBuffer();
 }
 
@@ -109,7 +112,9 @@ void Mouse::OnRightPressed( int x,int y )
 {
 	rightIsPressed = true;
 
-	buffer.push( Mouse::Event( Mouse::Event::Type::RPress,*this ) );
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseCode::RButton));
+
+	buffer.push(mouse_event);
 	TrimBuffer();
 }
 
@@ -117,19 +122,45 @@ void Mouse::OnRightReleased( int x,int y )
 {
 	rightIsPressed = false;
 
-	buffer.push( Mouse::Event( Mouse::Event::Type::RRelease,*this ) );
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseCode::RButton));
+
+	buffer.push(mouse_event);
 	TrimBuffer();
 }
 
-void Mouse::OnWheelUp( int x,int y )
+void Mouse::OnMiddlePressed(int x, int y)
 {
-	buffer.push( Mouse::Event( Mouse::Event::Type::WheelUp,*this ) );
+	middleIsPressed = true;
+
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseCode::MButton));
+
+	buffer.push(mouse_event);
 	TrimBuffer();
 }
 
-void Mouse::OnWheelDown( int x,int y )
+void Mouse::OnMiddleReleased(int x, int y)
 {
-	buffer.push( Mouse::Event( Mouse::Event::Type::WheelDown,*this ) );
+	middleIsPressed = false;
+
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseCode::MButton));
+
+	buffer.push(mouse_event);
+	TrimBuffer();
+}
+
+void Mouse::OnWheelUp( int x,int y, short delta)
+{
+	const std::shared_ptr<InputEvent> mouse_event(new MouseScrolledEvent(delta));
+
+	buffer.push(mouse_event);
+	TrimBuffer();
+}
+
+void Mouse::OnWheelDown( int x,int y, short delta)
+{
+	const std::shared_ptr<InputEvent> mouse_event(new MouseScrolledEvent(delta));
+
+	buffer.push(mouse_event);
 	TrimBuffer();
 }
 
