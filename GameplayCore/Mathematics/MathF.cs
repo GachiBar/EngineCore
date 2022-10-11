@@ -10,7 +10,7 @@ namespace GameplayCore.Mathematics
 
         public const float NegativeInfinity = float.NegativeInfinity;
 
-        public const float Deg2Rad = PI * 2.0f / 360F;
+        public const float Deg2Rad = PI * 2.0f / 360.0f;
 
         public const float Rad2Deg = 1.0f / Deg2Rad;
 

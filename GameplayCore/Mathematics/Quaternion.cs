@@ -123,7 +123,7 @@ namespace GameplayCore.Mathematics
 
         public void SetLookRotation(Vector3 view, Vector3 up)
         {
-            this = LookRotation(view, up);
+            this = Internal_LookRotation(view, up);
         }
 
         public static float Angle(Quaternion a, Quaternion b)
@@ -150,7 +150,7 @@ namespace GameplayCore.Mathematics
 
         public void SetFromToRotation(Vector3 fromDirection, Vector3 toDirection)
         {
-            this = FromToRotation(fromDirection, toDirection);
+            this = Internal_FromToRotation(fromDirection, toDirection);
         }
 
         public static Quaternion RotateTowards(Quaternion from, Quaternion to, float maxDegreesDelta)
@@ -275,11 +275,18 @@ namespace GameplayCore.Mathematics
             return Internal_LookRotation(forward, Vector3.Up);
         }
 
+        // TODO: refs
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static Quaternion Internal_FromToRotation(Vector3 fromDirection, Vector3 toDirection);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static Quaternion Internal_Slerp(Quaternion q1, Quaternion q2, float t);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static Quaternion Internal_LookRotation(Vector3 forward, Vector3 upwards);
         [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static Vector3 Internal_ToEulerRad(Quaternion q);
+        [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static Quaternion Internal_FromEulerRad(Vector3 euler);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static void Internal_ToAxisAngleRad(Quaternion q1, out Vector3 axis, out float angle);
     }
 }

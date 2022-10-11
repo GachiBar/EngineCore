@@ -34,10 +34,10 @@ namespace GameplayCore.Mathematics
 
         public Matrix(Vector4 column0, Vector4 column1, Vector4 column2, Vector4 column3)
         {
-            this.m00 = column0.X; this.m01 = column1.X; this.m02 = column2.X; this.m03 = column3.X;
-            this.m10 = column0.Y; this.m11 = column1.Y; this.m12 = column2.Y; this.m13 = column3.Y;
-            this.m20 = column0.Z; this.m21 = column1.Z; this.m22 = column2.Z; this.m23 = column3.Z;
-            this.m30 = column0.W; this.m31 = column1.W; this.m32 = column2.W; this.m33 = column3.W;
+            m00 = column0.X; m01 = column1.X; m02 = column2.X; m03 = column3.X;
+            m10 = column0.Y; m11 = column1.Y; m12 = column2.Y; m13 = column3.Y;
+            m20 = column0.Z; m21 = column1.Z; m22 = column2.Z; m23 = column3.Z;
+            m30 = column0.W; m31 = column1.W; m32 = column2.W; m33 = column3.W;
         }
 
         public float this[int row, int column]
