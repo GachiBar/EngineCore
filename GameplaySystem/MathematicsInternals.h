@@ -25,8 +25,20 @@ DirectX::SimpleMath::Vector3 Vector3Sum(DirectX::SimpleMath::Vector3 lhs, Direct
 
 #pragma endregion Vector3
 
-void AddMathematicsInternalCalls() {
-	
+#pragma region Quaternion
+
+//DirectX::SimpleMath::Quaternion Internal_LookRotation(DirectX::SimpleMath::Vector3 forward, DirectX::SimpleMath::Vector3 upwards) {
+//	//DirectX::SimpleMath::Matrix look_at_matrix = DirectX::SimpleMath::Matrix::CreateLookAt(forward, upwards);
+//	DirectX::SimpleMath::Quaternion r = DirectX::SimpleMath::Quaternion::Identity;
+//	//auto e = r.ToEuler;
+//	return DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(look_at_matrix);
+//}
+
+#pragma endregion Quaternion
+
+void AddMathematicsInternalCalls() {	
+	DirectX::SimpleMath::Quaternion q;
+
 	mono_add_internal_call("GameplayCore.Mathematics.Vector3::ExternalMagnitude", Vector3Magnitude);
 	mono_add_internal_call("GameplayCore.Mathematics.Vector3::ExternalMagnitudeSquared", Vector3MagnitudeSquared);
 	mono_add_internal_call("GameplayCore.Mathematics.Vector3::ExternalNormolized", Vector3Normolized);

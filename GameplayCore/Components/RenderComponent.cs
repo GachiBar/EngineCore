@@ -16,7 +16,7 @@ namespace GameplayCore.Components
 
         public override void Initialize() 
         {
-            EngineApi.Render.RegisterModel(Id);
+            EngineApi.Render.Internal_RegisterModel(Id);
         }
 
         public override void Render()
@@ -35,7 +35,7 @@ namespace GameplayCore.Components
             var normolized = result.Normolized;
             System.Console.WriteLine($"(X: {normolized.X}; Y: {normolized.Y}; Z: {normolized.Z})");
 
-            EngineApi.Render.DrawModel(Id);
+            EngineApi.Render.Internal_DrawModel(Id);
         }
 
         public override void Terminate() 
