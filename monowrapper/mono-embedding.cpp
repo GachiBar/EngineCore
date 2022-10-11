@@ -189,7 +189,7 @@ void TryInternalCall(mono::mono_type& type)
 
 int main()
 {
-    if(!mono::init_with_mono_assembly_path("mono/lib", "RootDomain"))
+    if(!mono::init_with_mono_assembly_path("..\\vendor\\mono\\lib\\4.5", "RootDomain"))
         return 1;
 
     std::cout << "Mono initialised\n";
