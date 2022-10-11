@@ -193,6 +193,9 @@
     <ProjectReference Include="..\..\DX11RenderEngine\SimpleMath\SimpleMath.vcxproj">
       <Project>{a8b84bff-0299-4f72-91b1-afe9574b2128}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\monowrapper\monowrapper.vcxproj">
+      <Project>{7d22e2d2-85f7-4744-be7d-2afe0c33ded3}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
