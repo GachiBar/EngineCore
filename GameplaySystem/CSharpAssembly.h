@@ -10,7 +10,6 @@ public:
 	MonoAssembly* GetMonoAssembly();
 
 	CSharpAssembly(const std::string& assembly_path);
-	~CSharpAssembly();
 
 private:
 	MonoAssembly* assembly_;

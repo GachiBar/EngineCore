@@ -24,6 +24,7 @@ engine::CSharpObject AddComponent(engine::CSharpObject& go, const std::string& n
 	params[0] = mono_reflection_type;
 
 	MonoObject* component_mono_object = go.CallMethod("AddComponent", params, 1);
+	go.CallMethod("Invalidate");
 	engine::CSharpObject component(domain, assembly, component_mono_object);
 	return component;
 }
