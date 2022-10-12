@@ -3,6 +3,7 @@
 #include "monopp/mono_domain.h"
 #include "monopp/mono_field.h"
 #include "monopp/mono_field_invoker.h"
+#include "monopp/mono_internal_call.h"
 #include "monopp/mono_jit.h"
 #include "monopp/mono_method.h"
 #include "monopp/mono_method_invoker.h"
@@ -45,18 +46,18 @@ void debug_class_info(const mono::mono_assembly& assembly, const std::string& cl
 
 void debug_method_info(const mono::mono_method& method)
 {
-    std::cout << "Name: " << method.get_name() << "/n"
-    << "Full name: " << method.get_fullname()<< "/n"
-    << "Full declarative name: " << method.get_full_declname() << "/n"
-    << "Visibility: " << mono::to_string(method.get_visibility()) << "/n"
-    << "Is static: " << method.is_static() << "/n"
+    std::cout << "Name: " << method.get_name() << "\n"
+    << "Full name: " << method.get_fullname()<< "\n"
+    << "Full declarative name: " << method.get_full_declname() << "\n"
+    << "Visibility: " << mono::to_string(method.get_visibility()) << "\n"
+    << "Is static: " << method.is_static() << "\n"
     << "Parameters: ";
     for(auto& type: method.get_param_types())
     {
         std::cout << type.get_name() << " ";
     }
-    std::cout << "/n"
-    << "Return type: " << method.get_return_type().get_name() << "/n";
+    std::cout << "\n"
+    << "Return type: " << method.get_return_type().get_name() << "\n";
 }
 
 void TryCallMethods(mono::mono_type& type)
@@ -131,7 +132,7 @@ void TryFieldsAndProperties(mono::mono_type& type)
     auto setter = property.get_set_method();
     auto getter = property.get_get_method();
 
-    auto setter_invoker = mono::make_method_invoker<int(int)>(setter);
+    auto setter_invoker = mono::make_method_invoker<void(int)>(setter);
     setter_invoker(instance, value - 3);
     
     auto getter_invoker = mono::make_method_invoker<int()>(getter);
@@ -139,9 +140,56 @@ void TryFieldsAndProperties(mono::mono_type& type)
     std::cout << "Property value: " << field_value << std::endl;
 }
 
+void TryStrings(mono::mono_type& type)
+{
+    auto instance = type.new_instance();
+
+    auto method = mono::make_method_invoker<std::string(std::string, int)>(type, "OutputSomething");
+    const auto result = method(instance, "test", 5);
+
+    std::cout << "Got string from method:" << result.c_str() << std::endl;
+}
+
+void TryReferences(mono::mono_type& first, mono::mono_type& second)
+{
+    // Create object of second class
+    auto instance1 = first.new_instance();
+    mono::mono_object instance2 = second.new_instance();
+    
+    // Set specific field
+    auto field = second.get_field("Message");
+    /// In order to get or set values to a field you need
+    /// to create an invoker.
+    auto mutable_field = mono::make_field_invoker<std::string>(field);
+    // Pass second object in method of first object as a reference
+    mutable_field.set_value(instance2, "Test reference!");
+
+    // Invoke method with reference to object
+    auto method = first.get_method("HandleMessage", 1);
+    auto invoker = mono::make_method_invoker<void(MonoObject*)>(method);
+    invoker(instance1, instance2.get_internal_ptr());
+}
+
+bool Draw(int mesh_id)
+{
+    std::cout << "Drawn mesh #" << mesh_id << std::endl;
+    return true;
+};
+
+void TryInternalCall(mono::mono_type& type)
+{
+    auto instance = type.new_instance();
+    
+    mono::add_internal_call("MonoPlayground.CSharpTesting::Draw", Draw);
+
+    auto void_method = type.get_method("DrawSome", 0);
+    auto thunk1 = mono::make_method_invoker<void()>(void_method);
+    thunk1(instance);
+}
+
 int main()
 {
-    if(!mono::init_with_mono_assembly_path("mono/lib", "RootDomain"))
+    if(!mono::init_with_mono_assembly_path("..\\vendor\\mono\\lib\\4.5", "RootDomain"))
         return 1;
 
     std::cout << "Mono initialised\n";
@@ -172,5 +220,12 @@ int main()
     
     TryFieldsAndProperties(testing_type);
 
+    TryStrings(testing_type);
+    TryInternalCall(testing_type);
+
+    auto testing_type2 = assembly.get_type("MonoPlayground", "MessageHolder");
+    TryReferences(testing_type, testing_type2);
+
     mono::shutdown();
+    return 0;
 }

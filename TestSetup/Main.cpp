@@ -26,6 +26,7 @@ engine::CSharpObject AddComponent(engine::CSharpObject& go, const std::string& n
 	params[0] = mono_reflection_type;
 
 	MonoObject* component_mono_object = go.CallMethod("AddComponent", params, 1);
+	go.CallMethod("Invalidate");
 	engine::CSharpObject component(domain, assembly, component_mono_object);
 	return component;
 }
@@ -47,8 +48,9 @@ public:
 
 void StandaloneGameTestApplication::Setup()
 {
-	AddComponent(go1, "GameplayCore", "TestUpdateComponent");
-	AddComponent(go2, "GameplayCore", "TestFixedUpdateComponent");
+	AddComponent(go1, "GameplayCore.Components", "TestUpdateComponent");
+	AddComponent(go2, "GameplayCore.Components", "TestFixedUpdateComponent");
+	AddComponent(go1, "GameplayCore.Components", "RenderComponent");
 
 	engine_->SetScene(&scene);
 }

@@ -39,6 +39,9 @@
     <ClInclude Include="CSharpDomain.h">
       <Filter>Header Files\Mono</Filter>
     </ClInclude>
+    <ClInclude Include="MathematicsInternals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameplaySystem.cpp">

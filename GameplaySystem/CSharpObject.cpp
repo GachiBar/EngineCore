@@ -5,11 +5,11 @@
 
 namespace engine {
 
-MonoClass* CSharpObject::GetMonoClass() {
+MonoClass* CSharpObject::GetMonoClass() const {
 	return class_;
 }
 
-MonoObject* CSharpObject::GetMonoObject() {
+MonoObject* CSharpObject::GetMonoObject() const {
 	return object_;
 }
 
@@ -44,12 +44,7 @@ CSharpObject::CSharpObject(
 	object_ = mono_object;
 }
 
-CSharpObject::~CSharpObject() {
-	//delete object_;
-}
-
-MonoObject* CSharpObject::CallMethod(const std::string& name)
-{
+MonoObject* CSharpObject::CallMethod(const std::string& name) const {
 	// Get a reference to the method in the class
 	MonoMethod* method = mono_class_get_method_from_name(class_, name.c_str(), 0);
 	assert(method != nullptr); // TODO: resources?
@@ -66,8 +61,7 @@ MonoObject* CSharpObject::CallMethod(const std::string& name)
 	return result;
 }
 
-MonoObject* CSharpObject::CallMethod(const std::string& name, void** params, size_t count)
-{
+MonoObject* CSharpObject::CallMethod(const std::string& name, void** params, size_t count) const {
 	// Get a reference to the method in the class
 	MonoMethod* method = mono_class_get_method_from_name(class_, name.c_str(), count);
 	assert(method != nullptr); // TODO: resources?

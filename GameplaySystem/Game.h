@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <Windows.h>
+#include "SimpleMath.h"
 
 #include "RenderEngine.h"
 #include "CSharpObject.h"
@@ -21,10 +22,8 @@ public:
 	CSharpObject* GetScene();
 	void SetScene(CSharpObject* scene);
 
-// TODO: now I implement basic window creation here, but we should refactor this in future.
-
-
 	void Initialize();
+	void Terminate();
 	void InitializeScene() const;
 
 	void RunFrame();
@@ -36,6 +35,8 @@ public:
 
 	RenderDevice& GetRenderer();
 private:
+	static RenderDevice* current_device_; // For test;
+
 	time_point<steady_clock> time_start = high_resolution_clock::now();
 	bool is_exit_requested = false;
 	nanoseconds lag = 0ns;
@@ -45,8 +46,9 @@ private:
 	CSharpObject* scene_;
 	
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	static void RegisterModel(size_t id);
+	static void DrawModel(size_t id);	
 
-	
 	void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
 	HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);
 	void InitRenderer(size_t width, size_t height);

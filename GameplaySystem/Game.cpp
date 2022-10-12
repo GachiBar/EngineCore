@@ -12,8 +12,11 @@
 #include <algorithm>
 
 #include "string_view"
+#include "MathematicsInternals.h"
 
 namespace engine {
+
+RenderDevice* Game::current_device_ = nullptr;
 
 CSharpObject* Game::GetScene() {
 	return scene_;
@@ -51,6 +54,23 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
+void Game::RegisterModel(size_t id) {
+	current_device_->RegisterModel(id, {
+		{
+			{{ 0.25,0.5,0}, {},{}},
+			{{ 0.5,0.5,0}, {},{}},
+			{{ 0.5,0.25,0}, {},{}},
+		},
+		{0,1,2,1,0,2},
+		EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+		2
+	});
+}
+
+void Game::DrawModel(size_t id) {
+	current_device_->DrawModel(id, 0, {}, ModelDefines::MRED);
+}
+
 void Game::Initialize() {
 	HINSTANCE instance = GetModuleHandle(nullptr);
 	LPCWSTR window_name = L"Test window";
@@ -64,11 +84,19 @@ void Game::Initialize() {
 	ShowWindow(handle_old_, SW_SHOW);
 	ShowWindow(handle_new_, SW_SHOW);
 	InitRenderer(static_cast<size_t>(width), static_cast<size_t>(height));
+
+	current_device_ = &renderer_;
+
+	mono_add_internal_call("GameplayCore.EngineApi.Render::RegisterModel", RegisterModel);
+	mono_add_internal_call("GameplayCore.EngineApi.Render::DrawModel", DrawModel);
+
+	AddMathematicsInternalCalls();	
+
+	scene_->CallMethod("Initialize");
 }
 
-void Game::InitializeScene() const
-{
-	scene_->CallMethod("Initialize");
+void Game::Terminate() {
+	scene_->CallMethod("Terminate");
 }
 
 void Game::RunFrame()
@@ -93,14 +121,22 @@ void Game::RunFrame()
 
 	while (lag >= kTimestep) {
 		lag -= kTimestep;
-
 		scene_->CallMethod("FixedUpdate");
 	}
 
 	scene_->CallMethod("Update");
 
+	//renderer_.SetRenderData({
+	//	std::chrono::duration<float>(dt).count(),
+	//	matrix::Identity,
+	//	matrix::Identity
+	//});
+
 	renderer_.BeginFrame();
+	
 	renderer_.SetRenderData({});
+
+	scene_->CallMethod("Render");
 
 	while (!renderer_.Present()) {
 		renderer_.EndFrame();
@@ -164,7 +200,7 @@ void Game::InitRenderer(size_t width, size_t height) {
 		height
 	});
 
-	renderer_.InitShaders(".\\KtripEngine\\DX11RenderEngine\\DX11RenderEngine\\Shaders");
+	renderer_.InitShaders("..\\..\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
 }
 
 } // namespace engine

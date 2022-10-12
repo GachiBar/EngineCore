@@ -33,6 +33,8 @@ namespace GameplayCore
             {
                 gameObject.FixedUpdate();
             }
+
+            Invalidate();
         }
 
         public void Update()
@@ -41,7 +43,19 @@ namespace GameplayCore
             {
                 gameObject.Update();
             }
+
+            Invalidate();
         }               
+
+        public void Render()
+        {
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.Render();
+            }
+
+            Invalidate();
+        }
 
         public void Terminate()
         {
@@ -74,9 +88,15 @@ namespace GameplayCore
 
         internal void Invalidate()
         {
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.Invalidate();
+            }
+
             foreach (var gameObject in _deletedGameObjects)
             {
                 _gameObjects.Remove(gameObject);
+                gameObject.Terminate();
             }
 
             _deletedGameObjects.Clear();
@@ -87,11 +107,6 @@ namespace GameplayCore
             }
 
             _createdGameObjects.Clear();
-
-            foreach (var gameObject in _gameObjects)
-            {
-                gameObject.Invalidate();
-            }
         }
     }
 }

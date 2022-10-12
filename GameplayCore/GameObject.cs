@@ -1,26 +1,56 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using GameplayCore.Components;
 
 namespace GameplayCore
 {
     public class GameObject
     {
-        //TODO: Handle component addition/deletation per frame. They can break iterators.
+        /// <summary>
+        /// Flag that determines whether the <see cref="_updatableComponents"/> is in a valid state.
+        /// Changing the set of <see cref="GameObject"/> <see cref="Component"/>s leads to an 
+        /// invalid state of the <see cref="_updatableComponents"/> collection.
+        /// </summary>
+        private bool _isUpdatableComponentsInvalid;
+
+        /// <summary>
+        /// Dictionary of all <see cref="Component"/>s, presented in this <see cref="GameObject"/>.
+        /// </summary>
         private Dictionary<Type, Component> _componentsMap;
 
+        /// <summary>
+        /// List of all <see cref="Component"/>s involved in updating.
+        /// </summary>
+        private List<Component> _updatableComponents;
+
+        /// <summary>
+        /// List of removed <see cref="Component"/>s. We should terminate it.
+        /// </summary>
+        private List<Component> _removedComponents;
+
+        /// <summary>
+        /// <see cref="Scene"/>, which contain this <see cref="GameObject"/>
+        /// </summary>
         public readonly Scene Scene;
 
+        /// <summary>
+        /// Flag that determines, is this <see cref="GameObject"/> is initialized.
+        /// </summary>
         public bool IsInitialized { get; private set; }
 
         internal GameObject(Scene scene)
         {
             _componentsMap = new Dictionary<Type, Component>();
+            _updatableComponents = new List<Component>();
+            _removedComponents = new List<Component>();
+            _isUpdatableComponentsInvalid = false;
             Scene = scene;           
         }
 
         public void Initialize()
         {
-            foreach (var component in _componentsMap.Values)
+            foreach (var component in _updatableComponents)
             {
                 component.Initialize();
             }
@@ -30,7 +60,7 @@ namespace GameplayCore
 
         public void FixedUpdate()
         {
-            foreach (var component in _componentsMap.Values)
+            foreach (var component in _updatableComponents)
             {
                 component.FixedUpdate();
             }
@@ -38,15 +68,23 @@ namespace GameplayCore
 
         public void Update()
         {
-            foreach (var component in _componentsMap.Values)
+            foreach (var component in _updatableComponents)
             {
                 component.Update();
             }
         }
 
+        public void Render()
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.Render();
+            }
+        }
+
         public void Terminate()
         {
-            foreach (var component in _componentsMap.Values)
+            foreach (var component in _updatableComponents)
             {
                 component.Terminate();
             }
@@ -56,15 +94,7 @@ namespace GameplayCore
 
         public T AddComponent<T>() where T : Component, new()
         {
-            var component = new T();
-            component.GameObject = this;
-
-            if (IsInitialized)
-            {
-                component.Initialize();
-            }
-           
-            return component;
+            return (T)AddComponent(typeof(T));
         }
 
         public Component AddComponent(Type componentType)
@@ -77,7 +107,7 @@ namespace GameplayCore
 
             if (_componentsMap.TryGetValue(componentType, out var component))
             {
-                RemoveComponent(component.GetType());
+                RemoveComponent(componentType);
             }
 
             _componentsMap[instance.GetType()] = instance;
@@ -88,6 +118,7 @@ namespace GameplayCore
                 instance.Initialize();
             }
 
+            _isUpdatableComponentsInvalid = true;
             return instance;
         }
 
@@ -104,10 +135,11 @@ namespace GameplayCore
 
                 if (IsInitialized)
                 {
-                    component.Terminate();
+                    _removedComponents.Add(component);
                 }
 
                 component.GameObject = null;
+                _isUpdatableComponentsInvalid = true;
                 return component;
             }
 
@@ -121,14 +153,26 @@ namespace GameplayCore
 
         public Component GetComponent(Type componentType)
         {
-            return _componentsMap.TryGetValue(componentType, out var component) 
-                ? component 
-                : null;
+            if (_componentsMap.TryGetValue(componentType, out var component))
+            {
+                return component;
+            }
+
+            return null;
         }
 
         internal void Invalidate()
         {
+            if (_isUpdatableComponentsInvalid)
+            {
+                foreach (var component in _removedComponents)
+                {
+                    component.Terminate();
+                }
 
+                _updatableComponents = _componentsMap.Values.ToList();
+                _isUpdatableComponentsInvalid = false;
+            }
         }
     }
 }
