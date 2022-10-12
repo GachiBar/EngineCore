@@ -8,6 +8,10 @@
 #include <iostream>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
+#include "../Editor/InputSystem/InputManager.h"
+#include <algorithm>
+
+#include "string_view"
 #include "MathematicsInternals.h"
 
 namespace engine {
@@ -34,19 +38,20 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		game = reinterpret_cast<Game*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
-	switch (msg)
+	if (msg == WM_DESTROY)
 	{
-	case WM_DESTROY: {
 		PostQuitMessage(0);
 		return 0;
 	}
-	default:
+	else if (InputManager::getInstance().IsInputMessage(msg))
+		InputManager::getInstance().ProcessInput(hwnd, msg, wparam, lparam);
+	else
+	{
 		if (game->renderer_.ProcessMessages(hwnd, msg, wparam, lparam)) {
 			return true;
 		}
-
-		return DefWindowProc(hwnd, msg, wparam, lparam);
 	}
+	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
 void Game::Internal_RegisterModel(size_t id) {
@@ -144,6 +149,11 @@ void Game::RunFrame()
 bool Game::IsExiting() const
 {
 	return is_exit_requested_;
+}
+
+RenderDevice& Game::GetRenderer()
+{
+	return renderer_;
 }
 
 void Game::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {

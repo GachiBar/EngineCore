@@ -24,10 +24,16 @@ public:
 
 	void Initialize();
 	void Terminate();
+	void InitializeScene() const;
 
 	void RunFrame();
 
 	bool IsExiting() const;
+
+	HWND handle_old_;
+	HWND handle_new_;
+
+	RenderDevice& GetRenderer();
 private:
 	static RenderDevice* current_device_; // For test;
 
@@ -36,8 +42,7 @@ private:
 	nanoseconds lag_ = 0ns;
 	nanoseconds ellapsed_ = 0ns;
 
-	HWND handle_old_;
-	HWND handle_new_;
+	
 	RenderDevice renderer_;
 	CSharpObject* scene_;
 	

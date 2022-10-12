@@ -19,6 +19,15 @@
     <Filter Include="ImGUI">
       <UniqueIdentifier>{97fc801d-eecc-491d-bd69-c2edfe137f17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InputSystem">
+      <UniqueIdentifier>{0ca7dd2c-f6e5-4ad8-8f04-0adb4c48b707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs">
+      <UniqueIdentifier>{917df45b-4449-414a-9406-3714e91334c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGuizmo">
+      <UniqueIdentifier>{dd1d7e40-77dc-4d24-b59d-04667fa69257}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Visual.cpp">
@@ -38,6 +47,39 @@
     </ClCompile>
     <ClCompile Include="EditorApplication.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\Keyboard.cpp">
+      <Filter>InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\Mouse.cpp">
+      <Filter>InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\InputManager.cpp">
+      <Filter>InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\GraphEditor.cpp">
+      <Filter>ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImCurveEdit.cpp">
+      <Filter>ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGradient.cpp">
+      <Filter>ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
+      <Filter>ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImSequencer.cpp">
+      <Filter>ImGuizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,5 +119,53 @@
     <ClInclude Include="EditorApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Delegates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\Keyboard.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\Mouse.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\InputManager.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\InputEvent.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\nameof.hpp">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\GraphEditor.h">
+      <Filter>ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImCurveEdit.h">
+      <Filter>ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImGradient.h">
+      <Filter>ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImGuizmo.h">
+      <Filter>ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImSequencer.h">
+      <Filter>ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImZoomSlider.h">
+      <Filter>ImGuizmo</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OIS\includes\OISPrereqs.h.in" />
   </ItemGroup>
 </Project>

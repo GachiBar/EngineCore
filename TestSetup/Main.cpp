@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../GameplaySystem/Game.h"
 #include "../GameplaySystem/CSharpDomain.h"
 #include "../GameplaySystem/CSharpAssembly.h"
@@ -49,14 +51,16 @@ void StandaloneGameTestApplication::Setup()
 	AddComponent(go1, "GameplayCore.Components", "TestUpdateComponent");
 	AddComponent(go2, "GameplayCore.Components", "TestFixedUpdateComponent");
 	AddComponent(go1, "GameplayCore.Components", "RenderComponent");
-	AddComponent(go1, "GameplayCore.Components", "TransformComponent");
 
 	engine_->SetScene(&scene);
 }
-
+#include "../Editor/Delegates.h"
 
 int main() {
-	StandaloneGameTestApplication app;
-	//EditorApplication app;
+
+	//std::cout << "Lambda delegate return value: " << del.Execute(3,5) << std::endl;
+
+	//StandaloneGameTestApplication app;
+	EditorApplication app;
 	return app.Run();
 }
