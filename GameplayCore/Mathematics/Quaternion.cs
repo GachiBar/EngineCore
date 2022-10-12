@@ -282,6 +282,11 @@ namespace GameplayCore.Mathematics
             return Internal_LookRotation(ref forward, ref upwards);
         }
 
+        public static Quaternion Inverse(Quaternion q)
+        {
+            return Internal_Inverse(q);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static Quaternion Internal_FromToRotation(ref Vector3 fromDirection, ref Vector3 toDirection);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -292,6 +297,8 @@ namespace GameplayCore.Mathematics
         extern private static Vector3 Internal_ToEulerRad(ref Quaternion q);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static Quaternion Internal_FromEulerRad(ref Vector3 euler);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static Quaternion Internal_Inverse(Quaternion rotation);
         //[MethodImpl(MethodImplOptions.InternalCall)]
         //extern private static void Internal_ToAxisAngleRad(Quaternion q1, out Vector3 axis, out float angle);
     }
