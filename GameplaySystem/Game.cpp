@@ -52,18 +52,18 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 void Game::Internal_RegisterModel(size_t id) {
 	current_device_->RegisterModel(id, {
 		{
-			{{ 0.25,0.5,0}, {},{}},
-			{{ 0.5,0.5,0}, {},{}},
-			{{ 0.5,0.25,0}, {},{}},
+			{{ -0.25, -0.25, 0 }, {},{}},
+			{{  0.0 ,  0.25, 0 }, {},{}},
+			{{  0.25, -0.25, 0 }, {},{}},			
 		},
-		{0,1,2,1,0,2},
+		{0,1,2},
 		EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-		2
+		1
 	});
 }
 
-void Game::Internal_DrawModel(size_t id) {
-	current_device_->DrawModel(id, 0, {}, ModelDefines::MRED);
+void Game::Internal_DrawModel(size_t id, DirectX::SimpleMath::Matrix model_matrix) {
+	current_device_->DrawModel(id, 0, model_matrix, ModelDefines::MRED);
 }
 
 void Game::Initialize() {

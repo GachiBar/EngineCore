@@ -43,7 +43,7 @@ private:
 	
 	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	static void Internal_RegisterModel(size_t id);
-	static void Internal_DrawModel(size_t id);
+	static void Internal_DrawModel(size_t id, DirectX::SimpleMath::Matrix model_matrix);
 
 	void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
 	HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);

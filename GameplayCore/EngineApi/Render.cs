@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using GameplayCore.Mathematics;
+using System.Runtime.CompilerServices;
 
 namespace GameplayCore.EngineApi
 {
@@ -8,6 +9,6 @@ namespace GameplayCore.EngineApi
         extern public static void Internal_RegisterModel(ulong id);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern public static void Internal_DrawModel(ulong id);
+        extern public static void Internal_DrawModel(ulong id, Matrix modelMatrix);
     }
 }
