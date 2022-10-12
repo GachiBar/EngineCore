@@ -7,8 +7,8 @@ EditorApplication::EditorApplication():Application() //,mw(new MainWindow)
 
 void EditorApplication::Setup()
 {
-	AddComponent(go1, "GameplayCore", "TestUpdateComponent");
-	AddComponent(go2, "GameplayCore", "TestFixedUpdateComponent");
+	AddComponent(go1, "GameplayCore.Components", "TestUpdateComponent");
+	AddComponent(go2, "GameplayCore.Components", "TestFixedUpdateComponent");
 
 	engine_->SetScene(&scene);
 
