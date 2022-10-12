@@ -1,12 +1,12 @@
 #include <iostream>
 
-#include "../GameplaySystem/Game.h"
+#include "../GameplaySystem/Engine.h"
 #include "../GameplaySystem/CSharpDomain.h"
 #include "../GameplaySystem/CSharpAssembly.h"
 #include "../GameplaySystem/CSharpObject.h"
 
 engine::CSharpDomain domain("..\\vendor\\mono\\lib\\4.5", "KtripRuntime", "KtripDomain");
-engine::CSharpAssembly assembly("GameplayCore.dll");
+engine::CSharpAssembly assembly("Debug\\net472\\GameplayCore.dll");
 
 engine::CSharpObject CreateGameObject(engine::CSharpObject& scene) {
 	MonoObject* go_mono_object = scene.CallMethod("CreateGameObject");

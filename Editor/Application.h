@@ -3,10 +3,7 @@
 #include <memory>
 
 #include "LayerStack.h"
-#include "../GameplaySystem/Game.h"
-
-typedef engine::Game Engine ;
-
+#include "../GameplaySystem/Engine.h"
 
 class Application
 {
@@ -30,14 +27,14 @@ public:
     /// Initialize the engine and run the main loop, then return the application exit code
     int Run();
 
-    std::shared_ptr<Engine> GetEngine();
+    std::shared_ptr<engine::Engine> GetEngine();
 
     virtual ~Application() = default;
 protected:
     void ApplyInput();
 
     LayerStack m_LayerStack;
-    std::shared_ptr<Engine> engine_;
+    std::shared_ptr<engine::Engine> engine_;
 
     /// Application exit code.
     int exit_code_;

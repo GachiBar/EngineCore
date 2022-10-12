@@ -12,7 +12,7 @@ namespace engine {
 
 using namespace std::chrono;
 
-class Game {
+class Engine {
 	const std::chrono::nanoseconds kTimestep =
 		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 

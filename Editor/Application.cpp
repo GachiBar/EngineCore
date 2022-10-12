@@ -6,7 +6,7 @@
 #include "Layer.h"
 #include "InputSystem/InputManager.h"
 
-Application::Application():m_LayerStack(this),engine_(new Engine()), exit_code_(0)
+Application::Application():m_LayerStack(this),engine_(new engine::Engine()), exit_code_(0)
 {
 }
 
@@ -47,7 +47,7 @@ int Application::Run()
 	return exit_code_;
 }
 
-std::shared_ptr<Engine> Application::GetEngine()
+std::shared_ptr<engine::Engine> Application::GetEngine()
 {
 	return engine_;
 }

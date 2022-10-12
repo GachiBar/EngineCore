@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Game.h"
+#include "Engine.h"
 #include "CSharpDomain.h"
 #include "CSharpAssembly.h"
 #include "CSharpObject.h"
@@ -16,26 +16,26 @@
 
 namespace engine {
 
-RenderDevice* Game::current_device_ = nullptr;
+RenderDevice* Engine::current_device_ = nullptr;
 
-CSharpObject* Game::GetScene() {
+CSharpObject* Engine::GetScene() {
 	return scene_;
 }
 
-void Game::SetScene(CSharpObject* scene) {
+void Engine::SetScene(CSharpObject* scene) {
 	scene_ = scene;
 }
 
-LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	Game* game = nullptr;
+LRESULT Engine::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+	Engine* engine = nullptr;
 
 	if (msg == WM_CREATE) {
 		const auto create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);
-		game = static_cast<Game*>(create_struct->lpCreateParams);
-		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(game));
+		engine = static_cast<Engine*>(create_struct->lpCreateParams);
+		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(engine));
 	}
 	else {
-		game = reinterpret_cast<Game*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+		engine = reinterpret_cast<Engine*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
 	if (msg == WM_DESTROY)
@@ -47,14 +47,14 @@ LRESULT Game::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		InputManager::getInstance().ProcessInput(hwnd, msg, wparam, lparam);
 	else
 	{
-		if (game->renderer_.ProcessMessages(hwnd, msg, wparam, lparam)) {
+		if (engine->renderer_.ProcessMessages(hwnd, msg, wparam, lparam)) {
 			return true;
 		}
 	}
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-void Game::Internal_RegisterModel(size_t id) {
+void Engine::Internal_RegisterModel(size_t id) {
 	current_device_->RegisterModel(id, {
 		{
 			{{ -0.25, -0.25, 0 }, {},{}},
@@ -67,11 +67,11 @@ void Game::Internal_RegisterModel(size_t id) {
 	});
 }
 
-void Game::Internal_DrawModel(size_t id, DirectX::SimpleMath::Matrix model_matrix) {
+void Engine::Internal_DrawModel(size_t id, DirectX::SimpleMath::Matrix model_matrix) {
 	current_device_->DrawModel(id, 0, model_matrix, ModelDefines::MRED);
 }
 
-void Game::Initialize() {
+void Engine::Initialize() {
 	HINSTANCE instance = GetModuleHandle(nullptr);
 	LPCWSTR window_name = L"Test window";
 	LONG width = 800;
@@ -95,11 +95,11 @@ void Game::Initialize() {
 	scene_->CallMethod("Initialize");
 }
 
-void Game::Terminate() {
+void Engine::Terminate() {
 	scene_->CallMethod("Terminate");
 }
 
-void Game::RunFrame()
+void Engine::RunFrame()
 {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
@@ -146,17 +146,17 @@ void Game::RunFrame()
 	renderer_.EndFrame();
 }
 
-bool Game::IsExiting() const
+bool Engine::IsExiting() const
 {
 	return is_exit_requested_;
 }
 
-RenderDevice& Game::GetRenderer()
+RenderDevice& Engine::GetRenderer()
 {
 	return renderer_;
 }
 
-void Game::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {
+void Engine::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {
 	WNDCLASSEX window_class;
 	window_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	window_class.lpfnWndProc = WndProc;
@@ -174,7 +174,7 @@ void Game::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {
 	RegisterClassEx(&window_class);
 }
 
-HWND Game::CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height) {
+HWND Engine::CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height) {
 	RECT window_rect = { 0, 0, width, height };
 	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
 
@@ -193,7 +193,7 @@ HWND Game::CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG wi
 		this);
 }
 
-void Game::InitRenderer(size_t width, size_t height) {
+void Engine::InitRenderer(size_t width, size_t height) {
 	renderer_.InitDevice({
 		handle_old_,
 		handle_new_,
