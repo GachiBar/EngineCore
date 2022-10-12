@@ -365,4 +365,6 @@ FodyWeavers.xsd
 
 imgui.ini
 
-git add --force vendor
+# Make sure to include everything in vendor.
+!vendor/**
+TestSetup/GameplayCore.dll

@@ -6,7 +6,7 @@
 #include "../GameplaySystem/CSharpObject.h"
 
 engine::CSharpDomain domain("..\\vendor\\mono\\lib\\4.5", "KtripRuntime", "KtripDomain");
-engine::CSharpAssembly assembly("Debug\\net472\\GameplayCore.dll");
+engine::CSharpAssembly assembly("GameplayCore.dll");
 
 engine::CSharpObject CreateGameObject(engine::CSharpObject& scene) {
 	MonoObject* go_mono_object = scene.CallMethod("CreateGameObject");
@@ -51,6 +51,7 @@ void StandaloneGameTestApplication::Setup()
 	AddComponent(go1, "GameplayCore.Components", "TestUpdateComponent");
 	AddComponent(go2, "GameplayCore.Components", "TestFixedUpdateComponent");
 	AddComponent(go1, "GameplayCore.Components", "RenderComponent");
+	AddComponent(go1, "GameplayCore.Components", "TransformComponent");
 
 	engine_->SetScene(&scene);
 }

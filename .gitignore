@@ -367,3 +367,5 @@ imgui.ini
 
 # Make sure to include everything in vendor.
 !vendor/**
+
+TestSetup/GameplayCore.dll
