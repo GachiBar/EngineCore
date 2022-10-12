@@ -130,6 +130,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)vendor\mono\lib\Debug;</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)GameplayCore\bin\Debug\net472\GameplayCore.dll $(ProjectDir) /y </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
