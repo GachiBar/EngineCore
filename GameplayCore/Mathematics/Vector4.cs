@@ -238,6 +238,16 @@ namespace GameplayCore.Mathematics
             return new Vector4(a.X / d, a.Y / d, a.Z / d, a.W / d);
         }
 
+        public static Vector4 operator *(Vector4 lhs, Matrix rhs)
+        {
+            Vector4 res;
+            res.X = lhs.X * rhs.m00 + lhs.Y * rhs.m10 + lhs.Z * rhs.m20 + lhs.W * rhs.m30;
+            res.Y = lhs.X * rhs.m01 + lhs.Y * rhs.m11 + lhs.Z * rhs.m21 + lhs.W * rhs.m31;
+            res.Z = lhs.X * rhs.m02 + lhs.Y * rhs.m12 + lhs.Z * rhs.m22 + lhs.W * rhs.m32;
+            res.W = lhs.X * rhs.m03 + lhs.Y * rhs.m13 + lhs.Z * rhs.m23 + lhs.W * rhs.m33;
+            return res;
+        }
+
         public static bool operator ==(Vector4 lhs, Vector4 rhs)
         {
             // Returns false in the presence of NaN values.
