@@ -1,4 +1,6 @@
 #pragma once
+#define NOMINMAX
+#include "Windows.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 
@@ -11,6 +13,9 @@ public:
 
     Mouse& GetMouseDevice();
 
+    bool IsInputMessage(UINT msg) const;
+
+    void ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 private:
     InputManager();
 

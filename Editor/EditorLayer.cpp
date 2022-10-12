@@ -6,8 +6,11 @@
 #include "LayerStack.h"
 //#include "../../FNADx11RenderDevice/include/D3D11Renderer.h"
 //#include "../../DX11RenderEngine/DX11RenderEngine/source/CoreRenderSystem/Graphics.h"
+#include <iostream>
+
 #include "InputSystem/InputEvent.h"
 #include "ImGuizmo/ImGuizmo.h"
+#include "libs/nameof.hpp"
 //#include "imgui/backends/imgui_impl_win32.h"
 //#include "imgui/backends/imgui_impl_dx11.h"
 
@@ -56,6 +59,8 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnInputEvent(InputEvent* e)
 {
+	auto t = NAMEOF_TYPE_RTTI(*e);
+	std::cout << t << std::endl;
 	if (m_BlockEvents)
 	{
 		ImGuiIO& io = ImGui::GetIO();
