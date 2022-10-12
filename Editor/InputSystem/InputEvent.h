@@ -1,8 +1,5 @@
 #pragma once
-#include "Mouse.h"
-#include "Keyboard.h"
 #include <windows.h>
-#include <utility>
 //#include "../libs/nameof.hpp"
 
 #define BIT(x) (1 << x)
@@ -328,114 +325,6 @@ public:
 	EVENT_CLASS_TYPE(KeyTyped)
 };
 
-/*
-class MouseEvent : public InputEvent
-{
-public:
-	enum class Type
-	{
-		LPress,
-		LRelease,
-		RPress,
-		RRelease,
-		WheelUp,
-		WheelDown,
-		Move,
-		Invalid
-	};
-private:
-	Type type;
-	bool leftIsPressed;
-	bool rightIsPressed;
-	int x;
-	int y;
-public:
-	MouseEvent()
-		:
-		type(Type::Invalid),
-		leftIsPressed(false),
-		rightIsPressed(false),
-		x(0),
-		y(0)
-	{}
-	MouseEvent(Type type, const Mouse& parent)
-		:
-		type(type),
-		leftIsPressed(parent.leftIsPressed),
-		rightIsPressed(parent.rightIsPressed),
-		x(parent.x),
-		y(parent.y)
-	{}
-	bool IsValid() const
-	{
-		return type != Type::Invalid;
-	}
-	Type GetType() const
-	{
-		return type;
-	}
-	std::pair<int, int> GetPos() const
-	{
-		return{ x,y };
-	}
-	int GetPosX() const
-	{
-		return x;
-	}
-	int GetPosY() const
-	{
-		return y;
-	}
-	bool LeftIsPressed() const
-	{
-		return leftIsPressed;
-	}
-	bool RightIsPressed() const
-	{
-		return rightIsPressed;
-	}
-};
-
-class KeyboardEvent : public InputEvent
-{
-public:
-	enum class Type
-	{
-		Press,
-		Release,
-		Invalid
-	};
-private:
-	Type type;
-	unsigned char code;
-public:
-	KeyboardEvent()
-		:
-		type(Type::Invalid),
-		code(0u)
-	{}
-	KeyboardEvent(Type type, unsigned char code)
-		:
-		type(type),
-		code(code)
-	{}
-	bool IsPress() const
-	{
-		return type == Type::Press;
-	}
-	bool IsRelease() const
-	{
-		return type == Type::Release;
-	}
-	bool IsValid() const
-	{
-		return type != Type::Invalid;
-	}
-	unsigned char GetCode() const
-	{
-		return code;
-	}
-};
-*/
 #undef EVENT_CLASS_TYPE
 #undef EVENT_CLASS_CATEGORY
+#undef BIT

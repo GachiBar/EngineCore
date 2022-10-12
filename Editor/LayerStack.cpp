@@ -2,6 +2,10 @@
 
 #include "Layer.h"
 
+LayerStack::LayerStack(Application* _owner):owner(_owner)
+{
+}
+
 LayerStack::~LayerStack()
 {
 	for (Layer* layer : layers_)
@@ -41,4 +45,9 @@ void LayerStack::PopOverlay(Layer* overlay)
 		overlay->OnDetach();
 		layers_.erase(it);
 	}
+}
+
+Application* LayerStack::GetOwner() const
+{
+	return owner;
 }

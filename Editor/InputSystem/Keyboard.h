@@ -12,7 +12,7 @@ public:
 	Keyboard( const Keyboard& ) = delete;
 	Keyboard& operator=( const Keyboard& ) = delete;
 	bool KeyIsPressed( unsigned char keycode ) const;
-	std::shared_ptr<KeyboardEvent> ReadKey();
+	std::shared_ptr<KeyboardEvent> Read();
 	bool KeyIsEmpty() const;
 	char ReadChar();
 	bool CharIsEmpty() const;

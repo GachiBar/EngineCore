@@ -7,13 +7,16 @@
 
 typedef engine::Game Engine ;
 
+
 class Application
 {
 public:
 	
 	Application();
 
-    void PushLayer();
+    void PushLayer(Layer* layer);
+    void PushOverlay(Layer* layer);
+
 
     /// Setup before engine initialization
     virtual void Setup() { }
@@ -27,8 +30,12 @@ public:
     /// Initialize the engine and run the main loop, then return the application exit code
     int Run();
 
+    std::shared_ptr<Engine> GetEngine();
+
     virtual ~Application() = default;
 protected:
+    void ApplyInput();
+
     LayerStack m_LayerStack;
     std::shared_ptr<Engine> engine_;
 

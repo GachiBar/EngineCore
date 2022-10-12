@@ -58,7 +58,7 @@ int main() {
 
 	//std::cout << "Lambda delegate return value: " << del.Execute(3,5) << std::endl;
 
-	StandaloneGameTestApplication app;
-	//EditorApplication app;
+	//StandaloneGameTestApplication app;
+	EditorApplication app;
 	return app.Run();
 }

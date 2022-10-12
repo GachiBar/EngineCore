@@ -30,13 +30,17 @@ public:
 	void RunFrame();
 
 	bool IsExiting() const;
+
+	HWND handle_old_;
+	HWND handle_new_;
+
+	RenderDevice& GetRenderer();
 private:
 	time_point<steady_clock> time_start = high_resolution_clock::now();
 	bool is_exit_requested = false;
 	nanoseconds lag = 0ns;
 
-	HWND handle_old_;
-	HWND handle_new_;
+	
 	RenderDevice renderer_;
 	CSharpObject* scene_;
 	

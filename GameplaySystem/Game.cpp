@@ -210,6 +210,11 @@ bool Game::IsExiting() const
 	return is_exit_requested;
 }
 
+RenderDevice& Game::GetRenderer()
+{
+	return renderer_;
+}
+
 void Game::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) {
 	WNDCLASSEX window_class;
 	window_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;

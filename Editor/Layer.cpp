@@ -1,6 +1,6 @@
 #include "Layer.h"
 
-Layer::Layer(std::string debugName)
-	: m_DebugName(std::move(debugName))
+Layer::Layer(LayerStack* owner, std::string name)
+	: owner_layer_stack(owner),m_DebugName(std::move(name))
 {
 }
