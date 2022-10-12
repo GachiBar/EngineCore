@@ -5,6 +5,7 @@ namespace GameplayCore.Components
     public class RenderComponent : Component
     {
         private static ulong _id = 0;
+        private TransformComponent _transform;
 
         public ulong Id;
 
@@ -16,26 +17,25 @@ namespace GameplayCore.Components
 
         public override void Initialize() 
         {
+            _transform = GameObject.GetComponent<TransformComponent>();
             EngineApi.Render.Internal_RegisterModel(Id);
         }
 
         public override void Render()
         {
-            var lhs = new Vector3(1, 2, 3);
-            var rhs = new Vector3(3, 2, 1);
-            var result = lhs + rhs;
-            System.Console.WriteLine($"(X: {result.X}; Y: {result.Y}; Z: {result.Z})");
-            
-            var magnitude = result.Magnitude;
-            System.Console.WriteLine($"Magnitude: {magnitude}");
+            Quaternion q = Quaternion.Identity;
+            System.Console.WriteLine(q);
+            q.SetFromToRotation(Vector3.Up, Vector3.Right);
+            System.Console.WriteLine(q);
+            var qq = Quaternion.RotateTowards(Quaternion.Identity, q, 10);
+            System.Console.WriteLine(qq);
+            var qr = Quaternion.LookRotation(Vector3.One);
+            System.Console.WriteLine(qr);
+            System.Console.WriteLine(q.EulerAngles);
+            q.EulerAngles = new Vector3(30, 0, 0);
+            System.Console.WriteLine(q.EulerAngles);
 
-            var sqrMagnitude = result.MagnitudeSquared;
-            System.Console.WriteLine($"Magnitude squared: {sqrMagnitude}");
-
-            var normolized = result.Normolized;
-            System.Console.WriteLine($"(X: {normolized.X}; Y: {normolized.Y}; Z: {normolized.Z})");
-
-            EngineApi.Render.Internal_DrawModel(Id);
+            EngineApi.Render.Internal_DrawModel(Id, _transform.ModelMatrix);
         }
 
         public override void Terminate() 

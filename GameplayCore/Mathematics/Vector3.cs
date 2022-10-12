@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace GameplayCore.Mathematics
 {
@@ -409,9 +410,24 @@ namespace GameplayCore.Mathematics
             return new Vector3(a.X * d, a.Y * d, a.Z * d);
         }
 
+        public static Vector3 operator *(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
+        }
+
+        public static Vector3 operator *(Vector3 lhs, Matrix rhs)
+        {
+            return Internal_TransformVector3(ref lhs, ref rhs);
+        }
+
         public static Vector3 operator /(Vector3 a, float d)
         {
             return new Vector3(a.X / d, a.Y / d, a.Z / d);
+        }
+
+        public static Vector3 operator /(Vector3 a, Vector3 b)
+        {
+            return new Vector3(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
         }
 
         public static bool operator ==(Vector3 lhs, Vector3 rhs)
@@ -454,6 +470,9 @@ namespace GameplayCore.Mathematics
 
             return string.Format("({0}, {1}, {2})", X.ToString(format, formatProvider), Y.ToString(format, formatProvider), Z.ToString(format, formatProvider));
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static Vector3 Internal_TransformVector3(ref Vector3 vector, ref Matrix matrix);
     }
 }
 
