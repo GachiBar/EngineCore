@@ -1,21 +1,20 @@
 #pragma once
 #include "Layer.h"
 
-
-class EditorLayer final : public Layer
+class ImGuiLayer final : public Layer
 {
 public:
-	EditorLayer(LayerStack* owner);
-	~EditorLayer() override = default;
+	ImGuiLayer(LayerStack* owner);
+	~ImGuiLayer() override = default;
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
-	//virtual void OnInputEvent(InputEvent* e) override;
-	virtual void OnGuiRender() override;
+	virtual void OnInputEvent(InputEvent* e) override;
 
+	void Begin();
+	void End();
 
 	void SetBlockEvents(bool block) { m_BlockEvents = block; }
 private:
 	bool m_BlockEvents = true;
 };
-

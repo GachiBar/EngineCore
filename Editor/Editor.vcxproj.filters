@@ -81,6 +81,9 @@
     <ClCompile Include="ImGuizmo\ImSequencer.cpp">
       <Filter>ImGuizmo</Filter>
     </ClCompile>
+    <ClCompile Include="ImGuiLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Visual.h">
@@ -164,8 +167,8 @@
     <ClInclude Include="ImGuizmo\ImZoomSlider.h">
       <Filter>ImGuizmo</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OIS\includes\OISPrereqs.h.in" />
+    <ClInclude Include="ImGuiLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

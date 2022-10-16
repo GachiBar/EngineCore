@@ -15,7 +15,9 @@ class EditorApplication final : public Application
 public:
 	EditorApplication();
 
-	void Setup() override;
+	void OnSetup() override;
+
+	void OnStart() override;
 
 	engine::CSharpObject scene = { domain, assembly, "GameplayCore", "Scene" };
 	engine::CSharpObject go1 = CreateGameObject(scene);

@@ -5,6 +5,7 @@
 #include "Delegates.h"
 #include "Layer.h"
 #include "InputSystem/InputManager.h"
+#include "ImGuiLayer.h"
 
 Application::Application():m_LayerStack(this),engine_(new engine::Engine()), exit_code_(0)
 {
@@ -22,9 +23,18 @@ void Application::PushOverlay(Layer* layer)
 	layer->OnAttach();
 }
 
+void Application::OnStart()
+{
+	//for (const auto layer : m_LayerStack)
+		//layer->OnGuiRender();
+
+	m_ImGuiLayer = new ImGuiLayer(&m_LayerStack);
+	//PushOverlay(m_ImGuiLayer);
+}
+
 int Application::Run()
 {
-	Setup();
+	OnSetup();
 	if (exit_code_)
 		return exit_code_;
 
@@ -42,12 +52,12 @@ int Application::Run()
 
 	engine_->Initialize(handle_old, handle_new, width, height);
 
-	Start();
+	OnStart();
 	if (exit_code_)
 		return exit_code_;
 
 	MSG msg = {};
-	bool is_exit_requested = false;
+	//bool is_exit_requested = false;
 
 	while (!is_exit_requested) 
 	{
@@ -64,18 +74,46 @@ int Application::Run()
 
 		ApplyInput();
 		engine_->RunFrame();
+
+		engine_->GetRenderer().BeginFrame();
+
+		engine_->GetRenderer().SetRenderData({});
+
+		//scene_->CallMethod("Render");
+
+
+		//m_ImGuiLayer->End();
+
+		//m_ImGuiLayer->Begin();
+		
+		//for (const auto layer : m_LayerStack)
+			//layer->OnGuiRender();
+		
+		//m_ImGuiLayer->End();
+
+
+		while (!engine_->GetRenderer().Present()) {
+			engine_->GetRenderer().EndFrame();
+		}
+
+		engine_->GetRenderer().EndFrame();
 	}
 
-	Stop();
+	OnStop();
 
 	engine_->Terminate();
 
 	return exit_code_;
 }
 
-std::shared_ptr<engine::Engine> Application::GetEngine()
+void Application::Close()
 {
-	return engine_;
+	is_exit_requested = true;
+}
+
+engine::Engine* Application::GetEngine() const
+{
+	return engine_.get();
 }
 
 void Application::ApplyInput()
@@ -105,6 +143,48 @@ void Application::ApplyInput()
 	}
 }
 
+bool Application::IsCapturedEvent(UINT uMsg)
+{
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.WantCaptureMouse)
+	{
+		switch (uMsg)
+		{
+		case WM_MOUSEMOVE:
+		case WM_MOUSELEAVE:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONDBLCLK:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONDBLCLK:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONDBLCLK:
+		case WM_XBUTTONDOWN:
+		case WM_XBUTTONDBLCLK:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONUP:
+		case WM_XBUTTONUP:
+		case WM_MOUSEWHEEL:
+		case WM_MOUSEHWHEEL:
+			return true;
+		}
+
+	}
+
+	if (io.WantCaptureKeyboard)
+	{
+		switch (uMsg)
+		{
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_SYSKEYDOWN:
+		case WM_SYSKEYUP:
+			return true;
+		}
+	}
+	return false;
+}
+
 LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	Application* application = nullptr;
 
@@ -117,11 +197,30 @@ LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		application = reinterpret_cast<Application*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
+	{
+		return 1;
+	}
+	if(!ImGui::GetCurrentContext())
+		ImGui::CreateContext();
+
+	ImGuiIO& io = ImGui::GetIO();
+
+
+
 	if (msg == WM_DESTROY)
 	{
 		PostQuitMessage(0);
 		return 0;
 	}
+	//else if (io.WantCaptureMouse && IsCapturedEvent(msg))
+	//{
+		//return DefWindowProc(hwnd, msg, wparam, lparam);
+	//}
+	//else if (io.WantCaptureKeyboard && IsCapturedEvent(msg))
+	//{
+		//return DefWindowProc(hwnd, msg, wparam, lparam);
+	//}
 	else if (InputManager::getInstance().IsInputMessage(msg)) {
 		InputManager::getInstance().ProcessInput(hwnd, msg, wparam, lparam);
 	}		

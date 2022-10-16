@@ -42,11 +42,11 @@ public:
 	engine::CSharpObject go1 = CreateGameObject(scene);
 	engine::CSharpObject go2 = CreateGameObject(scene);
 
-	void Setup() override;
+	void OnSetup() override;
 };
 
 
-void StandaloneGameTestApplication::Setup()
+void StandaloneGameTestApplication::OnSetup()
 {
 	AddComponent(go1, "GameplayCore.Components", "TestUpdateComponent");
 	AddComponent(go2, "GameplayCore.Components", "TestFixedUpdateComponent");

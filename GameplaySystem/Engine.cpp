@@ -58,7 +58,7 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 
 	AddMathematicsInternalCalls();	
 
-	scene_->CallMethod("Initialize");
+	//scene_->CallMethod("Initialize");
 }
 
 void Engine::Terminate() {
@@ -77,10 +77,10 @@ void Engine::RunFrame()
 
 	while (lag_ >= kTimestep) {
 		lag_ -= kTimestep;
-		scene_->CallMethod("FixedUpdate");
+		//scene_->CallMethod("FixedUpdate");
 	}
 
-	scene_->CallMethod("Update");
+	//scene_->CallMethod("Update");
 
 	renderer_.SetRenderData({
 		duration<float>(ellapsed_).count(),
@@ -88,17 +88,19 @@ void Engine::RunFrame()
 		matrix::Identity
 	});
 
+	/*
 	renderer_.BeginFrame();
 	
 	renderer_.SetRenderData({});
 
-	scene_->CallMethod("Render");
+	//scene_->CallMethod("Render");
 
 	while (!renderer_.Present()) {
 		renderer_.EndFrame();
 	}
 
 	renderer_.EndFrame();
+	*/
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
