@@ -165,18 +165,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CSharpAssembly.h" />
-    <ClInclude Include="CSharpDomain.h" />
-    <ClInclude Include="CSharpObject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="MathematicsInternals.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CSharpAssembly.cpp" />
-    <ClCompile Include="CSharpDomain.cpp" />
-    <ClCompile Include="CSharpObject.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="GameplaySystem.cpp" />
     <ClCompile Include="pch.cpp">

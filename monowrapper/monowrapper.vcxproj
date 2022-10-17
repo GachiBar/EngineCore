@@ -115,6 +115,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)vendor\mono\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,7 +145,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="mono-embedding.cpp" />
     <ClCompile Include="monopp\mono_assembly.cpp" />
     <ClCompile Include="monopp\mono_domain.cpp" />
     <ClCompile Include="monopp\mono_exception.cpp" />
@@ -153,8 +153,10 @@
     <ClCompile Include="monopp\mono_jit.cpp" />
     <ClCompile Include="monopp\mono_logger.cpp" />
     <ClCompile Include="monopp\mono_method.cpp" />
+    <ClCompile Include="monopp\mono_method_invoker.cpp" />
     <ClCompile Include="monopp\mono_object.cpp" />
     <ClCompile Include="monopp\mono_property.cpp" />
+    <ClCompile Include="monopp\mono_property_invoker.cpp" />
     <ClCompile Include="monopp\mono_string.cpp" />
     <ClCompile Include="monopp\mono_type.cpp" />
   </ItemGroup>
@@ -176,8 +178,6 @@
     <ClInclude Include="monopp\mono_property_invoker.h" />
     <ClInclude Include="monopp\mono_string.h" />
     <ClInclude Include="monopp\mono_type.h" />
-    <ClInclude Include="monopp\mono_type_conversion.h" />
-    <ClInclude Include="monopp\mono_type_traits.h" />
     <ClInclude Include="monopp\mono_visibility.h" />
   </ItemGroup>
   <ItemGroup>

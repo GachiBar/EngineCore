@@ -116,9 +116,16 @@ auto mono_method::is_static() const -> bool
 	uint32_t flags = mono_method_get_flags(method_, nullptr);
 	return (flags & MONO_METHOD_ATTR_STATIC) != 0;
 }
+
 auto mono_method::is_virtual() const -> bool
 {
 	uint32_t flags = mono_method_get_flags(method_, nullptr);
 	return (flags & MONO_METHOD_ATTR_VIRTUAL) != 0;
 }
+
+auto mono_method::get_internal_ptr() const -> MonoMethod*
+{
+	return method_;
+}
+
 } // namespace mono

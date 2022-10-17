@@ -18,7 +18,7 @@ namespace GameplayCore.Components
         public override void Initialize() 
         {
             _transform = GameObject.GetComponent<TransformComponent>();
-            EngineApi.Render.Internal_RegisterModel(Id);
+            EngineApi.Render.RegisterModel(Id);
         }
 
         public override void Render()
@@ -35,7 +35,7 @@ namespace GameplayCore.Components
             q.EulerAngles = new Vector3(30, 0, 0);
             System.Console.WriteLine(q.EulerAngles);
 
-            EngineApi.Render.Internal_DrawModel(Id, _transform.ModelMatrix);
+            EngineApi.Render.DrawModel(Id, _transform.ModelMatrix);
         }
 
         public override void Terminate() 
