@@ -6,8 +6,14 @@
 #include "Layer.h"
 #include "InputSystem/InputManager.h"
 
-Application::Application():m_LayerStack(this),engine_(new engine::Engine()), exit_code_(0)
+Application::Application(const char* dll_path)
+	: m_LayerStack(this)
+	, engine_(new engine::Engine())
+	, exit_code_(0)
+	, m_Domain{ "KtripDomain" }
+	, m_Assembly{ m_Domain, dll_path }
 {
+	mono::mono_domain::set_current_domain(m_Domain);
 }
 
 void Application::PushLayer(Layer* layer)

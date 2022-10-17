@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mono-embedding.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="monopp\mono_assembly.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -105,12 +102,6 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="monopp\mono_type.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="monopp\mono_type_conversion.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="monopp\mono_type_traits.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="monopp\mono_visibility.h">

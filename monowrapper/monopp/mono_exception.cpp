@@ -2,6 +2,7 @@
 #include "mono_object.h"
 #include "mono_property_invoker.h"
 #include "mono_type.h"
+#include "mono_string.h"
 
 namespace mono
 {
@@ -13,14 +14,20 @@ auto get_exception_info(MonoObject* ex) -> mono_thunk_exception::mono_exception_
 	const auto& exception_typename = type.get_fullname();
 
 	auto message_prop = type.get_property("Message");
-	auto mutable_msg_prop = make_property_invoker<std::string>(message_prop);
+	mono_property_invoker mutable_msg_prop(message_prop);
 
 	auto stacktrace_prop = type.get_property("StackTrace");
-	auto mutable_stack_prop = make_property_invoker<std::string>(stacktrace_prop);
+	mono_property_invoker mutable_stack_prop(stacktrace_prop);
 
-	auto message = mutable_msg_prop.get_value(obj);
-	auto stacktrace = mutable_stack_prop.get_value(obj);
-	return {exception_typename, message, stacktrace};
+	auto message_mono_obj = mutable_msg_prop.get_value(obj);
+	mono_object message_obj(message_mono_obj);
+	mono_string message(message_obj);
+
+	auto stacktrace_mono_obj = mutable_stack_prop.get_value(obj);
+	mono_object stacktrace_obj(stacktrace_mono_obj);
+	mono_string stacktrace(stacktrace_obj);
+
+	return {exception_typename, message.as_utf8(), stacktrace.as_utf8()};
 }
 
 mono_thunk_exception::mono_thunk_exception(MonoObject* ex)

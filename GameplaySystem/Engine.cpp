@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "Engine.h"
-#include "CSharpDomain.h"
-#include "CSharpAssembly.h"
-#include "CSharpObject.h"
+#include "MathematicsInternals.h"
+#include "../monowrapper/monopp/mono_method.h"
+#include "../monowrapper/monopp/mono_method_invoker.h"
 
 #include <fstream>
 #include <iostream>
@@ -11,18 +11,15 @@
 #include "../Editor/InputSystem/InputManager.h"
 #include <algorithm>
 
-#include "string_view"
-#include "MathematicsInternals.h"
-
 namespace engine {
 
 RenderDevice* Engine::current_device_ = nullptr;
 
-CSharpObject* Engine::GetScene() {
+mono::mono_object* Engine::GetScene() {
 	return scene_;
 }
 
-void Engine::SetScene(CSharpObject* scene) {
+void Engine::SetScene(mono::mono_object* scene) {
 	scene_ = scene;
 }
 
@@ -91,12 +88,15 @@ void Engine::Initialize() {
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
 
 	AddMathematicsInternalCalls();	
+	InitializeSceneCalls();
 
-	scene_->CallMethod("Initialize");
+	initialize_->invoke(*scene_);
 }
 
 void Engine::Terminate() {
-	scene_->CallMethod("Terminate");
+	terminate_->invoke(*scene_);
+
+	TerminateSceneCalls();
 }
 
 void Engine::RunFrame()
@@ -122,10 +122,10 @@ void Engine::RunFrame()
 
 	while (lag_ >= kTimestep) {
 		lag_ -= kTimestep;
-		scene_->CallMethod("FixedUpdate");
+		fixed_update_->invoke(*scene_);
 	}
 
-	scene_->CallMethod("Update");
+	update_->invoke(*scene_);
 
 	renderer_.SetRenderData({
 		duration<float>(ellapsed_).count(),
@@ -137,7 +137,7 @@ void Engine::RunFrame()
 	
 	renderer_.SetRenderData({});
 
-	scene_->CallMethod("Render");
+	render_->invoke(*scene_);
 
 	while (!renderer_.Present()) {
 		renderer_.EndFrame();
@@ -202,6 +202,31 @@ void Engine::InitRenderer(size_t width, size_t height) {
 	});
 
 	renderer_.InitShaders("..\\..\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
+}
+
+void Engine::InitializeSceneCalls() {
+	mono::mono_method initialize_method(scene_->get_type(), "Initialize", 0);
+	initialize_ = new mono::mono_method_invoker(initialize_method);
+
+	mono::mono_method terminate_method(scene_->get_type(), "Terminate", 0);
+	terminate_ = new mono::mono_method_invoker(terminate_method);
+
+	mono::mono_method fixed_update_method(scene_->get_type(), "FixedUpdate", 0);
+	fixed_update_ = new mono::mono_method_invoker(fixed_update_method);
+
+	mono::mono_method update_method(scene_->get_type(), "Update", 0);
+	update_ = new mono::mono_method_invoker(update_method);
+
+	mono::mono_method render_method(scene_->get_type(), "Render", 0);
+	render_ = new mono::mono_method_invoker(render_method);
+}
+
+void Engine::TerminateSceneCalls() {
+	delete initialize_;
+	delete terminate_;
+	delete fixed_update_;
+	delete update_;
+	delete render_;
 }
 
 } // namespace engine

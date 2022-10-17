@@ -2,6 +2,7 @@
 
 #include "mono_config.h"
 #include <functional>
+
 namespace mono
 {
 using log_handler = std::function<void(const std::string&)>;
