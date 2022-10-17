@@ -15,8 +15,16 @@
 namespace engine {
 
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
-	: domain_(domain)
+	: handle_old_(0)
+	, handle_new_(0)
+	, domain_(domain)
 	, assembly_(assembly)
+	, scene_(nullptr)
+	, initialize_(nullptr)
+	, terminate_(nullptr)
+	, fixed_update_(nullptr)
+	, update_(nullptr)
+	, render_(nullptr)
 {}
 
 mono::mono_object* Engine::GetScene() {
