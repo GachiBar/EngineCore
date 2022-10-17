@@ -23,12 +23,17 @@ void Application::PushOverlay(Layer* layer)
 	layer->OnAttach();
 }
 
+void Application::OnSetup()
+{
+
+}
+
 void Application::OnStart()
 {
 	//for (const auto layer : m_LayerStack)
 		//layer->OnGuiRender();
 
-	m_ImGuiLayer = new ImGuiLayer(&m_LayerStack);
+	//m_ImGuiLayer = new ImGuiLayer(&m_LayerStack);
 	//PushOverlay(m_ImGuiLayer);
 }
 
@@ -75,21 +80,17 @@ int Application::Run()
 		ApplyInput();
 		engine_->RunFrame();
 
+		InputManager::getInstance().Flush();
+
 		engine_->GetRenderer().BeginFrame();
 
 		engine_->GetRenderer().SetRenderData({});
 
-		//scene_->CallMethod("Render");
+		engine_->GetScene()->CallMethod("Render");
 
-
-		//m_ImGuiLayer->End();
-
-		//m_ImGuiLayer->Begin();
 		
-		//for (const auto layer : m_LayerStack)
-			//layer->OnGuiRender();
-		
-		//m_ImGuiLayer->End();
+		for (const auto layer : m_LayerStack)
+			layer->OnGuiRender();
 
 
 		while (!engine_->GetRenderer().Present()) {
@@ -118,7 +119,7 @@ engine::Engine* Application::GetEngine() const
 
 void Application::ApplyInput()
 {
-	std::shared_ptr<InputEvent> CurrentEvent= InputManager::getInstance().GetMouseDevice().Read();
+	std::shared_ptr<InputEvent> CurrentEvent= InputManager::getInstance().ReadEvent();
 	while (CurrentEvent)
 	{
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
@@ -127,66 +128,12 @@ void Application::ApplyInput()
 				break;
 			(*it)->OnInputEvent(CurrentEvent.get());
 		}
-		CurrentEvent = CurrentEvent = InputManager::getInstance().GetMouseDevice().Read();
+		CurrentEvent = CurrentEvent = InputManager::getInstance().ReadEvent();
 	}
-
-	CurrentEvent = InputManager::getInstance().GetKeyboardDevice().Read();
-	while (CurrentEvent)
-	{
-		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
-		{
-			if (CurrentEvent->Handled)
-				break;
-			(*it)->OnInputEvent(CurrentEvent.get());
-		}
-		CurrentEvent = CurrentEvent = InputManager::getInstance().GetKeyboardDevice().Read();
-	}
-}
-
-bool Application::IsCapturedEvent(UINT uMsg)
-{
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.WantCaptureMouse)
-	{
-		switch (uMsg)
-		{
-		case WM_MOUSEMOVE:
-		case WM_MOUSELEAVE:
-		case WM_LBUTTONDOWN:
-		case WM_LBUTTONDBLCLK:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONDBLCLK:
-		case WM_MBUTTONDOWN:
-		case WM_MBUTTONDBLCLK:
-		case WM_XBUTTONDOWN:
-		case WM_XBUTTONDBLCLK:
-		case WM_LBUTTONUP:
-		case WM_RBUTTONUP:
-		case WM_MBUTTONUP:
-		case WM_XBUTTONUP:
-		case WM_MOUSEWHEEL:
-		case WM_MOUSEHWHEEL:
-			return true;
-		}
-
-	}
-
-	if (io.WantCaptureKeyboard)
-	{
-		switch (uMsg)
-		{
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-		case WM_SYSKEYDOWN:
-		case WM_SYSKEYUP:
-			return true;
-		}
-	}
-	return false;
 }
 
 LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-	Application* application = nullptr;
+	Application* application;
 
 	if (msg == WM_CREATE) {
 		const auto create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);
@@ -201,27 +148,19 @@ LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	{
 		return 1;
 	}
-	if(!ImGui::GetCurrentContext())
+	if (!ImGui::GetCurrentContext())
 		ImGui::CreateContext();
-
-	ImGuiIO& io = ImGui::GetIO();
-
-
 
 	if (msg == WM_DESTROY)
 	{
 		PostQuitMessage(0);
 		return 0;
 	}
-	//else if (io.WantCaptureMouse && IsCapturedEvent(msg))
+	//else if ((io.WantCaptureMouse || io.WantCaptureKeyboard) && InputManager::IsInputMessage(msg))
 	//{
 		//return DefWindowProc(hwnd, msg, wparam, lparam);
 	//}
-	//else if (io.WantCaptureKeyboard && IsCapturedEvent(msg))
-	//{
-		//return DefWindowProc(hwnd, msg, wparam, lparam);
-	//}
-	else if (InputManager::getInstance().IsInputMessage(msg)) {
+	else if (InputManager::getInstance().IsInputMessage(msg) || msg == WM_KILLFOCUS) {
 		InputManager::getInstance().ProcessInput(hwnd, msg, wparam, lparam);
 	}		
 	else if (application != nullptr && application->engine_->ProcessMessages(hwnd, msg, wparam, lparam)) {

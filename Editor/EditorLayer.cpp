@@ -36,9 +36,8 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnGuiRender()
 {
-	//bool t = true;
-	//ImGui::ShowDemoWindow(&t);
-	
+	auto io = ImGui::GetIO();
+
 	// Note: Switch this to true to enable dockspace
 	static bool dockspaceOpen = true;
 	static bool opt_fullscreen_persistant = true;
@@ -78,7 +77,7 @@ void EditorLayer::OnGuiRender()
 		ImGui::PopStyleVar(2);
 
 	// DockSpace
-	ImGuiIO& io = ImGui::GetIO();
+	//ImGuiIO& io = ImGui::GetIO();
 	ImGuiStyle& style = ImGui::GetStyle();
 	float minWinSizeX = style.WindowMinSize.x;
 	style.WindowMinSize.x = 370.0f;
@@ -86,6 +85,29 @@ void EditorLayer::OnGuiRender()
 	{
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	}
+
+	//static bool show = true;
+	//ImGui::ShowDemoWindow(&show);
+
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			//ShowExampleMenuFile();
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu("Edit"))
+		{
+			if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+			if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+			ImGui::Separator();
+			if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+			if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+			if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
 	}
 	/*
 	if (ImGui::BeginMainMenuBar())

@@ -2,7 +2,6 @@
 
 #include <memory>
 
-
 #include "LayerStack.h"
 #include "../GameplaySystem/Engine.h"
 
@@ -18,7 +17,7 @@ public:
     void PushOverlay(Layer* layer);
     
     /// OnSetup before engine initialization
-    virtual void OnSetup() { }
+    virtual void OnSetup();
 
     /// OnSetup after engine initialization and before running the main loop
     virtual void OnStart();
@@ -43,15 +42,11 @@ protected:
 
     LayerStack m_LayerStack;
     std::shared_ptr<engine::Engine> engine_;
-    ImGuiLayer* m_ImGuiLayer;
 
     /// Application exit code.
     int exit_code_;
 
 private:
-
-    static bool IsCapturedEvent(UINT uMsg);
-   
 
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
     void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);

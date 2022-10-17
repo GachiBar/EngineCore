@@ -170,5 +170,8 @@
     <ClInclude Include="ImGuiLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InputSystem\InputKeys.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

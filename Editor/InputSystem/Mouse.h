@@ -1,55 +1,66 @@
 #pragma once
+#include <bitset>
 #include <memory>
 #include <queue>
+
+#include "InputEvent.h"
 
 class InputEvent;
 
 class Mouse
 {
+	friend class InputManager;
 public:
 
 	Mouse() = default;
 	Mouse( const Mouse& ) = delete;
 	Mouse& operator=( const Mouse& ) = delete;
+
 	std::pair<int,int> GetPos() const;
 	int GetPosX() const;
 	int GetPosY() const;
-	bool LeftIsPressed() const;
-	bool RightIsPressed() const;
-	bool IsInWindow() const;
-	std::shared_ptr<InputEvent> Read();
-	bool IsEmpty() const
-	{
-		return buffer.empty();
-	}
-	void Flush();
 
-	void OnMouseMove(int x, int y);
+	float GetDelta() const;
+
+	bool IsPressedDown(MouseKey key) const;
+	bool IsPressedUp(MouseKey key) const;
+	
+	bool IsKeyPressed(MouseKey key) const;
+	bool IsKeyPressed(unsigned char keycode) const;
+
+	bool IsLeftPressed() const;
+	bool IsRightPressed() const;
+	bool IsMiddlePressed() const;
+
+	bool IsInWindow() const;
+protected:
+	void OnMouseMove(int newx, int newy);
 	void OnMouseLeave();
 	void OnMouseEnter();
 
-	void OnLeftPressed(int x, int y);
-	void OnLeftReleased(int x, int y);
+	void OnLeftPressed();
+	void OnLeftReleased();
 
-	void OnRightPressed(int x, int y);
-	void OnRightReleased(int x, int y);
+	void OnRightPressed();
+	void OnRightReleased();
 
-	void OnMiddlePressed(int x, int y);
-	void OnMiddleReleased(int x, int y);
+	void OnMiddlePressed();
+	void OnMiddleReleased();
 
+	void OnWheelUp(short delta);
+	void OnWheelDown(short delta);
 
-	void OnWheelUp(int x, int y, short delta);
-	void OnWheelDown(int x, int y, short delta);
-private:
+	void Flush();
 
-	void TrimBuffer();
-private:
-	static constexpr unsigned int bufferSize = 4u;
+protected:
 	int x;
 	int y;
-	bool leftIsPressed = false;
-	bool rightIsPressed = false;
-	bool middleIsPressed = false;
+	float _delta;
+
 	bool isInWindow = false;
-	std::queue<std::shared_ptr<InputEvent>> buffer;
+
+	static constexpr unsigned int nKeys = 4u;
+	std::bitset<nKeys> keystates;
+
+	std::vector<std::shared_ptr<InputEvent>> last_changes;
 };

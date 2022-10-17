@@ -165,6 +165,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="InputSystem\InputEvent.h" />
+    <ClInclude Include="InputSystem\InputKeys.h" />
     <ClInclude Include="InputSystem\InputManager.h" />
     <ClInclude Include="InputSystem\Keyboard.h" />
     <ClInclude Include="InputSystem\Mouse.h" />
