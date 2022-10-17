@@ -18,7 +18,7 @@ class Engine {
 	const std::chrono::nanoseconds kTimestep =
 		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 
-	const float	kDt = 16.0f / 1000;
+	const float	kDt = 16.0f / 10000;
 
 public:
 	Engine(
@@ -67,6 +67,7 @@ private:
 	void SetupRendererInternalCalls();
 	void InitializeSceneCalls();
 	void TerminateSceneCalls();
+	void SendDeltaTime(float dt);
 };
 
 } // namespace engine

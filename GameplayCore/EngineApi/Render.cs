@@ -1,5 +1,4 @@
-﻿using System;
-using GameplayCore.Mathematics;
+﻿using GameplayCore.Mathematics;
 using System.Runtime.CompilerServices;
 
 namespace GameplayCore.EngineApi

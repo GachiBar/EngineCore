@@ -128,6 +128,8 @@ void Engine::RunFrame()
 	time_start_ = clock::now();
 	lag_ += duration_cast<nanoseconds>(dt);
 
+	SendDeltaTime(duration<float>(dt).count());
+
 	while (lag_ >= kTimestep) {
 		lag_ -= kTimestep;
 		fixed_update_->invoke(*scene_);
@@ -135,15 +137,13 @@ void Engine::RunFrame()
 
 	update_->invoke(*scene_);
 
+	renderer_.BeginFrame();
+	
 	renderer_.SetRenderData({
 		duration<float>(ellapsed_).count(),
 		matrix::Identity,
 		matrix::Identity
 	});
-
-	renderer_.BeginFrame();
-	
-	renderer_.SetRenderData({});
 
 	render_->invoke(*scene_);
 
@@ -245,6 +245,13 @@ void Engine::TerminateSceneCalls() {
 	delete fixed_update_;
 	delete update_;
 	delete render_;
+}
+
+void Engine::SendDeltaTime(float dt) {
+	auto time_type = assembly_.get_type("GameplayCore", "Time");
+	auto delta_time_property = time_type.get_property("DeltaTime");
+	mono::mono_property_invoker delta_time_property_invoker(delta_time_property);
+	delta_time_property_invoker.set_value(&dt);
 }
 
 } // namespace engine
