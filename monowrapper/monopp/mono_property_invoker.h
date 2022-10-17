@@ -9,34 +9,12 @@ namespace mono
 class mono_property_invoker
 {
 public:
-	mono_property_invoker(mono_property property)
-		: property_(property)
-	{
-	}
+	mono_property_invoker(mono_property property);
 
-	void set_value(void* val) const 
-	{		
-		mono_method_invoker thunk(property_.get_set_method());
-		thunk.invoke(&val);
-	}
-
-	void set_value(const mono_object& obj, void* val) const 
-	{
-		mono_method_invoker thunk(property_.get_set_method());
-		thunk.invoke(obj, &val);
-	}
-
-	auto get_value() const -> MonoObject* 
-	{
-		mono_method_invoker thunk(property_.get_get_method());
-		return thunk.invoke();
-	}
-
-	auto get_value(const mono_object& obj) const -> MonoObject* 
-	{
-		mono_method_invoker thunk(property_.get_get_method());
-		return thunk.invoke(obj);
-	}
+	void set_value(void* val) const;
+	void set_value(const mono_object& obj, void* val) const;
+	auto get_value() const->MonoObject*;
+	auto get_value(const mono_object& obj) const->MonoObject*;
 
 private:
 	mono_property property_;

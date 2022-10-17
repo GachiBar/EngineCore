@@ -13,46 +13,20 @@ namespace mono
 class mono_method_invoker 
 {
 public:
-	mono_method_invoker(mono_method method)
-		: method_(std::move(method))
-	{}
+	mono_method_invoker(mono_method method);
 
-	MonoObject* invoke()
-	{
-		return invoke(nullptr, nullptr);
-	}
+	MonoObject* invoke();
 
-	MonoObject* invoke(void** args)
-	{
-		return invoke(nullptr, args);
-	}
+	MonoObject* invoke(void** args);
 
-	MonoObject* invoke(const mono_object& object)
-	{
-		return invoke(object.get_internal_ptr(), nullptr);
-	}
+	MonoObject* invoke(const mono_object& object);
 
-	MonoObject* invoke(const mono_object& object, void** args) 
-	{
-		return invoke(object.get_internal_ptr(), args);
-	}
+	MonoObject* invoke(const mono_object& object, void** args);
 
 private:
 	mono_method method_;
 
-	MonoObject* invoke(MonoObject* object, void** args) 
-	{
-		MonoObject* exception = nullptr;
-		MonoObject* result = mono_runtime_invoke(method_.get_internal_ptr(), object, args, &exception);
-
-		if (exception)
-		{
-			mono_print_unhandled_exception(exception);
-			throw mono_thunk_exception(exception);
-		}
-
-		return result;
-	}
+	MonoObject* invoke(MonoObject* object, void** args);
 };
 
 } // namespace mono

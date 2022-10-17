@@ -51,6 +51,12 @@
     <ClCompile Include="monopp\mono_type.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="monopp\mono_property_invoker.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="monopp\mono_method_invoker.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="monopp\mono_assembly.h">

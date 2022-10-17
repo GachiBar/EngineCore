@@ -3,12 +3,12 @@
 #include "../GameplaySystem/Engine.h"
 #include "../monowrapper/monopp/mono_jit.h"
 
-const char kMonoLibPath[] = "..\\vendor\\mono\\lib\\4.5";
-const char kDllPath[] = "GameplayCore.dll";
-
 //TODO Move application header to another project
 #include "../Editor/Application.h"
 #include "../Editor/EditorApplication.h"
+
+const char kMonoLibPath[] = "..\\vendor\\mono\\lib\\4.5";
+const char kDllPath[] = "GameplayCore.dll";
 
 class StandaloneGameTestApplication final : public Application
 {
