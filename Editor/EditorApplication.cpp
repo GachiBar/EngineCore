@@ -1,18 +1,17 @@
 #include "EditorApplication.h"
 #include "EditorLayer.h"
 
-EditorApplication::EditorApplication():Application() //,mw(new MainWindow)
+EditorApplication::EditorApplication(const char* dll_path):Application(dll_path) //,mw(new MainWindow)
 {
 }
 
 void EditorApplication::OnSetup()
 {
 	Application::OnSetup();
-
-	AddComponent(go1, "GameplayCore.Components", "TestUpdateComponent");
-	AddComponent(go2, "GameplayCore.Components", "TestFixedUpdateComponent");
-	AddComponent(go1, "GameplayCore.Components", "RenderComponent");
-	AddComponent(go1, "GameplayCore.Components", "TransformComponent");
+	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TestUpdateComponent");
+	AddComponent(m_Assembly, go2, "GameplayCore.Components", "TestFixedUpdateComponent");
+	AddComponent(m_Assembly, go1, "GameplayCore.Components", "RenderComponent");
+	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TransformComponent");
 
 	engine_->SetScene(&scene);
 

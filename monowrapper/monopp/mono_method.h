@@ -26,6 +26,7 @@ public:
 	auto get_visibility() const -> visibility;
 	auto is_static() const -> bool;
 	auto is_virtual() const -> bool;
+	auto get_internal_ptr() const->MonoMethod*;
 
 protected:
 	void generate_meta();

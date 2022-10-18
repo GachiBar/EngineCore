@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Mono">
-      <UniqueIdentifier>{99a5e441-f03b-4a92-af48-9cefeab15ace}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Mono">
-      <UniqueIdentifier>{8f52ea13-a060-44a2-912c-6dde9f841083}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -29,15 +23,6 @@
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CSharpAssembly.h">
-      <Filter>Header Files\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="CSharpObject.h">
-      <Filter>Header Files\Mono</Filter>
-    </ClInclude>
-    <ClInclude Include="CSharpDomain.h">
-      <Filter>Header Files\Mono</Filter>
     </ClInclude>
     <ClInclude Include="MathematicsInternals.h">
       <Filter>Header Files</Filter>
@@ -52,15 +37,6 @@
     </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CSharpAssembly.cpp">
-      <Filter>Source Files\Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="CSharpObject.cpp">
-      <Filter>Source Files\Mono</Filter>
-    </ClCompile>
-    <ClCompile Include="CSharpDomain.cpp">
-      <Filter>Source Files\Mono</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

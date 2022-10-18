@@ -7,8 +7,9 @@ namespace GameplayCore
         private List<GameObject> _gameObjects;
         private List<GameObject> _createdGameObjects;
         private List<GameObject> _deletedGameObjects;
-
+                
         public bool IsInitialized { get; private set; }
+        private int GameObjectsCount => _gameObjects.Count;
 
         public Scene()
         {
@@ -107,6 +108,11 @@ namespace GameplayCore
             }
 
             _createdGameObjects.Clear();
+        }
+
+        private GameObject GetGameObject(int index)
+        {
+            return _gameObjects[index];
         }
     }
 }

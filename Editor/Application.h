@@ -4,14 +4,17 @@
 
 #include "LayerStack.h"
 #include "../GameplaySystem/Engine.h"
-
-class ImGuiLayer;
+#include "../monowrapper/monopp/mono_domain.h"
+#include "../monowrapper/monopp/mono_assembly.h"
+#include "../monowrapper/monopp/mono_type.h"
+#include "../monowrapper/monopp/mono_object.h"
+#include "../monowrapper/monopp/mono_method.h"
+#include "../monowrapper/monopp/mono_method_invoker.h"
 
 class Application
 {
 public:
-	
-	Application();
+	Application(const char* dll_path);
 
     void PushLayer(Layer* layer);
     void PushOverlay(Layer* layer);
@@ -30,6 +33,13 @@ public:
     int Run();
 
     void Close();
+    mono::mono_object CreateGameObject(const mono::mono_object& scene);
+
+    mono::mono_object AddComponent(
+        const mono::mono_assembly& assembly, 
+        const mono::mono_object& go, 
+        const std::string& name_space, 
+        const std::string& name);
 
     engine::Engine* GetEngine() const;
 
@@ -41,6 +51,8 @@ protected:
     void ApplyInput();
 
     LayerStack m_LayerStack;
+    mono::mono_domain m_Domain;
+    mono::mono_assembly m_Assembly;
     std::shared_ptr<engine::Engine> engine_;
 
     /// Application exit code.

@@ -84,7 +84,7 @@ DirectX::SimpleMath::Matrix Internal_ModelMatrix(
 
 #pragma endregion Matrix
 
-void AddMathematicsInternalCalls() {	
+void SetupMathematicsInternalCalls() {	
 	// Vector3.
 	mono_add_internal_call("GameplayCore.Mathematics.Vector3::Internal_TransformVector3", Internal_TransformVector3);
 

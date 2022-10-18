@@ -162,5 +162,5 @@ void EditorLayer::OnGuiRender()
     ImGui::End();
 
     gvm->draw_imgui();
-    hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
+    //hierarchy->draw_imgui();
 }
