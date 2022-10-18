@@ -1,15 +1,15 @@
-﻿using GameplayCore.Mathematics;
-
-namespace GameplayCore.Components
+﻿namespace GameplayCore.Components
 {
-    public class RenderComponent : Component
+    public class MeshRenderComponent : Component
     {
         private static ulong _id = 0;
         private TransformComponent _transform;
 
-        public ulong Id;
+        public readonly ulong Id;
 
-        public RenderComponent()
+        public string Path;
+
+        public MeshRenderComponent()
         {
             Id = _id;
             _id += 1;

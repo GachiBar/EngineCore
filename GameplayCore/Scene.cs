@@ -1,15 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace GameplayCore
 {
-    public class Scene
+    public class Scene : IReadOnlyList<GameObject>
     {
         private List<GameObject> _gameObjects;
         private List<GameObject> _createdGameObjects;
         private List<GameObject> _deletedGameObjects;
                 
         public bool IsInitialized { get; private set; }
-        private int GameObjectsCount => _gameObjects.Count;
+
+        #region IReadOnlyList
+
+        public int Count => _gameObjects.Count;
+
+        public GameObject this[int index] => _gameObjects[index];
+
+        #endregion IReadOnlyList
 
         public Scene()
         {
@@ -17,6 +25,20 @@ namespace GameplayCore
             _createdGameObjects = new List<GameObject>();
             _deletedGameObjects = new List<GameObject>();
         }
+
+        #region IReadOnlyList
+
+        public IEnumerator<GameObject> GetEnumerator()
+        {
+            return _gameObjects.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+           return GetEnumerator();
+        }
+
+        #endregion IReadOnlyList
 
         public void Initialize()
         {
@@ -108,11 +130,6 @@ namespace GameplayCore
             }
 
             _createdGameObjects.Clear();
-        }
-
-        private GameObject GetGameObject(int index)
-        {
-            return _gameObjects[index];
         }
     }
 }
