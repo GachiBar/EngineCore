@@ -1,5 +1,4 @@
-﻿using System;
-using GameplayCore.Mathematics;
+﻿using GameplayCore.Mathematics;
 using System.Runtime.CompilerServices;
 
 namespace GameplayCore.EngineApi
@@ -12,7 +11,7 @@ namespace GameplayCore.EngineApi
         {
             unsafe
             {
-                Internal_RegisterModel(Renderer, id);
+                Internal_RegisterModel(Renderer, id, "");
             }           
         }
 
@@ -25,7 +24,7 @@ namespace GameplayCore.EngineApi
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id);
+        extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, Matrix modelMatrix);

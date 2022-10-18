@@ -17,6 +17,11 @@ public:
 	explicit mono_object(MonoObject* object);
 	explicit mono_object(const mono_domain& domain, const mono_type& type);
 
+	template<typename T>
+	auto unbox() const -> T {
+		return *(T*)mono_object_unbox(object_);
+	}
+
 	auto get_type() const -> const mono_type&;
 
 	auto valid() const -> bool;

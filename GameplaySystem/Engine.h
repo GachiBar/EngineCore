@@ -59,6 +59,7 @@ private:
 	void SetupRendererInternalCalls();
 	void InitializeSceneCalls();
 	void TerminateSceneCalls();
+	void SendDeltaTime(float dt);
 };
 
 } // namespace engine

@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Collections.Generic;
 using GameplayCore.Components;
+using System.Collections;
 
 namespace GameplayCore
 {
-    public class GameObject
+    public class GameObject : IReadOnlyList<Component>
     {
         /// <summary>
         /// Flag that determines whether the <see cref="_updatableComponents"/> is in a valid state.
@@ -38,6 +39,14 @@ namespace GameplayCore
         /// Flag that determines, is this <see cref="GameObject"/> is initialized.
         /// </summary>
         public bool IsInitialized { get; private set; }
+
+        #region IReadOnlyList
+
+        public int Count => _updatableComponents.Count;
+
+        public Component this[int index] => _updatableComponents[index];
+
+        #endregion IReadOnlyList
 
         internal GameObject(Scene scene)
         {
@@ -174,5 +183,19 @@ namespace GameplayCore
                 _isUpdatableComponentsInvalid = false;
             }
         }
+
+        #region IReadOnlyList
+
+        public IEnumerator<Component> GetEnumerator()
+        {
+            return _updatableComponents.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion IReadOnlyList
     }
 }
