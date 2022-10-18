@@ -30,6 +30,11 @@ void Application::OnSetup()
 
 void Application::OnStart()
 {
+	auto io = ImGui::GetIO();
+
+	//io->SetIniFilename("imgui.ini"); // We don't want to save .ini file
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	//for (const auto layer : m_LayerStack)
 		//layer->OnGuiRender();
 
@@ -88,6 +93,7 @@ int Application::Run()
 
 		engine_->GetScene()->CallMethod("Render");
 
+		//ImGui::ShowDemoWindow();
 		
 		for (const auto layer : m_LayerStack)
 			layer->OnGuiRender();

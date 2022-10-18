@@ -151,6 +151,7 @@
     <ClInclude Include="Delegates.h" />
     <ClInclude Include="EditorApplication.h" />
     <ClInclude Include="EditorLayer.h" />
+    <ClInclude Include="GameViewWindow.h" />
     <ClInclude Include="ImGuiLayer.h" />
     <ClInclude Include="ImGuizmo\GraphEditor.h" />
     <ClInclude Include="ImGuizmo\ImCurveEdit.h" />
@@ -173,6 +174,8 @@
     <ClInclude Include="LayerStack.h" />
     <ClInclude Include="libs\nameof.hpp" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="SceneHierarchyWindow.h" />
     <ClInclude Include="SliderWidget.h" />
     <ClInclude Include="Visual.h" />
     <ClInclude Include="Widget.h" />
@@ -181,6 +184,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="EditorApplication.cpp" />
     <ClCompile Include="EditorLayer.cpp" />
+    <ClCompile Include="GameViewWindow.cpp" />
     <ClCompile Include="ImGuiLayer.cpp" />
     <ClCompile Include="ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="ImGuizmo\ImCurveEdit.cpp" />
@@ -193,6 +197,8 @@
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="LayerStack.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="MenuBar.cpp" />
+    <ClCompile Include="SceneHierarchyWindow.cpp" />
     <ClCompile Include="SliderWidget.cpp" />
     <ClCompile Include="Visual.cpp" />
     <ClCompile Include="Widget.cpp" />
