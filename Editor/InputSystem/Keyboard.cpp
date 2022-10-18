@@ -1,59 +1,31 @@
 #include "Keyboard.h"
 
-#include "InputEvent.h"
+#include "InputKeys.h"
 #include <memory>
+
+#include "InputManager.h"
+
+bool Keyboard::IsKeyDown(KeyboardKey key) const
+{
+	return std::ranges::any_of(last_changes, [key](const std::shared_ptr<InputEvent>& input_event)
+		{
+			return input_event->GetEventType() == EventType::KeyPressed &&
+				dynamic_cast<KeyPressedEvent*>(input_event.get())->GetKeyCode() == key;
+		});
+}
+
+bool Keyboard::IsKeyUp(KeyboardKey key) const
+{
+	return std::ranges::any_of(last_changes, [key](const std::shared_ptr<InputEvent>& input_event)
+		{
+			return input_event->GetEventType() == EventType::KeyReleased &&
+				dynamic_cast<KeyPressedEvent*>(input_event.get())->GetKeyCode() == key;
+		});
+}
 
 bool Keyboard::KeyIsPressed( unsigned char keycode ) const
 {
 	return keystates[keycode];
-}
-
-std::shared_ptr<KeyboardEvent> Keyboard::Read()
-{
-	if(!keybuffer.empty())
-	{
-		auto event_keyboard = keybuffer.front();
-		keybuffer.pop();
-		return event_keyboard;
-	}
-	return nullptr;
-}
-
-bool Keyboard::KeyIsEmpty() const
-{
-	return keybuffer.empty();
-}
-
-char Keyboard::ReadChar()
-{
-	if(!charbuffer.empty())
-	{
-		const unsigned char charcode = charbuffer.front();
-		charbuffer.pop();
-		return charcode;
-	}
-	return 0;
-}
-
-bool Keyboard::CharIsEmpty() const
-{
-	return charbuffer.empty();
-}
-
-void Keyboard::FlushKey()
-{
-	keybuffer = std::queue<std::shared_ptr<KeyboardEvent>>();
-}
-
-void Keyboard::FlushChar()
-{
-	charbuffer = std::queue<char>();
-}
-
-void Keyboard::Flush()
-{
-	FlushKey();
-	FlushChar();
 }
 
 void Keyboard::EnableAutorepeat()
@@ -81,8 +53,9 @@ void Keyboard::OnKeyPressed( unsigned char keycode )
 	keystates[ keycode ] = true;
 	const auto virtual_key = static_cast<KeyboardKey>(keycode);
 	const std::shared_ptr<KeyboardEvent> et(new KeyPressedEvent(virtual_key));
-	keybuffer.push(et);
-	TrimBuffer( keybuffer );
+
+	last_changes.push_back(et);
+	InputManager::getInstance().SendEventToBuffer(et);
 }
 
 void Keyboard::OnKeyReleased( unsigned char keycode )
@@ -90,22 +63,12 @@ void Keyboard::OnKeyReleased( unsigned char keycode )
 	keystates[ keycode ] = false;
 	const auto virtual_key = static_cast<KeyboardKey>(keycode);
 	const std::shared_ptr<KeyboardEvent> et(new KeyReleasedEvent(virtual_key));
-	keybuffer.push(et);
-	TrimBuffer( keybuffer );
+
+	last_changes.push_back(et);
+	InputManager::getInstance().SendEventToBuffer(et);
 }
 
-void Keyboard::OnChar( char character )
+void Keyboard::Flush()
 {
-	charbuffer.push( character );
-	TrimBuffer( charbuffer );
+	last_changes.clear();
 }
-
-template<typename T>
-void Keyboard::TrimBuffer( std::queue<T>& buffer )
-{
-	while( buffer.size() > bufferSize )
-	{
-		buffer.pop();
-	}
-}
-

@@ -18,19 +18,21 @@ public:
 
     void PushLayer(Layer* layer);
     void PushOverlay(Layer* layer);
+    
+    /// OnSetup before engine initialization
+    virtual void OnSetup();
 
-    /// Setup before engine initialization
-    virtual void Setup() { }
+    /// OnSetup after engine initialization and before running the main loop
+    virtual void OnStart();
 
-    /// Setup after engine initialization and before running the main loop
-    virtual void Start() { }
 
     /// Cleanup after the main loop. Called by Application
-    virtual void Stop() { }
+    virtual void OnStop() { }
 
     /// Initialize the engine and run the main loop, then return the application exit code
     int Run();
 
+    void Close();
     mono::mono_object CreateGameObject(const mono::mono_object& scene);
 
     mono::mono_object AddComponent(
@@ -39,10 +41,13 @@ public:
         const std::string& name_space, 
         const std::string& name);
 
-    std::shared_ptr<engine::Engine> GetEngine();
+    engine::Engine* GetEngine() const;
 
     virtual ~Application() = default;
 protected:
+
+    bool is_exit_requested = false;
+
     void ApplyInput();
 
     LayerStack m_LayerStack;
@@ -52,4 +57,10 @@ protected:
 
     /// Application exit code.
     int exit_code_;
+
+private:
+
+    static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+    void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
+    HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);
 };

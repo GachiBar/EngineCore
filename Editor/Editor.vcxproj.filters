@@ -81,6 +81,18 @@
     <ClCompile Include="ImGuizmo\ImSequencer.cpp">
       <Filter>ImGuizmo</Filter>
     </ClCompile>
+    <ClCompile Include="ImGuiLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameViewWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneHierarchyWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Visual.h">
@@ -164,8 +176,20 @@
     <ClInclude Include="ImGuizmo\ImZoomSlider.h">
       <Filter>ImGuizmo</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OIS\includes\OISPrereqs.h.in" />
+    <ClInclude Include="ImGuiLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\InputKeys.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GameViewWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneHierarchyWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
