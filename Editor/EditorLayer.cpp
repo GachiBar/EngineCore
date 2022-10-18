@@ -19,7 +19,7 @@ namespace Renderer
 	class D3D11Renderer;
 }
 
-EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner,"EditorLayer")
+EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selected_go(nullptr)
 {
 }
 
@@ -27,6 +27,12 @@ void EditorLayer::OnAttach()
 {
 	gvm = std::make_shared<GameViewWindow>();
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
+    properties = std::make_shared<PropertyWindow>();
+
+	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<mono::mono_object>& go)
+	{
+		selected_go = go;
+	});
 
 	auto& io = ImGui::GetIO();
 
@@ -41,7 +47,7 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnGuiRender()
 {
     bool p_open = true;
-    //ImGui::ShowDemoWindow(&t);
+    //ImGui::ShowDemoWindow(&p_open);
 
     static bool opt_fullscreen = true;
     static bool opt_padding = false;
@@ -162,5 +168,6 @@ void EditorLayer::OnGuiRender()
     ImGui::End();
 
     gvm->draw_imgui();
-    //hierarchy->draw_imgui();
+    hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
+    properties->draw_imgui(selected_go);
 }

@@ -175,6 +175,7 @@
     <ClInclude Include="libs\nameof.hpp" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="PropertyWindow.h" />
     <ClInclude Include="SceneHierarchyWindow.h" />
     <ClInclude Include="SliderWidget.h" />
     <ClInclude Include="Visual.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="LayerStack.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="MenuBar.cpp" />
+    <ClCompile Include="PropertyWindow.cpp" />
     <ClCompile Include="SceneHierarchyWindow.cpp" />
     <ClCompile Include="SliderWidget.cpp" />
     <ClCompile Include="Visual.cpp" />

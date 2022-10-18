@@ -2,6 +2,7 @@
 #include "GameViewWindow.h"
 #include "Layer.h"
 #include "MenuBar.h"
+#include "PropertyWindow.h"
 #include "SceneHierarchyWindow.h"
 
 
@@ -21,10 +22,13 @@ public:
 
 	std::shared_ptr<GameViewWindow> gvm;
 	std::shared_ptr<SceneHierarchyWindow> hierarchy;
+	std::shared_ptr<PropertyWindow> properties;
 	std::shared_ptr<MenuBar> menu_bar;
 	
 	
 private:
+	std::shared_ptr<mono::mono_object> selected_go;
+
 	bool m_BlockEvents = true;
 	bool m_ShowPhysicsColliders = false;
 	bool m_ViewportFocused = false, m_ViewportHovered = false;

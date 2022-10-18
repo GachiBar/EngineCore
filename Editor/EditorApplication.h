@@ -17,6 +17,7 @@ public:
 	mono::mono_object go1 = CreateGameObject(scene);
 	mono::mono_object go2 = CreateGameObject(scene);
 
+
 protected:
 	//std::shared_ptr<MainWindow> mw;
 };
