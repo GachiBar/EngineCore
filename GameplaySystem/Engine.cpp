@@ -105,7 +105,6 @@ void Engine::RunFrame()
 	}
 
 	renderer_.EndFrame();
-	*/
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
