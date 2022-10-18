@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Application.h"
 #include "InputSystem/InputEvent.h"
 
 
@@ -20,6 +21,8 @@ public:
 	virtual void OnInputEvent(InputEvent* event) {}
 
 	const std::string& GetName() const { return m_DebugName; }
+
+	Application* GetApp() const;
 protected:
 	LayerStack* owner_layer_stack;
 	std::string m_DebugName;

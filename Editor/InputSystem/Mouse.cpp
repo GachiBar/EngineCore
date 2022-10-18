@@ -1,5 +1,6 @@
 #include "Mouse.h"
-#include "InputEvent.h"
+#include "InputKeys.h"
+#include "InputManager.h"
 
 std::pair<int,int> Mouse::GetPos() const
 {
@@ -16,35 +17,57 @@ int Mouse::GetPosY() const
 	return y;
 }
 
-bool Mouse::LeftIsPressed() const
+float Mouse::GetDelta() const
 {
-	return leftIsPressed;
+	return _delta;
 }
 
-bool Mouse::RightIsPressed() const
+bool Mouse::IsPressedDown(MouseKey key) const
 {
-	return rightIsPressed;
+	return std::ranges::any_of(last_changes, [key](const std::shared_ptr<InputEvent>& input_event)
+	{
+		return input_event->GetEventType() == EventType::MouseButtonPressed && 
+			dynamic_cast<MouseButtonPressedEvent*>(input_event.get())->GetMouseButton() == key;
+	});
+}
+
+bool Mouse::IsPressedUp(MouseKey key) const
+{
+	return std::ranges::any_of(last_changes, [key](const std::shared_ptr<InputEvent>& input_event)
+		{
+			return input_event->GetEventType() == EventType::MouseButtonReleased &&
+				dynamic_cast<MouseButtonPressedEvent*>(input_event.get())->GetMouseButton() == key;
+		});
+}
+
+bool Mouse::IsKeyPressed(MouseKey key) const
+{
+	return IsKeyPressed(static_cast<unsigned char>(key));
+}
+
+bool Mouse::IsKeyPressed(const unsigned char keycode) const
+{
+	return keystates[keycode];
+}
+
+bool Mouse::IsLeftPressed() const
+{
+	return IsKeyPressed(MouseKey::LButton);
+}
+
+bool Mouse::IsRightPressed() const
+{
+	return IsKeyPressed(MouseKey::RButton);
+}
+
+bool Mouse::IsMiddlePressed() const
+{
+	return IsKeyPressed(MouseKey::MButton);
 }
 
 bool Mouse::IsInWindow() const
 {
 	return isInWindow;
-}
-
-std::shared_ptr<InputEvent> Mouse::Read()
-{
-	if(!buffer.empty())
-	{
-		auto e = buffer.front();
-		buffer.pop();
-		return e;
-	}
-	return nullptr;
-}
-
-void Mouse::Flush()
-{
-	buffer = std::queue<std::shared_ptr<InputEvent>>();
 }
 
 void Mouse::OnMouseLeave()
@@ -57,97 +80,97 @@ void Mouse::OnMouseEnter()
 	isInWindow = true;
 }
 
-void Mouse::OnMouseMove( int newx,int newy )
+void Mouse::OnMouseMove(const int newx, const int newy )
 {
 	x = newx;
 	y = newy;
 
 	const std::shared_ptr<InputEvent> mouse_event(new MouseMovedEvent(static_cast<float>(newx), static_cast<float>(newy)));
 
-	buffer.push(mouse_event);
-	TrimBuffer();
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::OnLeftPressed( int x,int y )
+void Mouse::OnLeftPressed()
 {
-	leftIsPressed = true;
+	keystates[static_cast<unsigned char>(MouseKey::LButton)] = true;
 
-	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseCode::LButton));
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseKey::LButton));
 
-	buffer.push(mouse_event);
-	TrimBuffer();
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::OnLeftReleased( int x,int y )
+void Mouse::OnLeftReleased()
 {
-	leftIsPressed = false;
+	keystates[static_cast<unsigned char>(MouseKey::LButton)] = false;
 
-	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseCode::LButton));
-	
-	buffer.push(mouse_event);
-	TrimBuffer();
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseKey::LButton));
+
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::OnRightPressed( int x,int y )
+void Mouse::OnRightPressed()
 {
-	rightIsPressed = true;
+	keystates[static_cast<unsigned char>(MouseKey::RButton)] = true;
 
-	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseCode::RButton));
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseKey::RButton));
 
-	buffer.push(mouse_event);
-	TrimBuffer();
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::OnRightReleased( int x,int y )
+void Mouse::OnRightReleased()
 {
-	rightIsPressed = false;
+	keystates[static_cast<unsigned char>(MouseKey::RButton)] = false;
 
-	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseCode::RButton));
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseKey::RButton));
 
-	buffer.push(mouse_event);
-	TrimBuffer();
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::OnMiddlePressed(int x, int y)
+void Mouse::OnMiddlePressed()
 {
-	middleIsPressed = true;
+	keystates[static_cast<unsigned char>(MouseKey::MButton)] = true;
 
-	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseCode::MButton));
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonPressedEvent(MouseKey::MButton));
 
-	buffer.push(mouse_event);
-	TrimBuffer();
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::OnMiddleReleased(int x, int y)
+void Mouse::OnMiddleReleased()
 {
-	middleIsPressed = false;
+	keystates[static_cast<unsigned char>(MouseKey::MButton)] = false;
 
-	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseCode::MButton));
+	const std::shared_ptr<InputEvent> mouse_event(new MouseButtonReleasedEvent(MouseKey::MButton));
 
-	buffer.push(mouse_event);
-	TrimBuffer();
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::OnWheelUp( int x,int y, short delta)
-{
-	const std::shared_ptr<InputEvent> mouse_event(new MouseScrolledEvent(delta));
-
-	buffer.push(mouse_event);
-	TrimBuffer();
-}
-
-void Mouse::OnWheelDown( int x,int y, short delta)
+void Mouse::OnWheelUp(short delta)
 {
 	const std::shared_ptr<InputEvent> mouse_event(new MouseScrolledEvent(delta));
+	_delta = delta;
 
-	buffer.push(mouse_event);
-	TrimBuffer();
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
 }
 
-void Mouse::TrimBuffer()
+void Mouse::OnWheelDown(short delta)
 {
-	while( buffer.size() > bufferSize )
-	{
-		buffer.pop();
-	}
+	const std::shared_ptr<InputEvent> mouse_event(new MouseScrolledEvent(delta));
+	_delta = delta;
+
+	last_changes.push_back(mouse_event);
+	InputManager::getInstance().SendEventToBuffer(mouse_event);
+}
+
+void Mouse::Flush()
+{
+	_delta = 0.f;
+	last_changes.clear();
 }

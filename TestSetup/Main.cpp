@@ -21,15 +21,15 @@ public:
 	mono::mono_object go1{ CreateGameObject(scene) };
 	mono::mono_object go2{ CreateGameObject(scene) };
 
-	void Setup() override;
+	void OnSetup() override;
 };
 
 
-void StandaloneGameTestApplication::Setup()
+void StandaloneGameTestApplication::OnSetup()
 {
 	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TestUpdateComponent");
 	AddComponent(m_Assembly, go2, "GameplayCore.Components", "TestFixedUpdateComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "RenderComponent");
+	AddComponent(m_Assembly, go1, "GameplayCore.Components", "MeshRenderComponent");
 	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TransformComponent");
 
 	engine_->SetScene(&scene);

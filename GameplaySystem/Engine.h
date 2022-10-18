@@ -15,6 +15,8 @@ namespace engine {
 using namespace std::chrono;
 
 class Engine {
+	friend class Application;
+
 	const std::chrono::nanoseconds kTimestep =
 		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 
@@ -27,23 +29,17 @@ public:
 
 	mono::mono_object* GetScene();
 	void SetScene(mono::mono_object* scene);
-
-	void Initialize();
+	void Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height);
 	void Terminate();
 
 	void RunFrame();
-
-	bool IsExiting() const;
-
-	HWND handle_old_;
-	HWND handle_new_;
-
+	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	void InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height);
 	RenderDevice& GetRenderer();
 private:
 	RenderDevice renderer_;
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
-	bool is_exit_requested_ = false;
 	nanoseconds lag_ = 0ns;
 	nanoseconds ellapsed_ = 0ns;
 
@@ -56,17 +52,14 @@ private:
 	mono::mono_method_invoker* fixed_update_;
 	mono::mono_method_invoker* update_;
 	mono::mono_method_invoker* render_;
-	
-	static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
 
-	void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
-	HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);
-	void InitRenderer(size_t width, size_t height);
 	void SetupRendererInternalCalls();
 	void InitializeSceneCalls();
 	void TerminateSceneCalls();
+	void SendDeltaTime(float dt);
 };
 
 } // namespace engine
