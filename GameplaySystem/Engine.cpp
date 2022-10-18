@@ -59,7 +59,7 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
 
 	SetupRendererInternalCalls();
-	SetupMathematicsInternalCalls();	
+	SetupMathematicsInternalCalls();
 	InitializeSceneCalls();
 
 	initialize_->invoke(*scene_);
@@ -89,22 +89,12 @@ void Engine::RunFrame()
 	}
 
 	update_->invoke(*scene_);
-
-	renderer_.BeginFrame();
-	
+		
 	renderer_.SetRenderData({
 		duration<float>(ellapsed_).count(),
 		matrix::Identity,
 		matrix::Identity
 	});
-
-	render_->invoke(*scene_);
-
-	while (!renderer_.Present()) {
-		renderer_.EndFrame();
-	}
-
-	renderer_.EndFrame();
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
