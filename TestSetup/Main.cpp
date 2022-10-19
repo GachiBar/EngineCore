@@ -35,6 +35,7 @@ void StandaloneGameTestApplication::OnSetup()
 	engine_->SetScene(&scene);
 }
 #include "../Editor/Delegates.h"
+#include "../GameplaySystem/ModelLoader.h"
 
 int main() {
 	if (!mono::init_with_mono_assembly_path(kMonoLibPath, "KtripRuntime")) {
