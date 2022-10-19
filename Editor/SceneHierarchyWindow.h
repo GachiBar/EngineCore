@@ -21,6 +21,6 @@ public:
 
 	Delegate<void, std::shared_ptr<mono::mono_object>& > OnSelectGameObjectInHierarchy;
 
-	std::vector< std::shared_ptr<mono::mono_object>> GetGameObjects(mono::mono_object& scene);
+	std::vector< std::shared_ptr<mono::mono_object>> GetGameObjects(mono::mono_object& scene) const;
 };
 

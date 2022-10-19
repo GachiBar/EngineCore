@@ -3,31 +3,28 @@
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
 #include "../Editor/InputSystem/InputManager.h"
-#include "imgui/imgui.h"
+#include "imgui/imgui_sugar.hpp"
 #include "format"
 
 void SceneHierarchyWindow::draw_imgui(mono::mono_object& scene)
 {
     auto go_arr = GetGameObjects(scene);
-
-    ImGui::Begin("Scene Hierarchy");
-
-    if (ImGui::BeginListBox("Scene Hierarchy"))
+    with_Window("Scene hierarchy")
     {
-        for (int i = 0; i < go_arr.size(); ++i)
-        {
-            if(ImGui::Selectable(std::format("go_{}",i).c_str(), false))
+	    with_ListBox("Scene hierarchy")
+	    {
+            for (int i = 0; i < go_arr.size(); ++i)
             {
-                OnSelectGameObjectInHierarchy.Execute(go_arr[i]);
+                if (ImGui::Selectable(std::format("go_{}", i).c_str(), false))
+                {
+                    OnSelectGameObjectInHierarchy.Execute(go_arr[i]);
+                }
             }
-        }
-        ImGui::EndListBox();
+	    }
     }
-
-    ImGui::End();
 }
 
-std::vector<std::shared_ptr<mono::mono_object>> SceneHierarchyWindow::GetGameObjects(mono::mono_object& scene)
+std::vector<std::shared_ptr<mono::mono_object>> SceneHierarchyWindow::GetGameObjects(mono::mono_object& scene) const
 {
     std::vector<std::shared_ptr<mono::mono_object>> res;
 

@@ -197,5 +197,8 @@
     <ClInclude Include="PropertyWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\imgui_sugar.hpp">
+      <Filter>ImGUI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
