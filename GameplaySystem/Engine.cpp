@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Engine.h"
-#include "MathematicsInternals.h"
 #include "ModelLoader.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
@@ -70,7 +69,6 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
 
 	SetupRendererInternalCalls();
-	SetupMathematicsInternalCalls();
 	InitializeSceneCalls();
 
 	initialize_->invoke(*scene_);

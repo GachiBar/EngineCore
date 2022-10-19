@@ -24,9 +24,6 @@
     <ClInclude Include="Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MathematicsInternals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ModelLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
