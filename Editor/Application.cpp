@@ -104,6 +104,8 @@ int Application::Run()
 		
 		while (!engine_->GetRenderer().Present()) {
 			engine_->GetRenderer().EndFrame();
+			engine_->GetRenderer().ReloadShaders();
+			engine_->GetRenderer().BeginFrame();
 		}
 
 		engine_->GetRenderer().EndFrame();

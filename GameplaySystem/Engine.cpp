@@ -103,7 +103,7 @@ bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
 
 void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
 	renderer_.InitDevice({ handle_old, handle_new, width, height });
-	renderer_.InitShaders("..\\..\\DX11RenderEngine\\DX11RenderEngine\\Shaders\\");
+	renderer_.InitShaders("..\\..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\");
 }
 
 void Engine::SetupRendererInternalCalls() {
