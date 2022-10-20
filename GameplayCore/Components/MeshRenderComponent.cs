@@ -18,6 +18,7 @@
         public override void Initialize() 
         {
             _transform = GameObject.GetComponent<TransformComponent>();
+            _transform.Position += new Mathematics.Vector3(0.0f, 0.0f, 5.0f);
             EngineApi.Render.RegisterModel(Id);
         }
 
