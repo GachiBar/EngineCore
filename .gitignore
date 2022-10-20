@@ -369,3 +369,7 @@ imgui.ini
 !vendor/**
 
 TestSetup/GameplayCore.dll
+
+GameplayCore.dll
+
+.idea/.idea.EngineCore/.idea/

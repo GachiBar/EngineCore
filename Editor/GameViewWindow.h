@@ -3,9 +3,11 @@
 
 class GameViewWindow
 {
+    void* Texture;
     bool isPlaying = false;
     bool windowIsHovered;
 public:
+    GameViewWindow(void* Texture);
     void draw_imgui();
 
     bool getWantCaptureMouse() {

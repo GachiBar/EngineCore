@@ -149,6 +149,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)GameplayCore\bin\Debug\net472\GameplayCore.dll $(SolutionDir) /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DX11RenderEngine\GachiRenderSystem\GachiRenderSystem.vcxproj">

@@ -45,7 +45,7 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 
 	ModelData model(verticies, indexes, EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0);
 
-	std::string path = "Content\\Cube.obj";
+	std::string path = "TestSetup\\Content\\Cube.obj";
 	auto m = ModelLoader::LoadObj(path, model);
 	renderer->RegisterModel(id, model);
 
@@ -121,7 +121,7 @@ bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
 
 void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
 	renderer_.InitDevice({ handle_old, handle_new, width, height });
-	renderer_.InitShaders("..\\..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\");
+	renderer_.InitShaders("..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\");
 }
 
 void Engine::SetupRendererInternalCalls() {

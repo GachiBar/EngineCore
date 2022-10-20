@@ -96,17 +96,29 @@ int Application::Run()
 		engine_->GetRenderer().BeginFrame();
 
 		engine_->render_->invoke(*engine_->GetScene());
-				
-		for (const auto layer : m_LayerStack)
-			layer->OnGuiRender();
 		
 		while (!engine_->GetRenderer().Present()) {
 			engine_->GetRenderer().EndFrame();
 			engine_->GetRenderer().ReloadShaders();
 			engine_->GetRenderer().BeginFrame();
-		}
+		};
+
+		for (const auto layer : m_LayerStack)
+			layer->OnGuiRender();
 
 		engine_->GetRenderer().EndFrame();
+
+
+
+
+		//engine_->GetRenderer().BeginFrame()
+		//while (!engine_->GetRenderer().Present()) {
+		//	engine_->GetRenderer().EndFrame();
+		//	engine_->GetRenderer().ReloadShaders();
+		//	engine_->GetRenderer().BeginFrame();
+		//}
+		//
+		//engine_->GetRenderer().EndFrame();
 	}
 
 	OnStop();
