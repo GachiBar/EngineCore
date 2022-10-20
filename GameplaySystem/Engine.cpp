@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Engine.h"
-#include "MathematicsInternals.h"
+#include "ModelLoader.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
@@ -39,16 +39,26 @@ RenderDevice& Engine::GetRenderer()
 }
 
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
-	renderer->RegisterModel(id, {
-		{
-			{{ -0.25, -0.25, 0 }, {},{}},
-			{{  0.0 ,  0.25, 0 }, {},{}},
-			{{  0.25, -0.25, 0 }, {},{}},			
-		},
-		{0,1,2},
-		EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-		1
-	});
+	std::vector<ModelVertex> verticies;
+	std::vector<uint16_t> indexes;
+	size_t primitiveCount = 0;
+
+	ModelData model(verticies, indexes, EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0);
+
+	std::string path = "Content\\Cube.obj";
+	auto m = ModelLoader::LoadObj(path, model);
+	renderer->RegisterModel(id, model);
+
+	//renderer->RegisterModel(id, {
+	//	{
+	//		{{ -0.25, -0.25, 0 }, {},{}},
+	//		{{  0.0 ,  0.25, 0 }, {},{}},
+	//		{{  0.25, -0.25, 0 }, {},{}},			
+	//	},
+	//	{0,1,2},
+	//	EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
+	//	1
+	//});
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
@@ -59,7 +69,6 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
 
 	SetupRendererInternalCalls();
-	SetupMathematicsInternalCalls();
 	InitializeSceneCalls();
 
 	initialize_->invoke(*scene_);
@@ -90,10 +99,19 @@ void Engine::RunFrame()
 
 	update_->invoke(*scene_);
 		
+	DirectX::SimpleMath::Vector3 eye = DirectX::SimpleMath::Vector3::Zero;
+	DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitZ;
+	auto view = DirectX::SimpleMath::Matrix::CreateLookAt(eye, direction, DirectX::SimpleMath::Vector3::Up);
+	auto projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(
+		DirectX::XM_PIDIV2,
+		800.0f / 600,
+		0.1f,
+		100.0f);
+
 	renderer_.SetRenderData({
 		duration<float>(ellapsed_).count(),
-		matrix::Identity,
-		matrix::Identity
+		view,
+		projection
 	});
 }
 

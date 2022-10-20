@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir)vendor\mono\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)vendor\assimp\lib;$(SolutionDir)vendor\mono\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -119,16 +119,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mono\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vendor\mono\lib\Debug;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)vendor\mono\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)GameplayCore\bin\Debug\net472\GameplayCore.dll $(ProjectDir) /y </Command>

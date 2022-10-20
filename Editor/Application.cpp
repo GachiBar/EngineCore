@@ -95,8 +95,6 @@ int Application::Run()
 
 		engine_->GetRenderer().BeginFrame();
 
-		engine_->GetRenderer().SetRenderData({});
-
 		engine_->render_->invoke(*engine_->GetScene());
 				
 		for (const auto layer : m_LayerStack)
