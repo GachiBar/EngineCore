@@ -28,6 +28,9 @@
     <Filter Include="ImGuizmo">
       <UniqueIdentifier>{dd1d7e40-77dc-4d24-b59d-04667fa69257}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libs\ini">
+      <UniqueIdentifier>{fcd64c00-a226-449d-821b-b82e87eef028}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Visual.cpp">
@@ -95,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="PropertyWindow.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\ini\IniReaderWriter.cpp">
+      <Filter>libs\ini</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +202,15 @@
     </ClInclude>
     <ClInclude Include="PropertyWindow.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\ini\ini.h">
+      <Filter>libs\ini</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\ini\IniReaderWriter.h">
+      <Filter>libs\ini</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\magic_enum.hpp">
+      <Filter>libs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
