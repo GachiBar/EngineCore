@@ -102,6 +102,12 @@
     <ClCompile Include="libs\ini\IniReaderWriter.cpp">
       <Filter>libs\ini</Filter>
     </ClCompile>
+    <ClCompile Include="InputSystem\ConfigReaderWriterFactory.cpp">
+      <Filter>InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigReaderWriter.cpp">
+      <Filter>InputSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Visual.h">
@@ -211,6 +217,12 @@
     </ClInclude>
     <ClInclude Include="libs\magic_enum.hpp">
       <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\ConfigReaderWriter.h">
+      <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\ConfigReaderWriterFactory.h">
+      <Filter>InputSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
