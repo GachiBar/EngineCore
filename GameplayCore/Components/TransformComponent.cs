@@ -8,6 +8,7 @@ namespace GameplayCore.Components
     {
         private TransformComponent _parent;
         private List<TransformComponent> _children;
+        private Vector3 _editorEuler;
 
         public int ChildrenCount => _children.Count;
 
@@ -42,8 +43,17 @@ namespace GameplayCore.Components
 
         public Vector3 LocalEuler
         {
-            get => LocalRotation.EulerAngles;
-            set => LocalRotation = Quaternion.Euler(value);
+            get
+            {
+                Quaternion.ToEuler(LocalRotation, out var yaw, out var pitch, out var roll);
+                return new Vector3(yaw, pitch, roll) * 180 / MathUtil.Pi;
+            }
+
+            set
+            {
+                var euler = value * MathUtil.Pi / 180.0f;
+                LocalRotation = Quaternion.RotationYawPitchRoll(euler.X, euler.Y, euler.Z);
+            }
         }
 
         public Vector3 LocalScale { get; set; } = Vector3.One;
@@ -52,45 +62,116 @@ namespace GameplayCore.Components
 
         public Quaternion Rotation
         {
-            get => Parent != null
-                ? LocalRotation * Parent.Rotation
-                : LocalRotation;
-            set => LocalRotation = Parent != null 
-                ? Quaternion.Inverse(Parent.Rotation) * value : 
-                value;
+            get
+            {
+                if (Parent != null)
+                {
+                    return LocalRotation * Parent.Rotation;
+                }
+                else
+                {
+                    return LocalRotation;
+                }
+            }
+
+            set
+            {
+                if (Parent != null)
+                {
+                    var quat = Parent.Rotation;
+                    quat.Invert();
+                    LocalRotation = quat * value;
+                }
+                else
+                {
+                    LocalRotation = value;
+                }
+            }
         }
 
         public Vector3 Euler
         {
-            get => Rotation.EulerAngles;
-            set => Rotation = Quaternion.Euler(value);
+            get
+            {
+                Quaternion.ToEuler(Rotation, out var yaw, out var pitch, out var roll);
+                return new Vector3(yaw, pitch, roll) * 180.0f / MathUtil.Pi;
+            }
+
+            set
+            {
+                var euler = value * MathUtil.Pi / 180.0f;
+                Rotation = Quaternion.RotationYawPitchRoll(euler.X, euler.Y, euler.Z);
+            }
         }
 
         public Vector3 Scale
         {
-            get => Parent != null 
-                ? LocalScale * Parent.Scale 
-                : LocalScale;
-            set => LocalScale = Parent != null 
-                ? value / Parent.Scale 
-                : value;
+            get
+            {
+                if (Parent != null)
+                {
+                    return LocalScale * Parent.Scale;
+                }
+                else
+                {
+                    return LocalScale;
+                }
+            }
+
+            set
+            {
+                if (Parent != null)
+                {
+                    LocalScale = value / Parent.Scale;
+                }
+                else
+                {
+                    LocalScale = value;
+                }
+            }
         }
 
         public Vector3 Position
         {
-            get => Parent != null
-                ? LocalPosition * Parent.ModelMatrix
-                : LocalPosition;
-            set => LocalPosition = Parent != null
-                ? value * Parent.ModelMatrix.Invert()
-                : value;
+            get
+            {
+                if (Parent != null)
+                {
+                    var transformation = Parent.ModelMatrix;
+                    var localPosition = LocalPosition;
+                    Vector3.Transform(ref localPosition, ref transformation, out Vector3 position);
+                    return position;
+                }
+                else 
+                {
+                    return LocalPosition;
+                }
+            }
+
+            set
+            {
+                if (Parent != null)
+                {
+                    var transformation = Parent.ModelMatrix;
+                    transformation.Invert();
+                    Vector3.Transform(ref value, ref transformation, out Vector3 position);
+                    LocalPosition = position;
+                }
+                else
+                {
+                    LocalPosition = value;
+                }
+            }
         }
 
         public Matrix ModelMatrix
         {
             get
             {
-                var model = Matrix.ModelMatrix(LocalScale, LocalRotation, LocalPosition);
+                var model = Matrix.Identity;
+                model *= Matrix.Scaling(LocalScale);
+                model *= Matrix.RotationQuaternion(LocalRotation);
+                model *= Matrix.Translation(LocalPosition);
                 
                 if (Parent != null)
                 {
@@ -98,6 +179,17 @@ namespace GameplayCore.Components
                 }
 
                 return model;
+            }
+        }
+
+        private Vector3 EditorEuler
+        {
+            get => _editorEuler;
+            set
+            {
+                _editorEuler = value;
+                var euler = _editorEuler * MathUtil.Pi / 180.0f;
+                LocalRotation = Quaternion.RotationYawPitchRoll(euler.X, euler.Y, euler.Z);
             }
         }
 

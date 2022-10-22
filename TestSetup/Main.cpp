@@ -7,7 +7,7 @@
 #include "../Editor/Application.h"
 #include "../Editor/EditorApplication.h"
 
-const char kMonoLibPath[] = "..\\vendor\\mono\\lib\\4.5";
+const char kMonoLibPath[] = "vendor\\mono\\lib\\4.5";
 const char kDllPath[] = "GameplayCore.dll";
 
 class StandaloneGameTestApplication final : public Application
@@ -40,6 +40,7 @@ void StandaloneGameTestApplication::OnSetup()
 	engine_->SetScene(&scene);
 }
 #include "../Editor/Delegates.h"
+#include "../GameplaySystem/ModelLoader.h"
 
 int main() {
 	StandaloneGameTestApplication app(kDllPath);

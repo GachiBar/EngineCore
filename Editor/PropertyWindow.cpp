@@ -34,7 +34,7 @@ void PropertyWindow::draw_imgui(std::shared_ptr<mono::mono_object> go)
 
 		for (auto& property : properties)
 		{
-			if(property.get_name() == "Euler")
+			if(property.get_name() == "EditorEuler")
 			{
 				mono::mono_property_invoker t(property);
 				mono::mono_object t1(t.get_value(component));
@@ -45,7 +45,7 @@ void PropertyWindow::draw_imgui(std::shared_ptr<mono::mono_object> go)
 					t.set_value(component,t3);
 				}
 			}
-			if(property.get_name() == "Scale")
+			if(property.get_name() == "LocalScale")
 			{
 				mono::mono_property_invoker t(property);
 				mono::mono_object t1(t.get_value(component));

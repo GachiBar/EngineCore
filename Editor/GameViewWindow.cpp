@@ -1,6 +1,10 @@
 #include "GameViewWindow.h"
 #include "imgui/imgui.h"
 
+GameViewWindow::GameViewWindow(void* Texture):Texture(Texture)
+{
+}
+
 void GameViewWindow::draw_imgui()
 {
     ImGui::Begin("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
@@ -21,7 +25,12 @@ void GameViewWindow::draw_imgui()
     // Get the size of the child (i.e. the whole draw size of the windows).
     ImVec2 wsize = ImGui::GetWindowSize();
     // Because I use the texture from OpenGL, I need to invert the V from the UV.
-    //ImGui::Image((ImTextureID)tex, wsize, ImVec2(0, 1), ImVec2(1, 0));
+    
+
+    ImGui::Image(Texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+
+
+
     ImGui::EndChild();
 
 
