@@ -12,24 +12,22 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
+#include "GameObject.h"
+#include "Scene.h"
+
 namespace engine {
 
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
 	: domain_(domain)
 	, assembly_(assembly)
-	, scene_(nullptr)
-	, initialize_(nullptr)
-	, terminate_(nullptr)
-	, fixed_update_(nullptr)
-	, update_(nullptr)
-	, render_(nullptr)
+	, scene_(new Scene(assembly))
 {}
 
-mono::mono_object* Engine::GetScene() {
+Scene* Engine::GetScene() {
 	return scene_;
 }
 
-void Engine::SetScene(mono::mono_object* scene) {
+void Engine::SetScene(Scene* scene) {
 	scene_ = scene;
 }
 
@@ -60,15 +58,13 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 
 	SetupRendererInternalCalls();
 	SetupMathematicsInternalCalls();
-	InitializeSceneCalls();
+	CacheWrappersMethods();
 
-	initialize_->invoke(*scene_);
+	scene_->Initialize();
 }
 
 void Engine::Terminate() {
-	terminate_->invoke(*scene_);
-
-	TerminateSceneCalls();
+	scene_->Terminate();
 }
 
 void Engine::RunFrame()
@@ -85,10 +81,10 @@ void Engine::RunFrame()
 
 	while (lag_ >= kTimestep) {
 		lag_ -= kTimestep;
-		fixed_update_->invoke(*scene_);
+		scene_->FixedUpdate();
 	}
 
-	update_->invoke(*scene_);
+	scene_->Update();
 		
 	renderer_.SetRenderData({
 		duration<float>(ellapsed_).count(),
@@ -116,29 +112,12 @@ void Engine::SetupRendererInternalCalls() {
 	renderer_property_invoker.set_value(&renderer_);
 }
 
-void Engine::InitializeSceneCalls() {
-	mono::mono_method initialize_method(scene_->get_type(), "Initialize", 0);
-	initialize_ = new mono::mono_method_invoker(initialize_method);
 
-	mono::mono_method terminate_method(scene_->get_type(), "Terminate", 0);
-	terminate_ = new mono::mono_method_invoker(terminate_method);
-
-	mono::mono_method fixed_update_method(scene_->get_type(), "FixedUpdate", 0);
-	fixed_update_ = new mono::mono_method_invoker(fixed_update_method);
-
-	mono::mono_method update_method(scene_->get_type(), "Update", 0);
-	update_ = new mono::mono_method_invoker(update_method);
-
-	mono::mono_method render_method(scene_->get_type(), "Render", 0);
-	render_ = new mono::mono_method_invoker(render_method);
-}
-
-void Engine::TerminateSceneCalls() {
-	delete initialize_;
-	delete terminate_;
-	delete fixed_update_;
-	delete update_;
-	delete render_;
+void Engine::CacheWrappersMethods()
+{
+	Scene::CacheMethods(assembly_);
+	GameObject::CacheMethods(assembly_);
+	Component::CacheMethods(assembly_);
 }
 
 void Engine::SendDeltaTime(float dt) {

@@ -1,14 +1,13 @@
 #pragma once
 
 #include "RenderEngine.h"
-#include "../monowrapper/monopp/mono_domain.h"
 #include "../monowrapper/monopp/mono_assembly.h"
-#include "../monowrapper/monopp/mono_object.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
 
 #include <chrono>
 #include <Windows.h>
 #include <SimpleMath.h>
+
+#include "Scene.h"
 
 namespace engine {
 
@@ -27,8 +26,8 @@ public:
 		const mono::mono_domain& domain,
 		const mono::mono_assembly& assembly);
 
-	mono::mono_object* GetScene();
-	void SetScene(mono::mono_object* scene);
+	Scene* GetScene();
+	void SetScene(Scene* scene);
 	void Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height);
 	void Terminate();
 
@@ -45,20 +44,14 @@ private:
 
 	const::mono::mono_domain& domain_;
 	const::mono::mono_assembly& assembly_;
-		
-	mono::mono_object* scene_;
-	mono::mono_method_invoker* initialize_;
-	mono::mono_method_invoker* terminate_;
-	mono::mono_method_invoker* fixed_update_;
-	mono::mono_method_invoker* update_;
-	mono::mono_method_invoker* render_;
 
+	Scene* scene_;
+	
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
 
 	void SetupRendererInternalCalls();
-	void InitializeSceneCalls();
-	void TerminateSceneCalls();
+	void CacheWrappersMethods();
 	void SendDeltaTime(float dt);
 };
 

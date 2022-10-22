@@ -10,10 +10,16 @@ EditorApplication::EditorApplication(const char* dll_path):Application(dll_path)
 void EditorApplication::OnSetup()
 {
 	Application::OnSetup();
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TestUpdateComponent");
-	AddComponent(m_Assembly, go2, "GameplayCore.Components", "TestFixedUpdateComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "MeshRenderComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TransformComponent");
+
+	scene = Scene(m_Assembly);
+	game_object_1 = scene.CreateGameObject();
+	game_object_2 = scene.CreateGameObject();
+	
+	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "TestUpdateComponent");
+	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "TransformComponent");
+	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "MeshRenderComponent");
+
+	game_object_2->AddComponent(m_Assembly, "GameplayCore.Components", "TestFixedUpdateComponent");
 
 	engine_->SetScene(&scene);
 

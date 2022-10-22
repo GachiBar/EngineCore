@@ -6,6 +6,9 @@
 #include "Layer.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "InputSystem/InputManager.h"
+#include "../monowrapper/monopp/mono_jit.h"
+
+const char kMonoLibPath[] = "..\\vendor\\mono\\lib\\4.5";
 
 Application::Application(const char* dll_path)
 	: m_LayerStack(this)
@@ -14,6 +17,10 @@ Application::Application(const char* dll_path)
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, exit_code_(0)
 {
+	if (!mono::init_with_mono_assembly_path(kMonoLibPath, "KtripRuntime")) {
+		throw std::runtime_error("Can't init Mono with assembly");
+	}		
+	
 	mono::mono_domain::set_current_domain(m_Domain);
 }
 
@@ -97,7 +104,7 @@ int Application::Run()
 
 		engine_->GetRenderer().SetRenderData({});
 
-		engine_->render_->invoke(*engine_->GetScene());
+		engine_->GetScene()->Render();
 				
 		for (const auto layer : m_LayerStack)
 			layer->OnGuiRender();
@@ -141,12 +148,9 @@ mono::mono_object Application::AddComponent(
 {
 	mono::mono_method add_component_method(go.get_type(), "AddComponent", 1);
 	mono::mono_method_invoker add_component_method_invoker(add_component_method);
-
-	MonoDomain* domain = mono::mono_domain::get_current_domain().get_internal_ptr();
-
+	
 	mono::mono_type component_type = assembly.get_type(name_space, name);
-	MonoType* type = mono_class_get_type(component_type.get_internal_ptr());
-	MonoReflectionType* reflection_type = mono_type_get_object(domain, type);
+	MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
 
 	void* params[1];
 	params[0] = reflection_type;

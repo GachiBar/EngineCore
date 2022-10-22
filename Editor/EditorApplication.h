@@ -13,10 +13,9 @@ public:
 
 	void OnStart() override;
 
-	mono::mono_object scene = m_Assembly.get_type("GameplayCore", "Scene").new_instance();
-	mono::mono_object go1 = CreateGameObject(scene);
-	mono::mono_object go2 = CreateGameObject(scene);
-
+	Scene scene;
+	GameObject* game_object_1 = nullptr;
+	GameObject* game_object_2 = nullptr;
 
 protected:
 	//std::shared_ptr<MainWindow> mw;

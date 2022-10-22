@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mono_config.h"
+#include "mono_exception.h"
 
 #include "mono_visibility.h"
 
@@ -69,6 +70,10 @@ public:
 	auto get_alignof() const -> std::uint32_t;
 
 	auto get_internal_ptr() const -> MonoClass*;
+
+	auto get_internal_type_ptr() const -> MonoType*;
+	
+	auto get_internal_reflection_type_ptr() const -> MonoReflectionType*;
 
 private:
 	void generate_meta();

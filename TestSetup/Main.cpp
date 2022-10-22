@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../GameplaySystem/Engine.h"
-#include "../monowrapper/monopp/mono_jit.h"
+
 
 //TODO Move application header to another project
 #include "../Editor/Application.h"
@@ -17,9 +17,9 @@ public:
 		: Application(dll_path)
 	{}
 
-	mono::mono_object scene{ m_Assembly.get_type("GameplayCore", "Scene").new_instance() };
-	mono::mono_object go1{ CreateGameObject(scene) };
-	mono::mono_object go2{ CreateGameObject(scene) };
+	Scene scene;
+	GameObject* game_object_1 = nullptr;
+	GameObject* game_object_2 = nullptr;
 
 	void OnSetup() override;
 };
@@ -27,21 +27,22 @@ public:
 
 void StandaloneGameTestApplication::OnSetup()
 {
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TestUpdateComponent");
-	AddComponent(m_Assembly, go2, "GameplayCore.Components", "TestFixedUpdateComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "MeshRenderComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TransformComponent");
+	scene = Scene(m_Assembly);
+	game_object_1 = scene.CreateGameObject();
+	game_object_2 = scene.CreateGameObject();
+
+	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "TestUpdateComponent");
+	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "TransformComponent");
+	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "MeshRenderComponent");
+
+	game_object_2->AddComponent(m_Assembly, "GameplayCore.Components", "TestFixedUpdateComponent");
 
 	engine_->SetScene(&scene);
 }
 #include "../Editor/Delegates.h"
 
 int main() {
-	if (!mono::init_with_mono_assembly_path(kMonoLibPath, "KtripRuntime")) {
-		return 1;
-	}		
-
-	//StandaloneGameTestApplication app(kDllPath);
-	EditorApplication app(kDllPath);
+	StandaloneGameTestApplication app(kDllPath);
+	//EditorApplication app(kDllPath);
 	return app.Run();
 }

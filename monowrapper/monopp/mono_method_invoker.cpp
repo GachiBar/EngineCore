@@ -26,6 +26,26 @@ MonoObject* mono::mono_method_invoker::invoke(const mono_object& object, void** 
 	return invoke(object.get_internal_ptr(), args);
 }
 
+MonoObject* mono_method_invoker::operator()()
+{
+	return invoke();
+}
+
+MonoObject* mono_method_invoker::operator()(void** args)
+{
+	return invoke(args);
+}
+
+MonoObject* mono_method_invoker::operator()(const mono_object& object)
+{
+	return invoke(object);
+}
+
+MonoObject* mono_method_invoker::operator()(const mono_object& object, void** args)
+{
+	return invoke(object, args);
+}
+
 MonoObject* mono_method_invoker::invoke(MonoObject* object, void** args)
 {
 	MonoObject* exception = nullptr;

@@ -168,6 +168,6 @@ void EditorLayer::OnGuiRender()
     ImGui::End();
 
     gvm->draw_imgui();
-    hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
+    hierarchy->draw_imgui((GetApp()->GetEngine()->GetScene()->GetInternalPtr()));
     properties->draw_imgui(selected_go);
 }
