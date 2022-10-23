@@ -151,6 +151,7 @@
     <ClCompile Include="monopp\mono_field.cpp" />
     <ClCompile Include="monopp\mono_gc_handle.cpp" />
     <ClCompile Include="monopp\mono_jit.cpp" />
+    <ClCompile Include="monopp\mono_jit_domain.cpp" />
     <ClCompile Include="monopp\mono_logger.cpp" />
     <ClCompile Include="monopp\mono_method.cpp" />
     <ClCompile Include="monopp\mono_method_invoker.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="monopp\mono_gc_handle.h" />
     <ClInclude Include="monopp\mono_internal_call.h" />
     <ClInclude Include="monopp\mono_jit.h" />
+    <ClInclude Include="monopp\mono_jit_domain.h" />
     <ClInclude Include="monopp\mono_logger.h" />
     <ClInclude Include="monopp\mono_method.h" />
     <ClInclude Include="monopp\mono_method_invoker.h" />

@@ -20,7 +20,7 @@ namespace engine {
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
 	: domain_(domain)
 	, assembly_(assembly)
-	, scene_(new Scene(assembly))
+	, scene_(nullptr)
 {}
 
 Scene* Engine::GetScene() {
@@ -46,17 +46,6 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::string path = "TestSetup\\Content\\Cube.obj";
 	auto m = ModelLoader::LoadObj(path, model);
 	renderer->RegisterModel(id, model);
-
-	//renderer->RegisterModel(id, {
-	//	{
-	//		{{ -0.25, -0.25, 0 }, {},{}},
-	//		{{  0.0 ,  0.25, 0 }, {},{}},
-	//		{{  0.25, -0.25, 0 }, {},{}},			
-	//	},
-	//	{0,1,2},
-	//	EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-	//	1
-	//});
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
@@ -67,7 +56,6 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
 
 	SetupRendererInternalCalls();
-	CacheWrappersMethods();
 	scene_->Initialize();
 }
 
@@ -127,14 +115,6 @@ void Engine::SetupRendererInternalCalls() {
 	auto renderer_property = renderer_type.get_property("Renderer");
 	mono::mono_property_invoker renderer_property_invoker(renderer_property);
 	renderer_property_invoker.set_value(&renderer_);
-}
-
-
-void Engine::CacheWrappersMethods()
-{
-	Scene::CacheMethods(assembly_);
-	GameObject::CacheMethods(assembly_);
-	Component::CacheMethods(assembly_);
 }
 
 void Engine::SendDeltaTime(float dt) {

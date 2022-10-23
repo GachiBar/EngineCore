@@ -6,44 +6,52 @@
 //TODO Move application header to another project
 #include "../Editor/Application.h"
 #include "../Editor/EditorApplication.h"
+#include "../monowrapper/monopp/mono_jit.cpp"
 
 const char kMonoLibPath[] = "vendor\\mono\\lib\\4.5";
 const char kDllPath[] = "GameplayCore.dll";
 
-class StandaloneGameTestApplication final : public Application
-{
+class StandaloneGameTestApplication final : public Application {
 public:
-	StandaloneGameTestApplication(const char* dll_path) 
-		: Application(dll_path)
+	StandaloneGameTestApplication() 
+		: Application()
+		, scene(nullptr)
 	{}
 
-	Scene scene;
-	GameObject* game_object_1 = nullptr;
-	GameObject* game_object_2 = nullptr;
+	~StandaloneGameTestApplication() {
+		if (scene != nullptr) {
+			delete scene;
+		}	
+	}
+
+	Scene* scene = nullptr;
+	std::shared_ptr<GameObject> game_object_1;
+	std::shared_ptr<GameObject>  game_object_2;
 
 	void OnSetup() override;
+
+	void OnStop() override;
 };
 
 
-void StandaloneGameTestApplication::OnSetup()
-{
-	scene = Scene(m_Assembly);
-	game_object_1 = scene.CreateGameObject();
-	game_object_2 = scene.CreateGameObject();
+void StandaloneGameTestApplication::OnSetup() {
+	scene = new Scene(m_Assembly);
+	game_object_1 = scene->CreateGameObject();
+	game_object_2 = scene->CreateGameObject();
 
-	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "TestUpdateComponent");
-	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "TransformComponent");
-	game_object_1->AddComponent(m_Assembly, "GameplayCore.Components", "MeshRenderComponent");
+	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
+	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");
 
-	game_object_2->AddComponent(m_Assembly, "GameplayCore.Components", "TestFixedUpdateComponent");
-
-	engine_->SetScene(&scene);
+	engine_->SetScene(scene);
 }
-#include "../Editor/Delegates.h"
-#include "../GameplaySystem/ModelLoader.h"
+
+void StandaloneGameTestApplication::OnStop() {
+	// TODO: clean up scene
+	//delete scene;
+}
 
 int main() {
-	StandaloneGameTestApplication app(kDllPath);
-	//EditorApplication app(kDllPath);
+	//StandaloneGameTestApplication app(kDllPath);
+	EditorApplication app;
 	return app.Run();
 }

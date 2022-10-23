@@ -4,6 +4,7 @@
 
 #include "LayerStack.h"
 #include "../GameplaySystem/Engine.h"
+#include "../monowrapper/monopp/mono_jit_domain.h"
 #include "../monowrapper/monopp/mono_domain.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 #include "../monowrapper/monopp/mono_type.h"
@@ -14,7 +15,7 @@
 class Application
 {
 public:
-	Application(const char* dll_path);
+	Application();
 
     void PushLayer(Layer* layer);
     void PushOverlay(Layer* layer);
@@ -51,6 +52,7 @@ protected:
     void ApplyInput();
 
     LayerStack m_LayerStack;
+    mono::mono_jit_domain m_JitDomain;
     mono::mono_domain m_Domain;
     mono::mono_assembly m_Assembly;
     std::shared_ptr<engine::Engine> engine_;
@@ -59,6 +61,8 @@ protected:
     int exit_code_;
 
 private:
+    static const char* kMonoLibPath;
+    static const char* kDllPath;
 
     static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
     void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);

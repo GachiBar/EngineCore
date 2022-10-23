@@ -8,19 +8,20 @@
 #include "InputSystem/InputManager.h"
 #include "../monowrapper/monopp/mono_jit.h"
 
-const char kMonoLibPath[] = "..\\vendor\\mono\\lib\\4.5";
+const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
+const char* Application::kDllPath = "GameplayCore.dll";
 
-Application::Application(const char* dll_path)
+Application::Application()
 	: m_LayerStack(this)
+	, m_JitDomain(kMonoLibPath, "KtripRuntime")
 	, m_Domain{ "KtripDomain" }
-	, m_Assembly{ m_Domain, dll_path }
+	, m_Assembly{ m_Domain, kDllPath }
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, exit_code_(0)
-{
-	if (!mono::init_with_mono_assembly_path(kMonoLibPath, "KtripRuntime")) {
-		throw std::runtime_error("Can't init Mono with assembly");
-	}		
-	
+{	
+	Scene::CacheMethods(m_Assembly);
+	GameObject::CacheMethods(m_Assembly);
+	Component::CacheMethods(m_Assembly);
 	mono::mono_domain::set_current_domain(m_Domain);
 }
 

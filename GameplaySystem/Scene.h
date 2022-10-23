@@ -6,32 +6,32 @@
 class Scene
 {
 public:
-   Scene():object_reference(nullptr){}
-   explicit Scene(const mono::mono_assembly& assembly);
-   
-   GameObject* CreateGameObject() const;
-   void DeleteGameObject(GameObject* game_object);
+	const mono::mono_object& GetInternal();
 
-   void Initialize();
-   void FixedUpdate();
-   void Update();
-   void Render();
-   void Terminate();
-   void Invalidate();
-   
-   const mono::mono_object& GetInternalPtr();
+	Scene(const mono::mono_assembly& assembly);   
 
-   static void CacheMethods(const mono::mono_assembly& assembly);
+	std::shared_ptr<GameObject> CreateGameObject();
+	void DeleteGameObject(std::shared_ptr<GameObject> game_object);
+
+	void Initialize();
+	void FixedUpdate();
+	void Update();
+	void Render();
+	void Terminate();
+	void Invalidate();
+   
+	static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:
-   mono::mono_object* object_reference;
+	const mono::mono_assembly& assembly_;
+	mono::mono_object object_;
    
-   static mono::mono_method_invoker* initialize_;
-   static mono::mono_method_invoker* terminate_;
-   static mono::mono_method_invoker* fixed_update_;
-   static mono::mono_method_invoker* update_;
-   static mono::mono_method_invoker* render_;
-   static mono::mono_method_invoker* invalidate_;
-   static mono::mono_method_invoker* create_game_object_;
-   static mono::mono_method_invoker* delete_game_object_;
+	static mono::mono_method_invoker* initialize_;
+	static mono::mono_method_invoker* terminate_;
+	static mono::mono_method_invoker* fixed_update_;
+	static mono::mono_method_invoker* update_;
+	static mono::mono_method_invoker* render_;
+	static mono::mono_method_invoker* invalidate_;
+	static mono::mono_method_invoker* create_game_object_;
+	static mono::mono_method_invoker* delete_game_object_;
 };

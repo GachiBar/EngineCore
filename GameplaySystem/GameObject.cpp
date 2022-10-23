@@ -5,96 +5,90 @@
 
 #include "../monowrapper/monopp/mono_assembly.h"
 
-mono::mono_method_invoker* GameObject::initialize_;
-mono::mono_method_invoker* GameObject::terminate_;
-mono::mono_method_invoker* GameObject::fixed_update_;
-mono::mono_method_invoker* GameObject::update_;
-mono::mono_method_invoker* GameObject::render_;
-mono::mono_method_invoker* GameObject::invalidate_;
-mono::mono_method_invoker* GameObject::add_component;
-mono::mono_method_invoker* GameObject::remove_component;
-mono::mono_method_invoker* GameObject::get_component;
+mono::mono_method_invoker* GameObject::initialize_ = nullptr;
+mono::mono_method_invoker* GameObject::terminate_ = nullptr;
+mono::mono_method_invoker* GameObject::fixed_update_ = nullptr;
+mono::mono_method_invoker* GameObject::update_ = nullptr;
+mono::mono_method_invoker* GameObject::render_ = nullptr;
+mono::mono_method_invoker* GameObject::invalidate_ = nullptr;
+mono::mono_method_invoker* GameObject::add_component = nullptr;
+mono::mono_method_invoker* GameObject::remove_component = nullptr;
+mono::mono_method_invoker* GameObject::get_component = nullptr;
 
-GameObject::GameObject(mono::mono_object* object_ref)
-{
-    assert(object_ref->get_type().get_name() == "GameObject" && "Can't init game object with different class!");
-    object_reference = object_ref;
+const mono::mono_object& GameObject::GetInternal() {
+    return object_;
 }
 
-std::shared_ptr<Component> GameObject::AddComponent(const mono::mono_assembly& assembly, const std::string& name_space, const std::string& name)
-{
-    return AddComponent(assembly.get_type(name_space, name));
+GameObject::GameObject(const mono::mono_assembly& assembly, mono::mono_object object)
+    : assembly_(assembly)
+    , object_(std::move(object))
+{}
+
+std::shared_ptr<Component> GameObject::AddComponent(const std::string& name_space, const std::string& name) {
+    return AddComponent(assembly_.get_type(name_space, name));
 }
 
-std::shared_ptr<Component> GameObject::AddComponent(const mono::mono_type& component_type)
-{
+std::shared_ptr<Component> GameObject::AddComponent(const mono::mono_type& component_type) {
     MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
     void* params[1] = {reflection_type};
 
-    auto component = new mono::mono_object(add_component->invoke(*object_reference, params));
-    return std::make_shared<Component>(component);
+    mono::mono_object component(add_component->invoke(object_, params));
+    Invalidate();
+    return std::shared_ptr<Component>(new Component(std::move(component)));
 }
 
-void GameObject::RemoveComponent(std::shared_ptr<Component> component)
-{
-    MonoReflectionType* reflection_type = component->GetInternalPtr().get_type().get_internal_reflection_type_ptr();
+void GameObject::RemoveComponent(std::shared_ptr<Component> component) {
+    MonoReflectionType* reflection_type = component->GetInternal().get_type().get_internal_reflection_type_ptr();
     void* params[1] = {reflection_type};
 
-    remove_component->invoke(*object_reference, params);
+    remove_component->invoke(object_, params);
+    Invalidate();
     component.reset();
 }
 
-std::shared_ptr<Component> GameObject::GetComponent(mono::mono_assembly& assembly, const std::string& name_space, const std::string& name)
-{
-    return GetComponent(assembly.get_type(name_space, name));
+std::shared_ptr<Component> GameObject::GetComponent(const std::string& name_space, const std::string& name) {
+    return GetComponent(assembly_.get_type(name_space, name));
 }
 
-std::shared_ptr<Component> GameObject::GetComponent(const mono::mono_type& component_type)
-{
+std::shared_ptr<Component> GameObject::GetComponent(const mono::mono_type& component_type) {
     MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
     void* params[1] = {reflection_type};
 
-    auto component = new mono::mono_object(get_component->invoke(*object_reference, params));
-    return std::make_shared<Component>(component);
+    mono::mono_object component(get_component->invoke(object_, params));
+    return std::shared_ptr<Component>(new Component(std::move(component)));
 }
 
-const mono::mono_object& GameObject::GetInternalPtr()
-{
-    return *object_reference;
+void GameObject::Initialize() {
+    assert(initialize_ != nullptr && "GameObject methods are not cached.");
+    initialize_->invoke(object_);
 }
 
-void GameObject::Initialize()
-{
-    initialize_->invoke(*object_reference);
+void GameObject::FixedUpdate() {
+    assert(fixed_update_ != nullptr && "GameObject methods are not cached.");
+    fixed_update_->invoke(object_);
 }
 
-void GameObject::FixedUpdate()
-{
-    fixed_update_->invoke(*object_reference);
+void GameObject::Update() {
+    assert(update_ != nullptr && "GameObject methods are not cached.");
+    update_->invoke(object_);
 }
 
-void GameObject::Update()
-{
-    update_->invoke(*object_reference);
+void GameObject::Render() {
+    assert(render_ != nullptr && "GameObject methods are not cached.");
+    render_->invoke(object_);
 }
 
-void GameObject::Render()
-{
-    render_->invoke(*object_reference);
+void GameObject::Terminate() {
+    assert(terminate_ != nullptr && "GameObject methods are not cached.");
+    terminate_->invoke(object_);
 }
 
-void GameObject::Terminate()
-{
-    terminate_->invoke(*object_reference);
+void GameObject::Invalidate() {
+    assert(invalidate_ != nullptr && "GameObject methods are not cached.");
+    invalidate_->invoke(object_);
 }
 
-void GameObject::Invalidate()
-{
-    invalidate_->invoke(*object_reference);
-}
-
-void GameObject::CacheMethods(const mono::mono_assembly& assembly)
-{
+void GameObject::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore", "GameObject");
     
     mono::mono_method initialize_method(type, "Initialize", 0);

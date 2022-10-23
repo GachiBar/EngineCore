@@ -2,72 +2,68 @@
 #include "Scene.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 
-mono::mono_method_invoker* Scene::initialize_;
-mono::mono_method_invoker* Scene::terminate_;
-mono::mono_method_invoker* Scene::fixed_update_;
-mono::mono_method_invoker* Scene::update_;
-mono::mono_method_invoker* Scene::render_;
-mono::mono_method_invoker* Scene::invalidate_;
-mono::mono_method_invoker* Scene::create_game_object_;
-mono::mono_method_invoker* Scene::delete_game_object_;
+mono::mono_method_invoker* Scene::initialize_ = nullptr;
+mono::mono_method_invoker* Scene::terminate_ = nullptr;
+mono::mono_method_invoker* Scene::fixed_update_ = nullptr;
+mono::mono_method_invoker* Scene::update_ = nullptr;
+mono::mono_method_invoker* Scene::render_ = nullptr;
+mono::mono_method_invoker* Scene::invalidate_ = nullptr;
+mono::mono_method_invoker* Scene::create_game_object_ = nullptr;
+mono::mono_method_invoker* Scene::delete_game_object_ = nullptr;
 
+const mono::mono_object& Scene::GetInternal() {
+    return object_;
+}
 
 Scene::Scene(const mono::mono_assembly& assembly)
-{
-    object_reference = new mono::mono_object(assembly.get_type("GameplayCore", "Scene").new_instance());
+    : assembly_(assembly)
+    , object_(assembly.get_type("GameplayCore", "Scene").new_instance())
+{}
+
+std::shared_ptr<GameObject> Scene::CreateGameObject() {
+    mono::mono_object object(create_game_object_->invoke(object_));
+    Invalidate();
+    return std::shared_ptr<GameObject>(new GameObject(assembly_, std::move(object)));
 }
 
-GameObject* Scene::CreateGameObject() const
-{
-    MonoObject* object = create_game_object_->invoke(*object_reference);
-    const auto game_object_ref = new mono::mono_object(object);
-    return new GameObject(game_object_ref);
+void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
+    void* params[1] = {game_object->GetInternal().get_internal_ptr()};
+    delete_game_object_->invoke(object_, params);
+    Invalidate();
+    game_object.reset();
 }
 
-void Scene::DeleteGameObject(GameObject* game_object)
-{
-    void* params[1] = {game_object->GetInternalPtr().get_internal_ptr()};
-    delete_game_object_->invoke(*object_reference, params);
-    delete game_object;
+void Scene::Initialize() {
+    assert(initialize_ != nullptr && "Scene methods are not cached.");
+    initialize_->invoke(object_);
 }
 
-void Scene::Initialize()
-{
-    initialize_->invoke(*object_reference);
+void Scene::FixedUpdate() {
+    assert(fixed_update_ != nullptr && "Scene methods are not cached.");
+    fixed_update_->invoke(object_);
 }
 
-void Scene::FixedUpdate()
-{
-    fixed_update_->invoke(*object_reference);
+void Scene::Update() {
+    assert(update_ != nullptr && "Scene methods are not cached.");
+    update_->invoke(object_);
 }
 
-void Scene::Update()
-{
-    update_->invoke(*object_reference);
+void Scene::Render() {
+    assert(render_ != nullptr && "Scene methods are not cached.");
+    render_->invoke(object_);
 }
 
-void Scene::Render()
-{
-    render_->invoke(*object_reference);
+void Scene::Terminate() {
+    assert(terminate_ != nullptr && "Scene methods are not cached.");
+    terminate_->invoke(object_);
 }
 
-void Scene::Terminate()
-{
-    terminate_->invoke(*object_reference);
+void Scene::Invalidate() {
+    assert(invalidate_ != nullptr && "Scene methods are not cached.");
+    invalidate_->invoke(object_);
 }
 
-void Scene::Invalidate()
-{
-    invalidate_->invoke(*object_reference);
-}
-
-const mono::mono_object& Scene::GetInternalPtr()
-{
-    return *object_reference;
-}
-
-void Scene::CacheMethods(const mono::mono_assembly& assembly)
-{
+void Scene::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore", "Scene");
     
     mono::mono_method initialize_method(type, "Initialize", 0);

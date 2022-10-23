@@ -8,39 +8,43 @@ mono::mono_method_invoker* Component::fixed_update_;
 mono::mono_method_invoker* Component::update_;
 mono::mono_method_invoker* Component::render_;
 
-Component::Component(mono::mono_object* object_ref)
-{
-    object_reference = object_ref;
-}
+Component::Component(mono::mono_object object)
+    : object_(std::move(object))
+{}
 
 void Component::Initialize()
 {
-    initialize_->invoke(*object_reference);
+    assert(initialize_ != nullptr && "Component methods are not cached.");
+    initialize_->invoke(object_);
 }
 
 void Component::FixedUpdate()
 {
-    fixed_update_->invoke(*object_reference);
+    assert(fixed_update_ != nullptr && "Component methods are not cached.");
+    fixed_update_->invoke(object_);
 }
 
 void Component::Update()
 {
-    update_->invoke(*object_reference);
+    assert(update_ != nullptr && "Component methods are not cached.");
+    update_->invoke(object_);
 }
 
 void Component::Render()
 {
-    render_->invoke(*object_reference);
+    assert(render_ != nullptr && "Component methods are not cached.");
+    render_->invoke(object_);
 }
 
 void Component::Terminate()
 {
-    terminate_->invoke(*object_reference);
+    assert(terminate_ != nullptr && "Component methods are not cached.");
+    terminate_->invoke(object_);
 }
 
-const mono::mono_object& Component::GetInternalPtr()
+const mono::mono_object& Component::GetInternal()
 {
-    return *object_reference;
+    return object_;
 }
 
 void Component::CacheMethods(const mono::mono_assembly& assembly)

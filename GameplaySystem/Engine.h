@@ -16,12 +16,13 @@ using namespace std::chrono;
 class Engine {
 	friend class Application;
 
+public:
 	const std::chrono::nanoseconds kTimestep =
 		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 
 	const float	kDt = 16.0f / 1000;
 
-public:
+
 	Engine(
 		const mono::mono_domain& domain,
 		const mono::mono_assembly& assembly);
@@ -51,7 +52,6 @@ private:
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
 
 	void SetupRendererInternalCalls();
-	void CacheWrappersMethods();
 	void SendDeltaTime(float dt);
 };
 

@@ -57,6 +57,9 @@
     <ClCompile Include="monopp\mono_method_invoker.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="monopp\mono_jit_domain.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="monopp\mono_assembly.h">
@@ -114,6 +117,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="monopp\mono_build_config.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="monopp\mono_jit_domain.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

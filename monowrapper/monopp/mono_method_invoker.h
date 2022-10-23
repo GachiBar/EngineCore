@@ -31,7 +31,6 @@ public:
 
 	MonoObject* operator()(const mono_object& object, void** args);
 
-
 private:
 	mono_method method_;
 

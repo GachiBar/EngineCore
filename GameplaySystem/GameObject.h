@@ -9,23 +9,21 @@
 class Scene;
 class Component;
 
-class GameObject
-{
-public:
-    explicit GameObject(mono::mono_object* object_ref);
+class GameObject {
+    friend class Scene;
 
+public:
     // TODO: Find way to sync links
     // TODO: Write getting reference type from mono_type
     // TODO: Write dem funcs
     // Add & Get can be linked to one instance btw
-    std::shared_ptr<Component> AddComponent(const mono::mono_assembly& assembly, const std::string& name_space, const std::string& name);
-    std::shared_ptr<Component> AddComponent(const mono::mono_type& component_type);
+    const mono::mono_object& GetInternal();
     
+    std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
+    std::shared_ptr<Component> AddComponent(const mono::mono_type& component_type);    
     void RemoveComponent(std::shared_ptr<Component> component);
-    std::shared_ptr<Component> GetComponent(mono::mono_assembly& assembly, const std::string& name_space, const std::string& name);
-    std::shared_ptr<Component> GetComponent(const mono::mono_type& component_type);
-
-    const mono::mono_object& GetInternalPtr(); 
+    std::shared_ptr<Component> GetComponent(const std::string& name_space, const std::string& name);
+    std::shared_ptr<Component> GetComponent(const mono::mono_type& component_type);   
     
     // Cached methods
     void Initialize();
@@ -38,7 +36,8 @@ public:
     static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:
-    mono::mono_object* object_reference;
+    const mono::mono_assembly& assembly_;
+    mono::mono_object object_;
     
     static mono::mono_method_invoker* add_component;
     static mono::mono_method_invoker* remove_component;
@@ -50,4 +49,6 @@ private:
     static mono::mono_method_invoker* render_;
     static mono::mono_method_invoker* terminate_;
     static mono::mono_method_invoker* invalidate_;
+
+    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
 };
