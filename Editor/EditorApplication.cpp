@@ -2,6 +2,7 @@
 #include "EditorLayer.h"
 #include "../monowrapper/monopp/mono_property.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
+#include <iostream>
 
 EditorApplication::EditorApplication()
 	: Application() //,mw(new MainWindow)
@@ -29,6 +30,16 @@ void EditorApplication::OnSetup()
 	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 
 	game_object_2->AddComponent("GameplayCore.Components", "TestFixedUpdateComponent");
+
+	for (size_t i = 0; i < scene->Count(); ++i) {
+		std::cout << "go:" << i << "\n";
+		auto go = (*scene)[i];
+
+		for (size_t j = 0; j < go->Count(); ++j) {
+			std::cout << "\t" << "component" << j << "\n";
+			auto component = (*go)[j];
+		}
+	}
 
 	engine_->SetScene(scene);
 

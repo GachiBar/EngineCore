@@ -3,6 +3,7 @@
 
 #include "../monowrapper/monopp/mono_object.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
+#include "../monowrapper/monopp/mono_property_invoker.h"
 
 #include "Component.h"
 
@@ -17,8 +18,9 @@ public:
     // TODO: Write getting reference type from mono_type
     // TODO: Write dem funcs
     // Add & Get can be linked to one instance btw
-    const mono::mono_object& GetInternal();
-    
+    const mono::mono_object& GetInternal() const;
+    size_t Count() const;
+
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
     std::shared_ptr<Component> AddComponent(const mono::mono_type& component_type);    
     void RemoveComponent(std::shared_ptr<Component> component);
@@ -31,7 +33,9 @@ public:
     void Update();
     void Render();
     void Terminate();
-    void Invalidate();
+    void Invalidate();    
+
+    std::shared_ptr<Component> operator[](size_t index);
 
     static void CacheMethods(const mono::mono_assembly& assembly);
 
@@ -39,9 +43,12 @@ private:
     const mono::mono_assembly& assembly_;
     mono::mono_object object_;
     
-    static mono::mono_method_invoker* add_component;
-    static mono::mono_method_invoker* remove_component;
-    static mono::mono_method_invoker* get_component;
+    static mono::mono_property_invoker* count_;
+    static mono::mono_method_invoker* get_item_;
+
+    static mono::mono_method_invoker* add_component_;
+    static mono::mono_method_invoker* remove_component_;
+    static mono::mono_method_invoker* get_component_;
     
     static mono::mono_method_invoker* initialize_;
     static mono::mono_method_invoker* fixed_update_;
