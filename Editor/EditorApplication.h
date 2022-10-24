@@ -8,12 +8,11 @@ class EditorApplication final : public Application
 {
 public:
 	EditorApplication();
+	~EditorApplication();
 
 	void OnSetup() override;
 
 	void OnStart() override;
-
-	void OnStop() override;
 
 	Scene* scene;
 	std::shared_ptr<GameObject> game_object_1;

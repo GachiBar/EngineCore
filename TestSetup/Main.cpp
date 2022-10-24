@@ -8,9 +8,6 @@
 #include "../Editor/EditorApplication.h"
 #include "../monowrapper/monopp/mono_jit.cpp"
 
-const char kMonoLibPath[] = "vendor\\mono\\lib\\4.5";
-const char kDllPath[] = "GameplayCore.dll";
-
 class StandaloneGameTestApplication final : public Application {
 public:
 	StandaloneGameTestApplication() 
@@ -29,8 +26,6 @@ public:
 	std::shared_ptr<GameObject>  game_object_2;
 
 	void OnSetup() override;
-
-	void OnStop() override;
 };
 
 
@@ -43,11 +38,6 @@ void StandaloneGameTestApplication::OnSetup() {
 	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");
 
 	engine_->SetScene(scene);
-}
-
-void StandaloneGameTestApplication::OnStop() {
-	// TODO: clean up scene
-	//delete scene;
 }
 
 int main() {

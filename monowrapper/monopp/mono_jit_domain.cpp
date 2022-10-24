@@ -7,3 +7,8 @@ mono::mono_jit_domain::mono_jit_domain(const std::string& mono_assembly_path, co
 		throw std::runtime_error("Can't init Mono with assembly");
 	}
 }
+
+mono::mono_jit_domain::~mono_jit_domain()
+{
+	mono::shutdown();
+}

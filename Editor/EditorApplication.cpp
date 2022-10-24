@@ -3,8 +3,17 @@
 #include "../monowrapper/monopp/mono_property.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
 
-EditorApplication::EditorApplication():Application() //,mw(new MainWindow)
+EditorApplication::EditorApplication()
+	: Application() //,mw(new MainWindow)
+	, scene(nullptr)
 {
+}
+
+EditorApplication::~EditorApplication()
+{
+	if (scene != nullptr) {
+		delete scene;
+	}
 }
 
 void EditorApplication::OnSetup()
@@ -30,10 +39,4 @@ void EditorApplication::OnStart()
 	Application::OnStart();
 	const auto editor_layer = new EditorLayer(&m_LayerStack);
 	PushLayer(editor_layer);
-}
-
-void EditorApplication::OnStop()
-{
-	// TODO: we should clean up scene
-	//delete scene;
 }

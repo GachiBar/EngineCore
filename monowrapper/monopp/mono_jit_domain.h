@@ -9,6 +9,7 @@ namespace mono
 class mono_jit_domain {
 public:
 	explicit mono_jit_domain(const std::string& mono_assembly_path, const std::string& domain, bool enable_debugging = false);
+	~mono_jit_domain();
 };
 
 } // namespace mono
