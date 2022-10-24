@@ -7,13 +7,13 @@ class Component {
     friend class GameObject;
 
 public:   
+    const mono::mono_object& GetInternal() const;
+
     void Initialize();
     void FixedUpdate();
     void Update();
     void Render();
-    void Terminate();
-   
-    const mono::mono_object& GetInternal();
+    void Terminate();  
     
     static void CacheMethods(const mono::mono_assembly& assembly);
 

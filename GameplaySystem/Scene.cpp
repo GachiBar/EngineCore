@@ -2,17 +2,33 @@
 #include "Scene.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 
+mono::mono_property_invoker* Scene::count_ = nullptr;
+mono::mono_method_invoker* Scene::get_item_ = nullptr;
+
 mono::mono_method_invoker* Scene::initialize_ = nullptr;
 mono::mono_method_invoker* Scene::terminate_ = nullptr;
 mono::mono_method_invoker* Scene::fixed_update_ = nullptr;
 mono::mono_method_invoker* Scene::update_ = nullptr;
 mono::mono_method_invoker* Scene::render_ = nullptr;
 mono::mono_method_invoker* Scene::invalidate_ = nullptr;
+
 mono::mono_method_invoker* Scene::create_game_object_ = nullptr;
 mono::mono_method_invoker* Scene::delete_game_object_ = nullptr;
 
-const mono::mono_object& Scene::GetInternal() {
+const char kIsNotCachedErrorMessage[] = "Scene methods are not cached.";
+
+const mono::mono_object& Scene::GetInternal() const {
     return object_;
+}
+
+size_t Scene::Count() const {
+    assert(count_ != nullptr && kIsNotCachedErrorMessage);
+
+    mono::mono_object value(count_->get_value(object_));
+    int count = value.unbox<int>();
+    assert(count >= 0 && "Count less then zero.");
+
+    return static_cast<size_t>(count);
 }
 
 Scene::Scene(const mono::mono_assembly& assembly)
@@ -34,38 +50,54 @@ void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
 }
 
 void Scene::Initialize() {
-    assert(initialize_ != nullptr && "Scene methods are not cached.");
+    assert(initialize_ != nullptr && kIsNotCachedErrorMessage);
     initialize_->invoke(object_);
 }
 
 void Scene::FixedUpdate() {
-    assert(fixed_update_ != nullptr && "Scene methods are not cached.");
+    assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
     fixed_update_->invoke(object_);
 }
 
 void Scene::Update() {
-    assert(update_ != nullptr && "Scene methods are not cached.");
+    assert(update_ != nullptr && kIsNotCachedErrorMessage);
     update_->invoke(object_);
 }
 
 void Scene::Render() {
-    assert(render_ != nullptr && "Scene methods are not cached.");
+    assert(render_ != nullptr && kIsNotCachedErrorMessage);
     render_->invoke(object_);
 }
 
 void Scene::Terminate() {
-    assert(terminate_ != nullptr && "Scene methods are not cached.");
+    assert(terminate_ != nullptr && kIsNotCachedErrorMessage);
     terminate_->invoke(object_);
 }
 
 void Scene::Invalidate() {
-    assert(invalidate_ != nullptr && "Scene methods are not cached.");
+    assert(invalidate_ != nullptr && kIsNotCachedErrorMessage);
     invalidate_->invoke(object_);
+}
+
+std::shared_ptr<GameObject> Scene::operator[](size_t index) {
+    assert(get_item_ != nullptr && kIsNotCachedErrorMessage);
+
+    void* args[1];
+    args[0] = &index;
+
+    mono::mono_object component(get_item_->invoke(object_, args));
+    return std::shared_ptr<GameObject>(new GameObject(assembly_, component));
 }
 
 void Scene::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore", "Scene");
-    
+
+    mono::mono_property count_property(type, "Count");
+    count_ = new mono::mono_property_invoker(count_property);
+
+    mono::mono_method get_item_method(type, "get_Item", 1);
+    get_item_ = new mono::mono_method_invoker(get_item_method);
+
     mono::mono_method initialize_method(type, "Initialize", 0);
     initialize_ = new mono::mono_method_invoker(initialize_method);
 

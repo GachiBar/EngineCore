@@ -8,47 +8,42 @@ mono::mono_method_invoker* Component::fixed_update_;
 mono::mono_method_invoker* Component::update_;
 mono::mono_method_invoker* Component::render_;
 
+const char kIsNotCachedErrorMessage[] = "Component methods are not cached.";
+
+const mono::mono_object& Component::GetInternal() const {
+    return object_;
+}
+
 Component::Component(mono::mono_object object)
     : object_(std::move(object))
 {}
 
-void Component::Initialize()
-{
-    assert(initialize_ != nullptr && "Component methods are not cached.");
+void Component::Initialize() {
+    assert(initialize_ != nullptr && kIsNotCachedErrorMessage);
     initialize_->invoke(object_);
 }
 
-void Component::FixedUpdate()
-{
-    assert(fixed_update_ != nullptr && "Component methods are not cached.");
+void Component::FixedUpdate() {
+    assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
     fixed_update_->invoke(object_);
 }
 
-void Component::Update()
-{
-    assert(update_ != nullptr && "Component methods are not cached.");
+void Component::Update() {
+    assert(update_ != nullptr && kIsNotCachedErrorMessage);
     update_->invoke(object_);
 }
 
-void Component::Render()
-{
-    assert(render_ != nullptr && "Component methods are not cached.");
+void Component::Render() {
+    assert(render_ != nullptr && kIsNotCachedErrorMessage);
     render_->invoke(object_);
 }
 
-void Component::Terminate()
-{
-    assert(terminate_ != nullptr && "Component methods are not cached.");
+void Component::Terminate() {
+    assert(terminate_ != nullptr && kIsNotCachedErrorMessage);
     terminate_->invoke(object_);
 }
 
-const mono::mono_object& Component::GetInternal()
-{
-    return object_;
-}
-
-void Component::CacheMethods(const mono::mono_assembly& assembly)
-{
+void Component::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore.Components", "Component");
     
     mono::mono_method initialize_method(type, "Initialize", 0);
