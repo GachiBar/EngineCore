@@ -31,7 +31,6 @@ public:
 
     void Flush();
 
-
     std::pair<float, float> GetMousePosition() const;
 
     float GetWheelDelta() const;
@@ -53,7 +52,6 @@ public:
 
     //Returns true during the frame the user starts pressing up the key
     bool GetMouseKeyUp(MouseKey key) const;
-
 
 private:
     template<typename T>

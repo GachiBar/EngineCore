@@ -11,6 +11,7 @@
 #include "InputSystem/InputEvent.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/nameof.hpp"
+#include "InputSystem/ConfigReaderWriterFactory.h"
 //#include "imgui/backends/imgui_impl_win32.h"
 //#include "imgui/backends/imgui_impl_dx11.h"
 
@@ -25,6 +26,11 @@ EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selec
 
 void EditorLayer::OnAttach()
 {
+    ConfigReaderWriterFactory ConfigFactory;
+    std::shared_ptr<IniReaderWriter> Config(ConfigFactory.Create());
+
+    auto t = magic_enum::enum_cast<MouseKey>(InputVirtualKey::A);
+
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>();
