@@ -56,6 +56,17 @@ void PropertyWindow::draw_imgui(std::shared_ptr<mono::mono_object> go)
 					t.set_value(component, t3);
 				}
 			}
+			if (property.get_name() == "LocalPosition") 
+			{
+				mono::mono_property_invoker t(property);
+				mono::mono_object t1(t.get_value(component));
+				auto t2 = t1.unbox<DirectX::SimpleMath::Vector3>();
+				float t3[3] = { t2.x, t2.y,t2.z };
+				if (ImGui::InputFloat3("Position", t3))
+				{
+					t.set_value(component, t3);
+				}
+			}
 		}
 	}
 	ImGui::End();

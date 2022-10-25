@@ -48,6 +48,9 @@ namespace GameplayCore
 
         #endregion IReadOnlyList
 
+        public event Action<GameObject, Component> ComponentAdded;
+        public event Action<GameObject, Component> ComponentRemoved;
+
         internal GameObject(Scene scene)
         {
             _componentsMap = new Dictionary<Type, Component>();
@@ -127,6 +130,7 @@ namespace GameplayCore
                 instance.Initialize();
             }
 
+            ComponentAdded?.Invoke(this, instance);
             _isUpdatableComponentsInvalid = true;
             return instance;
         }
@@ -146,8 +150,8 @@ namespace GameplayCore
                 {
                     _removedComponents.Add(component);
                 }
-
-                component.GameObject = null;
+                                
+                component.GameObject = null;                           
                 _isUpdatableComponentsInvalid = true;
                 return component;
             }
@@ -175,8 +179,9 @@ namespace GameplayCore
             if (_isUpdatableComponentsInvalid)
             {
                 foreach (var component in _removedComponents)
-                {
+                {                    
                     component.Terminate();
+                    ComponentRemoved?.Invoke(this, component);
                 }
 
                 _updatableComponents = _componentsMap.Values.ToList();

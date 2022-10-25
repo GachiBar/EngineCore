@@ -1,36 +1,43 @@
-﻿namespace GameplayCore.Components
+﻿using GameplayCore.Mathematics;
+
+namespace GameplayCore.Components
 {
-    public class MeshRenderComponent : Component
+    public class CameraComponent : Component
     {
-        private static ulong _id = 0;
+        private float _fow = MathUtil.PiOverTwo;
         private TransformComponent _transformComponent = null;
 
-        public readonly ulong Id;
-
-        public string Path;
-
-        public MeshRenderComponent()
-        {
-            Id = _id;
-            _id += 1;
+        public float FieldOfView 
+        { 
+            get => MathUtil.RadiansToDegrees(_fow); 
+            set => _fow = MathUtil.DegreesToRadians(value); 
         }
 
-        public override void Initialize() 
+        public float Near { get; set; } = 0.1f;
+        public float Far { get; set; } = 100.0f;
+
+        public override void Initialize()
         {
-            EngineApi.Render.RegisterModel(Id);
+            _transformComponent.Position = 5 * Vector3.BackwardRH;
         }
 
         public override void Render()
         {
             if (_transformComponent != null)
             {
-                EngineApi.Render.DrawModel(Id, _transformComponent.ModelMatrix);
-            }            
+                var fow = _fow;
+                var eye = _transformComponent.Position;
+                var target = _transformComponent.Position + _transformComponent.Forward;
+                var up = _transformComponent.Up;
+                var view = Matrix.LookAtRH(eye, target, up);
+                var projection = Matrix.PerspectiveFovRH(fow, 800.0f / 600, Near, Far);
+                EngineApi.Render.SetViewProjection(Time.EllapsedTime, view, projection);
+            }
         }
 
         protected override void OnAttach(GameObject gameObject)
         {
-            _transformComponent = GameObject.GetComponent<TransformComponent>();
+            _transformComponent = gameObject.GetComponent<TransformComponent>();
 
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
