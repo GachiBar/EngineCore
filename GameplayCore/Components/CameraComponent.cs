@@ -4,9 +4,15 @@ namespace GameplayCore.Components
 {
     public class CameraComponent : Component
     {
+        private float _fow = MathUtil.PiOverTwo;
         private TransformComponent _transformComponent = null;
 
-        public float FieldOfView { get; set; } = 90.0f;
+        public float FieldOfView 
+        { 
+            get => MathUtil.RadiansToDegrees(_fow); 
+            set => _fow = MathUtil.DegreesToRadians(value); 
+        }
+
         public float Near { get; set; } = 0.1f;
         public float Far { get; set; } = 100.0f;
 
@@ -19,10 +25,11 @@ namespace GameplayCore.Components
         {
             if (_transformComponent != null)
             {
-                var fow = MathUtil.DegreesToRadians(FieldOfView);
+                var fow = _fow;
                 var eye = _transformComponent.Position;
-                var target = _transformComponent.Forward;
-                var view = Matrix.LookAtRH(eye, target, Vector3.Up);
+                var target = _transformComponent.Position + _transformComponent.Forward;
+                var up = _transformComponent.Up;
+                var view = Matrix.LookAtRH(eye, target, up);
                 var projection = Matrix.PerspectiveFovRH(fow, 800.0f / 600, Near, Far);
                 EngineApi.Render.SetViewProjection(Time.EllapsedTime, view, projection);
             }

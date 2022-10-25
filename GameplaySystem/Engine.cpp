@@ -20,6 +20,9 @@ namespace engine {
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
 	: domain_(domain)
 	, assembly_(assembly)
+	, renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
+	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
+	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
 	, scene_(nullptr)
 {}
 
@@ -31,8 +34,7 @@ void Engine::SetScene(Scene* scene) {
 	scene_ = scene;
 }
 
-RenderDevice& Engine::GetRenderer()
-{
+RenderDevice& Engine::GetRenderer() {
 	return renderer_;
 }
 
@@ -103,29 +105,26 @@ void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t
 	renderer_.InitShaders("..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\");
 }
 
+mono::mono_property Engine::GetProperty(std::string name_space, std::string clazz, std::string property) {
+	return assembly_.get_type(name_space, clazz).get_property(property);
+}
+
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_RegisterModel", Internal_RegisterModel);
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_SetViewProjection", Internal_SetViewProjection);
 
-	auto renderer_type = assembly_.get_type("GameplayCore.EngineApi", "Render");
-	auto renderer_property = renderer_type.get_property("Renderer");
-	mono::mono_property_invoker renderer_property_invoker(renderer_property);
-	renderer_property_invoker.set_value(&renderer_);
+	renderer_property_.set_value(&renderer_);
 }
 
 void Engine::SendTimeData() {
 	auto time_type = assembly_.get_type("GameplayCore", "Time");
 	
 	float dt = duration<float>(dt_).count();
-	auto delta_time_property = time_type.get_property("DeltaTime");
-	mono::mono_property_invoker delta_time_property_invoker(delta_time_property);
-	delta_time_property_invoker.set_value(&dt);
+	delta_time_property_.set_value(&dt);
 
 	float ellapsed = duration<float>(ellapsed_).count();
-	auto ellapsed_time_property = time_type.get_property("EllapsedTime");
-	mono::mono_property_invoker ellapsed_time_property_invoker(ellapsed_time_property);
-	ellapsed_time_property_invoker.set_value(&ellapsed);
+	ellapsed_time_property_.set_value(&ellapsed);
 }
 
 } // namespace engine

@@ -47,6 +47,10 @@ private:
 	const::mono::mono_domain& domain_;
 	const::mono::mono_assembly& assembly_;
 
+	mono::mono_property_invoker renderer_property_;
+	mono::mono_property_invoker delta_time_property_;
+	mono::mono_property_invoker ellapsed_time_property_;
+
 	Scene* scene_;
 
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
@@ -57,6 +61,7 @@ private:
 		DirectX::SimpleMath::Matrix view, 
 		DirectX::SimpleMath::Matrix projection);
 
+	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
 	void SetupRendererInternalCalls();
 	void SendTimeData();
 };
