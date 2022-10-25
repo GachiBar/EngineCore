@@ -193,6 +193,13 @@ namespace GameplayCore.Components
             }
         }
 
+        public Vector3 Right => Rotate(Vector3.Right, Rotation);
+        public Vector3 Left => Rotate(Vector3.Left, Rotation);
+        public Vector3 Up => Rotate(Vector3.Up, Rotation);
+        public Vector3 Down => Rotate(Vector3.Down, Rotation);
+        public Vector3 Forward => Rotate(Vector3.ForwardRH, Rotation);
+        public Vector3 Backward => Rotate(Vector3.BackwardRH, Rotation);
+
         public TransformComponent()
         {
             Parent = null;
@@ -233,6 +240,12 @@ namespace GameplayCore.Components
         public TransformComponent this[int index]
         {
             get => _children[index];
+        }
+
+        private Vector3 Rotate(Vector3 vector, Quaternion rotation)
+        {
+            Vector3.Transform(ref vector, ref rotation, out var result);
+            return result;
         }
     }
 }

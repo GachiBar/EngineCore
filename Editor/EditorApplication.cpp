@@ -12,7 +12,8 @@ EditorApplication::EditorApplication()
 
 EditorApplication::~EditorApplication()
 {
-	if (scene != nullptr) {
+	if (scene != nullptr) 
+	{
 		delete scene;
 	}
 }
@@ -24,12 +25,12 @@ void EditorApplication::OnSetup()
 	scene = new Scene(m_Assembly);
 	game_object_1 = scene->CreateGameObject();
 	game_object_2 = scene->CreateGameObject();
-	
-	game_object_1->AddComponent("GameplayCore.Components", "TestUpdateComponent");
-	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");
-	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 
-	game_object_2->AddComponent("GameplayCore.Components", "TestFixedUpdateComponent");
+	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
+	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");	
+
+	game_object_2->AddComponent("GameplayCore.Components", "CameraComponent");
+	game_object_2->AddComponent("GameplayCore.Components", "TransformComponent");
 
 	for (size_t i = 0; i < scene->Count(); ++i) {
 		std::cout << "go:" << i << "\n";

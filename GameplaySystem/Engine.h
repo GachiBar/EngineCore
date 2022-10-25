@@ -40,6 +40,7 @@ private:
 	RenderDevice renderer_;
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
+	nanoseconds dt_ = 0ns;
 	nanoseconds lag_ = 0ns;
 	nanoseconds ellapsed_ = 0ns;
 
@@ -47,12 +48,17 @@ private:
 	const::mono::mono_assembly& assembly_;
 
 	Scene* scene_;
-	
+
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
+	static void Internal_SetViewProjection(
+		RenderDevice* renderer, 
+		float ellapsed, 
+		DirectX::SimpleMath::Matrix view, 
+		DirectX::SimpleMath::Matrix projection);
 
 	void SetupRendererInternalCalls();
-	void SendDeltaTime(float dt);
+	void SendTimeData();
 };
 
 } // namespace engine

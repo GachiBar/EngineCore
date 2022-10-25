@@ -44,7 +44,7 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	ModelData model(verticies, indexes, EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0);
 
 	std::string path = "TestSetup\\Content\\Cube.obj";
-	auto m = ModelLoader::LoadObj(path, model);
+	ModelLoader::LoadObj(path, model);
 	renderer->RegisterModel(id, model);
 }
 
@@ -52,9 +52,21 @@ void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::Simp
 	renderer->DrawModel(id, 0, model_matrix, ModelDefines::MRED);
 }
 
+void Engine::Internal_SetViewProjection(
+	RenderDevice* renderer, 
+	float ellapsed, 
+	DirectX::SimpleMath::Matrix view,
+	DirectX::SimpleMath::Matrix projection) 
+{
+	renderer->SetRenderData({
+		duration<float>(ellapsed).count(),
+		view,
+		projection
+	});
+}
+
 void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
-
 	SetupRendererInternalCalls();
 	scene_->Initialize();
 }
@@ -63,17 +75,16 @@ void Engine::Terminate() {
 	scene_->Terminate();
 }
 
-void Engine::RunFrame()
-{
+void Engine::RunFrame() {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
-	auto dt = clock::now() - time_start_;
-	ellapsed_ += dt;
+	dt_ = clock::now() - time_start_;
+	ellapsed_ += dt_;
 	time_start_ = clock::now();
-	lag_ += duration_cast<nanoseconds>(dt);
+	lag_ += duration_cast<nanoseconds>(dt_);
 
-	SendDeltaTime(duration<float>(dt).count());
+	SendTimeData();
 
 	while (lag_ >= kTimestep) {
 		lag_ -= kTimestep;
@@ -81,21 +92,6 @@ void Engine::RunFrame()
 	}
 
 	scene_->Update();
-		
-	DirectX::SimpleMath::Vector3 eye = DirectX::SimpleMath::Vector3::Zero;
-	DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitZ;
-	auto view = DirectX::SimpleMath::Matrix::CreateLookAt(eye, direction, DirectX::SimpleMath::Vector3::Up);
-	auto projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(
-		DirectX::XM_PIDIV2,
-		800.0f / 600,
-		0.1f,
-		100.0f);
-
-	renderer_.SetRenderData({
-		duration<float>(ellapsed_).count(),
-		view,
-		projection
-	});
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -110,6 +106,7 @@ void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_RegisterModel", Internal_RegisterModel);
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_SetViewProjection", Internal_SetViewProjection);
 
 	auto renderer_type = assembly_.get_type("GameplayCore.EngineApi", "Render");
 	auto renderer_property = renderer_type.get_property("Renderer");
@@ -117,11 +114,18 @@ void Engine::SetupRendererInternalCalls() {
 	renderer_property_invoker.set_value(&renderer_);
 }
 
-void Engine::SendDeltaTime(float dt) {
+void Engine::SendTimeData() {
 	auto time_type = assembly_.get_type("GameplayCore", "Time");
+	
+	float dt = duration<float>(dt_).count();
 	auto delta_time_property = time_type.get_property("DeltaTime");
 	mono::mono_property_invoker delta_time_property_invoker(delta_time_property);
 	delta_time_property_invoker.set_value(&dt);
+
+	float ellapsed = duration<float>(ellapsed_).count();
+	auto ellapsed_time_property = time_type.get_property("EllapsedTime");
+	mono::mono_property_invoker ellapsed_time_property_invoker(ellapsed_time_property);
+	ellapsed_time_property_invoker.set_value(&ellapsed);
 }
 
 } // namespace engine

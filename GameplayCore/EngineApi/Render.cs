@@ -23,10 +23,20 @@ namespace GameplayCore.EngineApi
             }            
         }
 
+        public static void SetViewProjection(float ellapsed, Matrix view, Matrix projection)
+        {
+            unsafe
+            {
+                Internal_SetViewProjection(Renderer, ellapsed, view, projection);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, Matrix modelMatrix);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetViewProjection(void* renderer, float ellapsed, Matrix view, Matrix projection);
     }
 }
