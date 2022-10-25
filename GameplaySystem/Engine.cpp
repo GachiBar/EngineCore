@@ -48,10 +48,16 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::string path = "TestSetup\\Content\\Cube.obj";
 	ModelLoader::LoadObj(path, model);
 	renderer->RegisterModel(id, model);
+	//renderer->RegisterTexture()
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
-	renderer->DrawModel(id, 0, model_matrix, ModelDefines::MRED);
+	//ModelDrawData mdd{
+	//	id, model_matrix
+	//};
+	//mdd.flags.isColored = 0;
+	//renderer->DrawModel(mdd);
+	renderer->DrawModel({id, model_matrix});
 }
 
 void Engine::Internal_SetViewProjection(
