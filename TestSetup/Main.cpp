@@ -1,12 +1,12 @@
 #include <iostream>
+#include <DirectXTex.h>
 
 #include "../GameplaySystem/Engine.h"
-
 
 //TODO Move application header to another project
 #include "../Editor/Application.h"
 #include "../Editor/EditorApplication.h"
-#include "../monowrapper/monopp/mono_jit.cpp"
+#include "../GameplaySystem/TextureLoader.h"
 
 class StandaloneGameTestApplication final : public Application {
 public:
@@ -41,6 +41,10 @@ void StandaloneGameTestApplication::OnSetup() {
 }
 
 int main() {
+	if (HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED); FAILED(result)) {
+		return result;
+	}
+
 	//StandaloneGameTestApplication app(kDllPath);
 	EditorApplication app;
 	return app.Run();
