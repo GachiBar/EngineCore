@@ -1,4 +1,5 @@
 #include "InputSettings.h"
+#include <ranges>
 
 #include "NameMapping/NamingStructs.h"
 
@@ -12,39 +13,38 @@ void InputSettings::RemoveInvalidKeys()
 	//TODO Remove from config ini config
 }
 
+void InputSettings::AddActionMapping(std::string const& ActionMap, const FKey& KeyMapping, bool bForceRebuildKeymaps)
+{
+	if (ActionMappings.contains(ActionMap))
+		ActionMappings[ActionMap].insert(KeyMapping);
+	else
+		ActionMappings[ActionMap] = { KeyMapping };
+
+	if (bForceRebuildKeymaps)
+	{
+		ForceRebuildKeymaps();
+	}
+}
+
 void InputSettings::SaveKeyMappings()
 {
-	ActionMappings.Sort();
-	AxisMappings.Sort();
 	SaveConfig();
 }
 
-void InputSettings::AddActionMapping(const FInputActionKeyMapping& KeyMapping, const bool bForceRebuildKeymaps)
-{
-	const auto find_result = std::ranges::find(ActionMappings, KeyMapping);
-	if(find_result!= ActionMappings.end())
-	{
-		ActionMappings.push_back(KeyMapping);
-	}
-	if (bForceRebuildKeymaps)
-	{
-		ForceRebuildKeymaps();
-	}
-}
-
-void InputSettings::GetActionMappingByName(const std::string& InActionName, std::vector<FInputActionKeyMapping>& OutMappings) const
+void InputSettings::GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings)
 {
 	if (!InActionName.empty())
 	{
-		OutMappings.clear();
-
-		std::ranges::copy_if(ActionMappings, std::begin(OutMappings), [&InActionName](FInputActionKeyMapping const& Value) {return Value.ActionName == InActionName; });
+		OutMappings = ActionMappings[InActionName];
 	}
 }
 
-void InputSettings::RemoveActionMapping(const FInputActionKeyMapping& KeyMapping, const bool bForceRebuildKeymaps)
+void InputSettings::RemoveActionMapping(const std::string& ActionMap, const FKey& KeyMapping, const bool bForceRebuildKeymaps)
 {
-	std::ranges::remove_if(ActionMappings, [&KeyMapping](FInputActionKeyMapping const& Value) {return Value == KeyMapping; });
+	if (!ActionMappings.contains(ActionMap))
+		return;
+
+	ActionMappings.at(ActionMap).erase(KeyMapping);
 
 	if (bForceRebuildKeymaps)
 	{
@@ -52,13 +52,13 @@ void InputSettings::RemoveActionMapping(const FInputActionKeyMapping& KeyMapping
 	}
 }
 
-void InputSettings::AddAxisMapping(const FInputAxisKeyMapping& KeyMapping, const bool bForceRebuildKeymaps)
+void InputSettings::AddAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping,
+	bool bForceRebuildKeymaps)
 {
-	const auto find_result = std::ranges::find(AxisMappings, KeyMapping);
-	if (find_result != AxisMappings.end())
-	{
-		AxisMappings.push_back(KeyMapping);
-	}
+	if (AxisMappings.contains(AxisMap))
+		AxisMappings[AxisMap].insert(KeyMapping);
+	else
+		AxisMappings[AxisMap] = { KeyMapping };
 
 	if (bForceRebuildKeymaps)
 	{
@@ -66,19 +66,20 @@ void InputSettings::AddAxisMapping(const FInputAxisKeyMapping& KeyMapping, const
 	}
 }
 
-void InputSettings::GetAxisMappingByName(const std::string& InAxisName, std::vector<FInputAxisKeyMapping>& OutMappings) const
+void InputSettings::GetAxisMappingByName(const std::string& InAxisName, std::set<FInputAxisKeyMapping>& OutMappings)
 {
 	if (!InAxisName.empty())
 	{
-		OutMappings.clear();
-
-		std::ranges::copy_if(AxisMappings, std::begin(OutMappings), [&InAxisName](FInputAxisKeyMapping const& Value) {return Value.AxisName == InAxisName; });
+		OutMappings = AxisMappings[InAxisName];
 	}
 }
 
-void InputSettings::RemoveAxisMapping(const FInputAxisKeyMapping& InKeyMapping, const bool bForceRebuildKeymaps)
+void InputSettings::RemoveAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& InKeyMapping, const bool bForceRebuildKeymaps)
 {
-	std::ranges::remove_if(AxisMappings, [&InKeyMapping](FInputAxisKeyMapping const& Value) {return Value == InKeyMapping; });
+	if (!AxisMappings.contains(AxisMap))
+		return;
+
+	AxisMappings.at(AxisMap).erase(InKeyMapping);
 
 	if (bForceRebuildKeymaps)
 	{
@@ -86,20 +87,18 @@ void InputSettings::RemoveAxisMapping(const FInputAxisKeyMapping& InKeyMapping, 
 	}
 }
 
-void InputSettings::GetActionNames(std::vector<std::string>& OutActionNames) const
+void InputSettings::GetActionNames(std::set<std::string>& OutActionNames) const
 {
 	OutActionNames.clear();
-
-	for (const FInputActionKeyMapping& ActionMapping : ActionMappings)
-		OutActionNames.push_back(ActionMapping.ActionName);
+	auto kv = std::views::keys(ActionMappings);
+	OutActionNames.insert(kv.begin(), kv.end());
 }
 
-void InputSettings::GetAxisNames(std::vector<std::string>& OutAxisNames) const
+void InputSettings::GetAxisNames(std::set<std::string>& OutAxisNames) const
 {
 	OutAxisNames.clear();
-
-	for (const FInputAxisKeyMapping& AxisMapping : AxisMappings)
-		OutAxisNames.push_back(AxisMapping.AxisName);
+	auto kv = std::views::keys(AxisMappings);
+	OutAxisNames.insert(kv.begin(), kv.end());
 }
 
 void InputSettings::ForceRebuildKeymaps()
@@ -124,7 +123,7 @@ std::string InputSettings::GetUniqueActionName(const std::string& BaseActionMapp
 		// Create a numbered name and check whether it's already been used
 		NewActionMappingName = std::string(BaseActionMappingName, ++NewMappingCount);
 
-		bFoundUniqueName = !(DoesActionExist(NewActionMappingName));
+		bFoundUniqueName = !DoesActionExist(NewActionMappingName);
 	} while (!bFoundUniqueName);
 
 	return NewActionMappingName;
@@ -140,69 +139,49 @@ std::string InputSettings::GetUniqueAxisName(const std::string& BaseAxisMappingN
 	{
 		// Create a numbered name and check whether it's already been used
 		NewAxisMappingName = BaseAxisMappingName + std::to_string(++NewMappingCount);
-		auto find_result = std::ranges::find_if(AxisMappings, [&NewAxisMappingName](FInputAxisKeyMapping const& Value)
-		{
-			return Value.AxisName == NewAxisMappingName;
-		});
 
-		bFoundUniqueName = find_result == AxisMappings.end();
+		bFoundUniqueName = !DoesAxisExist(NewAxisMappingName);
 	} while (!bFoundUniqueName);
 
 	return NewAxisMappingName;
 }
 
-void InputSettings::AddActionMapping(const FInputActionKeyMapping& NewMapping)
+void InputSettings::AddActionMapping(std::string const& NewMap, const FKey& NewKeyMapping)
 {
-	ActionMappings.push_back(NewMapping);
+	if (ActionMappings.contains(NewMap))
+		ActionMappings[NewMap].insert(NewKeyMapping);
+	ActionMappings[NewMap] = { NewKeyMapping };
 }
 
-void InputSettings::AddAxisMapping(const FInputAxisKeyMapping& NewMapping)
+void InputSettings::AddAxisMapping(std::string const& NewMap, const FInputAxisKeyMapping& NewKeyMapping)
 {
-	AxisMappings.push_back(NewMapping);
+	if (AxisMappings.contains(NewMap))
+		AxisMappings[NewMap].insert(NewKeyMapping);
+	AxisMappings[NewMap] = { NewKeyMapping };
 }
 
 /** Ask for all the action mappings */
-const std::vector <FInputActionKeyMapping>& InputSettings::GetActionMappings() const
+const std::map<std::string, std::set<FKey>>& InputSettings::GetActionMappings() const
 {
 	return ActionMappings;
 }
 
 /** Ask for all the axis mappings */
-const std::vector <FInputAxisKeyMapping>& InputSettings::GetAxisMappings() const
+const std::map<std::string, std::set<FInputAxisKeyMapping>>& InputSettings::GetAxisMappings() const
 {
 	return AxisMappings;
 }
 
-struct FMatchMappingByName
-{
-	FMatchMappingByName(const std::string& InName)
-		: Name(InName)
-	{
-	}
-
-	bool operator() (const FInputActionKeyMapping& ActionMapping) const
-	{
-		return ActionMapping.ActionName == Name;
-	}
-
-	bool operator() (const FInputAxisKeyMapping& AxisMapping) const
-	{
-		return AxisMapping.AxisName == Name;
-	}
-
-	std::string Name;
-};
-
 /** Finds unique action name based on existing action names */
 bool InputSettings::DoesActionExist(const std::string InActionName)
 {
-	return std::ranges::find_if(ActionMappings, FMatchMappingByName(InActionName)) != ActionMappings.end();
+	return ActionMappings.contains(InActionName);
 }
 
 /** Finds unique axis name based on existing action names */
 bool InputSettings::DoesAxisExist(const std::string InAxisName)
 {
-	return std::ranges::find_if(AxisMappings, FMatchMappingByName(InAxisName)) != AxisMappings.end();
+	return AxisMappings.contains(InAxisName);
 }
 
 void InputSettings::PopulateAxisConfigs()

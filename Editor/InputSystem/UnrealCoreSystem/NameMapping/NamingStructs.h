@@ -20,26 +20,6 @@ enum EInputEvent
 	IE_MAX                  =5,
 };
 
-struct FInputActionKeyMapping
-{
-	/** Friendly name of action, e.g "jump" */
-	std::string ActionName;
-
-
-	/** Key to bind it to. */
-	FKey Key;
-
-	bool operator==(const FInputActionKeyMapping& Other) const
-	{
-		return ActionName == Other.ActionName && Key == Other.Key;
-	}
-
-	FInputActionKeyMapping(const std::string InActionName = "", const FKey InKey = EKeys::Invalid)
-		: ActionName(InActionName)
-		, Key(InKey)
-	{}
-};
-
 struct FInputAxisKeyMapping
 {
 	/** Friendly name of axis, e.g "MoveForward" */

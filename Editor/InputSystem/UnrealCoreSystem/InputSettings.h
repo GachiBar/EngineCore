@@ -1,10 +1,14 @@
 #pragma once
+#include <map>
+#include <set>
 #include <vector>
 #include <string>
 #include "KeyStruct.h"
 
 class ConfigReaderWriter;
 using uint8 = unsigned char;
+
+struct FInputAxisKeyMapping;
 
 class InputSettings
 {
@@ -31,11 +35,11 @@ private:
 	float DoubleClickTime = 0.2f;
 
 private:
-	/** List of Action Mappings */
-	std::vector<struct FInputActionKeyMapping> ActionMappings;
+	/** Map of Action Mappings */
+	std::map<std::string, std::set<FKey>> ActionMappings;
 
-	/** List of Axis Mappings */
-	std::vector<struct FInputAxisKeyMapping> AxisMappings;
+	/** Map of Axis Mappings */
+	std::map<std::string, std::set<FInputAxisKeyMapping>> AxisMappings;
 
 public:
 	/** The keys which open the console. */
@@ -44,30 +48,30 @@ public:
 	void RemoveInvalidKeys();
 
 	/** Programmatically add an action mapping to the project defaults */
-	void AddActionMapping(const FInputActionKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
+	void AddActionMapping(std::string const & ActionMap, const FKey& KeyMapping, bool bForceRebuildKeymaps = true);
 
-	void GetActionMappingByName(const std::string& InActionName, std::vector<FInputActionKeyMapping>& OutMappings) const;
+	void GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings);
 
 	/** Programmatically remove an action mapping to the project defaults */
-	void RemoveActionMapping(const FInputActionKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
+	void RemoveActionMapping(const std::string& ActionMap, const FKey& KeyMapping, bool bForceRebuildKeymaps = true);
 
 	/** Programmatically add an axis mapping to the project defaults */
-	void AddAxisMapping(const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
+	void AddAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
 
 	/** Retrieve all axis mappings by a certain name. */
-	void GetAxisMappingByName(const std::string& InAxisName, std::vector<FInputAxisKeyMapping>& OutMappings) const;
+	void GetAxisMappingByName(const std::string& InAxisName, std::set<FInputAxisKeyMapping>& OutMappings);
 
 	/** Programmatically remove an axis mapping to the project defaults */
-	void RemoveAxisMapping(const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
+	void RemoveAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
 
 	/** Flush the current mapping values to the config file */
 	void SaveKeyMappings();
 
 	/** Populate a list of all defined action names */
-	void GetActionNames(std::vector<std::string>& OutActionNames) const;
+	void GetActionNames(std::set<std::string>& OutActionNames) const;
 
 	/** Populate a list of all defined axis names */
-	void GetAxisNames(std::vector<std::string>& OutAxisNames) const;
+	void GetAxisNames(std::set<std::string>& OutAxisNames) const;
 
 	/** When changes are made to the default mappings, push those changes out to PlayerInput key maps */
 	void ForceRebuildKeymaps();
@@ -78,14 +82,14 @@ public:
 	std::string GetUniqueAxisName(const std::string& BaseAxisMappingName);
 
 	/** Append new mapping to existing list */
-	void AddActionMapping(const FInputActionKeyMapping& NewMapping);
+	void AddActionMapping(std::string const& NewMap, const FKey& NewKeyMapping);
 	/** Append new mapping to existing list */
-	void AddAxisMapping(const FInputAxisKeyMapping& NewMapping);
+	void AddAxisMapping(std::string const& NewMap, const FInputAxisKeyMapping& NewKeyMapping);
 
 	/** Ask for all the action mappings */
-	const std::vector<FInputActionKeyMapping>& GetActionMappings() const;
+	const std::map<std::string, std::set<FKey>>& GetActionMappings() const;
 	/** Ask for all the axis mappings */
-	const std::vector<FInputAxisKeyMapping>& GetAxisMappings() const;
+	const std::map<std::string, std::set<FInputAxisKeyMapping>>& GetAxisMappings() const;
 
 	/** Finds unique action name based on existing action names */
 	bool DoesActionExist(const std::string InActionName);
