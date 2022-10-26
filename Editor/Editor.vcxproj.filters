@@ -31,6 +31,12 @@
     <Filter Include="libs\ini">
       <UniqueIdentifier>{fcd64c00-a226-449d-821b-b82e87eef028}</UniqueIdentifier>
     </Filter>
+    <Filter Include="InputSystem\UnrealCoreSystem">
+      <UniqueIdentifier>{525eaf9b-29e6-47db-9a96-a594f3e96575}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputSystem\UnrealCoreSystem\NameMapping">
+      <UniqueIdentifier>{231c0537-a998-45a9-b0c2-0b6a68b69cf7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Visual.cpp">
@@ -110,6 +116,27 @@
     </ClCompile>
     <ClCompile Include="InputSystem\ActionMap.cpp">
       <Filter>InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\UnrealCoreSystem\Keys.cpp">
+      <Filter>InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\UnrealCoreSystem\InputKeyManager.cpp">
+      <Filter>InputSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\UnrealCoreSystem\GenericPlatformInput.cpp">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\UnrealCoreSystem\InputSettings.cpp">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\UnrealCoreSystem\KeyDetails.cpp">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\UnrealCoreSystem\KeyStruct.cpp">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputSystem\UnrealCoreSystem\WindowsPlatformInput.cpp">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +256,33 @@
     </ClInclude>
     <ClInclude Include="InputSystem\ActionMap.h">
       <Filter>InputSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\NameMapping\InputChord.h">
+      <Filter>InputSystem\UnrealCoreSystem\NameMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\NameMapping\NamingStructs.h">
+      <Filter>InputSystem\UnrealCoreSystem\NameMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\GenericPlatformInput.h">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\InputKeyManager.h">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\InputSettings.h">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\KeyDetails.h">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\Keys.h">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\KeyStruct.h">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputSystem\UnrealCoreSystem\WindowsPlatformInput.h">
+      <Filter>InputSystem\UnrealCoreSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

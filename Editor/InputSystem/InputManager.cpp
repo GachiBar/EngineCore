@@ -1,5 +1,7 @@
 #include "InputManager.h"
 
+#include <windowsx.h>
+
 #include "InputKeys.h"
 
 
@@ -17,34 +19,44 @@ Keyboard& InputManager::GetKeyboardDevice()
 
 Mouse& InputManager::GetMouseDevice()
 {
+	std::shared_ptr<int> t(new int);
+	t.reset(new int);
+	std::map<std::string, int> t1;
+
+	std::erase_if(t1, [](auto& a) {return a.first; });
 	return mouse;
 }
 
 bool InputManager::IsInputMessage(UINT msg)
 {
-	return IsMouseMessage(msg) || IsKeyboardMessage(msg);
+	if (IsMouseMessage(msg) || IsKeyboardMessage(msg))
+	{
+		return true;
+	}
+	return false;
 }
 
 bool InputManager::IsMouseMessage(UINT msg)
 {
 	switch (msg)
 	{
-	case WM_MOUSEMOVE:
-	case WM_MOUSELEAVE:
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONDBLCLK:
-	case WM_RBUTTONDOWN:
-	case WM_RBUTTONDBLCLK:
-	case WM_MBUTTONDOWN:
-	case WM_MBUTTONDBLCLK:
-	case WM_XBUTTONDOWN:
-	case WM_XBUTTONDBLCLK:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONUP:
-	case WM_XBUTTONUP:
-	case WM_MOUSEWHEEL:
 	case WM_MOUSEHWHEEL:
+	case WM_MOUSEWHEEL:
+	case WM_MOUSEHOVER:
+	case WM_MOUSELEAVE:
+	case WM_MOUSEMOVE:
+	case WM_LBUTTONDBLCLK:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_MBUTTONDBLCLK:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONDBLCLK:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_XBUTTONDBLCLK:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
 		return true;
 	default:
 		return false;
@@ -55,10 +67,14 @@ bool InputManager::IsKeyboardMessage(UINT msg)
 {
 	switch (msg)
 	{
-	case WM_KEYDOWN:
-	case WM_KEYUP:
+	// Keyboard input notification messages...
+	case WM_CHAR:
+	case WM_SYSCHAR:
 	case WM_SYSKEYDOWN:
+	case WM_KEYDOWN:
 	case WM_SYSKEYUP:
+	case WM_KEYUP:
+	case WM_SYSCOMMAND:
 		return true;
 	default:
 		return false;
@@ -70,15 +86,167 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	if (msg == WM_KILLFOCUS)
 		GetKeyboardDevice().ClearState();
 	// ************ KEYBOARD MESSAGES ************ //
-	else if (msg == WM_KEYDOWN)
+	else if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN)
 	{
+		// Character code is stored in WPARAM
+				const int Win32Key = wparam;
+
+				// The actual key to use.  Some keys will be translated into other keys. 
+				// I.E VK_CONTROL will be translated to either VK_LCONTROL or VK_RCONTROL as these
+				// keys are never sent on their own
+				int ActualKey = Win32Key;
+
+				// LPARAM bit 30 will be ZERO for new presses, or ONE if this is a repeat
+				bool bIsRepeat = ( lparam & 0x40000000 ) != 0;
+
+				switch( Win32Key )
+				{
+				case VK_MENU:
+					// Differentiate between left and right alt
+					if( (lparam & 0x1000000) == 0 )
+					{
+						ActualKey = VK_LMENU;
+						//bIsRepeat = ModifierKeyState[EModifierKey::LeftAlt];
+						//ModifierKeyState[EModifierKey::LeftAlt] = true;
+					}
+					else
+					{
+						ActualKey = VK_RMENU;
+						//bIsRepeat = ModifierKeyState[EModifierKey::RightAlt];
+						//ModifierKeyState[EModifierKey::RightAlt] = true;
+					}
+					break;
+				case VK_CONTROL:
+					// Differentiate between left and right control
+					if( (lparam & 0x1000000) == 0 )
+					{
+						ActualKey = VK_LCONTROL;
+						//bIsRepeat = ModifierKeyState[EModifierKey::LeftControl];
+						//ModifierKeyState[EModifierKey::LeftControl] = true;
+					}
+					else
+					{
+						ActualKey = VK_RCONTROL;
+						//bIsRepeat = ModifierKeyState[EModifierKey::RightControl];
+						//ModifierKeyState[EModifierKey::RightControl] = true;
+					}
+					break;
+				case VK_SHIFT:
+					// Differentiate between left and right shift
+					ActualKey = MapVirtualKey( (lparam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+					if (ActualKey == VK_LSHIFT)
+					{
+						//bIsRepeat = ModifierKeyState[EModifierKey::LeftShift];
+						//ModifierKeyState[EModifierKey::LeftShift] = true;
+					}
+					else
+					{
+						//bIsRepeat = ModifierKeyState[EModifierKey::RightShift];
+						//ModifierKeyState[EModifierKey::RightShift] = true;
+					}
+					break;
+				case VK_CAPITAL:
+					//ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+					break;
+				default:
+					// No translation needed
+					break;
+				}
+
+				// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
+				unsigned int CharCode = ::MapVirtualKey( Win32Key, MAPVK_VK_TO_CHAR );
+
+				const bool Result = MessageHandler->OnKeyDown(ActualKey, CharCode, bIsRepeat);
+
+				// Always return 0 to handle the message or else windows will beep
+				if( Result || msg != WM_SYSKEYDOWN )
+				{
+					// Handled
+					return;
+				}
+				/*
 		if (!(lparam & 0x40000000) || GetKeyboardDevice().IsAutorepeatEnabled()) // no thank you on the autorepeat
 		{
 			GetKeyboardDevice().OnKeyPressed(static_cast<unsigned char>(wparam));
 		}
+		*/
+			}
+	else if (msg == WM_KEYUP || msg == WM_SYSKEYUP)
+	{
+		// Character code is stored in WPARAM
+				int Win32Key = wparam;
+
+				// The actual key to use.  Some keys will be translated into other keys. 
+				// I.E VK_CONTROL will be translated to either VK_LCONTROL or VK_RCONTROL as these
+				// keys are never sent on their own
+				int ActualKey = Win32Key;
+
+				bool bModifierKeyReleased = false;
+				switch( Win32Key )
+				{
+				case VK_MENU:
+					// Differentiate between left and right alt
+					if( (lparam & 0x1000000) == 0 )
+					{
+						ActualKey = VK_LMENU;
+						//ModifierKeyState[EModifierKey::LeftAlt] = false;
+					}
+					else
+					{
+						ActualKey = VK_RMENU;
+						//ModifierKeyState[EModifierKey::RightAlt] = false;
+					}
+					break;
+				case VK_CONTROL:
+					// Differentiate between left and right control
+					if( (lparam & 0x1000000) == 0 )
+					{
+						ActualKey = VK_LCONTROL;
+						//ModifierKeyState[EModifierKey::LeftControl] = false;
+					}
+					else
+					{
+						ActualKey = VK_RCONTROL;
+						//ModifierKeyState[EModifierKey::RightControl] = false;
+					}
+					break;
+				case VK_SHIFT:
+					// Differentiate between left and right shift
+					ActualKey = MapVirtualKey( (lparam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+					if (ActualKey == VK_LSHIFT)
+					{
+						//ModifierKeyState[EModifierKey::LeftShift] = false;
+					}
+					else
+					{
+						//ModifierKeyState[EModifierKey::RightShift] = false;
+					}
+					break;
+				case VK_CAPITAL:
+					//ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+					break;
+				default:
+					// No translation needed
+					break;
+				}
+
+				// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
+				unsigned int CharCode = ::MapVirtualKey( Win32Key, MAPVK_VK_TO_CHAR );
+
+				// Key up events are never repeats
+				const bool bIsRepeat = false;
+
+				const bool Result = MessageHandler->OnKeyUp( ActualKey, CharCode, bIsRepeat );
+
+				// Note that we allow system keys to pass through to DefWndProc here, so that core features
+				// like Alt+F4 to close a window work.
+				if( Result || msg != WM_SYSKEYUP )
+				{
+					// Handled
+					return;
+				}
 	}
-	else if (msg == WM_KEYUP)
-		GetKeyboardDevice().OnKeyReleased(static_cast<unsigned char>(wparam));
+		//GetKeyboardDevice().OnKeyReleased(static_cast<unsigned char>(wparam));
 	// ************ END KEYBOARD MESSAGES ************ //
 
 	// ************ MOUSE MESSAGES ************ //
@@ -141,14 +309,27 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	{
 		short const delta = GET_WHEEL_DELTA_WPARAM(wparam);
 		const POINTS pt = MAKEPOINTS(lparam);
-		
-		if (delta > 0)
+
+		const float SpinFactor = 1 / 120.0f;
+		const SHORT WheelDelta = GET_WHEEL_DELTA_WPARAM(wparam);
+
+		POINT CursorPoint;
+		CursorPoint.x = GET_X_LPARAM(lparam);
+		CursorPoint.y = GET_Y_LPARAM(lparam);
+
+		const std::pair CursorPos(CursorPoint.x, CursorPoint.y);
+
+		//const BOOL Result = MessageHandler->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
+		//return Result ? 0 : 1;
+		float delta2 = static_cast<float>(WheelDelta) * SpinFactor;
+
+		if (delta2 > 0)
 		{
-			GetMouseDevice().OnWheelUp(copysignf(1.f, delta));
+			GetMouseDevice().OnWheelUp(copysignf(1.f, delta2));
 		}
-		else if (delta < 0)
+		else if (delta2 < 0)
 		{
-			GetMouseDevice().OnWheelDown(copysignf(1.f, delta));
+			GetMouseDevice().OnWheelDown(copysignf(1.f, delta2));
 		}
 	}
 	// ************ END MOUSE MESSAGES ************ //
