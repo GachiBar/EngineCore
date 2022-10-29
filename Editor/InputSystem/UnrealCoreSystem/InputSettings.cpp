@@ -1,6 +1,7 @@
 #include "InputSettings.h"
 #include <ranges>
 
+#include "../ConfigReaderWriter.h"
 #include "NameMapping/NamingStructs.h"
 
 InputSettings::InputSettings()
@@ -26,9 +27,10 @@ void InputSettings::AddActionMapping(std::string const& ActionMap, const FKey& K
 	}
 }
 
-void InputSettings::SaveKeyMappings()
+void InputSettings::SaveKeyMappings() const
 {
-	SaveConfig();
+	ConfigReaderWriter->SaveAxisInput(AxisMappings);
+	ConfigReaderWriter->SaveActionsInput(ActionMappings);
 }
 
 void InputSettings::GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings)

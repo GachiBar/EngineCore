@@ -166,13 +166,12 @@ struct EKeys
 	static void RemoveKeysWithCategory(const std::string& InCategory);
 
 	// These exist for backwards compatibility reasons only
-	static bool IsModifierKey(FKey Key) { return Key.IsModifierKey(); }
 	static bool IsAxis(FKey Key) { return Key.IsAxis1D(); }
 
 
 	static void AddMenuCategoryDisplayInfo(const std::string& CategoryName, const std::string& DisplayName, const std::string& PaletteIcon);
 	static std::string GetMenuCategoryDisplayName(const std::string& CategoryName);
-	static std::string GetMenuCategoryPaletteIcon(const std::string& CategoryName);
+	//static std::string GetMenuCategoryPaletteIcon(const std::string& CategoryName);
 
 private:
 

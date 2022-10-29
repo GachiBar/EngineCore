@@ -65,7 +65,7 @@ public:
 	void RemoveAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
 
 	/** Flush the current mapping values to the config file */
-	void SaveKeyMappings();
+	void SaveKeyMappings() const;
 
 	/** Populate a list of all defined action names */
 	void GetActionNames(std::set<std::string>& OutActionNames) const;
