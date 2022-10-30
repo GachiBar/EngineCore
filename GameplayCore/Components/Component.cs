@@ -1,7 +1,12 @@
-﻿namespace GameplayCore.Components
+﻿using System;
+using GameplayCore.Serialization;
+using Newtonsoft.Json;
+
+namespace GameplayCore.Components
 {
     public abstract class Component
     {
+        [SerializeField, JsonConverter(typeof(GameObjectGuidJsonConverter))]
         private GameObject _gameObject = null;
 
         public GameObject GameObject 
@@ -29,7 +34,18 @@
         public virtual void Render() { }
         public virtual void Terminate() { }
 
+
         protected virtual void OnAttach(GameObject gameObject) {}
         protected virtual void OnDetach(GameObject gameObject) {}
+
+        string Serialize()
+        {
+            return String.Empty;
+        }
+
+        void Deserialize(string data)
+        {
+            
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections;
 
 namespace GameplayCore
 {
+    [Serializable]
     public class GameObject : IReadOnlyList<Component>
     {
         /// <summary>
@@ -39,6 +40,16 @@ namespace GameplayCore
         /// Flag that determines, is this <see cref="GameObject"/> is initialized.
         /// </summary>
         public bool IsInitialized { get; private set; }
+        
+        /// <summary>
+        /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.
+        /// </summary>
+        private System.Guid _guid;
+        
+        /// <summary>
+        /// Name of <see cref="Component"/>s.
+        /// </summary>
+        private String Name;
 
         #region IReadOnlyList
 
@@ -48,16 +59,19 @@ namespace GameplayCore
 
         #endregion IReadOnlyList
 
+        public System.Guid Guid => _guid;
+        
         public event Action<GameObject, Component> ComponentAdded;
         public event Action<GameObject, Component> ComponentRemoved;
 
-        internal GameObject(Scene scene)
+        internal GameObject(Scene scene, System.Guid guid)
         {
             _componentsMap = new Dictionary<Type, Component>();
             _updatableComponents = new List<Component>();
             _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
-            Scene = scene;           
+            Scene = scene;
+            _guid = guid;
         }
 
         public void Initialize()
@@ -172,6 +186,14 @@ namespace GameplayCore
             }
 
             return null;
+        }
+        
+        public IEnumerable<Component> GetComponentsEnumerable()
+        {
+            foreach (var component in _componentsMap.Values)
+            {
+                yield return component;
+            }
         }
 
         internal void Invalidate()
