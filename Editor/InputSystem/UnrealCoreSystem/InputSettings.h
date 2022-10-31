@@ -5,10 +5,10 @@
 #include <string>
 #include "KeyStruct.h"
 
+#include "NameMapping/ActionMapping.h"
+
 class ConfigReaderWriter;
 using uint8 = unsigned char;
-
-struct FInputAxisKeyMapping;
 
 class InputSettings
 {

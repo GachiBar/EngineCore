@@ -4,7 +4,6 @@
 #include <set>
 
 #include "../libs/ini/IniReaderWriter.h"
-
 struct FKey;
 struct FInputAxisKeyMapping;
 

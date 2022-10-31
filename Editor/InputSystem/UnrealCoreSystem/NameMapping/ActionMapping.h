@@ -47,6 +47,13 @@ struct FInputAxisKeyMapping
 				&& IsNearlyEqual (Scale, Other.Scale) );
 	}
 
+	bool operator<(const FInputAxisKeyMapping& Other) const
+	{
+		return AxisName < Other.AxisName
+			&& Key < Other.Key
+			&& Scale < Other.Scale;
+	}
+
 	FInputAxisKeyMapping(): Scale(0)
 	{
 	}

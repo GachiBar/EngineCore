@@ -2,6 +2,7 @@
 #include <memory>
 #include <windows.h>
 #include "GenericWindow.h"
+#include "../NameMapping/ActionMapping.h"
 
 class Application;
 /**

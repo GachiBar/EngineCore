@@ -337,7 +337,7 @@ void EKeys::GetAllKeys(std::vector<FKey>& OutKeys)
 
 void EKeys::RemoveKeysWithCategory(const std::string& InCategory)
 {
-    std::erase_if(InputKeys, [&InCategory](std::pair<FKey, std::shared_ptr<FKeyDetails>>& elem) {
+    std::erase_if(InputKeys, [&InCategory](std::pair<const FKey, std::shared_ptr<FKeyDetails>>& elem) {
             return elem.first.GetMenuCategory() == InCategory; 
         });
 }
