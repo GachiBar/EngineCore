@@ -29,13 +29,14 @@ public:
 
     bool ReadEvent(FInputEvent& IE) const;
 
+    void SetPlayerInput(PlayerInput* InPlayerEnums);
+
+	FGenericApplicationMessageHandler* GetMessageHandler();
+
     Application* app;
-private:
 
 private:
     PlayerInput* player_input;
-
-    FGenericApplicationMessageHandler* message_handler;
 
     InputManager();
 

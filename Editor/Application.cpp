@@ -18,6 +18,7 @@ Application::Application()
 	, m_Assembly{ m_Domain, kDllPath }
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, input_settings(new InputSettings())
+	, player_input(new PlayerInput())
 	, exit_code_(0)
 {	
 	Scene::CacheMethods(m_Assembly);
@@ -40,8 +41,11 @@ void Application::PushOverlay(Layer* layer)
 
 void Application::OnSetup()
 {
+	player_input->SetInputSettings(input_settings.get());
+
 	EKeys::Initialize();
 	InputManager::getInstance().app = this;
+	InputManager::getInstance().SetPlayerInput(player_input.get());
 
 	auto wnd = FWindowsWindow::Make();
 	FGenericWindowDefinition wnd_def;
@@ -73,10 +77,15 @@ void Application::OnSetup()
 
 	auto wnd2 = FWindowsWindow::Make();
 	wnd_def.AcceptsInput = false;
-	wnd->Initialize(this, t, GetModuleHandle(NULL), wnd, true);
+	wnd2->Initialize(this, t, GetModuleHandle(NULL), wnd, true);
 
 	wnds.push_back(wnd);
 	wnds.push_back(wnd2);
+
+	wnd->Show();
+
+	wnd2->Enable(false);
+	wnd2->Hide();
 }
 
 void Application::OnStart()
@@ -99,7 +108,7 @@ int Application::Run()
 	if (exit_code_)
 		return exit_code_;
 
-	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(), static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(), wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
+	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(), static_cast<FWindowsWindow*>(wnds[1].get())->GetHWnd(), wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
 
 	OnStart();
 	if (exit_code_)

@@ -13,6 +13,7 @@
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "InputSystem/UnrealCoreSystem/InputSettings.h"
 #include "InputSystem/UnrealCoreSystem/Keys.h"
+#include "InputSystem/UnrealCoreSystem/NameMapping/PlayerInput.h"
 #include "InputSystem/UnrealCoreSystem/Windows/GenericWindow.h"
 
 class Application
@@ -64,8 +65,10 @@ protected:
     mono::mono_jit_domain m_JitDomain;
     mono::mono_domain m_Domain;
     mono::mono_assembly m_Assembly;
+
     std::shared_ptr<engine::Engine> engine_;
     std::shared_ptr<InputSettings> input_settings;
+    std::shared_ptr<PlayerInput> player_input;
 
     /// Application exit code.
     int exit_code_;

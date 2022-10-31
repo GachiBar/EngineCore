@@ -1,12 +1,15 @@
 #include "PlayerInput.h"
 
 #include <algorithm>
-#include <iterator>
-
 #include "ActionMapping.h"
+#include "../MessageHandler/WindowsApplicationMessageHandler.h"
 #include "../InputSettings.h"
 #include "../../../libs/MathUtility.h"
 
+
+PlayerInput::PlayerInput():MessageHandler(new WindowsApplicationMessageHandler())
+{
+}
 
 bool PlayerInput::IsPressed(FKey InKey) const
 {
@@ -81,9 +84,14 @@ FVector PlayerInput::GetProcessedVectorKeyValue(FKey InKey) const
 	return KeyStateMap.contains(InKey) ? KeyStateMap.at(InKey).Value : FVector();
 }
 
+void PlayerInput::SetInputSettings(InputSettings* InInputSettings)
+{
+	input_settings = InInputSettings;
+}
+
 bool PlayerInput::IsKeyHandledByAction(FKey Key) const
 {
-	auto const bIsHandled = InputSettings && std::ranges::any_of(InputSettings->GetActionMappings(),
+	auto const bIsHandled = input_settings && std::ranges::any_of(input_settings->GetActionMappings(),
 		[&Key](const std::pair<const std::string, std::set<FKey>>& Value)
 		{
 			return Value.second.contains(Key) || Value.second.contains(EKeys::AnyKey);
@@ -96,9 +104,9 @@ float PlayerInput::DetermineAxisValue(const std::string& AxisName, std::set<FKey
 {
 	float AxisValue = 0.f;
 
-	if (InputSettings->GetAxisMappings().contains(AxisName))
+	if (input_settings->GetAxisMappings().contains(AxisName))
 	{
-		auto& AxisMappings = InputSettings->GetAxisMappings().at(AxisName);
+		auto& AxisMappings = input_settings->GetAxisMappings().at(AxisName);
 
 		std::set<FInputAxisKeyMapping> KeysToConsumeAndAxisKeysIntersection;
 

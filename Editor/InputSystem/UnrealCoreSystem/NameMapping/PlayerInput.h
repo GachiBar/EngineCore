@@ -40,6 +40,8 @@ class PlayerInput
 {
 public:
 
+	PlayerInput();
+
 	/** @return true if InKey is currently held */
 	bool IsPressed(FKey InKey) const;
 
@@ -57,6 +59,7 @@ public:
 
 	std::shared_ptr<FGenericApplicationMessageHandler> MessageHandler;
 
+	void SetInputSettings(InputSettings* InInputSettings);
 protected:
 	/** @return True if a key is handled by an action binding */
 	bool IsKeyHandledByAction(FKey Key) const;
@@ -72,8 +75,8 @@ protected:
 	uint32 EventCount = 0;
 
 protected:
-	
-	std::shared_ptr<InputSettings> InputSettings;
+	InputSettings* input_settings{};
+
     /** The current game view of each key */
-	std::map<FKey,FKeyState> KeyStateMap;
+	std::map<FKey,FKeyState> KeyStateMap{};
 };

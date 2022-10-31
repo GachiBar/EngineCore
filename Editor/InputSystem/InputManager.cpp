@@ -77,7 +77,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	if (msg == WM_KILLFOCUS)
 		Flush();
 	else if (msg == WM_INPUTLANGCHANGE || msg == WM_INPUTLANGCHANGEREQUEST)
-		message_handler->OnInputLanguageChanged();
+		GetMessageHandler()->OnInputLanguageChanged();
 	else if (msg == WM_CHAR)
 	{
 		// Character code is stored in WPARAM
@@ -86,7 +86,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// lparam bit 30 will be ZERO for new presses, or ONE if this is a repeat
 		const bool bIsRepeat = (lparam & 0x40000000) != 0;
 
-		message_handler->OnKeyChar(Character, bIsRepeat);
+		GetMessageHandler()->OnKeyChar(Character, bIsRepeat);
 	}
 	else if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN)
 	{
@@ -148,7 +148,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
 		const unsigned int CharCode = ::MapVirtualKey(Win32Key, MAPVK_VK_TO_CHAR);
 
-		message_handler->OnKeyDown(ActualKey, CharCode, bIsRepeat);
+		GetMessageHandler()->OnKeyDown(ActualKey, CharCode, bIsRepeat);
 	}
 	else if (msg == WM_KEYUP || msg == WM_SYSKEYUP)
 	{
@@ -206,7 +206,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// Key up events are never repeats
 		const bool bIsRepeat = false;
 
-		message_handler->OnKeyUp(ActualKey, CharCode, bIsRepeat);
+		GetMessageHandler()->OnKeyUp(ActualKey, CharCode, bIsRepeat);
 	}
 	//GetKeyboardDevice().OnKeyReleased(static_cast<unsigned char>(wparam));
 	// ************ END KEYBOARD MESSAGES ************ //
@@ -220,7 +220,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CursorPoint.x = GET_X_LPARAM(lparam);
 			CursorPoint.y = GET_Y_LPARAM(lparam);
 
-			message_handler->OnRawMouseMove(CursorPoint.x, CursorPoint.y);
+			GetMessageHandler()->OnRawMouseMove(CursorPoint.x, CursorPoint.y);
 		}
 		else
 		{
@@ -285,15 +285,15 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			if (bMouseUp)
 			{
-				message_handler->OnMouseUp(MouseButton, CursorPos);
+				GetMessageHandler()->OnMouseUp(MouseButton, CursorPos);
 			}
 			else if (bDoubleClick)
 			{
-				message_handler->OnMouseDoubleClick(app->GetMainWindow(), MouseButton, CursorPos);
+				GetMessageHandler()->OnMouseDoubleClick(app->GetMainWindow(), MouseButton, CursorPos);
 			}
 			else
 			{
-				message_handler->OnMouseDown(app->GetMainWindow(), MouseButton, CursorPos);
+				GetMessageHandler()->OnMouseDown(app->GetMainWindow(), MouseButton, CursorPos);
 			}
 		}
 		
@@ -309,14 +309,14 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		const FVector2D CursorPos(CursorPoint.x, CursorPoint.y);
 
-		message_handler->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
+		GetMessageHandler()->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
 	}
 	else if (msg == WM_CLOSE)
 	{
 		if (app->GetMainWindow())
 		{
 			// Called when the OS close button is pressed
-			message_handler->OnWindowClose(app->GetMainWindow());
+			GetMessageHandler()->OnWindowClose(app->GetMainWindow());
 		}
 	}
 	else if(msg == WM_SIZING)
@@ -341,7 +341,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
 			if (!bIsFullscreen)
 			{
-				message_handler->OnSizeChanged(app->GetMainWindow(), NewWidth, NewHeight, bWasMinimized);
+				GetMessageHandler()->OnSizeChanged(app->GetMainWindow(), NewWidth, NewHeight, bWasMinimized);
 			}
 		}
 	}
@@ -352,7 +352,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
 		if (!bIsFullscreen)
 		{
-			message_handler->OnResizingWindow(app->GetMainWindow());
+			GetMessageHandler()->OnResizingWindow(app->GetMainWindow());
 		}
 		
 	}
@@ -377,13 +377,13 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 					// Since the raw input is coming in as absolute it is likely the user is using a tablet
 					// or perhaps is interacting through a virtual desktop
 					// Absolute coordinates given through raw input are simulated using MouseMove to get relative coordinates
-					message_handler->OnMouseMove();
+					GetMessageHandler()->OnMouseMove();
 				}
 			}
 			// Since raw input is coming in as relative it is likely a traditional mouse device
 			const int xPosRelative = Raw->data.mouse.lLastX;
 			const int yPosRelative = Raw->data.mouse.lLastY;
-			message_handler->OnRawMouseMove(xPosRelative, yPosRelative);
+			GetMessageHandler()->OnRawMouseMove(xPosRelative, yPosRelative);
 		}
 	}
 	else if (msg == WM_MOUSEMOVE)
@@ -433,7 +433,17 @@ bool InputManager::ReadEvent(FInputEvent& IE) const
 	return player_input->MessageHandler->ReadInputEvent(IE);
 }
 
-InputManager::InputManager(): app(nullptr), player_input(nullptr), message_handler(nullptr)
+void InputManager::SetPlayerInput(PlayerInput* InPlayerEnums)
+{
+	player_input = InPlayerEnums;
+}
+
+FGenericApplicationMessageHandler* InputManager::GetMessageHandler()
+{
+	return player_input->MessageHandler.get();
+}
+
+InputManager::InputManager(): app(nullptr), player_input(nullptr)
 {
 }
 
