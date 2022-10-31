@@ -1,48 +1,51 @@
 #include <iostream>
+#include <DirectXTex.h>
 
 #include "../GameplaySystem/Engine.h"
-#include "../monowrapper/monopp/mono_jit.h"
 
 //TODO Move application header to another project
 #include "../Editor/Application.h"
 #include "../Editor/EditorApplication.h"
+#include "../GameplaySystem/TextureLoader.h"
 
-const char kMonoLibPath[] = "vendor\\mono\\lib\\4.5";
-const char kDllPath[] = "GameplayCore.dll";
-
-class StandaloneGameTestApplication final : public Application
-{
+class StandaloneGameTestApplication final : public Application {
 public:
-	StandaloneGameTestApplication(const char* dll_path) 
-		: Application(dll_path)
+	StandaloneGameTestApplication() 
+		: Application()
+		, scene(nullptr)
 	{}
 
-	mono::mono_object scene{ m_Assembly.get_type("GameplayCore", "Scene").new_instance() };
-	mono::mono_object go1{ CreateGameObject(scene) };
-	mono::mono_object go2{ CreateGameObject(scene) };
+	~StandaloneGameTestApplication() {
+		if (scene != nullptr) {
+			delete scene;
+		}	
+	}
+
+	Scene* scene = nullptr;
+	std::shared_ptr<GameObject> game_object_1;
+	std::shared_ptr<GameObject>  game_object_2;
 
 	void OnSetup() override;
 };
 
 
-void StandaloneGameTestApplication::OnSetup()
-{
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TestUpdateComponent");
-	AddComponent(m_Assembly, go2, "GameplayCore.Components", "TestFixedUpdateComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "MeshRenderComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TransformComponent");
+void StandaloneGameTestApplication::OnSetup() {
+	scene = new Scene(m_Assembly);
+	game_object_1 = scene->CreateGameObject();
+	game_object_2 = scene->CreateGameObject();
 
-	engine_->SetScene(&scene);
+	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
+	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");
+
+	engine_->SetScene(scene);
 }
-#include "../Editor/Delegates.h"
-#include "../GameplaySystem/ModelLoader.h"
 
 int main() {
-	if (!mono::init_with_mono_assembly_path(kMonoLibPath, "KtripRuntime")) {
-		return 1;
-	}		
+	if (HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED); FAILED(result)) {
+		return result;
+	}
 
 	//StandaloneGameTestApplication app(kDllPath);
-	EditorApplication app(kDllPath);
+	EditorApplication app;
 	return app.Run();
 }

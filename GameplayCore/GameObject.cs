@@ -6,6 +6,7 @@ using System.Collections;
 
 namespace GameplayCore
 {
+    [Serializable]
     public class GameObject : IReadOnlyList<Component>
     {
         /// <summary>
@@ -39,6 +40,16 @@ namespace GameplayCore
         /// Flag that determines, is this <see cref="GameObject"/> is initialized.
         /// </summary>
         public bool IsInitialized { get; private set; }
+        
+        /// <summary>
+        /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.
+        /// </summary>
+        private System.Guid _guid;
+        
+        /// <summary>
+        /// Name of <see cref="Component"/>s.
+        /// </summary>
+        private String Name;
 
         #region IReadOnlyList
 
@@ -48,13 +59,19 @@ namespace GameplayCore
 
         #endregion IReadOnlyList
 
-        internal GameObject(Scene scene)
+        public System.Guid Guid => _guid;
+        
+        public event Action<GameObject, Component> ComponentAdded;
+        public event Action<GameObject, Component> ComponentRemoved;
+
+        internal GameObject(Scene scene, System.Guid guid)
         {
             _componentsMap = new Dictionary<Type, Component>();
             _updatableComponents = new List<Component>();
             _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
-            Scene = scene;           
+            Scene = scene;
+            _guid = guid;
         }
 
         public void Initialize()
@@ -127,6 +144,7 @@ namespace GameplayCore
                 instance.Initialize();
             }
 
+            ComponentAdded?.Invoke(this, instance);
             _isUpdatableComponentsInvalid = true;
             return instance;
         }
@@ -146,8 +164,8 @@ namespace GameplayCore
                 {
                     _removedComponents.Add(component);
                 }
-
-                component.GameObject = null;
+                                
+                component.GameObject = null;                           
                 _isUpdatableComponentsInvalid = true;
                 return component;
             }
@@ -169,14 +187,23 @@ namespace GameplayCore
 
             return null;
         }
+        
+        public IEnumerable<Component> GetComponentsEnumerable()
+        {
+            foreach (var component in _componentsMap.Values)
+            {
+                yield return component;
+            }
+        }
 
         internal void Invalidate()
         {
             if (_isUpdatableComponentsInvalid)
             {
                 foreach (var component in _removedComponents)
-                {
+                {                    
                     component.Terminate();
+                    ComponentRemoved?.Invoke(this, component);
                 }
 
                 _updatableComponents = _componentsMap.Values.ToList();

@@ -3,7 +3,7 @@
     public class MeshRenderComponent : Component
     {
         private static ulong _id = 0;
-        private TransformComponent _transform;
+        private TransformComponent _transformComponent = null;
 
         public readonly ulong Id;
 
@@ -17,19 +17,45 @@
 
         public override void Initialize() 
         {
-            _transform = GameObject.GetComponent<TransformComponent>();
-            _transform.Position += new Mathematics.Vector3(0.0f, 0.0f, 5.0f);
             EngineApi.Render.RegisterModel(Id);
         }
 
         public override void Render()
         {
-            EngineApi.Render.DrawModel(Id, _transform.ModelMatrix);
+            if (_transformComponent != null)
+            {
+                EngineApi.Render.DrawModel(Id, _transformComponent.ModelMatrix);
+            }            
         }
 
-        public override void Terminate() 
-        { 
-        
+        protected override void OnAttach(GameObject gameObject)
+        {
+            _transformComponent = GameObject.GetComponent<TransformComponent>();
+
+            gameObject.ComponentAdded += OnComponentAdded;
+            gameObject.ComponentRemoved += OnComponentRemoved;
+        }
+
+        protected override void OnDetach(GameObject gameObject)
+        {
+            gameObject.ComponentAdded -= OnComponentAdded;
+            gameObject.ComponentRemoved -= OnComponentRemoved;
+        }
+
+        private void OnComponentAdded(GameObject gameObject, Component component)
+        {
+            if (component is TransformComponent transformComponent)
+            {
+                _transformComponent = transformComponent;
+            }
+        }
+
+        private void OnComponentRemoved(GameObject gameObject, Component component)
+        {
+            if (component is TransformComponent)
+            {
+                _transformComponent = null;
+            }
         }
     }
 }

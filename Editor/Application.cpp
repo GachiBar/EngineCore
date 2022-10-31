@@ -8,14 +8,21 @@
 #include "InputSystem/InputManager.h"
 #include "InputSystem/UnrealCoreSystem/Windows/WindowsWindow.h"
 
-Application::Application(const char* dll_path)
+const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
+const char* Application::kDllPath = "GameplayCore.dll";
+
+Application::Application()
 	: m_LayerStack(this)
+	, m_JitDomain(kMonoLibPath, "KtripRuntime")
 	, m_Domain{ "KtripDomain" }
-	, m_Assembly{ m_Domain, dll_path }
+	, m_Assembly{ m_Domain, kDllPath }
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, input_settings(new InputSettings())
 	, exit_code_(0)
-{
+{	
+	Scene::CacheMethods(m_Assembly);
+	GameObject::CacheMethods(m_Assembly);
+	Component::CacheMethods(m_Assembly);
 	mono::mono_domain::set_current_domain(m_Domain);
 }
 
@@ -121,7 +128,7 @@ int Application::Run()
 
 		engine_->GetRenderer().BeginFrame();
 
-		engine_->render_->invoke(*engine_->GetScene());
+		engine_->GetScene()->Render();
 		
 		while (!engine_->GetRenderer().Present()) {
 			engine_->GetRenderer().EndFrame();
@@ -184,12 +191,9 @@ mono::mono_object Application::AddComponent(
 {
 	mono::mono_method add_component_method(go.get_type(), "AddComponent", 1);
 	mono::mono_method_invoker add_component_method_invoker(add_component_method);
-
-	MonoDomain* domain = mono::mono_domain::get_current_domain().get_internal_ptr();
-
+	
 	mono::mono_type component_type = assembly.get_type(name_space, name);
-	MonoType* type = mono_class_get_type(component_type.get_internal_ptr());
-	MonoReflectionType* reflection_type = mono_type_get_object(domain, type);
+	MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
 
 	void* params[1];
 	params[0] = reflection_type;

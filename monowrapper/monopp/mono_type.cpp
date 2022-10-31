@@ -158,6 +158,17 @@ auto mono_type::get_internal_ptr() const -> MonoClass*
 	return class_;
 }
 
+auto mono_type::get_internal_type_ptr() const -> MonoType*
+{
+	return mono_class_get_type(get_internal_ptr());
+}
+
+auto mono_type::get_internal_reflection_type_ptr() const -> MonoReflectionType*
+{
+	MonoDomain* domain = mono_domain::get_current_domain().get_internal_ptr();
+	return mono_type_get_object(domain, get_internal_type_ptr());
+}
+
 void mono_type::generate_meta()
 {
 	type_ = mono_class_get_type(class_);

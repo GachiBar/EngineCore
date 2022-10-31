@@ -2,20 +2,47 @@
 #include "EditorLayer.h"
 #include "../monowrapper/monopp/mono_property.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
+#include <iostream>
 
-EditorApplication::EditorApplication(const char* dll_path):Application(dll_path) //,mw(new MainWindow)
+EditorApplication::EditorApplication()
+	: Application() //,mw(new MainWindow)
+	, scene(nullptr)
 {
+}
+
+EditorApplication::~EditorApplication()
+{
+	if (scene != nullptr) 
+	{
+		delete scene;
+	}
 }
 
 void EditorApplication::OnSetup()
 {
 	Application::OnSetup();
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TestUpdateComponent");
-	AddComponent(m_Assembly, go2, "GameplayCore.Components", "TestFixedUpdateComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "MeshRenderComponent");
-	AddComponent(m_Assembly, go1, "GameplayCore.Components", "TransformComponent");
 
-	engine_->SetScene(&scene);
+	scene = new Scene(m_Assembly);
+	game_object_1 = scene->CreateGameObject();
+	game_object_2 = scene->CreateGameObject();
+
+	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
+	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");	
+
+	game_object_2->AddComponent("GameplayCore.Components", "CameraComponent");
+	game_object_2->AddComponent("GameplayCore.Components", "TransformComponent");
+
+	for (size_t i = 0; i < scene->Count(); ++i) {
+		std::cout << "go:" << i << "\n";
+		auto go = (*scene)[i];
+
+		for (size_t j = 0; j < go->Count(); ++j) {
+			std::cout << "\t" << "component" << j << "\n";
+			auto component = (*go)[j];
+		}
+	}
+
+	engine_->SetScene(scene);
 
 }
 

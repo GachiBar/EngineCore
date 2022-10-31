@@ -6,7 +6,7 @@
 #include "imgui/imgui.h"
 #include "format"
 
-void SceneHierarchyWindow::draw_imgui(mono::mono_object& scene)
+void SceneHierarchyWindow::draw_imgui(const mono::mono_object& scene)
 {
     auto go_arr = GetGameObjects(scene);
 
@@ -27,7 +27,7 @@ void SceneHierarchyWindow::draw_imgui(mono::mono_object& scene)
     ImGui::End();
 }
 
-std::vector<std::shared_ptr<mono::mono_object>> SceneHierarchyWindow::GetGameObjects(mono::mono_object& scene)
+std::vector<std::shared_ptr<mono::mono_object>> SceneHierarchyWindow::GetGameObjects(const mono::mono_object& scene)
 {
     std::vector<std::shared_ptr<mono::mono_object>> res;
 

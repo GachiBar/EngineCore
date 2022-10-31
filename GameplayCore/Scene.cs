@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GameplayCore.Serialization;
+using Newtonsoft.Json;
 
 namespace GameplayCore
 {
@@ -90,9 +92,26 @@ namespace GameplayCore
             IsInitialized = false;
         }
 
+        public string Serialize()
+        {
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {new GameObjectDefaultJsonConverter()}
+            };
+
+            string data = JsonConvert.SerializeObject(_gameObjects, options);
+            return data;
+        }
+
+        public void Deserialize(string data)
+        {
+            
+        }
+
         public GameObject CreateGameObject()
         {            
-            var go = new GameObject(this);
+            var go = new GameObject(this, System.Guid.NewGuid());
             _createdGameObjects.Add(go);
 
             if (IsInitialized)

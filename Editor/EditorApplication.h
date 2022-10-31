@@ -7,16 +7,16 @@
 class EditorApplication final : public Application
 {
 public:
-	EditorApplication(const char* dll_path);
+	EditorApplication();
+	~EditorApplication();
 
 	void OnSetup() override;
 
 	void OnStart() override;
 
-	mono::mono_object scene = m_Assembly.get_type("GameplayCore", "Scene").new_instance();
-	mono::mono_object go1 = CreateGameObject(scene);
-	mono::mono_object go2 = CreateGameObject(scene);
-
+	Scene* scene;
+	std::shared_ptr<GameObject> game_object_1;
+	std::shared_ptr<GameObject> game_object_2;
 
 protected:
 	//std::shared_ptr<MainWindow> mw;

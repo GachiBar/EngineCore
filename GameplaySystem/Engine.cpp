@@ -12,31 +12,34 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
+#include "GameObject.h"
+#include "Scene.h"
+#include "TextureLoader.h"
+
 namespace engine {
 
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
 	: domain_(domain)
 	, assembly_(assembly)
+	, renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
+	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
+	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
 	, scene_(nullptr)
-	, initialize_(nullptr)
-	, terminate_(nullptr)
-	, fixed_update_(nullptr)
-	, update_(nullptr)
-	, render_(nullptr)
 {}
 
-mono::mono_object* Engine::GetScene() {
+Scene* Engine::GetScene() {
 	return scene_;
 }
 
-void Engine::SetScene(mono::mono_object* scene) {
+void Engine::SetScene(Scene* scene) {
 	scene_ = scene;
 }
 
-RenderDevice& Engine::GetRenderer()
-{
+RenderDevice& Engine::GetRenderer() {
 	return renderer_;
 }
+
+#include <DirectXTex.h>
 
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::vector<ModelVertex> verticies;
@@ -45,74 +48,61 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 
 	ModelData model(verticies, indexes, EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0);
 
-	std::string path = "TestSetup\\Content\\Cube.obj";
-	auto m = ModelLoader::LoadObj(path, model);
-	renderer->RegisterModel(id, model);
+	std::string path = "Content\\Cube.obj";
+	ModelLoader::LoadObj(path, model);
 
-	//renderer->RegisterModel(id, {
-	//	{
-	//		{{ -0.25, -0.25, 0 }, {},{}},
-	//		{{  0.0 ,  0.25, 0 }, {},{}},
-	//		{{  0.25, -0.25, 0 }, {},{}},			
-	//	},
-	//	{0,1,2},
-	//	EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST,
-	//	1
-	//});
+	renderer->RegisterModel(id, model);
+	
+	DirectX::ScratchImage image;
+	TextureLoader::LoadWic(L"Content\\Breaks.jpg", image);
+
+	renderer->RegisterTexture(id, image.GetImage(0, 0, 0)->width, image.GetImage(0, 0, 0)->height, image.GetImage(0, 0, 0)->pixels, false);
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
-	renderer->DrawModel(id, 0, model_matrix, ModelDefines::MRED);
+	renderer->DrawModel({id, id, model_matrix});
+}
+
+void Engine::Internal_SetViewProjection(
+	RenderDevice* renderer, 
+	float ellapsed, 
+	DirectX::SimpleMath::Matrix view,
+	DirectX::SimpleMath::Matrix projection) 
+{	
+	renderer->SetRenderData({
+		duration<float>(ellapsed).count(),
+		view,
+		projection
+	});
 }
 
 void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
-
 	SetupRendererInternalCalls();
-	InitializeSceneCalls();
-
-	initialize_->invoke(*scene_);
+	scene_->Initialize();
 }
 
 void Engine::Terminate() {
-	terminate_->invoke(*scene_);
-
-	TerminateSceneCalls();
+	scene_->Terminate();
 }
 
-void Engine::RunFrame()
-{
+void Engine::RunFrame() {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
-	auto dt = clock::now() - time_start_;
-	ellapsed_ += dt;
+	dt_ = clock::now() - time_start_;
+	ellapsed_ += dt_;
 	time_start_ = clock::now();
-	lag_ += duration_cast<nanoseconds>(dt);
+	lag_ += duration_cast<nanoseconds>(dt_);
 
-	SendDeltaTime(duration<float>(dt).count());
+	SendTimeData();
 
 	while (lag_ >= kTimestep) {
 		lag_ -= kTimestep;
-		fixed_update_->invoke(*scene_);
+		scene_->FixedUpdate();
 	}
 
-	update_->invoke(*scene_);
-		
-	DirectX::SimpleMath::Vector3 eye = DirectX::SimpleMath::Vector3::Zero;
-	DirectX::SimpleMath::Vector3 direction = DirectX::SimpleMath::Vector3::UnitZ;
-	auto view = DirectX::SimpleMath::Matrix::CreateLookAt(eye, direction, DirectX::SimpleMath::Vector3::Up);
-	auto projection = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(
-		DirectX::XM_PIDIV2,
-		800.0f / 600,
-		0.1f,
-		100.0f);
-
-	renderer_.SetRenderData({
-		duration<float>(ellapsed_).count(),
-		view,
-		projection
-	});
+	scene_->Update();
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -124,46 +114,26 @@ void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t
 	renderer_.InitShaders("..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\");
 }
 
+mono::mono_property Engine::GetProperty(std::string name_space, std::string clazz, std::string property) {
+	return assembly_.get_type(name_space, clazz).get_property(property);
+}
+
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_RegisterModel", Internal_RegisterModel);
 	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_SetViewProjection", Internal_SetViewProjection);
 
-	auto renderer_type = assembly_.get_type("GameplayCore.EngineApi", "Render");
-	auto renderer_property = renderer_type.get_property("Renderer");
-	mono::mono_property_invoker renderer_property_invoker(renderer_property);
-	renderer_property_invoker.set_value(&renderer_);
+	renderer_property_.set_value(&renderer_);
 }
 
-void Engine::InitializeSceneCalls() {
-	mono::mono_method initialize_method(scene_->get_type(), "Initialize", 0);
-	initialize_ = new mono::mono_method_invoker(initialize_method);
-
-	mono::mono_method terminate_method(scene_->get_type(), "Terminate", 0);
-	terminate_ = new mono::mono_method_invoker(terminate_method);
-
-	mono::mono_method fixed_update_method(scene_->get_type(), "FixedUpdate", 0);
-	fixed_update_ = new mono::mono_method_invoker(fixed_update_method);
-
-	mono::mono_method update_method(scene_->get_type(), "Update", 0);
-	update_ = new mono::mono_method_invoker(update_method);
-
-	mono::mono_method render_method(scene_->get_type(), "Render", 0);
-	render_ = new mono::mono_method_invoker(render_method);
-}
-
-void Engine::TerminateSceneCalls() {
-	delete initialize_;
-	delete terminate_;
-	delete fixed_update_;
-	delete update_;
-	delete render_;
-}
-
-void Engine::SendDeltaTime(float dt) {
+void Engine::SendTimeData() {
 	auto time_type = assembly_.get_type("GameplayCore", "Time");
-	auto delta_time_property = time_type.get_property("DeltaTime");
-	mono::mono_property_invoker delta_time_property_invoker(delta_time_property);
-	delta_time_property_invoker.set_value(&dt);
+	
+	float dt = duration<float>(dt_).count();
+	delta_time_property_.set_value(&dt);
+
+	float ellapsed = duration<float>(ellapsed_).count();
+	ellapsed_time_property_.set_value(&ellapsed);
 }
 
 } // namespace engine

@@ -23,6 +23,14 @@ public:
 
 	MonoObject* invoke(const mono_object& object, void** args);
 
+	MonoObject* operator()();
+
+	MonoObject* operator()(void** args);
+
+	MonoObject* operator()(const mono_object& object);
+
+	MonoObject* operator()(const mono_object& object, void** args);
+
 private:
 	mono_method method_;
 
