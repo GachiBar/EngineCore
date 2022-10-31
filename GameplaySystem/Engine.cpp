@@ -14,6 +14,7 @@
 
 #include "GameObject.h"
 #include "Scene.h"
+#include "TextureLoader.h"
 
 namespace engine {
 
@@ -38,6 +39,8 @@ RenderDevice& Engine::GetRenderer() {
 	return renderer_;
 }
 
+#include <DirectXTex.h>
+
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::vector<ModelVertex> verticies;
 	std::vector<uint16_t> indexes;
@@ -45,19 +48,19 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 
 	ModelData model(verticies, indexes, EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0);
 
-	std::string path = "TestSetup\\Content\\Cube.obj";
+	std::string path = "Content\\Cube.obj";
 	ModelLoader::LoadObj(path, model);
+
 	renderer->RegisterModel(id, model);
-	//renderer->RegisterTexture()
+	
+	DirectX::ScratchImage image;
+	TextureLoader::LoadWic(L"Content\\Breaks.jpg", image);
+
+	renderer->RegisterTexture(id, image.GetImage(0, 0, 0)->width, image.GetImage(0, 0, 0)->height, image.GetImage(0, 0, 0)->pixels, false);
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
-	//ModelDrawData mdd{
-	//	id, model_matrix
-	//};
-	//mdd.flags.isColored = 0;
-	//renderer->DrawModel(mdd);
-	renderer->DrawModel({id, model_matrix});
+	renderer->DrawModel({id, id, model_matrix});
 }
 
 void Engine::Internal_SetViewProjection(
@@ -65,7 +68,7 @@ void Engine::Internal_SetViewProjection(
 	float ellapsed, 
 	DirectX::SimpleMath::Matrix view,
 	DirectX::SimpleMath::Matrix projection) 
-{
+{	
 	renderer->SetRenderData({
 		duration<float>(ellapsed).count(),
 		view,
