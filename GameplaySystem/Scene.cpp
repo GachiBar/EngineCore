@@ -2,6 +2,8 @@
 #include "Scene.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 
+namespace engine {
+
 mono::mono_property_invoker* Scene::count_ = nullptr;
 mono::mono_method_invoker* Scene::get_item_ = nullptr;
 
@@ -26,6 +28,7 @@ size_t Scene::Count() const {
 
     mono::mono_object value(count_->get_value(object_));
     int count = value.unbox<int>();
+
     assert(count >= 0 && "Count less then zero.");
 
     return static_cast<size_t>(count);
@@ -43,7 +46,7 @@ std::shared_ptr<GameObject> Scene::CreateGameObject() {
 }
 
 void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
-    void* params[1] = {game_object->GetInternal().get_internal_ptr()};
+    void* params[1] = { game_object->GetInternal().get_internal_ptr() };
     delete_game_object_->invoke(object_, params);
     Invalidate();
     game_object.reset();
@@ -51,35 +54,41 @@ void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
 
 void Scene::Initialize() {
     assert(initialize_ != nullptr && kIsNotCachedErrorMessage);
+
     initialize_->invoke(object_);
 }
 
 void Scene::FixedUpdate() {
     assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
+
     fixed_update_->invoke(object_);
 }
 
 void Scene::Update() {
     assert(update_ != nullptr && kIsNotCachedErrorMessage);
+
     update_->invoke(object_);
 }
 
 void Scene::Render() {
     assert(render_ != nullptr && kIsNotCachedErrorMessage);
+
     render_->invoke(object_);
 }
 
 void Scene::Terminate() {
     assert(terminate_ != nullptr && kIsNotCachedErrorMessage);
+
     terminate_->invoke(object_);
 }
 
 void Scene::Invalidate() {
     assert(invalidate_ != nullptr && kIsNotCachedErrorMessage);
+
     invalidate_->invoke(object_);
 }
 
-std::shared_ptr<GameObject> Scene::operator[](size_t index) {
+std::shared_ptr<GameObject> Scene::operator[](size_t index) const {
     assert(get_item_ != nullptr && kIsNotCachedErrorMessage);
 
     void* args[1];
@@ -122,3 +131,5 @@ void Scene::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_method delete_game_object_method(type, "DeleteGameObject", 1);
     delete_game_object_ = new mono::mono_method_invoker(delete_game_object_method);
 }
+
+} // namespace engine

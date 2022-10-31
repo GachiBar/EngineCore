@@ -4,9 +4,10 @@
 
 #include "Delegates.h"
 #include "Layer.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
 #include "InputSystem/InputManager.h"
 #include "InputSystem/UnrealCoreSystem/Windows/WindowsWindow.h"
+#include "../monowrapper/monopp/mono_method_invoker.h"
+#include "../GameplaySystem/Component.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";
@@ -21,9 +22,9 @@ Application::Application()
 	, player_input(new PlayerInput())
 	, exit_code_(0)
 {	
-	Scene::CacheMethods(m_Assembly);
-	GameObject::CacheMethods(m_Assembly);
-	Component::CacheMethods(m_Assembly);
+	engine::Scene::CacheMethods(m_Assembly);
+	engine::GameObject::CacheMethods(m_Assembly);
+	engine::Component::CacheMethods(m_Assembly);
 	mono::mono_domain::set_current_domain(m_Domain);
 }
 
@@ -178,42 +179,6 @@ void Application::Close()
 std::shared_ptr<FGenericWindow> Application::GetMainWindow()
 {
 	return wnds.at(0);
-}
-
-mono::mono_object Application::CreateGameObject(const mono::mono_object& scene) {
-	mono::mono_method create_go_method(scene.get_type(), "CreateGameObject", 0);
-	mono::mono_method_invoker create_go_method_invoker(create_go_method);
-	mono::mono_object go(create_go_method_invoker.invoke(scene));
-
-	mono::mono_method invalidate_scene_method(scene.get_type(), "Invalidate", 0);
-	mono::mono_method_invoker invalidate_scene_method_invoker(invalidate_scene_method);
-	invalidate_scene_method_invoker.invoke(scene);
-
-	return go;
-}
-
-mono::mono_object Application::AddComponent(
-	const mono::mono_assembly& assembly,
-	const mono::mono_object& go,
-	const std::string& name_space,
-	const std::string& name)
-{
-	mono::mono_method add_component_method(go.get_type(), "AddComponent", 1);
-	mono::mono_method_invoker add_component_method_invoker(add_component_method);
-	
-	mono::mono_type component_type = assembly.get_type(name_space, name);
-	MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
-
-	void* params[1];
-	params[0] = reflection_type;
-
-	mono::mono_object component(add_component_method_invoker.invoke(go, params));
-
-	mono::mono_method invalidate_go_method(go.get_type(), "Invalidate", 0);
-	mono::mono_method_invoker invalidate_go_method_invoker(invalidate_go_method);
-	invalidate_go_method_invoker.invoke(go);
-
-	return component;
 }
 
 engine::Engine* Application::GetEngine() const

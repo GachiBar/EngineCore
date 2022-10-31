@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="monopp\mono_array.cpp" />
     <ClCompile Include="monopp\mono_assembly.cpp" />
     <ClCompile Include="monopp\mono_domain.cpp" />
     <ClCompile Include="monopp\mono_exception.cpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="monopp\mono_type.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="monopp\mono_array.h" />
     <ClInclude Include="monopp\mono_assembly.h" />
     <ClInclude Include="monopp\mono_config.h" />
     <ClInclude Include="monopp\mono_domain.h" />

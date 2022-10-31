@@ -1,14 +1,12 @@
 #pragma once
-#include <memory>
 
-namespace mono
-{
-	class mono_object;
-}
+#include "../GameplaySystem/GameObject.h"
+
+#include <memory>
 
 class PropertyWindow
 {
 public:
-	void draw_imgui(std::shared_ptr<mono::mono_object> go);
+	void draw_imgui(std::shared_ptr<engine::GameObject> go);
 };
 

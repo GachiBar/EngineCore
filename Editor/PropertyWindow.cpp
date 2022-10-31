@@ -1,12 +1,13 @@
 #include "PropertyWindow.h"
+#include "SimpleMath.h"
+#include "imgui/imgui.h"
+#include "../GameplaySystem/Component.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
 #include "../Editor/InputSystem/InputManager.h"
-#include "SimpleMath.h"
-#include "imgui/imgui.h"
 
-void PropertyWindow::draw_imgui(std::shared_ptr<mono::mono_object> go)
+void PropertyWindow::draw_imgui(std::shared_ptr<engine::GameObject> go)
 {
 	ImGui::Begin("Property Window");
 	if (!go.get())
@@ -15,59 +16,48 @@ void PropertyWindow::draw_imgui(std::shared_ptr<mono::mono_object> go)
 		return;
 	}
 
-	mono::mono_property components_count_property = go->get_type().get_property("Count");
-	mono::mono_property_invoker components_count_property_invoker(components_count_property);
-	mono::mono_object components_count_object(components_count_property_invoker.get_value(*go));
-	int components_count = components_count_object.unbox<int>();
-
-	// Iterate over all game object's components.
-	for (int j = 0; j < components_count; ++j)
+	for (size_t i = 0; i < go->Count(); ++i) 
 	{
-		mono::mono_method get_component_method = go->get_type().get_method("get_Item");
-		mono::mono_method_invoker get_component_method_invoker(get_component_method);
+		auto component = (*go)[i];
+		auto editablePropertiesNames = component->GetEditablePropertiesNames();
 
-		void* args[1];
-		args[0] = &j;
-
-		mono::mono_object component(get_component_method_invoker.invoke(*go, args));
-		auto properties = component.get_type().get_properties();
-
-		for (auto& property : properties)
+		for (auto propertyName : editablePropertiesNames) 
 		{
-			if(property.get_name() == "EditorEuler")
+			if (propertyName == "EditorEuler")
 			{
-				mono::mono_property_invoker t(property);
-				mono::mono_object t1(t.get_value(component));
+				mono::mono_property_invoker t(component->GetInternal().get_type().get_property(propertyName));
+				mono::mono_object t1(t.get_value(component->GetInternal()));
 				auto t2 = t1.unbox<DirectX::SimpleMath::Vector3>();
 				float t3[3] = { t2.x, t2.y,t2.z };
 				if (ImGui::SliderFloat3("Euler Rotation", t3, -360.f, 360.f))
 				{
-					t.set_value(component,t3);
+					t.set_value(component->GetInternal(), t3);
 				}
 			}
-			if(property.get_name() == "LocalScale")
+			if (propertyName == "LocalScale")
 			{
-				mono::mono_property_invoker t(property);
-				mono::mono_object t1(t.get_value(component));
+				mono::mono_property_invoker t(component->GetInternal().get_type().get_property(propertyName));
+				mono::mono_object t1(t.get_value(component->GetInternal()));
 				auto t2 = t1.unbox<DirectX::SimpleMath::Vector3>();
 				float t3[3] = { t2.x, t2.y,t2.z };
 				if (ImGui::InputFloat3("Scale", t3))
 				{
-					t.set_value(component, t3);
+					t.set_value(component->GetInternal(), t3);
 				}
 			}
-			if (property.get_name() == "LocalPosition") 
+			if (propertyName == "LocalPosition")
 			{
-				mono::mono_property_invoker t(property);
-				mono::mono_object t1(t.get_value(component));
+				mono::mono_property_invoker t(component->GetInternal().get_type().get_property(propertyName));
+				mono::mono_object t1(t.get_value(component->GetInternal()));
 				auto t2 = t1.unbox<DirectX::SimpleMath::Vector3>();
 				float t3[3] = { t2.x, t2.y,t2.z };
 				if (ImGui::InputFloat3("Position", t3))
 				{
-					t.set_value(component, t3);
+					t.set_value(component->GetInternal(), t3);
 				}
 			}
 		}
 	}
+
 	ImGui::End();
 }

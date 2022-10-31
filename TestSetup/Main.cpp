@@ -21,16 +21,16 @@ public:
 		}	
 	}
 
-	Scene* scene = nullptr;
-	std::shared_ptr<GameObject> game_object_1;
-	std::shared_ptr<GameObject>  game_object_2;
+	engine::Scene* scene = nullptr;
+	std::shared_ptr<engine::GameObject> game_object_1;
+	std::shared_ptr<engine::GameObject>  game_object_2;
 
 	void OnSetup() override;
 };
 
 
 void StandaloneGameTestApplication::OnSetup() {
-	scene = new Scene(m_Assembly);
+	scene = new engine::Scene(m_Assembly);
 	game_object_1 = scene->CreateGameObject();
 	game_object_2 = scene->CreateGameObject();
 

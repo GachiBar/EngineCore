@@ -37,7 +37,7 @@ namespace GameplayCore.Serialization
             writer.WritePropertyName("Components");
             writer.WriteStartArray();
 
-            foreach (var component in gameObject.GetComponentsEnumerable())
+            foreach (var component in gameObject)
             {
                 writer.WriteStartObject();
                 writer.WritePropertyName("Type");

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameplayCore.Mathematics;
+using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
 {
@@ -12,6 +13,7 @@ namespace GameplayCore.Components
 
         public int ChildrenCount => _children.Count;
 
+        [HideInInspector]
         public TransformComponent Parent
         {
             get => _parent;
@@ -39,8 +41,10 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Quaternion LocalRotation { get; set; } = Quaternion.Identity;
 
+        [HideInInspector]
         public Vector3 LocalEuler
         {
             get
@@ -60,6 +64,7 @@ namespace GameplayCore.Components
 
         public Vector3 LocalPosition { get; set; } = Vector3.Zero;
 
+        [HideInInspector]
         public Quaternion Rotation
         {
             get
@@ -89,6 +94,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Vector3 Euler
         {
             get
@@ -104,6 +110,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Vector3 Scale
         {
             get
@@ -131,6 +138,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Vector3 Position
         {
             get
@@ -182,6 +190,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [SerializeField]
         private Vector3 EditorEuler
         {
             get => _editorEuler;
