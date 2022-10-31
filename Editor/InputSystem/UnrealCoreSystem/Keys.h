@@ -11,7 +11,6 @@ struct EKeys
 
 	static const FKey MouseX;
 	static const FKey MouseY;
-	static const FKey Mouse2D;
 	static const FKey MouseScrollUp;
 	static const FKey MouseScrollDown;
 	static const FKey MouseWheelAxis;
@@ -160,7 +159,6 @@ struct EKeys
 
     static void Initialize();
 	static void AddKey(const FKeyDetails& KeyDetails);
-	static void AddPairedKey(const FKeyDetails& PairedKeyDetails, FKey KeyX, FKey KeyY);	// Map the two provided keys to the X and Z axes of the paired key
 	static void GetAllKeys(std::vector<FKey>& OutKeys);
 	static std::shared_ptr<FKeyDetails> GetKeyDetails(const FKey Key);
 	static void RemoveKeysWithCategory(const std::string& InCategory);

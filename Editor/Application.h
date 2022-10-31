@@ -10,6 +10,9 @@
 #include "../monowrapper/monopp/mono_object.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
+#include "InputSystem/UnrealCoreSystem/InputSettings.h"
+#include "InputSystem/UnrealCoreSystem/Keys.h"
+#include "InputSystem/UnrealCoreSystem/Windows/GenericWindow.h"
 
 class Application
 {
@@ -18,13 +21,12 @@ public:
 
     void PushLayer(Layer* layer);
     void PushOverlay(Layer* layer);
-    
+
     /// OnSetup before engine initialization
     virtual void OnSetup();
 
     /// OnSetup after engine initialization and before running the main loop
     virtual void OnStart();
-
 
     /// Cleanup after the main loop. Called by Application
     virtual void OnStop() { }
@@ -33,6 +35,9 @@ public:
     int Run();
 
     void Close();
+
+    std::shared_ptr<FGenericWindow> GetMainWindow();
+
     mono::mono_object CreateGameObject(const mono::mono_object& scene);
 
     mono::mono_object AddComponent(
@@ -51,12 +56,16 @@ protected:
     void ApplyInput();
 
     LayerStack m_LayerStack;
+    std::vector<std::shared_ptr<FGenericWindow>> wnds;
+
     mono::mono_domain m_Domain;
     mono::mono_assembly m_Assembly;
     std::shared_ptr<engine::Engine> engine_;
+    std::shared_ptr<InputSettings> input_settings;
 
     /// Application exit code.
     int exit_code_;
+
 
 private:
 

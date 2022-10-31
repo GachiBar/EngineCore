@@ -2,8 +2,11 @@
 #include <bitset>
 #include <memory>
 #include <queue>
+#include <set>
 
 #include "InputEvent.h"
+#include "UnrealCoreSystem/KeyStruct.h"
+#include "UnrealCoreSystem/Windows/GenericWindow.h"
 
 class InputEvent;
 
@@ -16,51 +19,27 @@ public:
 	Mouse( const Mouse& ) = delete;
 	Mouse& operator=( const Mouse& ) = delete;
 
-	std::pair<int,int> GetPos() const;
-	int GetPosX() const;
-	int GetPosY() const;
+	void SetPos(int x, int y);
+	std::pair<int, int> GetPos() const;
+	FVector2D GetCurPosFloatPoint() const;
 
-	float GetDelta() const;
+	void SetLastPos(int x, int y);
+	std::pair<int, int> GetLastPos() const;
+	FVector2D GetLastPosFloatPoint() const;
 
-	bool IsPressedDown(MouseKey key) const;
-	bool IsPressedUp(MouseKey key) const;
-	
-	bool IsKeyPressed(MouseKey key) const;
-	bool IsKeyPressed(unsigned char keycode) const;
+	bool IsInWindow(const FGenericWindow* Window) const;
 
-	bool IsLeftPressed() const;
-	bool IsRightPressed() const;
-	bool IsMiddlePressed() const;
 
-	bool IsInWindow() const;
-protected:
-	void OnMouseMove(int newx, int newy);
-	void OnMouseLeave();
-	void OnMouseEnter();
-
-	void OnLeftPressed();
-	void OnLeftReleased();
-
-	void OnRightPressed();
-	void OnRightReleased();
-
-	void OnMiddlePressed();
-	void OnMiddleReleased();
-
-	void OnWheelUp(short delta);
-	void OnWheelDown(short delta);
+	void AddPressedMouseButton(FKey const & MouseButton);
+	void RemoveMouseButton(FKey const& MouseButton);
+	std::set<FKey> const& GetPressedButtons();
 
 	void Flush();
 
 protected:
-	int x;
-	int y;
-	float _delta;
+	std::set<FKey> PressedMouseButtons;
 
-	bool isInWindow = false;
+	std::pair<int, int> last_pos;
+	std::pair<int, int> cur_pos;
 
-	static constexpr unsigned int nKeys = 4u;
-	std::bitset<nKeys> keystates;
-
-	std::vector<std::shared_ptr<InputEvent>> last_changes;
 };

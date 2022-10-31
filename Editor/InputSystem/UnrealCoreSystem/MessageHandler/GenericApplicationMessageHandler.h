@@ -1,8 +1,14 @@
 #pragma once
+#include <deque>
+
 #include "../Windows/GenericWindow.h"
 #include <memory>
-#include "SimpleMath.h"
+#include <queue>
 
+#include "SimpleMath.h"
+#include "../InputEvent/Events.h"
+
+struct FInputEvent;
 typedef unsigned int uint32;
 typedef unsigned char uint8;
 typedef DirectX::SimpleMath::Vector2 FVector2D;
@@ -143,6 +149,11 @@ public:
 		return false;
 	}
 
+	virtual void OnSizeChanged(const std::shared_ptr< FGenericWindow >& PlatformWindow, const int32 Width, const int32 Height, bool bWasMinimized)
+	{
+
+	}
+
 	virtual void OnResizingWindow( const std::shared_ptr< FGenericWindow >& Window )
 	{
 
@@ -167,5 +178,25 @@ public:
 	{
 
 	}
+
+	std::queue<FInputEvent> const & GetInputStack()
+	{
+		return InputStack;
+	}
+
+	bool ReadInputEvent(FInputEvent& Event_out)
+	{
+		if(InputStack.size())
+		{
+			Event_out = InputStack.front();
+			InputStack.pop();
+			return true;
+		}
+		Event_out = FInputEvent();
+		return false;
+	}
+
+protected:
+	std::queue<FInputEvent> InputStack;
 };
 

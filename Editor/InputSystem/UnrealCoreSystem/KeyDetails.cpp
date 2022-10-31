@@ -40,11 +40,6 @@ void FKeyDetails::CommonInit(const uint32 InKeyFlags)
 		//ensure((InKeyFlags & (EKeyFlags::Axis2D | EKeyFlags::Axis3D)) == 0);
 		AxisType = EInputAxisType::Axis1D;
 	}
-	else if ((InKeyFlags & EKeyFlags::Axis2D) != 0)
-	{
-		//ensure((InKeyFlags & EKeyFlags::Axis3D) == 0);
-		AxisType = EInputAxisType::Axis2D;
-	}
 	else
 	{
 		AxisType = EInputAxisType::None;

@@ -30,7 +30,7 @@ struct FMemory
 	template< class T > 
 	inline static void Memset( T& Src, uint8 ValueToSet )
 	{
-		static_assert( !std::is_pointer<T>::Value, "For pointers use the three parameters function");
+		static_assert( !std::is_pointer_v<T>, "For pointers use the three parameters function");
 		Memset( &Src, ValueToSet, sizeof( T ) );
 	}
 
@@ -42,7 +42,7 @@ struct FMemory
 	template< class T > 
 	inline static void Memzero( T& Src )
 	{
-		static_assert( !is_pointer<T>::Value, "For pointers use the two parameters function");
+		static_assert( !std::is_pointer_v<T>, "For pointers use the two parameters function");
 		Memzero( &Src, sizeof( T ) );
 	}
 
@@ -54,7 +54,7 @@ struct FMemory
 	template< class T > 
 	inline static void Memcpy( T& Dest, const T& Src )
 	{
-		static_assert( !is_pointer<T>::Value, "For pointers use the three parameters function");
+		static_assert( !std::is_pointer_v<T>, "For pointers use the three parameters function");
 		Memcpy( &Dest, &Src, sizeof( T ) );
 	}
 };

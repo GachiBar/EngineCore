@@ -3,6 +3,8 @@
 #include <windowsx.h>
 
 #include "InputKeys.h"
+#include "../Application.h"
+#include "UnrealCoreSystem/Windows/WindowsWindow.h"
 
 
 InputManager& InputManager::getInstance()
@@ -12,18 +14,13 @@ InputManager& InputManager::getInstance()
 	return instance;
 }
 
-Keyboard& InputManager::GetKeyboardDevice()
-{
-	return kbd;
-}
-
 Mouse& InputManager::GetMouseDevice()
 {
 	std::shared_ptr<int> t(new int);
 	t.reset(new int);
 	std::map<std::string, int> t1;
 
-	std::erase_if(t1, [](auto& a) {return a.first; });
+	std::erase_if(t1, [](auto& a) { return a.first; });
 	return mouse;
 }
 
@@ -84,173 +81,318 @@ bool InputManager::IsKeyboardMessage(UINT msg)
 void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	if (msg == WM_KILLFOCUS)
-		GetKeyboardDevice().ClearState();
-	// ************ KEYBOARD MESSAGES ************ //
+		Flush();
+	else if (msg == WM_INPUTLANGCHANGE || msg == WM_INPUTLANGCHANGEREQUEST)
+		message_handler->OnInputLanguageChanged();
+	else if (msg == WM_CHAR)
+	{
+		// Character code is stored in WPARAM
+		const TCHAR Character = wparam;
+
+		// lparam bit 30 will be ZERO for new presses, or ONE if this is a repeat
+		const bool bIsRepeat = (lparam & 0x40000000) != 0;
+
+		message_handler->OnKeyChar(Character, bIsRepeat);
+	}
 	else if (msg == WM_KEYDOWN || msg == WM_SYSKEYDOWN)
 	{
 		// Character code is stored in WPARAM
-				const int Win32Key = wparam;
+		const int Win32Key = wparam;
 
-				// The actual key to use.  Some keys will be translated into other keys. 
-				// I.E VK_CONTROL will be translated to either VK_LCONTROL or VK_RCONTROL as these
-				// keys are never sent on their own
-				int ActualKey = Win32Key;
+		// The actual key to use.  Some keys will be translated into other keys. 
+		// I.E VK_CONTROL will be translated to either VK_LCONTROL or VK_RCONTROL as these
+		// keys are never sent on their own
+		int ActualKey = Win32Key;
 
-				// LPARAM bit 30 will be ZERO for new presses, or ONE if this is a repeat
-				bool bIsRepeat = ( lparam & 0x40000000 ) != 0;
+		// lparam bit 30 will be ZERO for new presses, or ONE if this is a repeat
+		bool bIsRepeat = (lparam & 0x40000000) != 0;
 
-				switch( Win32Key )
-				{
-				case VK_MENU:
-					// Differentiate between left and right alt
-					if( (lparam & 0x1000000) == 0 )
-					{
-						ActualKey = VK_LMENU;
-						//bIsRepeat = ModifierKeyState[EModifierKey::LeftAlt];
-						//ModifierKeyState[EModifierKey::LeftAlt] = true;
-					}
-					else
-					{
-						ActualKey = VK_RMENU;
-						//bIsRepeat = ModifierKeyState[EModifierKey::RightAlt];
-						//ModifierKeyState[EModifierKey::RightAlt] = true;
-					}
-					break;
-				case VK_CONTROL:
-					// Differentiate between left and right control
-					if( (lparam & 0x1000000) == 0 )
-					{
-						ActualKey = VK_LCONTROL;
-						//bIsRepeat = ModifierKeyState[EModifierKey::LeftControl];
-						//ModifierKeyState[EModifierKey::LeftControl] = true;
-					}
-					else
-					{
-						ActualKey = VK_RCONTROL;
-						//bIsRepeat = ModifierKeyState[EModifierKey::RightControl];
-						//ModifierKeyState[EModifierKey::RightControl] = true;
-					}
-					break;
-				case VK_SHIFT:
-					// Differentiate between left and right shift
-					ActualKey = MapVirtualKey( (lparam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
-					if (ActualKey == VK_LSHIFT)
-					{
-						//bIsRepeat = ModifierKeyState[EModifierKey::LeftShift];
-						//ModifierKeyState[EModifierKey::LeftShift] = true;
-					}
-					else
-					{
-						//bIsRepeat = ModifierKeyState[EModifierKey::RightShift];
-						//ModifierKeyState[EModifierKey::RightShift] = true;
-					}
-					break;
-				case VK_CAPITAL:
-					//ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
-					break;
-				default:
-					// No translation needed
-					break;
-				}
-
-				// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
-				unsigned int CharCode = ::MapVirtualKey( Win32Key, MAPVK_VK_TO_CHAR );
-
-				const bool Result = MessageHandler->OnKeyDown(ActualKey, CharCode, bIsRepeat);
-
-				// Always return 0 to handle the message or else windows will beep
-				if( Result || msg != WM_SYSKEYDOWN )
-				{
-					// Handled
-					return;
-				}
-				/*
-		if (!(lparam & 0x40000000) || GetKeyboardDevice().IsAutorepeatEnabled()) // no thank you on the autorepeat
+		switch (Win32Key)
 		{
-			GetKeyboardDevice().OnKeyPressed(static_cast<unsigned char>(wparam));
-		}
-		*/
+		case VK_MENU:
+			// Differentiate between left and right alt
+			if ((lparam & 0x1000000) == 0)
+			{
+				ActualKey = VK_LMENU;
+				//bIsRepeat = ModifierKeyState[EModifierKey::LeftAlt];
+				//ModifierKeyState[EModifierKey::LeftAlt] = true;
 			}
+			else
+			{
+				ActualKey = VK_RMENU;
+				//bIsRepeat = ModifierKeyState[EModifierKey::RightAlt];
+				//ModifierKeyState[EModifierKey::RightAlt] = true;
+			}
+			break;
+		case VK_CONTROL:
+			// Differentiate between left and right control
+			if ((lparam & 0x1000000) == 0)
+			{
+				ActualKey = VK_LCONTROL;
+				//bIsRepeat = ModifierKeyState[EModifierKey::LeftControl];
+				//ModifierKeyState[EModifierKey::LeftControl] = true;
+			}
+			else
+			{
+				ActualKey = VK_RCONTROL;
+				//bIsRepeat = ModifierKeyState[EModifierKey::RightControl];
+				//ModifierKeyState[EModifierKey::RightControl] = true;
+			}
+			break;
+		case VK_SHIFT:
+			// Differentiate between left and right shift
+			ActualKey = MapVirtualKey((lparam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+			break;
+		case VK_CAPITAL:
+			//ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+			break;
+		default:
+			// No translation needed
+			break;
+		}
+
+		// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
+		const unsigned int CharCode = ::MapVirtualKey(Win32Key, MAPVK_VK_TO_CHAR);
+
+		message_handler->OnKeyDown(ActualKey, CharCode, bIsRepeat);
+	}
 	else if (msg == WM_KEYUP || msg == WM_SYSKEYUP)
 	{
 		// Character code is stored in WPARAM
-				int Win32Key = wparam;
+		int Win32Key = wparam;
 
-				// The actual key to use.  Some keys will be translated into other keys. 
-				// I.E VK_CONTROL will be translated to either VK_LCONTROL or VK_RCONTROL as these
-				// keys are never sent on their own
-				int ActualKey = Win32Key;
+		// The actual key to use.  Some keys will be translated into other keys. 
+		// I.E VK_CONTROL will be translated to either VK_LCONTROL or VK_RCONTROL as these
+		// keys are never sent on their own
+		int ActualKey = Win32Key;
 
-				bool bModifierKeyReleased = false;
-				switch( Win32Key )
-				{
-				case VK_MENU:
-					// Differentiate between left and right alt
-					if( (lparam & 0x1000000) == 0 )
-					{
-						ActualKey = VK_LMENU;
-						//ModifierKeyState[EModifierKey::LeftAlt] = false;
-					}
-					else
-					{
-						ActualKey = VK_RMENU;
-						//ModifierKeyState[EModifierKey::RightAlt] = false;
-					}
-					break;
-				case VK_CONTROL:
-					// Differentiate between left and right control
-					if( (lparam & 0x1000000) == 0 )
-					{
-						ActualKey = VK_LCONTROL;
-						//ModifierKeyState[EModifierKey::LeftControl] = false;
-					}
-					else
-					{
-						ActualKey = VK_RCONTROL;
-						//ModifierKeyState[EModifierKey::RightControl] = false;
-					}
-					break;
-				case VK_SHIFT:
-					// Differentiate between left and right shift
-					ActualKey = MapVirtualKey( (lparam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
-					if (ActualKey == VK_LSHIFT)
-					{
-						//ModifierKeyState[EModifierKey::LeftShift] = false;
-					}
-					else
-					{
-						//ModifierKeyState[EModifierKey::RightShift] = false;
-					}
-					break;
-				case VK_CAPITAL:
-					//ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
-					break;
-				default:
-					// No translation needed
-					break;
-				}
+		switch (Win32Key)
+		{
+		case VK_MENU:
+			// Differentiate between left and right alt
+			if ((lparam & 0x1000000) == 0)
+			{
+				ActualKey = VK_LMENU;
+				//ModifierKeyState[EModifierKey::LeftAlt] = false;
+			}
+			else
+			{
+				ActualKey = VK_RMENU;
+				//ModifierKeyState[EModifierKey::RightAlt] = false;
+			}
+			break;
+		case VK_CONTROL:
+			// Differentiate between left and right control
+			if ((lparam & 0x1000000) == 0)
+			{
+				ActualKey = VK_LCONTROL;
+				//ModifierKeyState[EModifierKey::LeftControl] = false;
+			}
+			else
+			{
+				ActualKey = VK_RCONTROL;
+				//ModifierKeyState[EModifierKey::RightControl] = false;
+			}
+			break;
+		case VK_SHIFT:
+			// Differentiate between left and right shift
+			ActualKey = MapVirtualKey((lparam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+			break;
+		case VK_CAPITAL:
+			//ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+			break;
+		default:
+			// No translation needed
+			break;
+		}
 
-				// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
-				unsigned int CharCode = ::MapVirtualKey( Win32Key, MAPVK_VK_TO_CHAR );
+		// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
+		unsigned int CharCode = ::MapVirtualKey(Win32Key, MAPVK_VK_TO_CHAR);
 
-				// Key up events are never repeats
-				const bool bIsRepeat = false;
+		// Key up events are never repeats
+		const bool bIsRepeat = false;
 
-				const bool Result = MessageHandler->OnKeyUp( ActualKey, CharCode, bIsRepeat );
-
-				// Note that we allow system keys to pass through to DefWndProc here, so that core features
-				// like Alt+F4 to close a window work.
-				if( Result || msg != WM_SYSKEYUP )
-				{
-					// Handled
-					return;
-				}
+		message_handler->OnKeyUp(ActualKey, CharCode, bIsRepeat);
 	}
-		//GetKeyboardDevice().OnKeyReleased(static_cast<unsigned char>(wparam));
+	//GetKeyboardDevice().OnKeyReleased(static_cast<unsigned char>(wparam));
 	// ************ END KEYBOARD MESSAGES ************ //
 
 	// ************ MOUSE MESSAGES ************ //
-	else if(msg ==  WM_MOUSEMOVE)
+	else if (IsMouseMessage(msg))
+	{
+		if(msg == WM_MOUSEMOVE || msg==WM_NCMOUSEMOVE)
+		{
+			POINT CursorPoint;
+			CursorPoint.x = GET_X_LPARAM(lparam);
+			CursorPoint.y = GET_Y_LPARAM(lparam);
+
+			message_handler->OnRawMouseMove(CursorPoint.x, CursorPoint.y);
+		}
+		else
+		{
+			POINT CursorPoint;
+			CursorPoint.x = GET_X_LPARAM(lparam);
+			CursorPoint.y = GET_Y_LPARAM(lparam);
+
+			ClientToScreen(hwnd, &CursorPoint);
+
+			const FVector2D CursorPos(CursorPoint.x, CursorPoint.y);
+
+			EMouseButtons::Type MouseButton = EMouseButtons::Invalid;
+			bool bDoubleClick = false;
+			bool bMouseUp = false;
+			switch (msg)
+			{
+			case WM_LBUTTONDBLCLK:
+				bDoubleClick = true;
+				MouseButton = EMouseButtons::Left;
+				break;
+			case WM_LBUTTONUP:
+				bMouseUp = true;
+				MouseButton = EMouseButtons::Left;
+				break;
+			case WM_LBUTTONDOWN:
+				MouseButton = EMouseButtons::Left;
+				break;
+			case WM_MBUTTONDBLCLK:
+				bDoubleClick = true;
+				MouseButton = EMouseButtons::Middle;
+				break;
+			case WM_MBUTTONUP:
+				bMouseUp = true;
+				MouseButton = EMouseButtons::Middle;
+				break;
+			case WM_MBUTTONDOWN:
+				MouseButton = EMouseButtons::Middle;
+				break;
+			case WM_RBUTTONDBLCLK:
+				bDoubleClick = true;
+				MouseButton = EMouseButtons::Right;
+				break;
+			case WM_RBUTTONUP:
+				bMouseUp = true;
+				MouseButton = EMouseButtons::Right;
+				break;
+			case WM_RBUTTONDOWN:
+				MouseButton = EMouseButtons::Right;
+				break;
+			case WM_XBUTTONDBLCLK:
+				bDoubleClick = true;
+				MouseButton = (HIWORD(wparam) & XBUTTON1) ? EMouseButtons::Thumb01 : EMouseButtons::Thumb02;
+				break;
+			case WM_XBUTTONUP:
+				bMouseUp = true;
+				MouseButton = (HIWORD(wparam) & XBUTTON1) ? EMouseButtons::Thumb01 : EMouseButtons::Thumb02;
+				break;
+			case WM_XBUTTONDOWN:
+				MouseButton = (HIWORD(wparam) & XBUTTON1) ? EMouseButtons::Thumb01 : EMouseButtons::Thumb02;
+				break;
+			}
+
+			if (bMouseUp)
+			{
+				message_handler->OnMouseUp(MouseButton, CursorPos);
+			}
+			else if (bDoubleClick)
+			{
+				message_handler->OnMouseDoubleClick(app->GetMainWindow(), MouseButton, CursorPos);
+			}
+			else
+			{
+				message_handler->OnMouseDown(app->GetMainWindow(), MouseButton, CursorPos);
+			}
+		}
+		
+	}
+	else if (msg == WM_MOUSEWHEEL)
+	{
+		const float SpinFactor = 1 / 120.0f;
+		const SHORT WheelDelta = GET_WHEEL_DELTA_WPARAM(wparam);
+
+		POINT CursorPoint;
+		CursorPoint.x = GET_X_LPARAM(lparam);
+		CursorPoint.y = GET_Y_LPARAM(lparam);
+
+		const FVector2D CursorPos(CursorPoint.x, CursorPoint.y);
+
+		message_handler->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
+	}
+	else if (msg == WM_CLOSE)
+	{
+		if (app->GetMainWindow())
+		{
+			// Called when the OS close button is pressed
+			message_handler->OnWindowClose(app->GetMainWindow());
+		}
+	}
+	else if(msg == WM_SIZING)
+	{
+		if (app->GetMainWindow())
+		{
+			// @todo Fullscreen - Perform deferred resize
+			// Note WM_SIZE provides the client dimension which is not equal to the window dimension if there is a windows border 
+			const int32 NewWidth = (int)(short)(LOWORD(lparam));
+			const int32 NewHeight = (int)(short)(HIWORD(lparam));
+
+			const FGenericWindowDefinition& Definition = app->GetMainWindow()->GetDefinition();
+			if (Definition.IsRegularWindow && !Definition.HasOSWindowBorder)
+			{
+				static_cast<FWindowsWindow*>(app->GetMainWindow().get())->AdjustWindowRegion(NewWidth, NewHeight);
+			}
+
+			const bool bWasMinimized = (wparam == SIZE_MINIMIZED);
+
+			const bool bIsFullscreen = (app->GetMainWindow()->GetWindowMode() == EWindowMode::Type::Fullscreen);
+
+			// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
+			if (!bIsFullscreen)
+			{
+				message_handler->OnSizeChanged(app->GetMainWindow(), NewWidth, NewHeight, bWasMinimized);
+			}
+		}
+	}
+	else if(msg == WM_SIZE)
+	{
+	const bool bIsFullscreen = (app->GetMainWindow()->GetWindowMode() == EWindowMode::Type::Fullscreen);
+
+	// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
+		if (!bIsFullscreen)
+		{
+			message_handler->OnResizingWindow(app->GetMainWindow());
+		}
+		
+	}
+	// ************ END MOUSE MESSAGES ************ //
+
+	/*
+	 	else if (msg == WM_MOUSEMOVE)
+	{
+		uint32 Size = 0;
+		::GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &Size, sizeof(RAWINPUTHEADER));
+		std::vector<uint8> RawData(Size);
+
+		if (::GetRawInputData((HRAWINPUT)lparam, RID_INPUT, RawData.data(), &Size, sizeof(RAWINPUTHEADER)) == Size)
+		{
+			const auto Raw = reinterpret_cast<const RAWINPUT* const>(RawData.data());
+
+			if (Raw->header.dwType == RIM_TYPEMOUSE)
+			{
+				const bool IsAbsoluteInput = (Raw->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE) == MOUSE_MOVE_ABSOLUTE;
+				if (IsAbsoluteInput)
+				{
+					// Since the raw input is coming in as absolute it is likely the user is using a tablet
+					// or perhaps is interacting through a virtual desktop
+					// Absolute coordinates given through raw input are simulated using MouseMove to get relative coordinates
+					message_handler->OnMouseMove();
+				}
+			}
+			// Since raw input is coming in as relative it is likely a traditional mouse device
+			const int xPosRelative = Raw->data.mouse.lLastX;
+			const int yPosRelative = Raw->data.mouse.lLastY;
+			message_handler->OnRawMouseMove(xPosRelative, yPosRelative);
+		}
+	}
+	else if (msg == WM_MOUSEMOVE)
 	{
 		POINTS pt = MAKEPOINTS(lparam);
 		//TODO remove magic numbers
@@ -284,77 +426,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 		}
 	}
-	else if (msg == WM_LBUTTONDOWN)
-	{
-		const POINTS pt = MAKEPOINTS(lparam);
-		GetMouseDevice().OnLeftPressed();
-		SetForegroundWindow(hwnd);
-	}
-	else if (msg == WM_RBUTTONDOWN)
-	{
-		const POINTS pt = MAKEPOINTS(lparam);
-		GetMouseDevice().OnRightPressed();
-	}
-	else if (msg == WM_LBUTTONUP)
-	{
-		const POINTS pt = MAKEPOINTS(lparam);
-		GetMouseDevice().OnLeftReleased();
-	}
-	else if (msg == WM_RBUTTONUP)
-	{
-		const POINTS pt = MAKEPOINTS(lparam);
-		GetMouseDevice().OnRightReleased();
-	}
-	else if (msg == WM_MOUSEWHEEL)
-	{
-		short const delta = GET_WHEEL_DELTA_WPARAM(wparam);
-		const POINTS pt = MAKEPOINTS(lparam);
-
-		const float SpinFactor = 1 / 120.0f;
-		const SHORT WheelDelta = GET_WHEEL_DELTA_WPARAM(wparam);
-
-		POINT CursorPoint;
-		CursorPoint.x = GET_X_LPARAM(lparam);
-		CursorPoint.y = GET_Y_LPARAM(lparam);
-
-		const std::pair CursorPos(CursorPoint.x, CursorPoint.y);
-
-		//const BOOL Result = MessageHandler->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
-		//return Result ? 0 : 1;
-		float delta2 = static_cast<float>(WheelDelta) * SpinFactor;
-
-		if (delta2 > 0)
-		{
-			GetMouseDevice().OnWheelUp(copysignf(1.f, delta2));
-		}
-		else if (delta2 < 0)
-		{
-			GetMouseDevice().OnWheelDown(copysignf(1.f, delta2));
-		}
-	}
-	// ************ END MOUSE MESSAGES ************ //
-}
-
-void InputManager::SendEventToBuffer(std::shared_ptr<InputEvent> const & input_event)
-{
-	input_buffer.push(input_event);
-	TrimBuffer(input_buffer);
-}
-
-void InputManager::SetInputBufferSize(int new_buffer_size)
-{
-	bufferSize = new_buffer_size;
-}
-
-std::shared_ptr<InputEvent> InputManager::ReadEvent()
-{
-	if (!input_buffer.empty())
-	{
-		const auto input = input_buffer.front();
-		input_buffer.pop();
-		return input;
-	}
-	return nullptr;
+	 */
 }
 
 std::pair<float, float> InputManager::GetMousePosition() const
@@ -362,55 +434,19 @@ std::pair<float, float> InputManager::GetMousePosition() const
 	return mouse.GetPos();
 }
 
-float InputManager::GetWheelDelta() const
+bool InputManager::ReadEvent(FInputEvent& IE) const
 {
-	return mouse.GetDelta();
+	return player_input->MessageHandler->ReadInputEvent(IE);
 }
 
-bool InputManager::GetKey(KeyboardKey key) const
+InputManager::InputManager(): app(nullptr), player_input(nullptr), message_handler(nullptr)
 {
-	return kbd.KeyIsPressed(static_cast<unsigned char>(key));
-}
-
-bool InputManager::GetMouseKey(MouseKey key) const
-{
-	return mouse.IsKeyPressed(key);
-}
-
-bool InputManager::GetKeyDown(KeyboardKey key) const
-{
-	return kbd.IsKeyDown(key);
-}
-
-bool InputManager::GetKeyUp(KeyboardKey key) const
-{
-	return kbd.IsKeyUp(key);
-}
-
-bool InputManager::GetMouseKeyDown(MouseKey key) const
-{
-	return mouse.IsPressedDown(key);
-}
-
-bool InputManager::GetMouseKeyUp(MouseKey key) const
-{
-	return mouse.IsPressedUp(key);
 }
 
 void InputManager::Flush()
 {
-	kbd.Flush();
+	//TODO
+	//KeyStates flush
+
 	mouse.Flush();
-}
-
-InputManager::InputManager():bufferSize(16)
-{}
-
-template <typename T>
-void InputManager::TrimBuffer(std::queue<T>& buffer)
-{
-	while (bufferSize != 0 && buffer.size() > bufferSize)
-	{
-		buffer.pop();
-	}
 }

@@ -42,12 +42,6 @@ bool FKey::IsAxis1D() const
 	return (KeyDetails ? KeyDetails->IsAxis1D() : false);
 }
 
-bool FKey::IsAxis2D() const
-{
-	ConditionalLookupKeyDetails();
-	return (KeyDetails ? KeyDetails->IsAxis2D() : false);
-}
-
 bool FKey::IsDigital() const
 {
 	ConditionalLookupKeyDetails();
@@ -58,12 +52,6 @@ bool FKey::IsAnalog() const
 {
 	ConditionalLookupKeyDetails();
 	return (KeyDetails ? KeyDetails->IsAnalog() : false);
-}
-
-bool FKey::ShouldUpdateAxisWithoutSamples() const
-{
-	ConditionalLookupKeyDetails();
-	return (KeyDetails ? KeyDetails->ShouldUpdateAxisWithoutSamples() : false);
 }
 
 bool FKey::IsBindableToActions() const
@@ -82,18 +70,6 @@ std::string FKey::GetMenuCategory() const
 {
 	ConditionalLookupKeyDetails();
 	return (KeyDetails ? KeyDetails->GetMenuCategory() : EKeys::NAME_KeyboardCategory);
-}
-
-EPairedAxis FKey::GetPairedAxis() const
-{
-	ConditionalLookupKeyDetails();
-	return (KeyDetails ? KeyDetails->GetPairedAxis() : EPairedAxis::Unpaired);
-}
-
-FKey FKey::GetPairedAxisKey() const
-{
-	ConditionalLookupKeyDetails();
-	return (KeyDetails ? KeyDetails->GetPairedAxisKey() : FKey());
 }
 
 void FKey::ConditionalLookupKeyDetails() const

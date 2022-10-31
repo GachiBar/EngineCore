@@ -1,23 +1,34 @@
 #pragma once
+#include <map>
 #include <set>
 #include "../KeyStruct.h"
+#include "../NameMapping/NamingStructs.h"
+#include "../NameMapping/PlayerInput.h"
+#include "../InputKeyManager.h"
 
+struct FKeyState;
 typedef unsigned int uint32;
 
 struct FInputEvent
 {
-	FInputEvent():bIsRepeat(false)
+	FInputEvent():InputEvent(IE_MAX),bIsRepeat(false)
 	{ }
 
-    FInputEvent(bool bInIsRepeat):bIsRepeat(bInIsRepeat)
+    FInputEvent(EInputEvent InInputEvent, bool bInIsRepeat):InputEvent(InInputEvent), bIsRepeat(bInIsRepeat)
 	{ }
 
 	/**
 	 * Virtual destructor.
 	 */
-	virtual ~FInputEvent( ) { }
+	virtual ~FInputEvent( ) = default;
 
 public:
+
+	virtual void OnApplyInput(std::map<FKey, FKeyState>& KeyStateMap)
+	{
+		
+	}
+
 
 	/**
 	 * Returns whether or not this character is an auto-repeated keystroke
@@ -41,6 +52,7 @@ public:
         return false;
     }
 protected:
+	EInputEvent InputEvent;
 	// True if this key was auto-repeated.
 	bool bIsRepeat;
 };
@@ -52,13 +64,13 @@ struct FCharacterEvent
 	 * UStruct Constructor.  Not meant for normal usage.
 	 */
 	FCharacterEvent()
-		: FInputEvent(false)
+		: FInputEvent()
 		, Character(0)
 	{
 	}
 
 	FCharacterEvent(const wchar_t InCharacter, const bool bInIsRepeat)
-		: FInputEvent(bInIsRepeat)
+		: FInputEvent(bInIsRepeat? IE_Repeat : IE_Pressed, bInIsRepeat)
 		, Character(InCharacter)
 	{ }
 
@@ -72,6 +84,19 @@ struct FCharacterEvent
 		return Character;
 	}
 
+	virtual void OnApplyInput(std::map<FKey, FKeyState>& KeyStateMap) override
+	{
+		const FKey KeyFounded = InputKeyManager::Get().GetKeyFromCodes(Character, Character);
+		if(KeyFounded!= EKeys::Invalid)
+		{
+			FKeyState& KeyState = KeyStateMap[KeyFounded];
+
+			KeyState.bDownPrevious = KeyState.bDown;
+			KeyState.bDown = InputEvent == IE_Repeat || InputEvent == IE_Pressed;
+
+			KeyState.EventCounts[InputEvent]++;
+		}
+	}
 private:
 
 	// The character that was pressed.
@@ -84,7 +109,7 @@ struct FKeyEvent : public FInputEvent
 	 * UStruct Constructor.  Not meant for normal usage.
 	 */
 	FKeyEvent()
-		: FInputEvent(false)
+		: FInputEvent()
 		, Key()
 		, CharacterCode(0)
 		, KeyCode(0)
@@ -99,10 +124,11 @@ struct FKeyEvent : public FInputEvent
 	 */
 	FKeyEvent(	const FKey InKey,
 				const bool bInIsRepeat,
+				const EInputEvent InInputEvent,
 				const uint32 InCharacterCode,
 				const uint32 InKeyCode
 	)
-		: FInputEvent(bInIsRepeat)
+		: FInputEvent(InInputEvent,bInIsRepeat)
 		, Key(InKey)
 		, CharacterCode(InCharacterCode)
 		, KeyCode(InKeyCode)
@@ -143,6 +169,16 @@ struct FKeyEvent : public FInputEvent
 		return true;
 	}
 
+	virtual void OnApplyInput(std::map<FKey, FKeyState>& KeyStateMap) override
+	{
+		FKeyState& KeyState = KeyStateMap[Key];
+
+		KeyState.bDownPrevious = KeyState.bDown;
+		KeyState.bDown = InputEvent == IE_Repeat || InputEvent == IE_Pressed;
+
+		KeyState.EventCounts[InputEvent]++;
+	}
+
 private:
 	// Name of the key that was pressed.
 	FKey Key;
@@ -163,55 +199,27 @@ struct FPointerEvent
 		, CursorDelta(FVector2D(0, 0))
 		, PressedButtons()
 		, EffectingButton()
-		, WheelDelta(0.0f, 0.0f)
+		, WheelDelta(0.0f)
 		, bIsDirectionInvertedFromDevice(false)
 	{ }
 
 	/** Events are immutable once constructed. */
 	FPointerEvent(
+		const EInputEvent InInputEvent,
 		const FVector2D& InScreenSpacePosition,
 		const FVector2D& InLastScreenSpacePosition,
 		const std::set<FKey>& InPressedButtons,
-		FKey InEffectingButton,
+		const FKey& InEffectingButton,
 		float InWheelDelta
 	)
-		: FInputEvent(false)
+		: FInputEvent(InInputEvent,false)
 		, ScreenSpacePosition(InScreenSpacePosition)
 		, LastScreenSpacePosition(InLastScreenSpacePosition)
 		, CursorDelta(InScreenSpacePosition - InLastScreenSpacePosition)
-		, PressedButtons(&InPressedButtons)
+		, PressedButtons(InPressedButtons)
 		, EffectingButton(InEffectingButton)
-		, bIsDirectionInvertedFromDevice(false)
-	{ }
-
-	FPointerEvent(
-		const FVector2D& InScreenSpacePosition,
-		const FVector2D& InLastScreenSpacePosition,
-		const FVector2D& InDelta,
-		const std::set<FKey>& InPressedButtons
-	)
-		: FInputEvent(false)
-		, ScreenSpacePosition(InScreenSpacePosition)
-		, LastScreenSpacePosition(InLastScreenSpacePosition)
-		, CursorDelta(InDelta)
-		, PressedButtons(&InPressedButtons)
-		, bIsDirectionInvertedFromDevice(false)
-	{ }
-
-	/** A constructor for raw mouse events */
-	FPointerEvent(
-		const FVector2D& InScreenSpacePosition,
-		const FVector2D& InLastScreenSpacePosition,
-		const FVector2D& InDelta,
-		const std::set<FKey>& InPressedButtons
-	)
-		: FInputEvent(false)
-		, ScreenSpacePosition(InScreenSpacePosition)
-		, LastScreenSpacePosition(InLastScreenSpacePosition)
-		, CursorDelta(InDelta)
-		, PressedButtons(&InPressedButtons)
-		, WheelDelta(0.0f, 0.0f)
-		, bIsDirectionInvertedFromDevice(false)
+		, WheelDelta(InWheelDelta)
+		,bIsDirectionInvertedFromDevice(false)
 	{ }
 
 
@@ -244,7 +252,7 @@ public:
 	FKey GetEffectingButton() const { return EffectingButton; }
 	
 	/** How much did the mouse wheel turn since the last mouse event */
-	float GetWheelDelta() const { return WheelDelta.Y; }
+	float GetWheelDelta() const { return WheelDelta; }
 
 	/** Returns the full set of pressed buttons */
 	const std::set<FKey>& GetPressedButtons() const { return PressedButtons; }
@@ -269,14 +277,25 @@ public:
 		return true;
 	}
 
+	virtual void OnApplyInput(std::map<FKey, FKeyState>& KeyStateMap) override
+	{
+		FKeyState& KeyState = KeyStateMap[EffectingButton];
+
+		//TODO
+		KeyState.bDownPrevious = KeyState.bDown;
+		KeyState.bDown = InputEvent == IE_Repeat || InputEvent == IE_Pressed;
+
+		KeyState.EventCounts[InputEvent]++;
+	}
+
 private:
 
 	FVector2D ScreenSpacePosition;
 	FVector2D LastScreenSpacePosition;
 	FVector2D CursorDelta;
-	std::set<FKey> PressedButtons;
+	std::set<FKey> PressedButtons{};
 	FKey EffectingButton;
 
-	FVector2D WheelDelta;
-	bool bIsDirectionInvertedFromDevice;
+	float WheelDelta{};
+	bool bIsDirectionInvertedFromDevice{};
 };

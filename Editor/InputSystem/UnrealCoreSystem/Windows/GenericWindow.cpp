@@ -165,29 +165,10 @@ const FGenericWindowDefinition& FGenericWindow::GetDefinition() const
 
 bool FGenericWindow::IsDefinitionValid() const
 {
-	return Definition;
+	return Definition.get();
 }
 
-float FGenericWindow::GetDPIScaleFactor() const
-{
-	return 1.0f;
-}
 
-void FGenericWindow::SetDPIScaleFactor(const float Factor)
-{
-	// empty default functionality
-}
-
-bool FGenericWindow::IsManualManageDPIChanges() const
-{
-	// returns false by default so the application can auto-manage the size of its windows, in response to DPI variations
-	return false;
-}
-
-void FGenericWindow::SetManualManageDPIChanges(const bool bAutoHandle)
-{
-	// empty default functionality
-}
 
 void FGenericWindow::SetNativeWindowButtonsVisibility(bool bVisible)
 {

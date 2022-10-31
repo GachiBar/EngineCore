@@ -165,13 +165,11 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="InputSystem\ActionMap.h" />
     <ClInclude Include="InputSystem\ConfigReaderWriter.h" />
     <ClInclude Include="InputSystem\ConfigReaderWriterFactory.h" />
     <ClInclude Include="InputSystem\InputEvent.h" />
     <ClInclude Include="InputSystem\InputKeys.h" />
     <ClInclude Include="InputSystem\InputManager.h" />
-    <ClInclude Include="InputSystem\Keyboard.h" />
     <ClInclude Include="InputSystem\Mouse.h" />
     <ClInclude Include="InputSystem\UnrealCoreSystem\GenericPlatformInput.h" />
     <ClInclude Include="InputSystem\UnrealCoreSystem\InputEvent\Events.h" />
@@ -217,10 +215,8 @@
     <ClCompile Include="ImGuizmo\ImGradient.cpp" />
     <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="ImGuizmo\ImSequencer.cpp" />
-    <ClCompile Include="InputSystem\ActionMap.cpp" />
     <ClCompile Include="InputSystem\ConfigReaderWriterFactory.cpp" />
     <ClCompile Include="InputSystem\InputManager.cpp" />
-    <ClCompile Include="InputSystem\Keyboard.cpp" />
     <ClCompile Include="InputSystem\Mouse.cpp" />
     <ClCompile Include="InputSystem\UnrealCoreSystem\GenericPlatformInput.cpp" />
     <ClCompile Include="InputSystem\UnrealCoreSystem\InputKeyManager.cpp" />

@@ -50,8 +50,8 @@ struct FInputKeyParams
 	/** Get the delta of the given axis for 2D axis */
 	FVector2D Get2DAxisDelta() const { return FVector2D((float)Delta.x, (float)Delta.y); }
 
-
+	FVector Delta = FVector::Zero;
 protected:
 	/** The Delta that the given key/axis has been changed by */
-	FVector Delta = FVector::Zero;
+	
 };

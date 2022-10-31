@@ -10,7 +10,6 @@ const FKey EKeys::AnyKey("AnyKey");
 
 const FKey EKeys::MouseX("MouseX");
 const FKey EKeys::MouseY("MouseY");
-const FKey EKeys::Mouse2D("Mouse2D");
 const FKey EKeys::MouseScrollUp("MouseScrollUp");
 const FKey EKeys::MouseScrollDown("MouseScrollDown");
 const FKey EKeys::MouseWheelAxis("MouseWheelAxis");
@@ -174,10 +173,10 @@ void EKeys::Initialize()
 
 	AddKey(FKeyDetails(EKeys::MouseX, "Mouse X", FKeyDetails::Axis1D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples));
 	AddKey(FKeyDetails(EKeys::MouseY, "Mouse Y", FKeyDetails::Axis1D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples));
-	AddPairedKey(FKeyDetails(EKeys::Mouse2D, "Mouse XY 2D-Axis", FKeyDetails::Axis2D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples), EKeys::MouseX, EKeys::MouseY);
-	AddKey(FKeyDetails(EKeys::MouseWheelAxis, "Mouse Wheel Axis", FKeyDetails::Axis1D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples));
+	
 	AddKey(FKeyDetails(EKeys::MouseScrollUp, "Mouse Wheel Up", FKeyDetails::MouseButton | FKeyDetails::ButtonAxis));
 	AddKey(FKeyDetails(EKeys::MouseScrollDown, "Mouse Wheel Down", FKeyDetails::MouseButton | FKeyDetails::ButtonAxis));
+	AddKey(FKeyDetails(EKeys::MouseWheelAxis, "Mouse Wheel Axis", FKeyDetails::Axis1D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples));
 
 	AddKey(FKeyDetails(EKeys::LeftMouseButton, "Left Mouse Button", FKeyDetails::MouseButton, NAME_None, "LMB"));
 	AddKey(FKeyDetails(EKeys::RightMouseButton, "Right Mouse Button", FKeyDetails::MouseButton, NAME_None,"RMB"));
@@ -324,34 +323,6 @@ void EKeys::AddKey(const FKeyDetails& KeyDetails)
 	//ensureMsgf(!InputKeys.Contains(Key), TEXT("Adding duplicate key '%s'", *Key.ToString());
 	Key.KeyDetails.reset(new FKeyDetails(KeyDetails));
 	InputKeys[Key] = Key.KeyDetails;
-}
-
-
-void EKeys::AddPairedKey(const FKeyDetails& PairedKeyDetails, FKey KeyX, FKey KeyY)
-{
-	// Validate pairing meets all the necessary conditions.
-    /*
-	if (!ensureMsgf(PairedKeyDetails.IsAxis2D(), TEXT("Paired key '%s' must be a 2D axis", *PairedKeyDetails.GetKey().ToString()) ||
-		!ensureMsgf(InputKeys.Contains(KeyX), TEXT("Failed to locate key '%s' for pairing. Make sure you've bound it with AddKey before calling AddPairedKey.", *KeyX.ToString()) ||
-		!ensureMsgf(InputKeys.Contains(KeyY), TEXT("Failed to locate key '%s' for pairing. Make sure you've bound it with AddKey before calling AddPairedKey.", *KeyY.ToString()) ||
-		!ensureMsgf(KeyX.IsAxis1D(), TEXT("Key '%s' is not a 1D axis", *KeyX.ToString()) ||	// TODO: Would be good to be able to pair a 2D axis to 1D axis to make a 3D axis. Possibly via another helper function?
-		!ensureMsgf(KeyY.IsAxis1D(), TEXT("Key '%s' is not a 1D axis", *KeyY.ToString()) ||
-		!ensureMsgf(KeyX.GetPairedAxis() == EPairedAxis::Unpaired, TEXT("Key '%s' has been already been paired as key '%s'. Only a single pairing is permitted.", *KeyX.ToString(), *KeyX.GetPairedAxisKey().ToString()) ||
-		!ensureMsgf(KeyY.GetPairedAxis() == EPairedAxis::Unpaired, TEXT("Key '%s' has been already been paired as key '%s'. Only a single pairing is permitted.", *KeyY.ToString(), *KeyY.GetPairedAxisKey().ToString())
-		)
-	{
-		return;
-	}
-    */
-	// Add the basic paired key information
-	AddKey(PairedKeyDetails);
-
-	// Update key details on the paired keys to point them to the vector version
-	// TODO: Do we want a reverse lookup from vector version to the single axis versions?
-
-	InputKeys[KeyX]->PairedAxis = EPairedAxis::X;
-	InputKeys[KeyY]->PairedAxis = EPairedAxis::Y;
-	InputKeys[KeyX]->PairedAxisKey = InputKeys[KeyY]->PairedAxisKey = PairedKeyDetails.GetKey();
 }
 
 void EKeys::GetAllKeys(std::vector<FKey>& OutKeys)

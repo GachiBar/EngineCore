@@ -33,19 +33,13 @@ struct FKeyDetails
 
 	bool IsMouseButton() const { return bIsMouseButton != 0; }
 	bool IsAxis1D() const { return AxisType == EInputAxisType::Axis1D; }
-	bool IsAxis2D() const { return AxisType == EInputAxisType::Axis2D; }
 	bool IsButtonAxis() const { return AxisType == EInputAxisType::Button; }	// Analog 1D axis emulating a digital button press.
-	bool IsAnalog() const { return IsAxis1D() || IsAxis2D(); }
+	bool IsAnalog() const { return IsAxis1D(); }
 	bool IsDigital() const { return !IsAnalog(); }
-	bool ShouldUpdateAxisWithoutSamples() const { return bShouldUpdateAxisWithoutSamples != 0; }
 	bool IsBindableToActions() const { return bIsBindableToActions != 0; }
 	std::string GetMenuCategory() const { return MenuCategory; }
 	std::string GetDisplayName(const bool bLongDisplayName = true) const;
 	const FKey& GetKey() const { return Key; }
-
-	// Key pairing
-	EPairedAxis GetPairedAxis() const { return PairedAxis; }
-	const FKey& GetPairedAxisKey() const { return PairedAxisKey; }
 
 private:
 	friend struct EKeys;
@@ -56,15 +50,10 @@ private:
 	{
 		None,
 		Button,			// Whilst the physical input is an analog axis the FKey uses it to emulate a digital button.
-		Axis1D,
-		Axis2D,
+		Axis1D
 	};
 
 	FKey  Key;
-
-	// Key pairing
-	EPairedAxis PairedAxis = EPairedAxis::Unpaired;		// Paired axis identifier. Lets this key know which axis it represents on the PairedAxisKey
-	FKey		PairedAxisKey;							// Paired axis reference. This is the FKey representing the final paired vector axis. Note: NOT the other key in the pairing.
 
 	std::string MenuCategory;
 

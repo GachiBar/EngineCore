@@ -72,9 +72,6 @@
     <ClCompile Include="LayerStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InputSystem\Keyboard.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
     <ClCompile Include="InputSystem\Mouse.cpp">
       <Filter>InputSystem</Filter>
     </ClCompile>
@@ -121,9 +118,6 @@
       <Filter>InputSystem</Filter>
     </ClCompile>
     <ClCompile Include="ConfigReaderWriter.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\ActionMap.cpp">
       <Filter>InputSystem</Filter>
     </ClCompile>
     <ClCompile Include="InputSystem\UnrealCoreSystem\Keys.cpp">
@@ -206,9 +200,6 @@
     <ClInclude Include="LayerStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InputSystem\Keyboard.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
     <ClInclude Include="InputSystem\Mouse.h">
       <Filter>InputSystem</Filter>
     </ClInclude>
@@ -273,9 +264,6 @@
       <Filter>InputSystem</Filter>
     </ClInclude>
     <ClInclude Include="InputSystem\ConfigReaderWriterFactory.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\ActionMap.h">
       <Filter>InputSystem</Filter>
     </ClInclude>
     <ClInclude Include="InputSystem\UnrealCoreSystem\NameMapping\NamingStructs.h">

@@ -37,7 +37,7 @@ std::shared_ptr< FWindowsWindow > FWindowsWindow::Make()
 	return std::shared_ptr<FWindowsWindow>(new FWindowsWindow());
 }
 
-void FWindowsWindow::Initialize( FWindowsApplication* const Application, const std::shared_ptr< FGenericWindowDefinition >& InDefinition, HINSTANCE InHInstance, const std::shared_ptr< FWindowsWindow >& InParent, const bool bShowImmediately )
+void FWindowsWindow::Initialize(Application* const Application, const std::shared_ptr< FGenericWindowDefinition >& InDefinition, HINSTANCE InHInstance, const std::shared_ptr< FWindowsWindow >& InParent, const bool bShowImmediately )
 {
 	Definition = InDefinition;
 	OwningApplication = Application;
@@ -54,8 +54,6 @@ void FWindowsWindow::Initialize( FWindowsApplication* const Application, const s
 
 	const float WidthInitial = Definition->WidthDesiredOnScreen;
 	const float HeightInitial = Definition->HeightDesiredOnScreen;
-
-	DPIScaleFactor = FPlatformApplicationMisc::GetDPIScaleFactorAtPoint(XInitialRect, YInitialRect);
 
 	int32 ClientX =  XInitialRect;
 	int32 ClientY = YInitialRect;
@@ -252,7 +250,6 @@ FWindowsWindow::FWindowsWindow()
 	, bIsFirstTimeVisible(true)
 	, bInitiallyMinimized(false)
 	, bInitiallyMaximized(false)
-	, DPIScaleFactor(1.0f)
 {
 	// PreFullscreenWindowPlacement.length will be set when we save the window placement and then used to check if the structure is valid
 	memset(&PreFullscreenWindowPlacement, 0, sizeof(PreFullscreenWindowPlacement));
@@ -738,13 +735,13 @@ void FWindowsWindow::SetWindowMode( EWindowMode::Type NewWindowMode )
 /** @return true if the native window is maximized, false otherwise */
 bool FWindowsWindow::IsMaximized() const
 {
-	bool bIsMaximized = !!::IsZoomed(HWnd);
+	bool bIsMaximized = !!(IsZoomed(HWnd));
 	return bIsMaximized;
 }
 
 bool FWindowsWindow::IsMinimized() const
 {
-	return !!::IsIconic(HWnd);
+	return !!(::IsIconic(HWnd));
 }
 
 /** @return true if the native window is visible, false otherwise */
@@ -789,16 +786,6 @@ bool FWindowsWindow::GetRestoredDimensions(int32& X, int32& Y, int32& Width, int
 	{
 		return false;
 	}
-}
-
-bool FWindowsWindow::IsManualManageDPIChanges() const
-{
-	return bHandleManualDPIChanges;
-}
-
-void FWindowsWindow::SetManualManageDPIChanges(const bool bManualDPIChanges)
-{
-	bHandleManualDPIChanges = bManualDPIChanges;
 }
 
 void FWindowsWindow::OnParentWindowMinimized()

@@ -47,6 +47,10 @@ struct FInputAxisKeyMapping
 				&& IsNearlyEqual (Scale, Other.Scale) );
 	}
 
+	FInputAxisKeyMapping(): Scale(0)
+	{
+	}
+
 	FInputAxisKeyMapping(std::string InAxisName = NAME_None, FKey InKey = EKeys::Invalid, const float InScale = 1.f)
 		: AxisName(std::move(InAxisName))
 		, Scale(InScale)

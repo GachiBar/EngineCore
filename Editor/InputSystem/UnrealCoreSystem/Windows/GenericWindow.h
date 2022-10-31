@@ -158,21 +158,6 @@ public:
 	/** @return	Returns true if the window definition is valid */
 	virtual bool IsDefinitionValid() const;
 
-	/**
-	 * @return ratio of pixels to SlateUnits in this window.
-	 * E.g. DPIScale of 2.0 means there is a 2x2 pixel square for every 1x1 SlateUnit.
-	 */
-	virtual float GetDPIScaleFactor() const;
-
-	/** sets a new DPI scale factor */
-	virtual void SetDPIScaleFactor(const float Factor);
-
-	/** determines whether or not this window does its own DPI management */
-	virtual bool IsManualManageDPIChanges() const;
-
-	/** call with a true argument if this window need to do its custom size management in response to DPI variations */
-	virtual void SetManualManageDPIChanges(const bool bAutoHandle);
-
 	/** Shows or hides native window buttons on platforms that use them */
 	virtual void SetNativeWindowButtonsVisibility(bool bVisible);
 

@@ -4,53 +4,61 @@
 #include "../KeyStruct.h"
 #include "../Keys.h"
 #include "../InputKeyManager.h"
+#include "../../InputManager.h"
 
-static FKey TranslateMouseButtonToKey( const EMouseButtons::Type Button )
+static FKey const & TranslateMouseButtonToKey( const EMouseButtons::Type Button )
 {
-	FKey Key = EKeys::Invalid;
-
 	switch( Button )
 	{
-	case EMouseButtons::Left:
-		Key = EKeys::LeftMouseButton;
-		break;
-	case EMouseButtons::Middle:
-		Key = EKeys::MiddleMouseButton;
-		break;
-	case EMouseButtons::Right:
-		Key = EKeys::RightMouseButton;
-		break;
-	case EMouseButtons::Thumb01:
-		Key = EKeys::ThumbMouseButton;
-		break;
-	case EMouseButtons::Thumb02:
-		Key = EKeys::ThumbMouseButton2;
-		break;
+		case EMouseButtons::Left:
+			return EKeys::LeftMouseButton;
+			
+		case EMouseButtons::Middle:
+			return EKeys::MiddleMouseButton;
+			
+		case EMouseButtons::Right:
+			return EKeys::RightMouseButton;
+			
+		case EMouseButtons::Thumb01:
+			return EKeys::ThumbMouseButton;
+			
+		case EMouseButtons::Thumb02:
+			return EKeys::ThumbMouseButton2;
+
+		default:
+			return EKeys::Invalid;
 	}
 
-	return Key;
 }
 
 bool WindowsApplicationMessageHandler::OnKeyChar( const char Character, const bool IsRepeat )
 {
-	FCharacterEvent CharacterEvent( Character, IsRepeat );
-	return ProcessKeyCharEvent( CharacterEvent );
+	const FCharacterEvent CharacterEvent( Character, IsRepeat );
+	InputStack.push(CharacterEvent);
+	//return ProcessKeyCharEvent( CharacterEvent );
+	return true;
 }
 
 bool WindowsApplicationMessageHandler::OnKeyDown(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat)
 {
 	FKey const Key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
-	FKeyEvent KeyEvent(Key, IsRepeat, CharacterCode, KeyCode);
+	FKeyEvent const KeyEvent(Key, IsRepeat, IsRepeat ? IE_Repeat : IE_Pressed, CharacterCode, KeyCode);
 
-	return ProcessKeyDownEvent(KeyEvent);
+	InputStack.push(KeyEvent);
+
+	//return ProcessKeyDownEvent(KeyEvent);
+	return true;
 }
 
 bool WindowsApplicationMessageHandler::OnKeyUp( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat )
 {
 	FKey const Key = InputKeyManager::Get().GetKeyFromCodes( KeyCode, CharacterCode );
-	FKeyEvent KeyEvent(Key, IsRepeat, CharacterCode, KeyCode);
+	FKeyEvent const KeyEvent(Key, IsRepeat,IE_Released, CharacterCode, KeyCode);
 
-	return ProcessKeyUpEvent( KeyEvent );
+	InputStack.push(KeyEvent);
+
+	//return ProcessKeyUpEvent( KeyEvent );
+	return true;
 }
 
 void WindowsApplicationMessageHandler::OnInputLanguageChanged()
@@ -70,68 +78,75 @@ bool WindowsApplicationMessageHandler::OnMouseDown(const std::shared_ptr< FGener
 bool WindowsApplicationMessageHandler::OnMouseDown(const std::shared_ptr<FGenericWindow>& PlatformWindow,
 	const EMouseButtons::Type Button, const FVector2D CursorPos)
 {
+	FKey const & Key = TranslateMouseButtonToKey(Button);
 
-	FKey Key = TranslateMouseButtonToKey(Button);
+	InputManager::getInstance().GetMouseDevice().AddPressedMouseButton(Key);
 
-	FPointerEvent MouseEvent(
+	const FPointerEvent MouseEvent(
+		IE_Pressed,
 		CursorPos,
-		GetLastCursorPos(),
-		PressedMouseButtons,
+		InputManager::getInstance().GetMouseDevice().GetLastPosFloatPoint(),
+		InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
 		Key,
 		0.f
 	);
-
-	PressedMouseButtons.insert(MouseEvent.GetEffectingButton());
-	return ProcessMouseButtonDownEvent(PlatformWindow, MouseEvent);
+	
+	InputStack.push(MouseEvent);
+	return true;
 }
 
 bool WindowsApplicationMessageHandler::OnMouseDoubleClick( const std::shared_ptr< FGenericWindow >& PlatformWindow, const EMouseButtons::Type Button )
 {
     POINT p;
     GetCursorPos(&p);
-	return OnMouseDoubleClick(PlatformWindow, Button, p);
+	return OnMouseDoubleClick(PlatformWindow, Button, FVector2D{static_cast<float>(p.x),static_cast<float>(p.y)});
 }
 
 bool WindowsApplicationMessageHandler::OnMouseDoubleClick( const std::shared_ptr< FGenericWindow >& PlatformWindow, const EMouseButtons::Type Button, const FVector2D CursorPos )
 {
+	FKey const& Key = TranslateMouseButtonToKey( Button );
 
-	FKey Key = TranslateMouseButtonToKey( Button );
+	InputManager::getInstance().GetMouseDevice().AddPressedMouseButton(Key);
 
-	FPointerEvent MouseEvent(
+	const FPointerEvent MouseEvent(
+		IE_DoubleClick,
 		CursorPos,
-		GetLastCursorPos(),
-		PressedMouseButtons,
+		InputManager::getInstance().GetMouseDevice().GetLastPosFloatPoint(),
+		InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
 		Key,
 		0
 		);
 
-    PressedMouseButtons.Add( InMouseEvent.GetEffectingButton() );
+	InputStack.push(MouseEvent);
 
-	return ProcessMouseButtonDoubleClickEvent( PlatformWindow, MouseEvent );
+	return true;
+	//return ProcessMouseButtonDoubleClickEvent( PlatformWindow, MouseEvent );
 }
 
 bool WindowsApplicationMessageHandler::OnMouseUp( const EMouseButtons::Type Button )
 {
     POINT p;
     GetCursorPos(&p);
-	return OnMouseUp(Button, p);
+	return OnMouseUp(Button, FVector2D{ static_cast<float>(p.x),static_cast<float>(p.y) });
 }
 
 bool WindowsApplicationMessageHandler::OnMouseUp( const EMouseButtons::Type Button, const FVector2D CursorPos )
 {
-	FKey Key = TranslateMouseButtonToKey( Button );
+	const FKey& Key = TranslateMouseButtonToKey( Button );
+
+	InputManager::getInstance().GetMouseDevice().RemoveMouseButton(Key);
 
 	FPointerEvent MouseEvent(
+		IE_Pressed,
 		CursorPos,
-		GetLastCursorPos(),
-		PressedMouseButtons,
+		InputManager::getInstance().GetMouseDevice().GetLastPosFloatPoint(),
+		InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
 		Key,
 		0
 		);
 
-    PressedMouseButtons.erase(MouseEvent.GetEffectingButton());
-
-	return ProcessMouseButtonUpEvent( MouseEvent );
+	InputStack.push(MouseEvent);
+	return true;
 }
 
 bool WindowsApplicationMessageHandler::OnMouseWheel( const float Delta )
@@ -144,73 +159,48 @@ bool WindowsApplicationMessageHandler::OnMouseWheel( const float Delta )
 bool WindowsApplicationMessageHandler::OnMouseWheel( const float Delta, const FVector2D CursorPos )
 {
 	FPointerEvent MouseWheelEvent(
+		IE_Axis,
 		CursorPos,
 		CursorPos,
-		PressedMouseButtons,
+		InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
 		EKeys::Invalid,
 		Delta
 		);
 
-	return ProcessMouseWheelOrGestureEvent( MouseWheelEvent, nullptr );
+	InputStack.push(MouseWheelEvent);
+	return true;
+	//return ProcessMouseWheelOrGestureEvent( MouseWheelEvent, nullptr );
 }
 
 bool WindowsApplicationMessageHandler::OnMouseMove()
 {
-	bool Result = true;
-	const FVector2D CurrentCursorPosition = GetCursorPos();
-	const FVector2D LastCursorPosition = GetLastCursorPos();
-	
-	// Force the cursor user index to use the platform cursor since we've been notified that the platform 
-	// cursor position has changed. This is done intentionally after getting the positions in order to avoid
-	// false positives.
+	POINT p;
+	GetCursorPos(&p);
+	const FVector2D CurrentCursorPosition = {static_cast<float>(p.x),static_cast<float>(p.y)};
 
-	// NOTE: When we swap out the real OS cursor for the faux slate cursor ie. UsePlatformCursorForCursorUser(false)
-	// we reset this event count to 0.  This occurs typically when a gamepad is being used and you don't want to manipulate the real
-	// OS cursor, instead move around a fake cursor so that you can still do development stuff outside the game window.  Anyway,
-	// when this occurs, in the future the OS will send you a long delayed mouse movement.  I'm not exactly sure what's triggering it,
-	// it's not a movement from the application, I think it's something more subtle, like swapping true cursor visibility for using
-	// a None cursor, it could also be some combination.
-	// 
-	// In any event, we track the number of events, and if we get more than 3, then we start trying to swap back to the OS cursor.
-	// the 3 should give us any buffer needed for either a last frame mouse movement, or a weird condition like noted above.
-	//PlatformMouseMovementEvents++;
-
-	//if (PlatformMouseMovementEvents > 3)
-	//{
-	//	UsePlatformCursorForCursorUser(true);
-	//}
+	const FVector2D LastCursorPosition = InputManager::getInstance().GetMouseDevice().GetCurPosFloatPoint();
 	
 	if ( LastCursorPosition != CurrentCursorPosition )
 	{
 		FPointerEvent MouseEvent(
+			IE_Axis,
 			CurrentCursorPosition,
 			LastCursorPosition,
-			PressedMouseButtons,
+			InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
 			EKeys::Invalid,
 			0
 			);
 
-		Result = ProcessMouseMoveEvent( MouseEvent );
+		InputStack.push(MouseEvent);
 	}
 
-	return Result;
+	return true;
 }
 
-bool WindowsApplicationMessageHandler::OnRawMouseMove( const int32 X, const int32 Y )
+void WindowsApplicationMessageHandler::OnSizeChanged(const std::shared_ptr<FGenericWindow>& PlatformWindow,
+	const int32 Width, const int32 Height, bool bWasMinimized)
 {
-	if ( X != 0 || Y != 0 )
-	{
-		FPointerEvent MouseEvent(
-			GetCursorPos(),
-			GetLastCursorPos(),
-			FVector2D( X, Y ), 
-			PressedMouseButtons
-		);
-
-		ProcessMouseMoveEvent(MouseEvent);
-	}
 	
-	return true;
 }
 
 void WindowsApplicationMessageHandler::OnResizingWindow( const std::shared_ptr< FGenericWindow >& PlatformWindow )
@@ -237,14 +227,15 @@ bool WindowsApplicationMessageHandler::OnApplicationActivationChanged(const bool
 	if (UserSwitchedAway)
 	{
 		// Clear the pressed buttons when we deactivate the application, the button state can no longer be trusted.
-		PressedMouseButtons.clear();
+		InputManager::getInstance().GetMouseDevice().Flush();
 	}
 	return true;
 }
 
 void WindowsApplicationMessageHandler::OnWindowClose(const std::shared_ptr<FGenericWindow>& PlatformWindow)
 {
-	
+	//TODO request exit
+	//invalidate window ptr
 }
 
 void WindowsApplicationMessageHandler::SetCursorPos( const FVector2D& MouseCoordinate )

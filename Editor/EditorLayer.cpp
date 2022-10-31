@@ -29,8 +29,6 @@ void EditorLayer::OnAttach()
     ConfigReaderWriterFactory ConfigFactory;
     std::shared_ptr<IniReaderWriter> Config(ConfigFactory.Create());
 
-    auto t = magic_enum::enum_cast<MouseKey>(InputVirtualKey::A);
-
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>();

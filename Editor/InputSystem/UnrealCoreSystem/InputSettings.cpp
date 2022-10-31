@@ -3,6 +3,7 @@
 
 #include "../ConfigReaderWriter.h"
 #include "NameMapping/NamingStructs.h"
+#include "NameMapping/ActionMapping.h"
 
 InputSettings::InputSettings()
 	: bCaptureMouseOnLaunch(true)
@@ -60,7 +61,13 @@ void InputSettings::AddAxisMapping(std::string const& AxisMap, const FInputAxisK
 	if (AxisMappings.contains(AxisMap))
 		AxisMappings[AxisMap].insert(KeyMapping);
 	else
-		AxisMappings[AxisMap] = { KeyMapping };
+	{
+		AxisMappings.clear();
+
+		std::set<FInputAxisKeyMapping> Set;
+		Set.insert(KeyMapping);
+		AxisMappings[AxisMap] = Set;
+	}
 
 	if (bForceRebuildKeymaps)
 	{
@@ -152,14 +159,20 @@ void InputSettings::AddActionMapping(std::string const& NewMap, const FKey& NewK
 {
 	if (ActionMappings.contains(NewMap))
 		ActionMappings[NewMap].insert(NewKeyMapping);
-	ActionMappings[NewMap] = { NewKeyMapping };
+
+	std::set<FKey> Set;
+	Set.insert(NewKeyMapping);
+	ActionMappings[NewMap] = Set;
 }
 
 void InputSettings::AddAxisMapping(std::string const& NewMap, const FInputAxisKeyMapping& NewKeyMapping)
 {
 	if (AxisMappings.contains(NewMap))
 		AxisMappings[NewMap].insert(NewKeyMapping);
-	AxisMappings[NewMap] = { NewKeyMapping };
+
+	std::set<FInputAxisKeyMapping> Set;
+	Set.insert(NewKeyMapping);
+	AxisMappings[NewMap] = Set;
 }
 
 /** Ask for all the action mappings */

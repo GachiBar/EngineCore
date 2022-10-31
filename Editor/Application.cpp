@@ -6,12 +6,14 @@
 #include "Layer.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "InputSystem/InputManager.h"
+#include "InputSystem/UnrealCoreSystem/Windows/WindowsWindow.h"
 
 Application::Application(const char* dll_path)
 	: m_LayerStack(this)
 	, m_Domain{ "KtripDomain" }
 	, m_Assembly{ m_Domain, dll_path }
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
+	, input_settings(new InputSettings())
 	, exit_code_(0)
 {
 	mono::mono_domain::set_current_domain(m_Domain);
@@ -31,7 +33,43 @@ void Application::PushOverlay(Layer* layer)
 
 void Application::OnSetup()
 {
+	EKeys::Initialize();
+	InputManager::getInstance().app = this;
 
+	auto wnd = FWindowsWindow::Make();
+	FGenericWindowDefinition wnd_def;
+	wnd_def.Type = EWindowType::Normal;
+	wnd_def.XDesiredPositionOnScreen = 640.f;
+	wnd_def.YDesiredPositionOnScreen = 160.f;
+	wnd_def.WidthDesiredOnScreen = 1286.f;
+	wnd_def.HeightDesiredOnScreen = 726.f;
+	wnd_def.TransparencySupport = EWindowTransparency::None;
+	wnd_def.HasOSWindowBorder = true;
+	wnd_def.AppearsInTaskbar = true;
+	wnd_def.AcceptsInput = true;
+	wnd_def.ActivationPolicy = EWindowActivationPolicy::Always;
+	wnd_def.IsTopmostWindow = false;
+	wnd_def.HasCloseButton = true;
+	wnd_def.SupportsMinimize = true;
+	wnd_def.IsModalWindow = false;
+	wnd_def.IsRegularWindow = true;
+	wnd_def.SizeWillChangeOften = false;
+	wnd_def.ShouldPreserveAspectRatio = false;
+	wnd_def.CornerRadius = 2;
+	wnd_def.ExpectedMaxHeight = -1;
+	wnd_def.ExpectedMaxWidth = -1;
+	wnd_def.Title = L"HelloWindow";
+	wnd_def.Opacity = 1.f;
+	
+	auto t = std::make_shared<FGenericWindowDefinition>(wnd_def);
+	wnd->Initialize(this, t, GetModuleHandle(NULL), nullptr, true);
+
+	auto wnd2 = FWindowsWindow::Make();
+	wnd_def.AcceptsInput = false;
+	wnd->Initialize(this, t, GetModuleHandle(NULL), wnd, true);
+
+	wnds.push_back(wnd);
+	wnds.push_back(wnd2);
 }
 
 void Application::OnStart()
@@ -54,19 +92,7 @@ int Application::Run()
 	if (exit_code_)
 		return exit_code_;
 
-	HINSTANCE instance = GetModuleHandle(nullptr);
-	LPCWSTR window_name = L"Test window";
-	LONG width = 800;
-	LONG height = 600;
-
-	RegisterWindowClass(GetModuleHandle(nullptr), window_name);
-	HWND handle_old = CreateWindowInstance(instance, window_name, width, height);
-	HWND handle_new = CreateWindowInstance(instance, window_name, width, height);
-
-	ShowWindow(handle_old, SW_SHOW);
-	ShowWindow(handle_new, SW_SHOW);
-
-	engine_->Initialize(handle_old, handle_new, width, height);
+	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(), static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(), wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
 
 	OnStart();
 	if (exit_code_)
@@ -133,6 +159,11 @@ void Application::Close()
 	is_exit_requested = true;
 }
 
+std::shared_ptr<FGenericWindow> Application::GetMainWindow()
+{
+	return wnds.at(0);
+}
+
 mono::mono_object Application::CreateGameObject(const mono::mono_object& scene) {
 	mono::mono_method create_go_method(scene.get_type(), "CreateGameObject", 0);
 	mono::mono_method_invoker create_go_method_invoker(create_go_method);
@@ -179,16 +210,18 @@ engine::Engine* Application::GetEngine() const
 
 void Application::ApplyInput()
 {
-	std::shared_ptr<InputEvent> CurrentEvent= InputManager::getInstance().ReadEvent();
-	while (CurrentEvent)
+	FInputEvent IE;
+
+	while (InputManager::getInstance().ReadEvent(IE))
 	{
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
+			/*
 			if (CurrentEvent->Handled)
 				break;
 			(*it)->OnInputEvent(CurrentEvent.get());
+			*/
 		}
-		CurrentEvent = CurrentEvent = InputManager::getInstance().ReadEvent();
 	}
 }
 
