@@ -167,8 +167,6 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="InputSystem\ConfigReaderWriter.h" />
     <ClInclude Include="InputSystem\ConfigReaderWriterFactory.h" />
-    <ClInclude Include="InputSystem\InputEvent.h" />
-    <ClInclude Include="InputSystem\InputKeys.h" />
     <ClInclude Include="InputSystem\InputManager.h" />
     <ClInclude Include="InputSystem\Mouse.h" />
     <ClInclude Include="InputSystem\UnrealCoreSystem\GenericPlatformInput.h" />

@@ -9,7 +9,7 @@ public:
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
-	virtual void OnInputEvent(InputEvent* e) override;
+	virtual void OnInputEvent(FInputEvent* e) override;
 
 	void Begin();
 	void End();

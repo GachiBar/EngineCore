@@ -188,13 +188,13 @@ const std::map<std::string, std::set<FInputAxisKeyMapping>>& InputSettings::GetA
 }
 
 /** Finds unique action name based on existing action names */
-bool InputSettings::DoesActionExist(const std::string InActionName)
+bool InputSettings::DoesActionExist(const std::string& InActionName)
 {
 	return ActionMappings.contains(InActionName);
 }
 
 /** Finds unique axis name based on existing action names */
-bool InputSettings::DoesAxisExist(const std::string InAxisName)
+bool InputSettings::DoesAxisExist(const std::string& InAxisName)
 {
 	return AxisMappings.contains(InAxisName);
 }

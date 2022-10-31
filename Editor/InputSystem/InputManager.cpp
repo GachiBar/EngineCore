@@ -2,7 +2,6 @@
 
 #include <windowsx.h>
 
-#include "InputKeys.h"
 #include "../Application.h"
 #include "UnrealCoreSystem/Windows/WindowsWindow.h"
 
@@ -16,11 +15,6 @@ InputManager& InputManager::getInstance()
 
 Mouse& InputManager::GetMouseDevice()
 {
-	std::shared_ptr<int> t(new int);
-	t.reset(new int);
-	std::map<std::string, int> t1;
-
-	std::erase_if(t1, [](auto& a) { return a.first; });
 	return mouse;
 }
 

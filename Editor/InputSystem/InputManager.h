@@ -1,7 +1,6 @@
 #pragma once
 #define NOMINMAX
 
-#include "InputEvent.h"
 #include "Windows.h"
 #include "Mouse.h"
 #include "UnrealCoreSystem/NameMapping/PlayerInput.h"
@@ -32,8 +31,6 @@ public:
 
     Application* app;
 private:
-    template<typename T>
-    void TrimBuffer(std::queue<T>& buffer);
 
 private:
     PlayerInput* player_input;

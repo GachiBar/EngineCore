@@ -116,11 +116,3 @@ float PlayerInput::DetermineAxisValue(const std::string& AxisName, std::set<FKey
 
 	return AxisValue;
 }
-
-void PlayerInput::Proccess()
- {
-	 for (auto& KeyState : KeyStateMap)
-	 {
-		 
-	 }
- }

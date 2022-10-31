@@ -1,5 +1,4 @@
 #include "Mouse.h"
-#include "InputKeys.h"
 #include "InputManager.h"
 
 void Mouse::SetPos(int x, int y)

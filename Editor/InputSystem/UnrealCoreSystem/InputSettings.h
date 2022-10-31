@@ -92,9 +92,9 @@ public:
 	const std::map<std::string, std::set<FInputAxisKeyMapping>>& GetAxisMappings() const;
 
 	/** Finds unique action name based on existing action names */
-	bool DoesActionExist(const std::string InActionName);
+	bool DoesActionExist(const std::string& InActionName);
 	/** Finds unique axis name based on existing action names */
-	bool DoesAxisExist(const std::string InAxisName);
+	bool DoesAxisExist(const std::string& InAxisName);
 
 private:
 	std::shared_ptr<ConfigReaderWriter> ConfigReaderWriter;

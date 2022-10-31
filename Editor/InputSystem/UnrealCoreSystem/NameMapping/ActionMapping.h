@@ -3,7 +3,7 @@
 #include "../Keys.h"
 #include "../KeyStruct.h"
 
-static const std::string NAME_None = "";
+static const std::string NAME_None;
 
 struct FInputActionKeyMapping
 {

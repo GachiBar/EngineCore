@@ -55,8 +55,6 @@ public:
 	/** @return processed value of the InKey */
 	FVector GetProcessedVectorKeyValue(FKey InKey) const;
 
-    void Proccess();
-
 	std::shared_ptr<FGenericApplicationMessageHandler> MessageHandler;
 
 protected:

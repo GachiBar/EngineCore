@@ -206,9 +206,6 @@
     <ClInclude Include="InputSystem\InputManager.h">
       <Filter>InputSystem</Filter>
     </ClInclude>
-    <ClInclude Include="InputSystem\InputEvent.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
     <ClInclude Include="libs\nameof.hpp">
       <Filter>libs</Filter>
     </ClInclude>
@@ -235,9 +232,6 @@
     </ClInclude>
     <ClInclude Include="ImGuiLayer.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\InputKeys.h">
-      <Filter>InputSystem</Filter>
     </ClInclude>
     <ClInclude Include="GameViewWindow.h">
       <Filter>Header Files</Filter>
