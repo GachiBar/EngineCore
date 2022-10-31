@@ -4,6 +4,8 @@
 
 #include <dwmapi.h>
 #include <algorithm>
+
+#include "../../../Application.h"
 #include "../../../libs/MathUtility.h"
 #include "../../../libs/MemoryUtility.h"
 
@@ -143,6 +145,8 @@ void FWindowsWindow::Initialize(Application* const Application, const std::share
 		WindowHeight += BorderRect.bottom - BorderRect.top;
 	}
 
+	RegisterWindowClass(InHInstance, AppWindowClass.c_str());
+
 	// Creating the Window
 	HWnd = CreateWindowEx(
 		WindowExStyle,
@@ -151,8 +155,9 @@ void FWindowsWindow::Initialize(Application* const Application, const std::share
 		WindowStyle,
 		WindowX, WindowY, 
 		WindowWidth, WindowHeight,
-		( InParent) ? static_cast<HWND>( InParent->HWnd ) : NULL,
+		( InParent) ? InParent->HWnd : NULL,
 		NULL, InHInstance, NULL);
+
 
 	if (HWnd == NULL)
 	{
@@ -325,6 +330,25 @@ HRGN FWindowsWindow::MakeWindowRegionObject(bool bIncludeBorderWhenMaximized) co
 	}
 
 	return Region;
+}
+
+void FWindowsWindow::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name)
+{
+	WNDCLASSEX window_class;
+	window_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+	window_class.lpfnWndProc = Application::WndProc;
+	window_class.cbClsExtra = 0;
+	window_class.cbWndExtra = 0;
+	window_class.hInstance = instance;
+	window_class.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
+	window_class.hIconSm = window_class.hIcon;
+	window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	window_class.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+	window_class.lpszMenuName = nullptr;
+	window_class.lpszClassName = window_name;
+	window_class.cbSize = sizeof(WNDCLASSEX);
+
+	RegisterClassEx(&window_class);
 }
 
 void FWindowsWindow::AdjustWindowRegion( int32 Width, int32 Height )
@@ -735,15 +759,13 @@ void FWindowsWindow::SetWindowMode( EWindowMode::Type NewWindowMode )
 /** @return true if the native window is maximized, false otherwise */
 bool FWindowsWindow::IsMaximizedWindow() const
 {
-	//bool bIsMaximized = IsZoomed(HWnd);
-	//return bIsMaximized;
-	return true;
+	bool bIsMaximized = IsZoomed(HWnd);
+	return bIsMaximized;
 }
 
 bool FWindowsWindow::IsMinimizedWindow() const
 {
-	return true;
-	//return IsIconic(HWnd);
+	return IsIconic(HWnd);
 }
 
 /** @return true if the native window is visible, false otherwise */

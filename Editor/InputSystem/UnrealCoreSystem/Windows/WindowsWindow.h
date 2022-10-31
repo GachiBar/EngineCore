@@ -99,6 +99,9 @@ private:
 	   ::DeleteObject, unless you're passing it to SetWindowRgn(), which will absorb the reference itself. */
 	HRGN MakeWindowRegionObject(bool bIncludeBorderWhenMaximized) const;
 
+
+	void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
+
 private:
 
 	/** The application that owns this window. */

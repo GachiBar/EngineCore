@@ -50,6 +50,8 @@ public:
     engine::Engine* GetEngine() const;
 
     virtual ~Application() = default;
+
+    static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 protected:
 
     bool is_exit_requested = false;
@@ -68,12 +70,12 @@ protected:
     /// Application exit code.
     int exit_code_;
 
-
+    
 private:
     static const char* kMonoLibPath;
     static const char* kDllPath;
 
-    static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+   
     void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
     HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);
 };
