@@ -270,7 +270,7 @@ HRGN FWindowsWindow::MakeWindowRegionObject(bool bIncludeBorderWhenMaximized) co
 	if ( RegionWidth != INDEX_NONE && RegionHeight != INDEX_NONE )
 	{
 		const bool bIsBorderlessGameWindow = GetDefinition().Type == EWindowType::GameWindow && !GetDefinition().HasOSWindowBorder;
-		if (IsMaximized())
+		if (IsMaximizedWindow())
 		{
 			if (bIsBorderlessGameWindow)
 			{
@@ -392,7 +392,7 @@ void FWindowsWindow::ReshapeWindow( int32 NewX, int32 NewY, int32 NewWidth, int3
 		NewHeight = FMath::Max( NewHeight, FMath::Min( OldHeight, MinRetainedHeight ) );
 	}
 
-	if (IsMaximized())
+	if (IsMaximizedWindow())
 	{
 		Restore();
 	}
@@ -733,15 +733,17 @@ void FWindowsWindow::SetWindowMode( EWindowMode::Type NewWindowMode )
 }
 
 /** @return true if the native window is maximized, false otherwise */
-bool FWindowsWindow::IsMaximized() const
+bool FWindowsWindow::IsMaximizedWindow() const
 {
-	bool bIsMaximized = !!(IsZoomed(HWnd));
-	return bIsMaximized;
+	//bool bIsMaximized = IsZoomed(HWnd);
+	//return bIsMaximized;
+	return true;
 }
 
-bool FWindowsWindow::IsMinimized() const
+bool FWindowsWindow::IsMinimizedWindow() const
 {
-	return !!(::IsIconic(HWnd));
+	return true;
+	//return IsIconic(HWnd);
 }
 
 /** @return true if the native window is visible, false otherwise */

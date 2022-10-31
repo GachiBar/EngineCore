@@ -91,10 +91,10 @@ public:
 	virtual EWindowMode::Type GetWindowMode() const;
 
 	/** @return true if the native window is maximized, false otherwise */
-	virtual bool IsMaximized() const;
+	virtual bool IsMaximizedWindow() const;
 
 	/** @return true if the native window is minimized, false otherwise */
-	virtual bool IsMinimized() const;
+	virtual bool IsMinimizedWindow() const;
 
 	/** @return true if the native window is visible, false otherwise */
 	virtual bool IsVisible() const;

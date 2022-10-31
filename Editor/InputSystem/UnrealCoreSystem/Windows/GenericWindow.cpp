@@ -78,13 +78,13 @@ EWindowMode::Type FGenericWindow::GetWindowMode() const
 	return EWindowMode::Windowed;
 }
 
-bool FGenericWindow::IsMaximized() const
+bool FGenericWindow::IsMaximizedWindow() const
 {
 	// empty default functionality
 	return true;
 }
 
-bool FGenericWindow::IsMinimized() const
+bool FGenericWindow::IsMinimizedWindow() const
 {
 	return false;
 }

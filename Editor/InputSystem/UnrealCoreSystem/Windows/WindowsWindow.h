@@ -72,9 +72,12 @@ public:
 	virtual void Show() override;
 	virtual void Hide() override;
 	virtual void SetWindowMode( EWindowMode::Type NewWindowMode ) override;
-	virtual EWindowMode::Type GetWindowMode() const override { return WindowMode; } 
-	virtual bool IsMaximized() const override;
-	virtual bool IsMinimized() const override;
+	virtual EWindowMode::Type GetWindowMode() const override { return WindowMode; }
+
+
+	virtual bool IsMaximizedWindow() const override;
+	virtual bool IsMinimizedWindow() const override;
+
 	virtual bool IsVisible() const override;
 	virtual bool GetRestoredDimensions(int32& X, int32& Y, int32& Width, int32& Height) override;
 	virtual void SetWindowFocus() override;
