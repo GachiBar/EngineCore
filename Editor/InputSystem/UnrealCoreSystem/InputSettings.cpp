@@ -3,11 +3,15 @@
 
 #include "../ConfigReaderWriter.h"
 #include "NameMapping/NamingStructs.h"
+#include "../ConfigReaderWriterFactory.h"
 #include "NameMapping/ActionMapping.h"
 
 InputSettings::InputSettings()
-	: bCaptureMouseOnLaunch(true)
+	: 
+	  bCaptureMouseOnLaunch(true)
 {
+	ConfigReaderWriterFactory ConfigFactory;
+	ConfigReaderWriter.reset(ConfigFactory.Create());
 }
 
 void InputSettings::RemoveInvalidKeys()
@@ -15,10 +19,16 @@ void InputSettings::RemoveInvalidKeys()
 	//TODO Remove from config ini config
 }
 
-void InputSettings::SaveKeyMappings() const
+void InputSettings::SaveKeyMappingsToFile() const
 {
 	ConfigReaderWriter->SaveAxisInput(AxisMappings);
 	ConfigReaderWriter->SaveActionsInput(ActionMappings);
+}
+
+void InputSettings::LoadKeyMappingsFromConfig()
+{
+	ConfigReaderWriter->GetActionsFromIni(ActionMappings);
+	ConfigReaderWriter->GetAxisFromIni(AxisMappings);
 }
 
 void InputSettings::GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings)

@@ -8,8 +8,16 @@
 #include <cctype>
 #include <string>
 #include <limits>
+#include <set>
+#include <ranges>
+
 #include "../magic_enum.hpp"
+
+#define MINI_CASE_SENSITIVE
 #include "ini.h"
+#include "../../InputSystem/UnrealCoreSystem/KeyStruct.h"
+
+struct FInputAxisKeyMapping;
 
 template<typename T, typename _ = void>
 struct is_container : std::false_type {};
@@ -122,7 +130,7 @@ public:
 	//container scope
 	template <template<class, class> class TContainer, class TObject,
 	std::enable_if_t<!std::is_same_v<TContainer<TObject, std::allocator<TObject>>,std::string> && is_container<TContainer<TObject, std::allocator<TObject>>>::value, bool> = true>
-	TContainer<std::optional<TObject>, std::allocator<std::optional<TObject>>> GetValue(const std::string& section, const std::string& name)
+	TContainer<TObject, std::allocator<TObject>> GetValue(const std::string& section, const std::string& name)
 	{
 		//update ini structure
 		if (!file.read(ini))
@@ -137,18 +145,20 @@ public:
 		if (!has_key)
 			return {};
 
-		TContainer<std::optional<TObject>, std::allocator<std::optional<TObject>>> arr_result;
+		TContainer<TObject, std::allocator<TObject>> arr_result;
 
 		std::istringstream ss(ini[section][name]);
 		std::string token;
 
 		while (std::getline(ss, token, ',')) {
-			arr_result.push_back(FromString<TObject>(token));
+			std::optional<TObject> StrFromValue = FromString<TObject>(token);
+			if(StrFromValue.has_value())
+				arr_result.push_back(StrFromValue.value());
 		}
 		
 		return arr_result;
 	}
-	
+
 	template <class T, std::enable_if_t<std::is_same_v<std::string, T> || !is_container<T>::value, bool> = true>
 	std::optional<T> GetValue(const std::string& section, const std::string& name)
 	{
@@ -168,7 +178,17 @@ public:
 		return FromString<T>(ini[section][name]);
 	}
 
-protected:
+public:
+
+	//string scope
+	template <class T, std::enable_if_t<!std::is_same_v<std::string, T> && std::is_class_v<T>, bool> = true>
+	std::string ToString(const T& value)
+	{
+		std::ostringstream str1;
+		str1 << value;
+		return str1.str();
+	}
+
 	//string scope
 	template <class T, std::enable_if_t<std::is_same_v<std::string, T>, bool>  = true>
 	std::string ToString(const T& value)
@@ -200,6 +220,42 @@ protected:
 	std::string ToString(T value)
 	{
 		return std::string(magic_enum::enum_name(value));
+	}
+
+	
+	//FKey scope
+	template <class T>
+	std::enable_if_t<std::is_same_v<T,FKey>, std::optional<FKey>> FromString(
+		const std::string& str)
+	{
+		T Key(str);
+		if (Key.IsValid())
+			return Key;
+		return std::nullopt;
+	}
+
+	//FInputAxisKeyMapping scope
+	template <class T>
+	std::enable_if_t<std::is_same_v<T, FInputAxisKeyMapping>, std::optional<FInputAxisKeyMapping>> FromString(
+		const std::string& str)
+	{
+		auto tokenizer = [](std::string const& s, char del, std::vector<std::string>& words_out)
+		{
+			words_out.clear();
+			std::stringstream ss(s);
+			std::string word;
+			while (!ss.eof()) {
+				getline(ss, word, del);
+				words_out.push_back(word);
+			}
+		};
+		std::vector<std::string> parameters;
+		tokenizer(str, '/', parameters);
+		auto KeyOpt = FromString<FKey>(parameters[0]);
+		auto ScaleOpt = FromString<float>(parameters[1]);
+		if(KeyOpt.has_value() && ScaleOpt.has_value())
+			return T(KeyOpt.value(),ScaleOpt.value());
+		return std::nullopt;
 	}
 
 

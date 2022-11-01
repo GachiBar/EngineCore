@@ -55,5 +55,9 @@ struct FInputAxisKeyMapping
 
 inline std::ostream& operator<<(std::ostream& os, const FInputAxisKeyMapping& Key)
 {
+	if(Key.Key.IsValid())
+	{
+		os << Key.Key << "/" << Key.Scale;
+	}
 	return os;
 }
