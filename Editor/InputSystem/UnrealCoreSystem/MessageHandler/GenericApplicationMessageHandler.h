@@ -72,7 +72,7 @@ public:
 	{
 	}
 
-	virtual bool OnKeyChar( const char Character, const bool IsRepeat )
+	virtual bool OnKeyChar(const wchar_t Character, const bool IsRepeat)
 	{
 		return false;
 	}

@@ -6,7 +6,7 @@
 
 struct WindowsApplicationMessageHandler : public FGenericApplicationMessageHandler
 {
-	virtual bool OnKeyChar( const char Character, const bool IsRepeat ) override;
+	virtual bool OnKeyChar(const wchar_t Character, const bool IsRepeat) override;
 	virtual bool OnKeyDown( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat ) override;
 	virtual bool OnKeyUp( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat ) override;
 	virtual void OnInputLanguageChanged() override;
