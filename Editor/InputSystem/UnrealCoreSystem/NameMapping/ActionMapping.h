@@ -25,9 +25,6 @@ struct FInputActionKeyMapping
 
 struct FInputAxisKeyMapping
 {
-	/** Friendly name of axis, e.g "MoveForward" */
-	std::string AxisName;
-
 	/** Multiplier to use for the mapping when accumulating the axis value */
 	float Scale;
 
@@ -36,31 +33,27 @@ struct FInputAxisKeyMapping
 
 	bool operator==(const FInputAxisKeyMapping& Other) const
 	{
-		//TODO move to math lib
-		auto IsNearlyEqual = [](float A, float B, float ErrorTolerance = std::numeric_limits<float>::epsilon())
-		{
-			return std::abs(A - B) <= ErrorTolerance;
-		};
-
-		return (   AxisName == Other.AxisName
-				&& Key == Other.Key
-				&& IsNearlyEqual (Scale, Other.Scale) );
+		return (Key == Other.Key);
 	}
 
 	bool operator<(const FInputAxisKeyMapping& Other) const
 	{
-		return AxisName < Other.AxisName
-			&& Key < Other.Key
-			&& Scale < Other.Scale;
+		return Key < Other.Key;
 	}
 
 	FInputAxisKeyMapping(): Scale(0)
 	{
 	}
 
-	FInputAxisKeyMapping(std::string InAxisName = NAME_None, FKey InKey = EKeys::Invalid, const float InScale = 1.f)
-		: AxisName(std::move(InAxisName))
-		, Scale(InScale)
+	FInputAxisKeyMapping(FKey InKey = EKeys::Invalid, const float InScale = 1.f)
+		: Scale(InScale)
 		, Key(std::move(InKey))
 	{}
+
+	friend std::ostream& operator<<(std::ostream& os, const FInputAxisKeyMapping& Key);
 };
+
+inline std::ostream& operator<<(std::ostream& os, const FInputAxisKeyMapping& Key)
+{
+	return os;
+}

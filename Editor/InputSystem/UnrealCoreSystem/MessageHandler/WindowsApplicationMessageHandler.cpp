@@ -33,8 +33,8 @@ static FKey const & TranslateMouseButtonToKey( const EMouseButtons::Type Button 
 
 bool WindowsApplicationMessageHandler::OnKeyChar( const char Character, const bool IsRepeat )
 {
-	const FCharacterEvent CharacterEvent( Character, IsRepeat );
-	InputStack.push(CharacterEvent);
+	FCharacterEvent CharacterEvent(Character, IsRepeat);
+	InputStack.push(std::make_shared<FCharacterEvent>(CharacterEvent));
 	//return ProcessKeyCharEvent( CharacterEvent );
 	return true;
 }
@@ -44,7 +44,7 @@ bool WindowsApplicationMessageHandler::OnKeyDown(const int32 KeyCode, const uint
 	FKey const Key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
 	FKeyEvent const KeyEvent(Key, IsRepeat, IsRepeat ? IE_Repeat : IE_Pressed, CharacterCode, KeyCode);
 
-	InputStack.push(KeyEvent);
+	InputStack.push(std::make_shared<FKeyEvent>(KeyEvent));
 
 	//return ProcessKeyDownEvent(KeyEvent);
 	return true;
@@ -55,7 +55,7 @@ bool WindowsApplicationMessageHandler::OnKeyUp( const int32 KeyCode, const uint3
 	FKey const Key = InputKeyManager::Get().GetKeyFromCodes( KeyCode, CharacterCode );
 	FKeyEvent const KeyEvent(Key, IsRepeat,IE_Released, CharacterCode, KeyCode);
 
-	InputStack.push(KeyEvent);
+	InputStack.push(std::make_shared<FKeyEvent>(KeyEvent));
 
 	//return ProcessKeyUpEvent( KeyEvent );
 	return true;
@@ -91,7 +91,7 @@ bool WindowsApplicationMessageHandler::OnMouseDown(const std::shared_ptr<FGeneri
 		0.f
 	);
 	
-	InputStack.push(MouseEvent);
+	InputStack.push(std::make_shared<FPointerEvent>(MouseEvent));
 	return true;
 }
 
@@ -117,7 +117,7 @@ bool WindowsApplicationMessageHandler::OnMouseDoubleClick( const std::shared_ptr
 		0
 		);
 
-	InputStack.push(MouseEvent);
+	InputStack.push(std::make_shared<FPointerEvent>(MouseEvent));
 
 	return true;
 	//return ProcessMouseButtonDoubleClickEvent( PlatformWindow, MouseEvent );
@@ -145,7 +145,7 @@ bool WindowsApplicationMessageHandler::OnMouseUp( const EMouseButtons::Type Butt
 		0
 		);
 
-	InputStack.push(MouseEvent);
+	InputStack.push(std::make_shared<FPointerEvent>(MouseEvent));
 	return true;
 }
 
@@ -163,11 +163,24 @@ bool WindowsApplicationMessageHandler::OnMouseWheel( const float Delta, const FV
 		CursorPos,
 		CursorPos,
 		InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
-		EKeys::Invalid,
+		EKeys::MouseWheelAxis,
 		Delta
 		);
+	InputStack.push(std::make_shared<FPointerEvent>(MouseWheelEvent));
 
-	InputStack.push(MouseWheelEvent);
+	//TODO
+	FPointerEvent MouseWheelPressedEvent(MouseWheelEvent,
+		IE_Pressed,
+		Delta > 0  ? EKeys::MouseScrollUp :EKeys::MouseScrollDown
+	);
+	InputStack.push(std::make_shared<FPointerEvent>(MouseWheelPressedEvent));
+
+	FPointerEvent MouseWheelReleasedEvent(MouseWheelEvent,
+		IE_Released,
+		Delta > 0 ? EKeys::MouseScrollUp : EKeys::MouseScrollDown
+	);
+	InputStack.push(std::make_shared<FPointerEvent>(MouseWheelReleasedEvent));
+
 	return true;
 	//return ProcessMouseWheelOrGestureEvent( MouseWheelEvent, nullptr );
 }
@@ -182,16 +195,34 @@ bool WindowsApplicationMessageHandler::OnMouseMove()
 	
 	if ( LastCursorPosition != CurrentCursorPosition )
 	{
-		FPointerEvent MouseEvent(
-			IE_Axis,
-			CurrentCursorPosition,
-			LastCursorPosition,
-			InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
-			EKeys::Invalid,
-			0
+		if(LastCursorPosition.y!= CurrentCursorPosition.y)
+		{
+			FPointerEvent MouseEventY(
+				IE_Axis,
+				CurrentCursorPosition,
+				LastCursorPosition,
+				InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
+				EKeys::MouseY,
+				0
 			);
 
-		InputStack.push(MouseEvent);
+			InputStack.push(std::make_shared<FPointerEvent>(MouseEventY));
+		}
+		if (LastCursorPosition.y != CurrentCursorPosition.y)
+		{
+			FPointerEvent MouseEventX(
+				IE_Axis,
+				CurrentCursorPosition,
+				LastCursorPosition,
+				InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
+				EKeys::MouseX,
+				0
+			);
+
+			InputStack.push(std::make_shared<FPointerEvent>(MouseEventX));
+		}
+
+		InputManager::getInstance().GetMouseDevice().SetPos(p.x, p.y);
 	}
 
 	return true;

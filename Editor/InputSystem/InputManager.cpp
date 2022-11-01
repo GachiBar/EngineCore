@@ -214,13 +214,30 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	// ************ MOUSE MESSAGES ************ //
 	else if (IsMouseMessage(msg))
 	{
+
 		if(msg == WM_MOUSEMOVE || msg==WM_NCMOUSEMOVE)
 		{
 			POINT CursorPoint;
 			CursorPoint.x = GET_X_LPARAM(lparam);
 			CursorPoint.y = GET_Y_LPARAM(lparam);
 
-			GetMessageHandler()->OnRawMouseMove(CursorPoint.x, CursorPoint.y);
+			//GetMessageHandler()->OnRawMouseMove(CursorPoint.x, CursorPoint.y);
+
+			GetMessageHandler()->OnMouseMove();
+			
+		}
+		else if (msg == WM_MOUSEWHEEL || msg == WM_MOUSEHWHEEL)
+		{
+			const float SpinFactor = 1 / 120.0f;
+			const SHORT WheelDelta = GET_WHEEL_DELTA_WPARAM(wparam);
+
+			POINT CursorPoint;
+			CursorPoint.x = GET_X_LPARAM(lparam);
+			CursorPoint.y = GET_Y_LPARAM(lparam);
+
+			const FVector2D CursorPos(CursorPoint.x, CursorPoint.y);
+
+			GetMessageHandler()->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
 		}
 		else
 		{
@@ -298,19 +315,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 		
 	}
-	else if (msg == WM_MOUSEWHEEL)
-	{
-		const float SpinFactor = 1 / 120.0f;
-		const SHORT WheelDelta = GET_WHEEL_DELTA_WPARAM(wparam);
-
-		POINT CursorPoint;
-		CursorPoint.x = GET_X_LPARAM(lparam);
-		CursorPoint.y = GET_Y_LPARAM(lparam);
-
-		const FVector2D CursorPos(CursorPoint.x, CursorPoint.y);
-
-		GetMessageHandler()->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
-	}
+	
 	else if (msg == WM_CLOSE)
 	{
 		if (app->GetMainWindow())
@@ -357,70 +362,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		
 	}
 	// ************ END MOUSE MESSAGES ************ //
-
-	/*
-	 	else if (msg == WM_MOUSEMOVE)
-	{
-		uint32 Size = 0;
-		::GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &Size, sizeof(RAWINPUTHEADER));
-		std::vector<uint8> RawData(Size);
-
-		if (::GetRawInputData((HRAWINPUT)lparam, RID_INPUT, RawData.data(), &Size, sizeof(RAWINPUTHEADER)) == Size)
-		{
-			const auto Raw = reinterpret_cast<const RAWINPUT* const>(RawData.data());
-
-			if (Raw->header.dwType == RIM_TYPEMOUSE)
-			{
-				const bool IsAbsoluteInput = (Raw->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE) == MOUSE_MOVE_ABSOLUTE;
-				if (IsAbsoluteInput)
-				{
-					// Since the raw input is coming in as absolute it is likely the user is using a tablet
-					// or perhaps is interacting through a virtual desktop
-					// Absolute coordinates given through raw input are simulated using MouseMove to get relative coordinates
-					GetMessageHandler()->OnMouseMove();
-				}
-			}
-			// Since raw input is coming in as relative it is likely a traditional mouse device
-			const int xPosRelative = Raw->data.mouse.lLastX;
-			const int yPosRelative = Raw->data.mouse.lLastY;
-			GetMessageHandler()->OnRawMouseMove(xPosRelative, yPosRelative);
-		}
-	}
-	else if (msg == WM_MOUSEMOVE)
-	{
-		POINTS pt = MAKEPOINTS(lparam);
-		//TODO remove magic numbers
-		if (pt.x > 0 && pt.x < 800 && pt.y > 0 && pt.y < 600)
-		{
-			GetMouseDevice().OnMouseMove(pt.x, pt.y);
-			if (!GetMouseDevice().IsInWindow())
-			{
-				SetCapture(hwnd);
-				GetMouseDevice().OnMouseEnter();
-			}
-		}
-		else
-		{
-			if (wparam & (MK_LBUTTON | MK_RBUTTON))
-			{
-				pt.x = std::max(short(0), pt.x);
-				//TODO remove magic numbers
-				pt.x = std::min(short(800 - 1), pt.x);
-				pt.y = std::max(short(0), pt.y);
-				//TODO remove magic numbers
-				pt.y = std::min(short(600 - 1), pt.y);
-				GetMouseDevice().OnMouseMove(pt.x, pt.y);
-			}
-			else
-			{
-				ReleaseCapture();
-				GetMouseDevice().OnMouseLeave();
-				GetMouseDevice().OnLeftReleased();
-				GetMouseDevice().OnRightReleased();
-			}
-		}
-	}
-	 */
+	
 }
 
 std::pair<float, float> InputManager::GetMousePosition() const
@@ -428,9 +370,14 @@ std::pair<float, float> InputManager::GetMousePosition() const
 	return mouse.GetPos();
 }
 
-bool InputManager::ReadEvent(FInputEvent& IE) const
+bool InputManager::ReadEvent(std::shared_ptr<FInputEvent>& IE) const
 {
 	return player_input->MessageHandler->ReadInputEvent(IE);
+}
+
+PlayerInput* InputManager::GetPlayerInput() const
+{
+	return player_input;
 }
 
 void InputManager::SetPlayerInput(PlayerInput* InPlayerEnums)
@@ -449,8 +396,12 @@ InputManager::InputManager(): app(nullptr), player_input(nullptr)
 
 void InputManager::Flush()
 {
-	//TODO
+	
 	//KeyStates flush
-
+	for (auto& KeyState : player_input->GetKeyStates())
+	{
+		KeyState.second.FlushEvents();
+	}
+	
 	mouse.Flush();
 }

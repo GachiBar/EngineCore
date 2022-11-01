@@ -27,8 +27,9 @@ public:
 
     std::pair<float, float> GetMousePosition() const;
 
-    bool ReadEvent(FInputEvent& IE) const;
+    bool ReadEvent(std::shared_ptr<FInputEvent>& IE) const;
 
+    PlayerInput* GetPlayerInput() const;
     void SetPlayerInput(PlayerInput* InPlayerEnums);
 
 	FGenericApplicationMessageHandler* GetMessageHandler();

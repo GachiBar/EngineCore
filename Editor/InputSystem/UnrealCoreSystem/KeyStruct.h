@@ -2,7 +2,7 @@
 #pragma once
 #include <string>
 #include <memory>
-
+#include <ostream>
 typedef unsigned char uint8;
 typedef unsigned int uint32;
 
@@ -35,6 +35,9 @@ struct FKey
 	friend struct EKeys;
 
     static const std::string SyntheticCharPrefix;
+
+	friend std::ostream& operator<<(std::ostream& os, const FKey& Key);
+
 private:
 	std::string KeyName;
 

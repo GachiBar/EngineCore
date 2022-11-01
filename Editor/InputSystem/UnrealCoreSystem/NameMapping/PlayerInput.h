@@ -26,13 +26,19 @@ struct FKeyState
 	/** Queued state information */
 	uint8 bDownPrevious:1;
 
-	int EventCounts[IE_MAX];
+	int EventCounts[IE_MAX] ;
+
+	void FlushEvents()
+	{
+		std::fill_n(EventCounts, IE_MAX, 0);
+	}
 
 	FKeyState()
 		: Value(0.f, 0.f, 0.f)
 		, bDown(false)
 		, bDownPrevious(false)
 	{
+		std::fill_n(EventCounts, IE_MAX, 0);
 	}
 };
 
@@ -51,21 +57,31 @@ public:
 	/** return true if InKey went from down to up since player input was last processed. */
 	bool WasJustReleased(FKey InKey) const;
 
+	bool IsActionPressed(const std::string& ActionName) const;
+
+	bool WasActionJustPressed(const std::string& ActionName) const;
+
+	bool WasActionJustReleased(const std::string& ActionName) const;
+
 	/** @return current state of the InKey */
 	float GetKeyValue(FKey InKey) const;
 
+	float GetAxisValue(std::string const& AxisName) const;
 	/** @return processed value of the InKey */
 	FVector GetProcessedVectorKeyValue(FKey InKey) const;
 
 	std::shared_ptr<FGenericApplicationMessageHandler> MessageHandler;
 
 	void SetInputSettings(InputSettings* InInputSettings);
+
+	std::map<FKey, FKeyState>& GetKeyStates();
+
+	void SetKeyStateValue(FKey const& Key, float Value);
 protected:
 	/** @return True if a key is handled by an action binding */
 	bool IsKeyHandledByAction(FKey Key) const;
 
 	/* Returns the summed values of all the components of this axis this frame
-	 * @param AxisBinding - the action to determine if it ocurred
 	 * @param KeysToConsume - array to collect the keys associated with this binding that should be consumed
 	 */
 	float DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume);
