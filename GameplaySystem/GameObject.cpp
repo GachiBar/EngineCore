@@ -50,7 +50,14 @@ size_t GameObject::Count() const {
 GameObject::GameObject(const mono::mono_assembly& assembly, mono::mono_object object)
     : assembly_(assembly)
     , object_(std::move(object))
-{}
+    , handle_(0)
+{
+    handle_ = mono_gchandle_new(object_.get_internal_ptr(), true);
+}
+
+GameObject::~GameObject() {
+    mono_gchandle_free(handle_);
+}
 
 std::shared_ptr<Component> GameObject::AddComponent(const std::string& name_space, const std::string& name) {
     return AddComponent(assembly_.get_type(name_space, name));

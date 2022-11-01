@@ -13,6 +13,7 @@ public:
 	size_t Count() const;
 
 	Scene(const mono::mono_assembly& assembly);
+	~Scene();
 
 	std::shared_ptr<GameObject> CreateGameObject();
 	void DeleteGameObject(std::shared_ptr<GameObject> game_object);
@@ -29,6 +30,8 @@ public:
 	static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:
+	uint32_t handle_;
+
 	const mono::mono_assembly& assembly_;
 	mono::mono_object object_;
 

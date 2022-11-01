@@ -170,9 +170,6 @@ void EditorLayer::OnGuiRender()
 
     ImGui::End();
 
-    auto go0 = (*GetApp()->GetEngine()->GetScene())[0];
-    auto go1 = (*GetApp()->GetEngine()->GetScene())[1];
-    auto t = go0->Count();
     gvm->draw_imgui();
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
     properties->draw_imgui(selected_go);

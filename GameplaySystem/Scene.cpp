@@ -37,7 +37,14 @@ size_t Scene::Count() const {
 Scene::Scene(const mono::mono_assembly& assembly)
     : assembly_(assembly)
     , object_(assembly.get_type("GameplayCore", "Scene").new_instance())
-{}
+    , handle_(0)
+{
+    handle_ = mono_gchandle_new(object_.get_internal_ptr(), true);
+}
+
+Scene::~Scene() {
+    mono_gchandle_free(handle_);
+}
 
 std::shared_ptr<GameObject> Scene::CreateGameObject() {
     mono::mono_object object(create_game_object_->invoke(object_));

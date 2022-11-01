@@ -22,8 +22,14 @@ const mono::mono_object& Component::GetInternal() const {
 
 Component::Component(mono::mono_object object)
     : object_(std::move(object))
+    , handle_(0)
 {
+    handle_ = mono_gchandle_new(object_.get_internal_ptr(), true);
     mono::mono_type type = object_.get_type();
+}
+
+Component::~Component() {
+    mono_gchandle_free(handle_);
 }
 
 void Component::Initialize() {

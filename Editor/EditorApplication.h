@@ -15,8 +15,6 @@ public:
 	void OnStart() override;
 
 	engine::Scene* scene;
-	std::shared_ptr<engine::GameObject> game_object_1;
-	std::shared_ptr<engine::GameObject> game_object_2;
 
 protected:
 	//std::shared_ptr<MainWindow> mw;

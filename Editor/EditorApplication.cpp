@@ -23,8 +23,8 @@ void EditorApplication::OnSetup()
 	Application::OnSetup();
 
 	scene = new engine::Scene(m_Assembly);
-	game_object_1 = scene->CreateGameObject();
-	game_object_2 = scene->CreateGameObject();
+	auto game_object_1 = scene->CreateGameObject();
+	auto game_object_2 = scene->CreateGameObject();
 
 	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");	

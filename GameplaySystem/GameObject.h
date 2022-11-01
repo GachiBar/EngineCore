@@ -12,8 +12,6 @@ class Scene;
 class Component;
 
 class GameObject {
-    friend class Scene;
-
 public:
     // TODO: Find way to sync links
     // TODO: Write getting reference type from mono_type
@@ -22,6 +20,9 @@ public:
     const mono::mono_object& GetInternal() const;
     std::string Name() const;
     size_t Count() const;
+
+    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
+    ~GameObject();
 
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
     std::shared_ptr<Component> AddComponent(const mono::mono_type& component_type);
@@ -45,6 +46,8 @@ public:
     static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:
+    uint32_t handle_;
+
     const mono::mono_assembly& assembly_;
     mono::mono_object object_;
 
@@ -61,9 +64,7 @@ private:
     static mono::mono_method_invoker* update_;
     static mono::mono_method_invoker* render_;
     static mono::mono_method_invoker* terminate_;
-    static mono::mono_method_invoker* invalidate_;
-
-    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
+    static mono::mono_method_invoker* invalidate_;    
 };
 
 } // namespace engine
