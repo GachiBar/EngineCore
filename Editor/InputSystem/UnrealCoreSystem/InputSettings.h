@@ -47,16 +47,10 @@ public:
 
 	void RemoveInvalidKeys();
 
-	/** Programmatically add an action mapping to the project defaults */
-	void AddActionMapping(std::string const & ActionMap, const FKey& KeyMapping, bool bForceRebuildKeymaps = true);
-
 	void GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings);
 
 	/** Programmatically remove an action mapping to the project defaults */
 	void RemoveActionMapping(const std::string& ActionMap, const FKey& KeyMapping, bool bForceRebuildKeymaps = true);
-
-	/** Programmatically add an axis mapping to the project defaults */
-	void AddAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
 
 	/** Retrieve all axis mappings by a certain name. */
 	void GetAxisMappingByName(const std::string& InAxisName, std::set<FInputAxisKeyMapping>& OutMappings);

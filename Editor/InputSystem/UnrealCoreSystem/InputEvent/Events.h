@@ -51,6 +51,23 @@ public:
     {
         return false;
     }
+
+	float GetFloatValueFromInputEvent(EInputEvent IE) const
+	{
+		switch (IE) {
+			case IE_Released:
+				return 0.f;
+			case IE_Pressed:
+			case IE_Repeat:
+			case IE_DoubleClick:
+				return 1.f;
+			case IE_Axis:
+			case IE_MAX:
+			default:
+				return 0.f;
+		}
+	}
+
 protected:
 	EInputEvent InputEvent;
 	// True if this key was auto-repeated.
@@ -95,6 +112,9 @@ struct FCharacterEvent
 			KeyState.bDown = InputEvent == IE_Repeat || InputEvent == IE_Pressed;
 
 			KeyState.EventCounts[InputEvent]++;
+
+			KeyState.Value.y = 0;
+			KeyState.Value.x = GetFloatValueFromInputEvent(InputEvent);
 		}
 	}
 private:
@@ -177,6 +197,9 @@ struct FKeyEvent : public FInputEvent
 		KeyState.bDown = InputEvent == IE_Repeat || InputEvent == IE_Pressed;
 
 		KeyState.EventCounts[InputEvent]++;
+
+		KeyState.Value.y = 0;
+		KeyState.Value.x = GetFloatValueFromInputEvent(InputEvent);
 	}
 
 private:
@@ -209,7 +232,7 @@ struct FPointerEvent
 		const FVector2D& InScreenSpacePosition,
 		const FVector2D& InLastScreenSpacePosition,
 		const std::set<FKey>& InPressedButtons,
-		const FKey& InEffectingButton,
+		const FKey InEffectingButton,
 		float InWheelDelta
 	)
 		: FInputEvent(InInputEvent,false)
@@ -217,21 +240,20 @@ struct FPointerEvent
 		, LastScreenSpacePosition(InLastScreenSpacePosition)
 		, CursorDelta(InScreenSpacePosition - InLastScreenSpacePosition)
 		, PressedButtons(InPressedButtons)
-		, EffectingButton(InEffectingButton)
+		, EffectingButton(std::move(InEffectingButton))
 		, WheelDelta(InWheelDelta)
 		,bIsDirectionInvertedFromDevice(false)
 	{ }
 
-
-	/** A constructor to alter cursor positions */
 	FPointerEvent(
-		const FPointerEvent& Other,
-		const FVector2D& InScreenSpacePosition,
-		const FVector2D& InLastScreenSpacePosition)
+		const FPointerEvent& InPointerEvent,
+		EInputEvent InInputEvent,
+		const FKey InEffectingButton
+	)
 	{
-		*this = Other;
-		ScreenSpacePosition = InScreenSpacePosition;
-		LastScreenSpacePosition = InLastScreenSpacePosition;
+		*this = InPointerEvent;
+		this->InputEvent = InInputEvent;
+		this->EffectingButton = InEffectingButton;
 	}
 	
 public:
@@ -281,11 +303,32 @@ public:
 	{
 		FKeyState& KeyState = KeyStateMap[EffectingButton];
 
-		//TODO
 		KeyState.bDownPrevious = KeyState.bDown;
 		KeyState.bDown = InputEvent == IE_Repeat || InputEvent == IE_Pressed;
 
 		KeyState.EventCounts[InputEvent]++;
+
+		if(InputEvent==IE_Axis)
+		{
+			KeyState.Value.y = 0;
+			if(EffectingButton==EKeys::MouseX)
+			{
+				KeyState.Value.x = CursorDelta.x;
+			}
+			else if (EffectingButton == EKeys::MouseY)
+			{
+				KeyState.Value.x = CursorDelta.y;
+			}
+			else if(EffectingButton == EKeys::MouseWheelAxis)
+			{
+				KeyState.Value.x = WheelDelta;
+			}
+		}
+		else
+		{
+			KeyState.Value.y = 0;
+			KeyState.Value.x = GetFloatValueFromInputEvent(InputEvent);
+		}
 	}
 
 private:

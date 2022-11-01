@@ -48,6 +48,17 @@ void Application::OnSetup()
 	InputManager::getInstance().app = this;
 	InputManager::getInstance().SetPlayerInput(player_input.get());
 
+	input_settings->AddActionMapping("Test", EKeys::A);
+	input_settings->AddActionMapping("Test", EKeys::W);
+	input_settings->AddActionMapping("Test", EKeys::SpaceBar);
+	input_settings->AddActionMapping("Test", EKeys::Enter);
+
+
+	input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::A,-1.f });
+	input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::D,1.f });
+	input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::W,1.f });
+	//input_settings->AddActionMapping("Test", EKeys::SpaceBar);
+
 	auto wnd = FWindowsWindow::Make();
 	FGenericWindowDefinition wnd_def;
 	wnd_def.Type = EWindowType::Normal;
@@ -84,9 +95,12 @@ void Application::OnSetup()
 	wnds.push_back(wnd2);
 
 	wnd->Show();
+	//wnd->SetWindowFocus();
 
+	//wnd2->Show();
 	wnd2->Enable(false);
 	wnd2->Hide();
+	SetFocus(wnd->GetHWnd());
 }
 
 void Application::OnStart()
@@ -134,6 +148,13 @@ int Application::Run()
 		ApplyInput();
 		engine_->RunFrame();
 
+		if(player_input->IsActionPressed("Test"))
+		{
+			
+		}
+
+		std::cout << player_input->GetAxisValue("TestAxis") << std::endl;
+
 		InputManager::getInstance().Flush();
 
 		engine_->GetRenderer().BeginFrame();
@@ -176,10 +197,11 @@ engine::Engine* Application::GetEngine() const
 
 void Application::ApplyInput()
 {
-	FInputEvent IE;
+	std::shared_ptr<FInputEvent> IE;
 
 	while (InputManager::getInstance().ReadEvent(IE))
 	{
+		IE->OnApplyInput(player_input->GetKeyStates());
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
 			/*

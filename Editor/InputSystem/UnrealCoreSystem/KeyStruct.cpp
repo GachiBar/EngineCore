@@ -9,7 +9,7 @@ bool FKey::IsValid() const
 	if (!KeyName.empty())
 	{
 		ConditionalLookupKeyDetails();
-		return KeyDetails==nullptr;
+		return KeyDetails!=nullptr;
 	}
 	return false;
 }
@@ -96,4 +96,12 @@ void FKey::ResetKey() const
 		}
 	}
     */
+}
+
+
+std::ostream& operator<<(std::ostream& os, const FKey& Key)
+{
+	if(Key.IsValid())
+		os<<Key.ToString();
+	return os;
 }

@@ -68,7 +68,9 @@ class FGenericApplicationMessageHandler
 {
 public:
 
-	virtual ~FGenericApplicationMessageHandler() {}
+	virtual ~FGenericApplicationMessageHandler()
+	{
+	}
 
 	virtual bool OnKeyChar( const char Character, const bool IsRepeat )
 	{
@@ -179,12 +181,12 @@ public:
 
 	}
 
-	std::queue<FInputEvent> const & GetInputStack()
+	std::queue< std::shared_ptr<FInputEvent>> const & GetInputStack()
 	{
 		return InputStack;
 	}
 
-	bool ReadInputEvent(FInputEvent& Event_out)
+	bool ReadInputEvent(std::shared_ptr<FInputEvent>& Event_out)
 	{
 		if(InputStack.size())
 		{
@@ -192,11 +194,11 @@ public:
 			InputStack.pop();
 			return true;
 		}
-		Event_out = FInputEvent();
+		Event_out = nullptr;
 		return false;
 	}
 
 protected:
-	std::queue<FInputEvent> InputStack;
+	std::queue<std::shared_ptr<FInputEvent>> InputStack;
 };
 

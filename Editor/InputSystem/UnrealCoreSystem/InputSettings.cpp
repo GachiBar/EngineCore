@@ -15,19 +15,6 @@ void InputSettings::RemoveInvalidKeys()
 	//TODO Remove from config ini config
 }
 
-void InputSettings::AddActionMapping(std::string const& ActionMap, const FKey& KeyMapping, bool bForceRebuildKeymaps)
-{
-	if (ActionMappings.contains(ActionMap))
-		ActionMappings[ActionMap].insert(KeyMapping);
-	else
-		ActionMappings[ActionMap] = { KeyMapping };
-
-	if (bForceRebuildKeymaps)
-	{
-		ForceRebuildKeymaps();
-	}
-}
-
 void InputSettings::SaveKeyMappings() const
 {
 	ConfigReaderWriter->SaveAxisInput(AxisMappings);
@@ -55,29 +42,9 @@ void InputSettings::RemoveActionMapping(const std::string& ActionMap, const FKey
 	}
 }
 
-void InputSettings::AddAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping,
-	bool bForceRebuildKeymaps)
-{
-	if (AxisMappings.contains(AxisMap))
-		AxisMappings[AxisMap].insert(KeyMapping);
-	else
-	{
-		AxisMappings.clear();
-
-		std::set<FInputAxisKeyMapping> Set;
-		Set.insert(KeyMapping);
-		AxisMappings[AxisMap] = Set;
-	}
-
-	if (bForceRebuildKeymaps)
-	{
-		ForceRebuildKeymaps();
-	}
-}
-
 void InputSettings::GetAxisMappingByName(const std::string& InAxisName, std::set<FInputAxisKeyMapping>& OutMappings)
 {
-	if (!InAxisName.empty())
+	if (!InAxisName.empty() && AxisMappings.contains(InAxisName))
 	{
 		OutMappings = AxisMappings[InAxisName];
 	}
@@ -159,20 +126,24 @@ void InputSettings::AddActionMapping(std::string const& NewMap, const FKey& NewK
 {
 	if (ActionMappings.contains(NewMap))
 		ActionMappings[NewMap].insert(NewKeyMapping);
-
-	std::set<FKey> Set;
-	Set.insert(NewKeyMapping);
-	ActionMappings[NewMap] = Set;
+	else
+	{
+		std::set<FKey> Set;
+		Set.insert(NewKeyMapping);
+		ActionMappings[NewMap] = Set;
+	}
 }
 
 void InputSettings::AddAxisMapping(std::string const& NewMap, const FInputAxisKeyMapping& NewKeyMapping)
 {
 	if (AxisMappings.contains(NewMap))
 		AxisMappings[NewMap].insert(NewKeyMapping);
-
-	std::set<FInputAxisKeyMapping> Set;
-	Set.insert(NewKeyMapping);
-	AxisMappings[NewMap] = Set;
+	else
+	{
+		std::set<FInputAxisKeyMapping> Set;
+		Set.insert(NewKeyMapping);
+		AxisMappings[NewMap] = Set;
+	}
 }
 
 /** Ask for all the action mappings */
