@@ -12,6 +12,8 @@ class Scene;
 class Component;
 
 class GameObject {
+    friend class Scene;
+
 public:
     // TODO: Find way to sync links
     // TODO: Write getting reference type from mono_type
@@ -19,9 +21,9 @@ public:
     // Add & Get can be linked to one instance btw
     const mono::mono_object& GetInternal() const;
     std::string Name() const;
+    void Name(std::string& value);
     size_t Count() const;
-
-    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
+        
     ~GameObject();
 
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
@@ -65,6 +67,8 @@ private:
     static mono::mono_method_invoker* render_;
     static mono::mono_method_invoker* terminate_;
     static mono::mono_method_invoker* invalidate_;    
+
+    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
 };
 
 } // namespace engine

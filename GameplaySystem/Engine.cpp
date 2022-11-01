@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Engine.h"
 #include "ModelLoader.h"
+#include "GameObject.h"
+#include "Scene.h"
+#include "TextureLoader.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
@@ -12,20 +15,7 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
-#include "GameObject.h"
-#include "Scene.h"
-#include "TextureLoader.h"
-
 namespace engine {
-
-Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
-	: domain_(domain)
-	, assembly_(assembly)
-	, renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
-	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
-	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
-	, scene_(nullptr)
-{}
 
 Scene* Engine::GetScene() {
 	return scene_;
@@ -39,7 +29,14 @@ RenderDevice& Engine::GetRenderer() {
 	return renderer_;
 }
 
-#include <DirectXTex.h>
+Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
+	: domain_(domain)
+	, assembly_(assembly)
+	, renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
+	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
+	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
+	, scene_(nullptr)
+{}
 
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::vector<ModelVertex> verticies;

@@ -8,6 +8,8 @@ namespace GameplayCore.Components
 {
     public abstract class Component
     {
+        private string[] _editablePropertiesNames;
+
         [SerializeField, JsonConverter(typeof(GameObjectGuidJsonConverter))]
         private GameObject _gameObject = null;
 
@@ -30,6 +32,15 @@ namespace GameplayCore.Components
             }
         }
 
+        public Component()
+        {
+            _editablePropertiesNames = GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .Where(p => IsEditableProperty(p))
+                .Select(p => p.Name)
+                .ToArray();
+        }
+
         public virtual void Initialize() { }
         public virtual void FixedUpdate() { }
         public virtual void Update() { }
@@ -38,11 +49,7 @@ namespace GameplayCore.Components
 
         internal string[] GetEditablePropertiesNames()
         {
-            return GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .Where(p => IsEditableProperty(p))
-                .Select(p => p.Name)
-                .ToArray();
+            return _editablePropertiesNames;
         }
 
         protected virtual void OnAttach(GameObject gameObject) { }

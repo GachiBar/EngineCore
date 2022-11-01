@@ -6,10 +6,11 @@
 namespace engine {
 
 class Component {
+    friend class GameObject;
+
 public:
     const mono::mono_object& GetInternal() const;
-
-    Component(mono::mono_object object);
+    
     ~Component();
 
     void Initialize();
@@ -32,7 +33,9 @@ private:
     static mono::mono_method_invoker* update_;
     static mono::mono_method_invoker* render_;
     static mono::mono_method_invoker* terminate_;
-    static mono::mono_method_invoker* get_editable_properties_names_;   
+    static mono::mono_method_invoker* get_editable_properties_names_;  
+
+    Component(mono::mono_object object);
 };
 
 } // namespace engine

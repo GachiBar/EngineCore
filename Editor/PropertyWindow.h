@@ -7,6 +7,6 @@
 class PropertyWindow
 {
 public:
-	void draw_imgui(std::shared_ptr<engine::GameObject> go);
+	void draw_imgui(std::shared_ptr<engine::GameObject> gameObject);
 };
 

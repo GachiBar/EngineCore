@@ -14,28 +14,27 @@ namespace engine {
 using namespace std::chrono;
 
 class Engine {
-	friend class Application;
-
 public:
 	const std::chrono::nanoseconds kTimestep =
 		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 
 	const float	kDt = 16.0f / 1000;
 
+	Scene* GetScene();
+	void SetScene(Scene* scene);
+	RenderDevice& GetRenderer();
 
 	Engine(
 		const mono::mono_domain& domain,
 		const mono::mono_assembly& assembly);
 
-	Scene* GetScene();
-	void SetScene(Scene* scene);
 	void Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height);
 	void Terminate();
 
 	void RunFrame();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	void InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height);
-	RenderDevice& GetRenderer();
+	
 private:
 	RenderDevice renderer_;
 

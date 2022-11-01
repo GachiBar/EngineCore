@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "Component.h"
 #include "../monowrapper/monopp/mono_assembly.h"
+#include "../monowrapper/monopp/mono_domain.h"
 #include "../monowrapper/monopp/mono_string.h"
 
 namespace engine {
@@ -34,6 +35,14 @@ std::string GameObject::Name() const {
     mono::mono_object value(name_->get_value(object_));
     mono::mono_string name(value);
     return name.as_utf8();
+}
+
+void GameObject::Name(std::string& value) {
+    assert(name_ != nullptr && kIsNotCachedErrorMessage);
+
+    auto domain = mono::mono_domain::get_current_domain();
+    mono::mono_string name(domain, value);
+    name_->set_value(object_, name.get_internal_ptr());
 }
 
 size_t GameObject::Count() const {

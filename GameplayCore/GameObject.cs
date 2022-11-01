@@ -9,9 +9,6 @@ namespace GameplayCore
     [Serializable]
     public class GameObject : IReadOnlyList<Component>
     {
-        // TODO: fix this terrible approach
-        private static int _id = 0;
-
         /// <summary>
         /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.
         /// </summary>
@@ -54,7 +51,7 @@ namespace GameplayCore
         /// <summary>
         /// Name of <see cref="GameObject"/>.
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         #region IReadOnlyList
 
@@ -62,10 +59,6 @@ namespace GameplayCore
         {
             get
             {
-                if (_updatableComponents == null)
-                {
-                    System.Console.WriteLine("Oooops");
-                }
                 return _updatableComponents.Count;
             }
         }
@@ -85,8 +78,7 @@ namespace GameplayCore
             _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
             Scene = scene;
-            Name = $"GameObject{_id}";
-            _id += 1;
+            Name = $"GameObject{scene.Count}";
         }
 
         public void Initialize()

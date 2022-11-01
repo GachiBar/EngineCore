@@ -15,8 +15,8 @@ const char* Application::kDllPath = "GameplayCore.dll";
 Application::Application()
 	: m_LayerStack(this)
 	, m_JitDomain(kMonoLibPath, "KtripRuntime")
-	, m_Domain{ "KtripDomain" }
-	, m_Assembly{ m_Domain, kDllPath }
+	, m_Domain("KtripDomain")
+	, m_Assembly(m_Domain, kDllPath)
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, input_settings(new InputSettings())
 	, player_input(new PlayerInput())
@@ -150,18 +150,6 @@ int Application::Run()
 			layer->OnGuiRender();
 
 		engine_->GetRenderer().EndFrame();
-
-
-
-
-		//engine_->GetRenderer().BeginFrame()
-		//while (!engine_->GetRenderer().Present()) {
-		//	engine_->GetRenderer().EndFrame();
-		//	engine_->GetRenderer().ReloadShaders();
-		//	engine_->GetRenderer().BeginFrame();
-		//}
-		//
-		//engine_->GetRenderer().EndFrame();
 	}
 
 	OnStop();
