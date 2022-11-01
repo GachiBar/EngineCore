@@ -31,7 +31,7 @@ static FKey const & TranslateMouseButtonToKey( const EMouseButtons::Type Button 
 
 }
 
-bool WindowsApplicationMessageHandler::OnKeyChar( const char Character, const bool IsRepeat )
+bool WindowsApplicationMessageHandler::OnKeyChar(const wchar_t Character, const bool IsRepeat)
 {
 	FCharacterEvent CharacterEvent(Character, IsRepeat);
 	InputStack.push(std::make_shared<FCharacterEvent>(CharacterEvent));
@@ -52,7 +52,7 @@ bool WindowsApplicationMessageHandler::OnKeyDown(const int32 KeyCode, const uint
 
 bool WindowsApplicationMessageHandler::OnKeyUp( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat )
 {
-	FKey const Key = InputKeyManager::Get().GetKeyFromCodes( KeyCode, CharacterCode );
+	FKey const Key = InputKeyManager::Get().GetKeyFromCodes( KeyCode, CharacterCode);
 	FKeyEvent const KeyEvent(Key, IsRepeat,IE_Released, CharacterCode, KeyCode);
 
 	InputStack.push(std::make_shared<FKeyEvent>(KeyEvent));

@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include <map>
 #include <set>
 #include "../KeyStruct.h"
@@ -103,7 +104,9 @@ struct FCharacterEvent
 
 	virtual void OnApplyInput(std::map<FKey, FKeyState>& KeyStateMap) override
 	{
-		const FKey KeyFounded = InputKeyManager::Get().GetKeyFromCodes(Character, Character);
+		//std::wcout << Character << std::endl;
+		/*
+		const FKey KeyFounded = InputKeyManager::Get().GetKeyFromCodes(Character, Character,true);
 		if(KeyFounded!= EKeys::Invalid)
 		{
 			FKeyState& KeyState = KeyStateMap[KeyFounded];
@@ -116,6 +119,7 @@ struct FCharacterEvent
 			KeyState.Value.y = 0;
 			KeyState.Value.x = GetFloatValueFromInputEvent(InputEvent);
 		}
+		*/
 	}
 private:
 

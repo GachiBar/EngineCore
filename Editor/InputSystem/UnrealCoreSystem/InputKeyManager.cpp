@@ -62,26 +62,26 @@ void InputKeyManager::InitKeyMappings()
  *
  * @param	KeyCode	the key code to get the name for
  */
-FKey InputKeyManager::GetKeyFromCodes( const uint32 KeyCode, const uint32 CharCode ) const
+FKey InputKeyManager::GetKeyFromCodes(const uint32 KeyCode, const uint32 CharCode, const bool IsChar) const
 {
 	FKey ResultKey = EKeys::Invalid;
 
-	if (KeyMapVirtualToEnum.contains(KeyCode))
+	if (!IsChar && KeyMapVirtualToEnum.contains(KeyCode))
 		ResultKey = KeyMapVirtualToEnum.at(KeyCode);
 
-	if(ResultKey == EKeys::Invalid)
+	if(ResultKey == EKeys::Invalid && KeyMapCharToEnum.contains(CharCode) && IsChar)
 	{
-		ResultKey = KeyMapCharToEnum.at(KeyCode);
+		ResultKey = KeyMapCharToEnum.at(CharCode);
 	}
 
     // If we didn't find a FKey and the CharCode is not a control character (using 32/space as the start of that range),
 	// then we want to synthesize a new FKey for this unknown character so that key binding on non-qwerty keyboards works better
     if(ResultKey == EKeys::Invalid && CharCode > 32)
     {
-        FKey NewKey(FKey::SyntheticCharPrefix + std::to_string(CharCode));
-		EKeys::AddKey(FKeyDetails(NewKey, std::string(1,char(CharCode)), FKeyDetails::NotActionBindableKey));
-		const_cast<InputKeyManager*>(this)->KeyMapCharToEnum[CharCode] = NewKey;
-		return NewKey;
+        //FKey NewKey(FKey::SyntheticCharPrefix + std::to_string(CharCode));
+		//EKeys::AddKey(FKeyDetails(NewKey, std::string(1,char(CharCode)), FKeyDetails::NotActionBindableKey));
+		//const_cast<InputKeyManager*>(this)->KeyMapCharToEnum[CharCode] = NewKey;
+		//return NewKey;
 	}
 
 	return ResultKey;
