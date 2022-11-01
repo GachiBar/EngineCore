@@ -28,10 +28,11 @@ void EditorApplication::OnSetup()
 
 	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");	
+	game_object_1->AddComponent("GameplayCore.Components", "TestEditorFieldsComponent");
 
 	game_object_2->AddComponent("GameplayCore.Components", "CameraComponent");
 	game_object_2->AddComponent("GameplayCore.Components", "TransformComponent");
-
+	
 	for (size_t i = 0; i < scene->Count(); ++i) {
 		std::cout << "go:" << i << "\n";
 		auto go = (*scene)[i];

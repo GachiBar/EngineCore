@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "ComponentProperty.h"
 #include "../monowrapper/monopp/mono_object.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 
@@ -10,7 +11,9 @@ class Component {
 
 public:
     const mono::mono_object& GetInternal() const;
-    
+    std::string Name() const;
+    ComponentProperty GetProperty(std::string name);
+
     ~Component();
 
     void Initialize();

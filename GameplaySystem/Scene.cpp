@@ -27,7 +27,7 @@ size_t Scene::Count() const {
     assert(count_ != nullptr && kIsNotCachedErrorMessage);
 
     mono::mono_object value(count_->get_value(object_));
-    int count = value.unbox<int>();
+    int count = *reinterpret_cast<int*>(value.unbox());
 
     assert(count >= 0 && "Count less then zero.");
 

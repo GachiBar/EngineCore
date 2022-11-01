@@ -20,6 +20,14 @@ const mono::mono_object& Component::GetInternal() const {
     return object_;
 }
 
+std::string Component::Name() const {
+    return object_.get_type().get_name();
+}
+
+ComponentProperty Component::GetProperty(std::string name) {
+    return ComponentProperty(*this, name);
+}
+
 Component::Component(mono::mono_object object)
     : object_(std::move(object))
     , handle_(0)
