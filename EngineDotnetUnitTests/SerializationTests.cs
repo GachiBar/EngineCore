@@ -27,8 +27,9 @@ namespace EngineDotnetUnitTests
                 first, second
             };
 
-            first.AddComponent<MeshRenderComponent>();
-            second.AddComponent<TransformComponent>();
+            MeshRenderComponent meshRenderer = first.AddComponent<MeshRenderComponent>();
+            TransformComponent transform = second.AddComponent<TransformComponent>();
+            meshRenderer.GetType().GetField("_transformComponent", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(meshRenderer, transform);
 
             MethodInfo invalidate =
                 scene.GetType().GetMethod("Invalidate", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -36,7 +37,7 @@ namespace EngineDotnetUnitTests
         }
 
         [Test]
-        public void Test1()
+        public void SerializeTest()
         {
             JsonSerializerSettings options = new JsonSerializerSettings()
             {
@@ -50,6 +51,31 @@ namespace EngineDotnetUnitTests
             
             Assert.That(scene_data, Is.EqualTo(data));
             Assert.IsTrue(scene_data != "[]" && scene_data.Length > 0);
+        }
+        
+        [Test]
+        public void DeserializeTest()
+        {
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {new GameObjectDefaultJsonConverter()}
+            };
+
+            string data = JsonConvert.SerializeObject(objects, options);
+            string scene_data = scene.Serialize();
+            Console.WriteLine("Original serialize json: ");
+            Console.Write(data);
+
+            Scene new_scene = new Scene();
+            
+            new_scene.Deserialize(scene_data);
+            string new_data = new_scene.Serialize();
+            
+            Console.WriteLine("New json: ");
+            Console.Write(new_data);
+
+            Assert.Pass();
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿namespace GameplayCore.Components
+﻿using GameplayCore.Serialization;
+
+namespace GameplayCore.Components
 {
     public class MeshRenderComponent : Component
     {
         private static ulong _id = 0;
-        private TransformComponent _transformComponent = null;
+        [SerializeField] private TransformComponent _transformComponent = null;
 
         public readonly ulong Id;
-
         public string Path;
 
         public MeshRenderComponent()

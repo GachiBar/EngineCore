@@ -106,7 +106,13 @@ namespace GameplayCore
 
         public void Deserialize(string data)
         {
-            
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {new GameObjectDefaultJsonConverter()}
+            };
+
+            _gameObjects = JsonConvert.DeserializeObject<List<GameObject>>(data, options);
         }
 
         public GameObject CreateGameObject()

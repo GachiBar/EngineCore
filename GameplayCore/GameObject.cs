@@ -149,6 +149,18 @@ namespace GameplayCore
             return instance;
         }
 
+        // For serialization
+        private void AddComponentSilent(Component instance)
+        {
+            if (_componentsMap.TryGetValue(instance.GetType(), out _))
+            {
+                RemoveComponent(instance.GetType());
+            }
+
+            _componentsMap[instance.GetType()] = instance;
+            instance.GameObject = this;
+        }
+
         public T RemoveComponent<T>() where T : Component
         {
             return (T)RemoveComponent(typeof(T));
