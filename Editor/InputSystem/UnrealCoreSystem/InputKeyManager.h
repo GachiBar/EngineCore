@@ -14,7 +14,7 @@ public:
 	 * Retrieves the key mapped to the specified character code.
 	 * @param KeyCode	The key code to get the name for.
 	 */
-	FKey GetKeyFromCodes(const uint32 KeyCode, const uint32 CharCode, const bool IsChar = false) const;
+	FKey GetKeyFromCodes(const uint32 KeyCode, const uint32 CharCode) const;
 	void InitKeyMappings();
 private:
 	InputKeyManager()
