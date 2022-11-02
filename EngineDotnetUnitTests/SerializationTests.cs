@@ -75,7 +75,7 @@ namespace EngineDotnetUnitTests
             Console.WriteLine("New json: ");
             Console.Write(new_data);
 
-            Assert.Pass();
+            Assert.That(new_data, Is.EqualTo(scene_data));
         }
     }
 }
