@@ -78,6 +78,8 @@ bool PlayerInput::IsActionPressed(const std::string& ActionName) const
 {
 	std::set<FKey> ActionKeys;
 	input_settings->GetActionMappingByName(ActionName, ActionKeys);
+	ActionKeys.erase(EKeys::Invalid);
+
 	return std::ranges::any_of(ActionKeys, [this](FKey const& ActionKey) {return IsPressed(ActionKey); });
 }
 
@@ -85,6 +87,7 @@ bool PlayerInput::WasActionJustPressed(const std::string& ActionName) const
 {
 	std::set<FKey> ActionKeys;
 	input_settings->GetActionMappingByName(ActionName, ActionKeys);
+	ActionKeys.erase(EKeys::Invalid);
 	bool bIsAnyOfJustPressed = false;
 	FKey JustPressedKey = EKeys::Invalid;
 
@@ -112,6 +115,8 @@ bool PlayerInput::WasActionJustReleased(const std::string& ActionName) const
 {
 	std::set<FKey> ActionKeys;
 	input_settings->GetActionMappingByName(ActionName, ActionKeys);
+	ActionKeys.erase(EKeys::Invalid);
+
 	bool bIsAnyOfJustReleased = false;
 	FKey JustReleasedKey = EKeys::Invalid;
 
@@ -155,7 +160,8 @@ float PlayerInput::GetAxisValue(std::string const& AxisName) const
 
 		for (auto& AxisMapping : AxisMappings)
 		{
-			AxisValue += GetKeyValue(AxisMapping.Key) * AxisMapping.Scale;
+			if(AxisMapping.Key!=EKeys::Invalid)
+				AxisValue += GetKeyValue(AxisMapping.Key) * AxisMapping.Scale;
 		}
 	}
 

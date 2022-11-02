@@ -145,14 +145,21 @@ int Application::Run()
 
 		ApplyInput();
 		engine_->RunFrame();
-
-		/*
-		if(player_input->WasActionJustPressed("Test2"))
+		
+		if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
 		{
-			int a = 42;
+			std::cout << "Pressed" << std::endl;
 		}
-		*/
-		//std::cout << player_input->GetAxisValue("TestAxis") << std::endl;
+		if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
+		{
+			std::cout << "StillPressed" << std::endl;
+		}
+		if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
+		{
+			std::cout << "Released" << std::endl;
+		}
+		
+		std::cout << InputManager::getInstance().player_input->GetAxisValue("TestAxis3");
 
 		InputManager::getInstance().Flush();
 

@@ -137,7 +137,7 @@ bool WindowsApplicationMessageHandler::OnMouseUp( const EMouseButtons::Type Butt
 	InputManager::getInstance().GetMouseDevice().RemoveMouseButton(Key);
 
 	FPointerEvent MouseEvent(
-		IE_Pressed,
+		IE_Released,
 		CursorPos,
 		InputManager::getInstance().GetMouseDevice().GetLastPosFloatPoint(),
 		InputManager::getInstance().GetMouseDevice().GetPressedButtons(),
