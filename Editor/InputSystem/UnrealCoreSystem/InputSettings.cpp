@@ -33,7 +33,7 @@ void InputSettings::LoadKeyMappingsFromConfig()
 
 void InputSettings::GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings)
 {
-	if (!InActionName.empty())
+	if (!InActionName.empty() && ActionMappings.contains(InActionName))
 	{
 		OutMappings = ActionMappings[InActionName];
 	}
@@ -114,7 +114,11 @@ void InputSettings::RenameActionGroup(const std::string& InActionName, const std
 
 void InputSettings::RenameAxisGroup(const std::string& InAxisName, const std::string& InNewName)
 {
-
+	if (AxisMappings.contains(InAxisName) && InAxisName != InNewName)
+	{
+		AxisMappings[InAxisName].swap(AxisMappings[InNewName]);
+		AxisMappings.erase(InAxisName);
+	}
 }
 
 void InputSettings::GetActionNames(std::set<std::string>& OutActionNames) const

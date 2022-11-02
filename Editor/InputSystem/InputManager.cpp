@@ -394,7 +394,9 @@ FGenericApplicationMessageHandler* InputManager::GetMessageHandler()
 InputManager::InputManager() : app(nullptr),
 input_settings(new InputSettings()),
 player_input(new PlayerInput())
-{}
+{
+	player_input->SetInputSettings(input_settings.get());
+}
 
 void InputManager::Flush()
 {

@@ -6,6 +6,7 @@ ConfigReaderWriter::ConfigReaderWriter(const std::string& filename):IniReaderWri
 
 void ConfigReaderWriter::SaveActionsInput(std::map<std::string, std::set<FKey>> const& ActionMappings)
 {
+	RemoveSection(InputActionNameSection);
 	for (auto& ActionMapping : ActionMappings)
 	{
 		SetValue(InputActionNameSection, ActionMapping.first, ActionMapping.second);
@@ -14,6 +15,8 @@ void ConfigReaderWriter::SaveActionsInput(std::map<std::string, std::set<FKey>> 
 
 void ConfigReaderWriter::SaveAxisInput(std::map<std::string, std::set<FInputAxisKeyMapping>> const& AxisMappings)
 {
+	RemoveSection(InputAxisNameSection);
+
 	for (auto& AxisMapping : AxisMappings)
 	{
 		SetValue(InputAxisNameSection, AxisMapping.first, AxisMapping.second);
