@@ -117,6 +117,7 @@ std::shared_ptr<Component> GameObject::operator[](size_t index) {
 std::string GameObject::Serialize()
 {
     // Call method serialize
+    return "";
 }
 
 void GameObject::Deserialize(const std::string& data)
