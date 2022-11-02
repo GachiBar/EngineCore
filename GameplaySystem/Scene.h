@@ -25,6 +25,9 @@ public:
 	void Terminate();
 	void Invalidate();
 
+	std::string Serialize();
+	void Deserialize(const std::string& data);
+
 	std::shared_ptr<GameObject> operator[](size_t index) const;
 
 	static void CacheMethods(const mono::mono_assembly& assembly);

@@ -101,6 +101,7 @@ namespace GameplayCore
             };
 
             string data = JsonConvert.SerializeObject(_gameObjects, options);
+            //System.Console.WriteLine(data);
             return data;
         }
 

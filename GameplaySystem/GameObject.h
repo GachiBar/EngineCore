@@ -42,9 +42,6 @@ public:
 
     std::shared_ptr<Component> operator[](size_t index) const;
 
-    std::string Serialize();
-    void Deserialize(const std::string& data);
-
     static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:

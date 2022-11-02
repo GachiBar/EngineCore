@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Scene.h"
 #include "../monowrapper/monopp/mono_assembly.h"
+#include "../monowrapper/monopp/mono_domain.h"
+#include "../monowrapper/monopp/mono_string.h"
 
 namespace engine {
 
@@ -95,6 +97,26 @@ void Scene::Invalidate() {
     assert(invalidate_ != nullptr && kIsNotCachedErrorMessage);
 
     invalidate_->invoke(object_);
+}
+
+std::string Scene::Serialize()
+{
+    mono::mono_object result(serialize_->invoke(object_));
+    mono::mono_string json(result);
+    // Call method serialize
+    return json.as_utf8();
+}
+
+void Scene::Deserialize(const std::string& data)
+{
+    auto domain = mono::mono_domain::get_current_domain();
+    mono::mono_string json(domain, data);
+
+    void* params[1];
+    params[0] = json.get_internal_ptr();
+
+    deserialize_->invoke(object_, params);
+    // Call method deserialize
 }
 
 std::shared_ptr<GameObject> Scene::operator[](size_t index) const {
