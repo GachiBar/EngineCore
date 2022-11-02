@@ -153,7 +153,7 @@ int Application::Run()
 			
 		}
 
-		std::cout << player_input->GetAxisValue("TestAxis") << std::endl;
+		//std::cout << player_input->GetAxisValue("TestAxis") << std::endl;
 
 		InputManager::getInstance().Flush();
 

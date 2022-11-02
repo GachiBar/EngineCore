@@ -12,9 +12,9 @@ std::string ComponentProperty::GetName() {
 	return name_;
 }
 
-void* ComponentProperty::GetValue() {
+mono::mono_object ComponentProperty::GetValue() {
 	mono::mono_object value(property_invoker_.get_value(component_.GetInternal()));
-	return value.unbox();
+	return value;
 }
 
 void ComponentProperty::SetValue(void* data) {
@@ -44,6 +44,7 @@ PropertyType NameToPropertyType(const std::string& name) {
 	if (name == "Vector2")		return PropertyType::kVector2;
 	if (name == "Vector3")		return PropertyType::kVector3;
 	if (name == "Vector4")		return PropertyType::kVector4;
+	if (name == "String")		return PropertyType::kString;
 	if (name == "GameObject")	return PropertyType::kGameObject;
 
 	return PropertyType::kUndefined;

@@ -65,12 +65,8 @@ void Engine::Internal_SetViewProjection(
 	float ellapsed, 
 	DirectX::SimpleMath::Matrix view,
 	DirectX::SimpleMath::Matrix projection) 
-{	
-	renderer->SetRenderData({
-		duration<float>(ellapsed).count(),
-		view,
-		projection
-	});
+{		
+	renderer->SetRenderData({ellapsed, view, projection});
 }
 
 void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {

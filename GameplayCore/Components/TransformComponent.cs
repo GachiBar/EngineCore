@@ -50,7 +50,7 @@ namespace GameplayCore.Components
             get
             {
                 Quaternion.ToEuler(LocalRotation, out var yaw, out var pitch, out var roll);
-                return new Vector3(yaw, pitch, roll) * 180 / MathUtil.Pi;
+                return new Vector3(pitch, yaw, roll) * 180 / MathUtil.Pi;
             }
 
             set
@@ -179,8 +179,8 @@ namespace GameplayCore.Components
                 var model = Matrix.Identity;
                 model *= Matrix.Scaling(LocalScale);
                 model *= Matrix.RotationQuaternion(LocalRotation);
-                model *= Matrix.Translation(LocalPosition);
-                
+                model *= Matrix.Translation(LocalPosition);               
+
                 if (Parent != null)
                 {
                     model *= Parent.ModelMatrix;
@@ -198,7 +198,7 @@ namespace GameplayCore.Components
             {
                 _editorEuler = value;
                 var euler = _editorEuler * MathUtil.Pi / 180.0f;
-                LocalRotation = Quaternion.RotationYawPitchRoll(euler.X, euler.Y, euler.Z);
+                LocalRotation = Quaternion.RotationYawPitchRoll(euler.Y, euler.X, euler.Z);
             }
         }
 

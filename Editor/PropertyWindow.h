@@ -12,7 +12,9 @@ public:
 
 private:
 	void DrawGameObjectProperties(std::shared_ptr<engine::GameObject> gameObject);
-	void DrawComponentProperties(std::shared_ptr<engine::Component> component);
+	void DrawComponentProperties(
+		std::shared_ptr<engine::GameObject> gameObject, 
+		std::shared_ptr<engine::Component> component);
 
 	void DrawFloatProperty(engine::ComponentProperty property);
 	void DrawDoubleProperty(engine::ComponentProperty property);
@@ -28,6 +30,7 @@ private:
 	void DrawVector2Property(engine::ComponentProperty property);
 	void DrawVector3Property(engine::ComponentProperty property);
 	void DrawVector4Property(engine::ComponentProperty property);
+	void DrawStringProperty(engine::ComponentProperty property);
 	void DrawGameObjectProperty(engine::ComponentProperty property);
 };
 

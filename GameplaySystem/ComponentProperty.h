@@ -24,6 +24,7 @@ enum class PropertyType {
 	kVector2,
 	kVector3,
 	kVector4,
+	kString,
 	kGameObject,
 };
 
@@ -36,7 +37,7 @@ public:
 
 	std::string GetName();
 
-	void* GetValue();
+	mono::mono_object GetValue();
 
 	void SetValue(void* data);
 	

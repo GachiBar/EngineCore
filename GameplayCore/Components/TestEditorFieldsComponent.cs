@@ -18,6 +18,7 @@ namespace GameplayCore.Components
         private Vector2 _vector2Value;
         private Vector3 _vector3Value;
         private Vector4 _vector4Value;
+        private string _stringValue = "TestString";
         private GameObject _gameObjectValue;
 
         public float FloatProperty 
@@ -158,6 +159,16 @@ namespace GameplayCore.Components
             {
                 System.Console.WriteLine($"{nameof(Vector4Property)} = {value}");
                 _vector4Value = value;
+            }
+        }
+
+        public string StringProperty
+        {
+            get => _stringValue;
+            set
+            {
+                System.Console.WriteLine($"{nameof(StringProperty)} = {value}");
+                _stringValue = value;
             }
         }
 

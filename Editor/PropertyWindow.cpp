@@ -2,9 +2,11 @@
 #include "SimpleMath.h"
 #include "imgui/imgui.h"
 #include "../GameplaySystem/Component.h"
+#include "../monowrapper/monopp/mono_domain.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
+#include "../monowrapper/monopp/mono_string.h"
 #include "../Editor/InputSystem/InputManager.h"
 
 #include <format>
@@ -20,10 +22,13 @@ void PropertyWindow::draw_imgui(std::shared_ptr<engine::GameObject> gameObject)
 
 	DrawGameObjectProperties(gameObject);
 
-	for (size_t i = 0; i < gameObject->Count(); ++i) 
+	for (size_t i = 0; i < gameObject->Count(); ++i)
 	{
+		// We nead push id to allow multiple buttons with same names ("Remove").
+		ImGui::PushID(i);
 		auto component = (*gameObject)[i];
-		DrawComponentProperties(component);
+		DrawComponentProperties(gameObject, component);
+		ImGui::PopID();
 	}
 
 	ImGui::End();
@@ -31,12 +36,14 @@ void PropertyWindow::draw_imgui(std::shared_ptr<engine::GameObject> gameObject)
 
 void PropertyWindow::DrawGameObjectProperties(std::shared_ptr<engine::GameObject> gameObject)
 {
-	if (ImGui::CollapsingHeader("GameObject properties", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::Text(gameObject->Name().c_str());
+	if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) {
+		ImGui::Text(std::format("{}: {}", "Name", gameObject->Name()).c_str());
 	}
 }
 
-void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> component)
+void PropertyWindow::DrawComponentProperties(
+	std::shared_ptr<engine::GameObject> gameObject, 
+	std::shared_ptr<engine::Component> component)
 {
 	if (ImGui::CollapsingHeader(component->Name().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 		auto editablePropertiesNames = component->GetEditablePropertiesNames();
@@ -89,6 +96,9 @@ void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> 
 			case engine::PropertyType::kVector4:
 				DrawVector4Property(property);
 				break;
+			case engine::PropertyType::kString:
+				DrawStringProperty(property);
+				break;
 			case engine::PropertyType::kGameObject:
 				DrawGameObjectProperty(property);
 				break;
@@ -98,8 +108,8 @@ void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> 
 			}
 		}
 
-		if (ImGui::Button("RemoveComponent")) {
-			// TODO: remove component
+		if (ImGui::Button("Remove")) {
+			gameObject->RemoveComponent(component);
 		}
 	}
 
@@ -107,7 +117,7 @@ void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> 
 
 void PropertyWindow::DrawFloatProperty(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<float*>(property.GetValue());
+	auto value = reinterpret_cast<float*>(property.GetValue().unbox());
 
 	if (ImGui::InputFloat(property.GetName().c_str(), value))
 	{
@@ -117,7 +127,7 @@ void PropertyWindow::DrawFloatProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawDoubleProperty(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<double*>(property.GetValue());
+	auto value = reinterpret_cast<double*>(property.GetValue().unbox());
 
 	if (ImGui::InputDouble(property.GetName().c_str(), value))
 	{
@@ -127,7 +137,7 @@ void PropertyWindow::DrawDoubleProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawBoolProperty(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<bool*>(property.GetValue());
+	auto value = reinterpret_cast<bool*>(property.GetValue().unbox());
 
 	if (ImGui::Checkbox(property.GetName().c_str(), value))
 	{
@@ -137,7 +147,7 @@ void PropertyWindow::DrawBoolProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawByteProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImS8 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S8, value, &step))
@@ -148,7 +158,7 @@ void PropertyWindow::DrawByteProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawShortProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImS16 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S16, value, &step))
@@ -159,7 +169,7 @@ void PropertyWindow::DrawShortProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawIntProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImS32 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S32, value, &step))
@@ -170,7 +180,7 @@ void PropertyWindow::DrawIntProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawLongProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImS64 step = 1;
 	
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S64, value, &step))
@@ -181,7 +191,7 @@ void PropertyWindow::DrawLongProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawUByteProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImU8 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U8, value, &step))
@@ -192,7 +202,7 @@ void PropertyWindow::DrawUByteProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawUShortProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImU16 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U16, value, &step))
@@ -203,7 +213,7 @@ void PropertyWindow::DrawUShortProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawUIntProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImU32 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U32, value, &step))
@@ -214,7 +224,7 @@ void PropertyWindow::DrawUIntProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawULongProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue();
+	void* value = property.GetValue().unbox();
 	ImU64 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U64, value, &step))
@@ -225,7 +235,7 @@ void PropertyWindow::DrawULongProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawVector2Property(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<DirectX::SimpleMath::Vector2*>(property.GetValue());
+	auto value = reinterpret_cast<DirectX::SimpleMath::Vector2*>(property.GetValue().unbox());
 	float vector[2] = { value->x, value->y };
 
 	if (ImGui::InputFloat2(property.GetName().c_str(), vector))
@@ -236,11 +246,10 @@ void PropertyWindow::DrawVector2Property(engine::ComponentProperty property)
 
 void PropertyWindow::DrawVector3Property(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<DirectX::SimpleMath::Vector3*>(property.GetValue());
+	auto value = reinterpret_cast<DirectX::SimpleMath::Vector3*>(property.GetValue().unbox());
 	float vector[3] = { value->x, value->y, value->z };
 
-	//ImGui::InputFloat3("Scale", t3)
-	if (ImGui::SliderFloat3(property.GetName().c_str(), vector, -360.0f, 360.0f))
+	if (ImGui::InputFloat3(property.GetName().c_str(), vector))
 	{
 		property.SetValue(vector);
 	}
@@ -248,12 +257,30 @@ void PropertyWindow::DrawVector3Property(engine::ComponentProperty property)
 
 void PropertyWindow::DrawVector4Property(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<DirectX::SimpleMath::Vector4*>(property.GetValue());
+	auto value = reinterpret_cast<DirectX::SimpleMath::Vector4*>(property.GetValue().unbox());
 	float vector[4] = { value->x, value->y, value->z, value->w };
 
 	if (ImGui::InputFloat4(property.GetName().c_str(), vector))
 	{
 		property.SetValue(vector);
+	}
+}
+
+void PropertyWindow::DrawStringProperty(engine::ComponentProperty property)
+{
+	const size_t bufferSize = 256;
+	char buffer[bufferSize];
+
+	mono::mono_string value(property.GetValue());
+	std::string content = value.as_utf8();	
+	content.copy(buffer, bufferSize);
+	buffer[content.size()] = '\0';
+
+	if (ImGui::InputText(property.GetName().c_str(), buffer, bufferSize)) 
+	{
+		std::string newContent(buffer);
+		mono::mono_string newValue(mono::mono_domain::get_current_domain(), newContent);
+		property.SetValue(newValue.get_internal_ptr());
 	}
 }
 
