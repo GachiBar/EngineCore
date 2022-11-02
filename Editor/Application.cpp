@@ -146,20 +146,20 @@ int Application::Run()
 		ApplyInput();
 		engine_->RunFrame();
 		
-		if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
-		{
-			std::cout << "Pressed" << std::endl;
-		}
-		if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
-		{
-			std::cout << "StillPressed" << std::endl;
-		}
-		if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
-		{
-			std::cout << "Released" << std::endl;
-		}
+		//if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
+		//{
+		//	std::cout << "Pressed" << std::endl;
+		//}
+		//if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
+		//{
+		//	std::cout << "StillPressed" << std::endl;
+		//}
+		//if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
+		//{
+		//	std::cout << "Released" << std::endl;
+		//}
 		
-		std::cout << InputManager::getInstance().player_input->GetAxisValue("TestAxis3");
+		//std::cout << InputManager::getInstance().player_input->GetAxisValue("TestAxis3");
 
 		InputManager::getInstance().Flush();
 
