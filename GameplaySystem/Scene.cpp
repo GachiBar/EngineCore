@@ -13,6 +13,8 @@ mono::mono_method_invoker* Scene::fixed_update_ = nullptr;
 mono::mono_method_invoker* Scene::update_ = nullptr;
 mono::mono_method_invoker* Scene::render_ = nullptr;
 mono::mono_method_invoker* Scene::invalidate_ = nullptr;
+mono::mono_method_invoker* Scene::serialize_ = nullptr;
+mono::mono_method_invoker* Scene::deserialize_ = nullptr;
 
 mono::mono_method_invoker* Scene::create_game_object_ = nullptr;
 mono::mono_method_invoker* Scene::delete_game_object_ = nullptr;
@@ -137,6 +139,12 @@ void Scene::CacheMethods(const mono::mono_assembly& assembly) {
 
     mono::mono_method delete_game_object_method(type, "DeleteGameObject", 1);
     delete_game_object_ = new mono::mono_method_invoker(delete_game_object_method);
+
+    mono::mono_method serialize_method(type, "Serialize", 0);
+    serialize_ = new mono::mono_method_invoker(serialize_method);
+
+    mono::mono_method deserialize_method(type, "Deserialize", 1);
+    deserialize_ = new mono::mono_method_invoker(deserialize_method);
 }
 
 } // namespace engine

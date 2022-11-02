@@ -197,13 +197,6 @@ void GameObject::CacheMethods(const mono::mono_assembly& assembly) {
 
     mono::mono_method invalidate_method(type, "Invalidate", 0);
     invalidate_ = new mono::mono_method_invoker(invalidate_method);
-	
-
-    mono::mono_method serialize_method(type, "Serialize", 0);
-    serialize_ = new mono::mono_method_invoker(serialize_method);
-
-    mono::mono_method deserialize_method(type, "Deserialize", 1);
-    deserialize_ = new mono::mono_method_invoker(deserialize_method);
 }
 
 } // namespace engine

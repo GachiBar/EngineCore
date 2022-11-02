@@ -68,8 +68,6 @@ private:
     static mono::mono_method_invoker* terminate_;
 
     static mono::mono_method_invoker* invalidate_;
-    static mono::mono_method_invoker* serialize_;
-    static mono::mono_method_invoker* deserialize_;
 
     GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
 };

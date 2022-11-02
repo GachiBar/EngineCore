@@ -44,6 +44,8 @@ private:
 	static mono::mono_method_invoker* update_;
 	static mono::mono_method_invoker* render_;
 	static mono::mono_method_invoker* invalidate_;
+	static mono::mono_method_invoker* serialize_;
+	static mono::mono_method_invoker* deserialize_;
 
 	static mono::mono_method_invoker* create_game_object_;
 	static mono::mono_method_invoker* delete_game_object_;
