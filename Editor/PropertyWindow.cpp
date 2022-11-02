@@ -196,7 +196,7 @@ void PropertyWindow::DrawAddComponentPanel(std::shared_ptr<engine::GameObject> g
 
 	int selected = 0;
 
-	if (ImGui::Combo("combo", &selected, available_components_items, availableComponentsCount))
+	if (ImGui::Combo("Add", &selected, available_components_items, availableComponentsCount))
 	{		
 		std::string fullName(available_components_items[selected]);
 		std::string nameSpace;

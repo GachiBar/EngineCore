@@ -217,6 +217,7 @@ namespace GameplayCore
                     ComponentRemoved?.Invoke(this, component);
                 }
 
+                _removedComponents.Clear();
                 _updatableComponents = _componentsMap.Values.ToList();
                 _isUpdatableComponentsInvalid = false;
             }
