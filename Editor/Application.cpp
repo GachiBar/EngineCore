@@ -17,8 +17,6 @@ Application::Application()
 	, m_Domain{ "KtripDomain" }
 	, m_Assembly{ m_Domain, kDllPath }
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
-	, input_settings(new InputSettings())
-	, player_input(new PlayerInput())
 	, exit_code_(0)
 {	
 	Scene::CacheMethods(m_Assembly);
@@ -41,23 +39,23 @@ void Application::PushOverlay(Layer* layer)
 
 void Application::OnSetup()
 {
-	player_input->SetInputSettings(input_settings.get());
-
 	EKeys::Initialize();
 	InputManager::getInstance().app = this;
-	InputManager::getInstance().SetPlayerInput(player_input.get());
 
-	input_settings->AddActionMapping("Test", EKeys::A);
-	input_settings->AddActionMapping("Test", EKeys::W);
-	input_settings->AddActionMapping("Test", EKeys::SpaceBar);
-	input_settings->AddActionMapping("Test", EKeys::Enter);
+	//input_settings->AddActionMapping("Test", EKeys::A);
+	//input_settings->AddActionMapping("Test", EKeys::W);
+	//input_settings->AddActionMapping("Test", EKeys::SpaceBar);
+	//input_settings->AddActionMapping("Test", EKeys::Enter);
 
 
-	input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::A,-1.f });
-	input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::D,1.f });
-	input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::W,1.f });
+	//input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::A,-1.f });
+	//input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::D,1.f });
+	//input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::W,0.5f });
 	//input_settings->AddActionMapping("Test", EKeys::SpaceBar);
 
+	InputManager::getInstance().input_settings->LoadKeyMappingsFromConfig();
+	//input_settings->SaveKeyMappingsToFile();
+	
 	auto wnd = FWindowsWindow::Make();
 	FGenericWindowDefinition wnd_def;
 	wnd_def.Type = EWindowType::Normal;
@@ -147,12 +145,13 @@ int Application::Run()
 		ApplyInput();
 		engine_->RunFrame();
 
-		if(player_input->IsActionPressed("Test"))
+		/*
+		if(player_input->WasActionJustPressed("Test2"))
 		{
-			
+			int a = 42;
 		}
-
-		std::cout << player_input->GetAxisValue("TestAxis") << std::endl;
+		*/
+		//std::cout << player_input->GetAxisValue("TestAxis") << std::endl;
 
 		InputManager::getInstance().Flush();
 
@@ -248,7 +247,7 @@ void Application::ApplyInput()
 
 	while (InputManager::getInstance().ReadEvent(IE))
 	{
-		IE->OnApplyInput(player_input->GetKeyStates());
+		IE->OnApplyInput(InputManager::getInstance().player_input->GetKeyStates());
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
 			/*

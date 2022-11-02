@@ -28,6 +28,7 @@ void EditorLayer::OnAttach()
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>();
+    SettingsWindow = std::make_shared<ProjectSettingsWindow>();
 
 	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<mono::mono_object>& go)
 	{
@@ -170,4 +171,5 @@ void EditorLayer::OnGuiRender()
     gvm->draw_imgui();
     hierarchy->draw_imgui((GetApp()->GetEngine()->GetScene()->GetInternal()));
     properties->draw_imgui(selected_go);
+    SettingsWindow->draw_imgui();
 }

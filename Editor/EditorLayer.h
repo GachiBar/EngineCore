@@ -4,7 +4,7 @@
 #include "MenuBar.h"
 #include "PropertyWindow.h"
 #include "SceneHierarchyWindow.h"
-
+#include "ProjectSettingsWindow.h"
 
 class EditorLayer final : public Layer
 {
@@ -17,14 +17,13 @@ public:
 	//virtual void OnInputEvent(InputEvent* e) override;
 	virtual void OnGuiRender() override;
 
-
 	void SetBlockEvents(bool block) { m_BlockEvents = block; }
 
 	std::shared_ptr<GameViewWindow> gvm;
 	std::shared_ptr<SceneHierarchyWindow> hierarchy;
 	std::shared_ptr<PropertyWindow> properties;
 	std::shared_ptr<MenuBar> menu_bar;
-	
+	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
 	
 private:
 	std::shared_ptr<mono::mono_object> selected_go;

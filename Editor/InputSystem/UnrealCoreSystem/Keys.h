@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include "KeyDetails.h"
 
 struct EKeys
 {

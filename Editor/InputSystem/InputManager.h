@@ -36,8 +36,10 @@ public:
 
     Application* app;
 
+    std::shared_ptr<InputSettings> input_settings;
+    std::shared_ptr<PlayerInput> player_input;
+
 private:
-    PlayerInput* player_input;
 
     InputManager();
 

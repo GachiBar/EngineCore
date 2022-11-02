@@ -73,6 +73,50 @@ void InputSettings::RemoveAxisMapping(std::string const& AxisMap, const FInputAx
 	}
 }
 
+void InputSettings::RemoveAction(const std::string& InActionName)
+{
+	ActionMappings.erase(InActionName);
+}
+
+void InputSettings::RemoveAllActions()
+{
+	ActionMappings.clear();
+}
+
+void InputSettings::RemoveAxis(const std::string& InAxisName)
+{
+	AxisMappings.erase(InAxisName);
+}
+
+void InputSettings::RemoveAllAxis()
+{
+	AxisMappings.clear();
+}
+
+void InputSettings::AddActionGroup(const std::string& InActionName)
+{
+	ActionMappings[InActionName];
+}
+
+void InputSettings::AddAxisGroup(const std::string& InAxisName)
+{
+	AxisMappings[InAxisName];
+}
+
+void InputSettings::RenameActionGroup(const std::string& InActionName, const std::string& InNewName)
+{
+	if(ActionMappings.contains(InActionName) && InActionName != InNewName)
+	{
+		ActionMappings[InActionName].swap(ActionMappings[InNewName]);
+		ActionMappings.erase(InActionName);
+	}
+}
+
+void InputSettings::RenameAxisGroup(const std::string& InAxisName, const std::string& InNewName)
+{
+
+}
+
 void InputSettings::GetActionNames(std::set<std::string>& OutActionNames) const
 {
 	OutActionNames.clear();
@@ -107,7 +151,7 @@ std::string InputSettings::GetUniqueActionName(const std::string& BaseActionMapp
 	do
 	{
 		// Create a numbered name and check whether it's already been used
-		NewActionMappingName = std::string(BaseActionMappingName, ++NewMappingCount);
+		NewActionMappingName = BaseActionMappingName + std::to_string(++NewMappingCount);
 
 		bFoundUniqueName = !DoesActionExist(NewActionMappingName);
 	} while (!bFoundUniqueName);
