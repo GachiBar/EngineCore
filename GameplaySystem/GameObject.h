@@ -42,8 +42,8 @@ public:
 
     std::shared_ptr<Component> operator[](size_t index) const;
 
-    //std::string Serialize();
-    //void Deserialize(const std::string& data);
+    std::string Serialize();
+    void Deserialize(const std::string& data);
 
     static void CacheMethods(const mono::mono_assembly& assembly);
 
@@ -66,7 +66,10 @@ private:
     static mono::mono_method_invoker* update_;
     static mono::mono_method_invoker* render_;
     static mono::mono_method_invoker* terminate_;
-    static mono::mono_method_invoker* invalidate_;    
+
+    static mono::mono_method_invoker* invalidate_;
+    static mono::mono_method_invoker* serialize_;
+    static mono::mono_method_invoker* deserialize_;
 
     GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
 };

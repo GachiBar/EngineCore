@@ -148,15 +148,16 @@ std::shared_ptr<Component> GameObject::operator[](size_t index) const {
     return std::shared_ptr<Component>(new Component(component));
 }
 
-//std::string GameObject::Serialize()
-//{
-//    // Call method serialize
-//}
-//
-//void GameObject::Deserialize(const std::string& data)
-//{
-//    // Call method deserialize
-//}
+std::string GameObject::Serialize()
+{
+    // Call method serialize
+    return "";
+}
+
+void GameObject::Deserialize(const std::string& data)
+{
+    // Call method deserialize
+}
 
 void GameObject::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore", "GameObject");
@@ -196,6 +197,13 @@ void GameObject::CacheMethods(const mono::mono_assembly& assembly) {
 
     mono::mono_method invalidate_method(type, "Invalidate", 0);
     invalidate_ = new mono::mono_method_invoker(invalidate_method);
+	
+
+    mono::mono_method serialize_method(type, "Serialize", 0);
+    serialize_ = new mono::mono_method_invoker(serialize_method);
+
+    mono::mono_method deserialize_method(type, "Deserialize", 1);
+    deserialize_ = new mono::mono_method_invoker(deserialize_method);
 }
 
 } // namespace engine
