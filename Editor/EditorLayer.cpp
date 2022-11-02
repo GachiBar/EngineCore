@@ -30,7 +30,7 @@ void EditorLayer::OnAttach()
 
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
-    properties = std::make_shared<PropertyWindow>();
+    properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
 
 	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
 	{

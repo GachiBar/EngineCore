@@ -11,6 +11,71 @@
 
 #include <format>
 
+bool ComponentData::operator== (const ComponentData& other)
+{
+	return this->FullName == other.FullName;
+}
+
+bool ComponentData::operator< (const ComponentData& other)
+{
+	return this->FullName < other.FullName;
+}
+
+bool operator==(const ComponentData& lhs, const ComponentData& rhs)
+{
+	return lhs.FullName == rhs.FullName;
+}
+
+PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
+	: assembly(assembly)
+{
+	auto baseComponentType = assembly.get_type("GameplayCore.Components", "Component");
+	auto typeNames = assembly.dump_type_names();
+
+	for (auto typeName : typeNames) 
+	{
+		mono::mono_type type;
+
+		try 
+		{
+			size_t lastDotPosition = typeName.find_last_of(".");
+			std::string nameSpace = typeName.substr(0, lastDotPosition);
+			std::string name = typeName.substr(lastDotPosition + 1, typeName.size() - lastDotPosition - 1);
+			type = assembly.get_type(nameSpace, name);
+		}
+		catch (mono::mono_exception& ex) 
+		{
+			continue;
+		}
+
+		bool isComponent = false;
+
+		// TODO: check, is class abstract.
+		while (type.has_base_type()) 
+		{
+			if (type.is_derived_from(baseComponentType))
+			{
+				isComponent = true;
+				break;
+			}
+
+			type = type.get_base_type();
+		}
+
+		if (isComponent) 
+		{
+			ComponentData componentData
+			{ 
+				type.get_namespace(), 
+				type.get_name(), 
+				type.get_namespace() + "." + type.get_name()
+			};
+			
+			components_names.push_back(componentData);
+		}
+	}
+}
+
 void PropertyWindow::draw_imgui(std::shared_ptr<engine::GameObject> gameObject)
 {
 	ImGui::Begin("Property Window");
@@ -31,6 +96,7 @@ void PropertyWindow::draw_imgui(std::shared_ptr<engine::GameObject> gameObject)
 		ImGui::PopID();
 	}
 
+	DrawAddComponentPanel(gameObject);
 	ImGui::End();
 }
 
@@ -111,8 +177,31 @@ void PropertyWindow::DrawComponentProperties(
 		if (ImGui::Button("Remove")) {
 			gameObject->RemoveComponent(component);
 		}
+
+		// TODO: mono_class_get_parent
 	}
 
+}
+
+void PropertyWindow::DrawAddComponentPanel(std::shared_ptr<engine::GameObject> gameObject)
+{
+	char** items = new char*[components_names.size()];
+
+	for (size_t i = 0; i < components_names.size(); ++i)
+	{
+		items[i] = components_names[i].FullName.data();
+	}
+
+	static int itemCurrent = 0;
+
+	if (ImGui::Combo("combo", &itemCurrent, items, components_names.size())) 
+	{		
+		auto componentData = components_names[itemCurrent];
+		gameObject->AddComponent(componentData.NameSpace, componentData.Name);
+		gameObject->Invalidate();
+	}
+
+	delete[] items;
 }
 
 void PropertyWindow::DrawFloatProperty(engine::ComponentProperty property)

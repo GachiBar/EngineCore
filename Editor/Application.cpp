@@ -157,20 +157,12 @@ int Application::Run()
 
 		InputManager::getInstance().Flush();
 
-		engine_->GetRenderer().BeginFrame();
-
-		engine_->GetScene()->Render();
-		
-		while (!engine_->GetRenderer().Present()) {
-			engine_->GetRenderer().EndFrame();
-			engine_->GetRenderer().ReloadShaders();
-			engine_->GetRenderer().BeginFrame();
-		};
+		engine_->BeginRender();
 
 		for (const auto layer : m_LayerStack)
 			layer->OnGuiRender();
 
-		engine_->GetRenderer().EndFrame();
+		engine_->EndRender();
 	}
 
 	OnStop();
@@ -188,6 +180,11 @@ void Application::Close()
 std::shared_ptr<FGenericWindow> Application::GetMainWindow()
 {
 	return wnds.at(0);
+}
+
+const mono::mono_assembly& Application::GetAssembly() const
+{
+	return m_Assembly;
 }
 
 engine::Engine* Application::GetEngine() const

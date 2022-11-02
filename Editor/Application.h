@@ -40,6 +40,7 @@ public:
 
     std::shared_ptr<FGenericWindow> GetMainWindow();
 
+    const mono::mono_assembly& GetAssembly() const;
     engine::Engine* GetEngine() const;
 
     virtual ~Application() = default;

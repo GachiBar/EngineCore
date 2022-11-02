@@ -11,19 +11,11 @@ EditorApplication::EditorApplication()
 {
 }
 
-EditorApplication::~EditorApplication()
-{
-	if (scene != nullptr) 
-	{
-		delete scene;
-	}
-}
-
 void EditorApplication::OnSetup()
 {
 	Application::OnSetup();
 
-	scene = new engine::Scene(m_Assembly);
+	scene = std::make_shared<engine::Scene>(m_Assembly);
 	auto game_object_1 = scene->CreateGameObject();
 	auto game_object_2 = scene->CreateGameObject();
 	//auto game_object_3 = scene->CreateGameObject();

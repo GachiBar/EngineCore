@@ -15,24 +15,16 @@ public:
 		, scene(nullptr)
 	{}
 
-	~StandaloneGameTestApplication() {
-		if (scene != nullptr) {
-			delete scene;
-		}	
-	}
-
-	engine::Scene* scene = nullptr;
-	std::shared_ptr<engine::GameObject> game_object_1;
-	std::shared_ptr<engine::GameObject>  game_object_2;
+	std::shared_ptr<engine::Scene> scene = nullptr;
 
 	void OnSetup() override;
 };
 
 
 void StandaloneGameTestApplication::OnSetup() {
-	scene = new engine::Scene(m_Assembly);
-	game_object_1 = scene->CreateGameObject();
-	game_object_2 = scene->CreateGameObject();
+	scene = std::make_shared<engine::Scene>(m_Assembly);
+	auto game_object_1 = scene->CreateGameObject();
+	auto game_object_2 = scene->CreateGameObject();
 
 	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");

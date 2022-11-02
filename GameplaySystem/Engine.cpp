@@ -17,11 +17,11 @@
 
 namespace engine {
 
-Scene* Engine::GetScene() {
+std::shared_ptr<Scene> Engine::GetScene() {
 	return scene_;
 }
 
-void Engine::SetScene(Scene* scene) {
+void Engine::SetScene(std::shared_ptr<Scene> scene) {
 	scene_ = scene;
 }
 
@@ -96,6 +96,22 @@ void Engine::RunFrame() {
 	}
 
 	scene_->Update();
+}
+
+void Engine::BeginRender() {
+	renderer_.BeginFrame();
+
+	scene_->Render();
+
+	while (!renderer_.Present()) {
+		renderer_.EndFrame();
+		renderer_.ReloadShaders();
+		renderer_.BeginFrame();
+	};
+}
+
+void Engine::EndRender() {
+	renderer_.EndFrame();
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
