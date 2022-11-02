@@ -25,12 +25,10 @@ EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selec
 
 void EditorLayer::OnAttach()
 {
-    ConfigReaderWriterFactory ConfigFactory;
-    std::shared_ptr<IniReaderWriter> Config(ConfigFactory.Create());
-
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
+    SettingsWindow = std::make_shared<ProjectSettingsWindow>();
 
 	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
 	{
@@ -173,4 +171,5 @@ void EditorLayer::OnGuiRender()
     gvm->draw_imgui();
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
     properties->draw_imgui(selected_go);
+    SettingsWindow->draw_imgui();
 }

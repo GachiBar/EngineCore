@@ -60,8 +60,7 @@ protected:
     mono::mono_assembly m_Assembly;
 
     std::shared_ptr<engine::Engine> engine_;
-    std::shared_ptr<InputSettings> input_settings;
-    std::shared_ptr<PlayerInput> player_input;
+
 
     /// Application exit code.
     int exit_code_;

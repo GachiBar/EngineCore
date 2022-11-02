@@ -9,6 +9,7 @@
 InputManager& InputManager::getInstance()
 {
 	static InputManager instance;
+	
 	// Instantiated on first use.
 	return instance;
 }
@@ -377,12 +378,12 @@ bool InputManager::ReadEvent(std::shared_ptr<FInputEvent>& IE) const
 
 PlayerInput* InputManager::GetPlayerInput() const
 {
-	return player_input;
+	return player_input.get();
 }
 
 void InputManager::SetPlayerInput(PlayerInput* InPlayerEnums)
 {
-	player_input = InPlayerEnums;
+	player_input.reset(InPlayerEnums);
 }
 
 FGenericApplicationMessageHandler* InputManager::GetMessageHandler()
@@ -390,8 +391,11 @@ FGenericApplicationMessageHandler* InputManager::GetMessageHandler()
 	return player_input->MessageHandler.get();
 }
 
-InputManager::InputManager(): app(nullptr), player_input(nullptr)
+InputManager::InputManager() : app(nullptr),
+input_settings(new InputSettings()),
+player_input(new PlayerInput())
 {
+	player_input->SetInputSettings(input_settings.get());
 }
 
 void InputManager::Flush()

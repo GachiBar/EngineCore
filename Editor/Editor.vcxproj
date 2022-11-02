@@ -159,12 +159,6 @@
     <ClInclude Include="ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="ImGuizmo\ImSequencer.h" />
     <ClInclude Include="ImGuizmo\ImZoomSlider.h" />
-    <ClInclude Include="imgui\imconfig.h" />
-    <ClInclude Include="imgui\imgui.h" />
-    <ClInclude Include="imgui\imgui_internal.h" />
-    <ClInclude Include="imgui\imstb_rectpack.h" />
-    <ClInclude Include="imgui\imstb_textedit.h" />
-    <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="InputSystem\ConfigReaderWriter.h" />
     <ClInclude Include="InputSystem\ConfigReaderWriterFactory.h" />
     <ClInclude Include="InputSystem\InputManager.h" />
@@ -187,6 +181,7 @@
     <ClInclude Include="InputSystem\UnrealCoreSystem\Windows\WindowsWindow.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="LayerStack.h" />
+    <ClInclude Include="libs\imgui_sugar.hpp" />
     <ClInclude Include="libs\ini\ini.h" />
     <ClInclude Include="libs\ini\IniReaderWriter.h" />
     <ClInclude Include="libs\magic_enum.hpp" />
@@ -195,6 +190,7 @@
     <ClInclude Include="libs\nameof.hpp" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="ProjectSettingsWindow.h" />
     <ClInclude Include="PropertyWindow.h" />
     <ClInclude Include="SceneHierarchyWindow.h" />
     <ClInclude Include="SliderWidget.h" />
@@ -232,6 +228,7 @@
     <ClCompile Include="libs\ini\IniReaderWriter.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="MenuBar.cpp" />
+    <ClCompile Include="ProjectSettingsWindow.cpp" />
     <ClCompile Include="PropertyWindow.cpp" />
     <ClCompile Include="SceneHierarchyWindow.cpp" />
     <ClCompile Include="SliderWidget.cpp" />

@@ -2,6 +2,8 @@
 #include "KeyStruct.h"
 #include "KeyDetails.h"
 #include <map>
+#include <ranges>
+
 #include "InputKeyManager.h"
 
 static const std::string NAME_None = "";
@@ -329,10 +331,8 @@ void EKeys::GetAllKeys(std::vector<FKey>& OutKeys)
 {
     OutKeys.clear();
 
-    for (auto& it : InputKeys)
-	{
-		OutKeys.push_back(it.first);
-	}
+	auto kv = std::views::keys(InputKeys);
+	OutKeys.assign(kv.begin(),kv.end());
 }
 
 void EKeys::RemoveKeysWithCategory(const std::string& InCategory)

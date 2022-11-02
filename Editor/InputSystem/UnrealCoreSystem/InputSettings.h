@@ -58,8 +58,23 @@ public:
 	/** Programmatically remove an axis mapping to the project defaults */
 	void RemoveAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
 
+	
+	void RemoveAction(const std::string& InActionName);
+	void RemoveAllActions();
+
+	void RemoveAxis(const std::string& InAxisName);
+	void RemoveAllAxis();
+
+	void AddActionGroup(const std::string& InActionName);
+	void AddAxisGroup(const std::string& InAxisName);
+
+	void RenameActionGroup(const std::string& InActionName, const std::string& InNewName);
+	void RenameAxisGroup(const std::string& InAxisName, const std::string& InNewName);
+
 	/** Flush the current mapping values to the config file */
-	void SaveKeyMappings() const;
+	void SaveKeyMappingsToFile() const;
+
+	void LoadKeyMappingsFromConfig();
 
 	/** Populate a list of all defined action names */
 	void GetActionNames(std::set<std::string>& OutActionNames) const;
