@@ -118,21 +118,21 @@ void EditorLayer::OnGuiRender()
 
             if (ImGui::MenuItem("Open...", "Ctrl+O"))
             {
-                std::ifstream ifs("File_1.txt");
+                std::ifstream ifs("..\\File_1.txt");
                 std::string content((std::istreambuf_iterator<char>(ifs)),
                     (std::istreambuf_iterator<char>()));
 
-                (GetApp()->GetEngine()->GetScene())->Deserialize(content);
+                GetApp()->GetEngine()->GetScene()->Deserialize(content);
                 //OpenScene();
             }
 
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
                 //SaveScene();
-                std::string json = (GetApp()->GetEngine()->GetScene())->Serialize();
+                std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
                 std::ofstream file_handler;
                 // File Open
-                file_handler.open("File_1.txt");
+                file_handler.open("..\\File_1.txt");
 
                 // Write to the file
                 file_handler << json;
