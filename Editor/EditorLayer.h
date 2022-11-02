@@ -26,7 +26,7 @@ public:
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
 	
 private:
-	std::shared_ptr<mono::mono_object> selected_go;
+	std::shared_ptr<engine::GameObject> selected_go;
 
 	bool m_BlockEvents = true;
 	bool m_ShowPhysicsColliders = false;

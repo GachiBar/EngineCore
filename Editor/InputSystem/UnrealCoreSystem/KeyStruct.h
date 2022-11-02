@@ -38,6 +38,11 @@ struct FKey
 
 	friend std::ostream& operator<<(std::ostream& os, const FKey& Key);
 
+	FKey& operator =(const FKey& value)
+	{
+		this->KeyName = value.KeyName;
+		return *this;
+	}
 private:
 	std::string KeyName;
 

@@ -27,7 +27,7 @@ void GameViewWindow::draw_imgui()
     // Because I use the texture from OpenGL, I need to invert the V from the UV.
     
 
-    ImGui::Image(Texture, wsize, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::Image(Texture, wsize, ImVec2(0, 0), ImVec2(1, 1));
 
 
 

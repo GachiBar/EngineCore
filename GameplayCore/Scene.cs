@@ -101,12 +101,25 @@ namespace GameplayCore
             };
 
             string data = JsonConvert.SerializeObject(_gameObjects, options);
+            //System.Console.WriteLine(data);
             return data;
         }
 
         public void Deserialize(string data)
         {
+            GameObjectDefaultJsonConverter converter = new GameObjectDefaultJsonConverter(this); 
+
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {converter}
+            };
+
+            // Get objects without references
+            _gameObjects = JsonConvert.DeserializeObject<List<GameObject>>(data, options);
             
+            // And then set it
+            converter.PassGuidReferences(data);
         }
 
         public GameObject CreateGameObject()

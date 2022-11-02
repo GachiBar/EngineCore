@@ -60,5 +60,6 @@ void Mouse::Flush()
 	InputManager::getInstance().GetPlayerInput()->SetKeyStateValue(EKeys::MouseWheelAxis, 0.f);
 	InputManager::getInstance().GetPlayerInput()->SetKeyStateValue(EKeys::MouseX, 0.f);
 	InputManager::getInstance().GetPlayerInput()->SetKeyStateValue(EKeys::MouseY, 0.f);
+
 	PressedMouseButtons.clear();
 }

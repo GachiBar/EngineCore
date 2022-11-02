@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Engine.h"
 #include "ModelLoader.h"
+#include "GameObject.h"
+#include "Scene.h"
+#include "TextureLoader.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
@@ -12,11 +15,19 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
-#include "GameObject.h"
-#include "Scene.h"
-#include "TextureLoader.h"
-
 namespace engine {
+
+std::shared_ptr<Scene> Engine::GetScene() {
+	return scene_;
+}
+
+void Engine::SetScene(std::shared_ptr<Scene> scene) {
+	scene_ = scene;
+}
+
+RenderDevice& Engine::GetRenderer() {
+	return renderer_;
+}
 
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
 	: domain_(domain)
@@ -26,20 +37,6 @@ Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assem
 	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
 	, scene_(nullptr)
 {}
-
-Scene* Engine::GetScene() {
-	return scene_;
-}
-
-void Engine::SetScene(Scene* scene) {
-	scene_ = scene;
-}
-
-RenderDevice& Engine::GetRenderer() {
-	return renderer_;
-}
-
-#include <DirectXTex.h>
 
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::vector<ModelVertex> verticies;
@@ -68,12 +65,8 @@ void Engine::Internal_SetViewProjection(
 	float ellapsed, 
 	DirectX::SimpleMath::Matrix view,
 	DirectX::SimpleMath::Matrix projection) 
-{	
-	renderer->SetRenderData({
-		duration<float>(ellapsed).count(),
-		view,
-		projection
-	});
+{		
+	renderer->SetRenderData({ellapsed, view, projection});
 }
 
 void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {
@@ -103,6 +96,22 @@ void Engine::RunFrame() {
 	}
 
 	scene_->Update();
+}
+
+void Engine::BeginRender() {
+	renderer_.BeginFrame();
+
+	scene_->Render();
+
+	while (!renderer_.Present()) {
+		renderer_.EndFrame();
+		renderer_.ReloadShaders();
+		renderer_.BeginFrame();
+	};
+}
+
+void Engine::EndRender() {
+	renderer_.EndFrame();
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {

@@ -10,6 +10,11 @@ namespace GameplayCore
     public class GameObject : IReadOnlyList<Component>
     {
         /// <summary>
+        /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.
+        /// </summary>
+        private Guid _guid;
+
+        /// <summary>
         /// Flag that determines whether the <see cref="_updatableComponents"/> is in a valid state.
         /// Changing the set of <see cref="GameObject"/> <see cref="Component"/>s leads to an 
         /// invalid state of the <see cref="_updatableComponents"/> collection.
@@ -40,38 +45,40 @@ namespace GameplayCore
         /// Flag that determines, is this <see cref="GameObject"/> is initialized.
         /// </summary>
         public bool IsInitialized { get; private set; }
-        
+
+        public Guid Guid => _guid;
+
         /// <summary>
-        /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.
+        /// Name of <see cref="GameObject"/>.
         /// </summary>
-        private System.Guid _guid;
-        
-        /// <summary>
-        /// Name of <see cref="Component"/>s.
-        /// </summary>
-        private String Name;
+        public string Name { get; set; }
 
         #region IReadOnlyList
 
-        public int Count => _updatableComponents.Count;
+        public int Count
+        {
+            get
+            {
+                return _updatableComponents.Count;
+            }
+        }
 
         public Component this[int index] => _updatableComponents[index];
 
-        #endregion IReadOnlyList
-
-        public System.Guid Guid => _guid;
+        #endregion IReadOnlyList       
         
         public event Action<GameObject, Component> ComponentAdded;
         public event Action<GameObject, Component> ComponentRemoved;
 
-        internal GameObject(Scene scene, System.Guid guid)
+        internal GameObject(Scene scene, Guid guid)
         {
+            _guid = guid;
             _componentsMap = new Dictionary<Type, Component>();
             _updatableComponents = new List<Component>();
             _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
             Scene = scene;
-            _guid = guid;
+            Name = $"GameObject{scene.Count}";
         }
 
         public void Initialize()
@@ -149,6 +156,18 @@ namespace GameplayCore
             return instance;
         }
 
+        // For serialization
+        private void AddComponentSilent(Component instance)
+        {
+            if (_componentsMap.TryGetValue(instance.GetType(), out _))
+            {
+                RemoveComponent(instance.GetType());
+            }
+
+            _componentsMap[instance.GetType()] = instance;
+            instance.GameObject = this;
+        }
+
         public T RemoveComponent<T>() where T : Component
         {
             return (T)RemoveComponent(typeof(T));
@@ -187,14 +206,6 @@ namespace GameplayCore
 
             return null;
         }
-        
-        public IEnumerable<Component> GetComponentsEnumerable()
-        {
-            foreach (var component in _componentsMap.Values)
-            {
-                yield return component;
-            }
-        }
 
         internal void Invalidate()
         {
@@ -215,7 +226,7 @@ namespace GameplayCore
 
         public IEnumerator<Component> GetEnumerator()
         {
-            return _updatableComponents.GetEnumerator();
+            return _componentsMap.Values.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

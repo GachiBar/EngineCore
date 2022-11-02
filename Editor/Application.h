@@ -40,14 +40,7 @@ public:
 
     std::shared_ptr<FGenericWindow> GetMainWindow();
 
-    mono::mono_object CreateGameObject(const mono::mono_object& scene);
-
-    mono::mono_object AddComponent(
-        const mono::mono_assembly& assembly, 
-        const mono::mono_object& go, 
-        const std::string& name_space, 
-        const std::string& name);
-
+    const mono::mono_assembly& GetAssembly() const;
     engine::Engine* GetEngine() const;
 
     virtual ~Application() = default;
