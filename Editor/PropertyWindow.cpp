@@ -27,6 +27,16 @@ PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
 PropertyWindow::~PropertyWindow()
 {
 	delete[] available_components_items;
+
+	if (scene_game_objects_names_size > 0)
+	{
+		for (size_t i = 0; i < scene_game_objects_names_size; ++i)
+		{
+			delete[] scene_game_objects_names[i];
+		}
+
+		delete[] scene_game_objects_names;
+	}
 }
 
 void PropertyWindow::draw_imgui(
