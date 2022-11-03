@@ -26,9 +26,7 @@ std::string FKeyDetails::GetDisplayName(const bool bLongDisplayName) const
 
 void FKeyDetails::CommonInit(const uint32 InKeyFlags)
 {
-	bIsMouseButton = ((InKeyFlags & EKeyFlags::MouseButton) != 0);
-	bShouldUpdateAxisWithoutSamples = ((InKeyFlags & EKeyFlags::UpdateAxisWithoutSamples) != 0);
-	bIsBindableToActions = ((~InKeyFlags & EKeyFlags::NotActionBindableKey) != 0) && ((~InKeyFlags & EKeyFlags::Deprecated) != 0);
+	KeyFlags = InKeyFlags;
 
 	if ((InKeyFlags & EKeyFlags::ButtonAxis) != 0)
 	{
@@ -46,7 +44,7 @@ void FKeyDetails::CommonInit(const uint32 InKeyFlags)
 	}
 
 	// Set up default menu categories
-	if (MenuCategory == "")
+	if (MenuCategory.empty())
 	{
         if (IsMouseButton())
 		{

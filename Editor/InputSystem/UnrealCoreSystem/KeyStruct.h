@@ -22,7 +22,6 @@ struct FKey
 	bool IsAxis1D() const;
 	bool IsDigital() const;
 	bool IsAnalog() const;
-	bool IsBindableToActions() const;
 
 	std::string GetDisplayName(bool bLongDisplayName = true) const;
 	std::string ToString() const;

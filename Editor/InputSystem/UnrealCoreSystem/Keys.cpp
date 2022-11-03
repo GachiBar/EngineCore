@@ -1,4 +1,7 @@
 #include "Keys.h"
+
+#include <algorithm>
+
 #include "KeyStruct.h"
 #include "KeyDetails.h"
 #include <map>
@@ -159,6 +162,7 @@ const std::string EKeys::NAME_MouseCategory("Mouse");
 const std::string EKeys::NAME_KeyboardCategory("Key");
 
 bool EKeys::bInitialized = false;
+std::vector<FKey> EKeys::PrettyOrderedKeys;
 std::map<FKey, std::shared_ptr<FKeyDetails> > EKeys::InputKeys;
 std::map<std::string, EKeys::FCategoryDisplayInfo> EKeys::MenuCategoryDisplayInfo;
 
@@ -171,142 +175,142 @@ void EKeys::Initialize()
 	AddMenuCategoryDisplayInfo(NAME_MouseCategory, "Mouse", "GraphEditor.MouseEvent_16x");
 	AddMenuCategoryDisplayInfo(NAME_KeyboardCategory, "Keyboard", "GraphEditor.KeyEvent_16x");
     
-	AddKey(FKeyDetails(EKeys::AnyKey, "Any Key"));
+	AddKey(FKeyDetails(EKeys::AnyKey, "Any Key",FKeyDetails::KeyboardKey | FKeyDetails::MouseKey |  FKeyDetails::MouseButton));
 
-	AddKey(FKeyDetails(EKeys::MouseX, "Mouse X", FKeyDetails::Axis1D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples));
-	AddKey(FKeyDetails(EKeys::MouseY, "Mouse Y", FKeyDetails::Axis1D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples));
+	AddKey(FKeyDetails(EKeys::MouseX, "Mouse X", FKeyDetails::Axis1D | FKeyDetails::MouseKey));
+	AddKey(FKeyDetails(EKeys::MouseY, "Mouse Y", FKeyDetails::Axis1D | FKeyDetails::MouseKey));
 	
-	AddKey(FKeyDetails(EKeys::MouseScrollUp, "Mouse Wheel Up", FKeyDetails::MouseButton | FKeyDetails::ButtonAxis));
-	AddKey(FKeyDetails(EKeys::MouseScrollDown, "Mouse Wheel Down", FKeyDetails::MouseButton | FKeyDetails::ButtonAxis));
-	AddKey(FKeyDetails(EKeys::MouseWheelAxis, "Mouse Wheel Axis", FKeyDetails::Axis1D | FKeyDetails::MouseButton | FKeyDetails::UpdateAxisWithoutSamples));
+	AddKey(FKeyDetails(EKeys::MouseScrollUp, "Mouse Wheel Up", FKeyDetails::MouseKey | FKeyDetails::ButtonAxis));
+	AddKey(FKeyDetails(EKeys::MouseScrollDown, "Mouse Wheel Down", FKeyDetails::MouseKey | FKeyDetails::ButtonAxis));
+	AddKey(FKeyDetails(EKeys::MouseWheelAxis, "Mouse Wheel Axis", FKeyDetails::Axis1D | FKeyDetails::MouseKey));
 
-	AddKey(FKeyDetails(EKeys::LeftMouseButton, "Left Mouse Button", FKeyDetails::MouseButton, NAME_None, "LMB"));
-	AddKey(FKeyDetails(EKeys::RightMouseButton, "Right Mouse Button", FKeyDetails::MouseButton, NAME_None,"RMB"));
-	AddKey(FKeyDetails(EKeys::MiddleMouseButton, "Middle Mouse Button", FKeyDetails::MouseButton));
-	AddKey(FKeyDetails(EKeys::ThumbMouseButton, "Thumb Mouse Button", FKeyDetails::MouseButton));
-	AddKey(FKeyDetails(EKeys::ThumbMouseButton2, "Thumb Mouse Button 2", FKeyDetails::MouseButton));
+	AddKey(FKeyDetails(EKeys::LeftMouseButton, "Left Mouse Button", FKeyDetails::MouseKey| FKeyDetails::MouseButton, NAME_None, "LMB"));
+	AddKey(FKeyDetails(EKeys::RightMouseButton, "Right Mouse Button", FKeyDetails::MouseKey | FKeyDetails::MouseButton, NAME_None,"RMB"));
+	AddKey(FKeyDetails(EKeys::MiddleMouseButton, "Middle Mouse Button", FKeyDetails::MouseKey | FKeyDetails::MouseButton));
+	AddKey(FKeyDetails(EKeys::ThumbMouseButton, "Thumb Mouse Button", FKeyDetails::MouseKey | FKeyDetails::MouseButton));
+	AddKey(FKeyDetails(EKeys::ThumbMouseButton2, "Thumb Mouse Button 2", FKeyDetails::MouseKey | FKeyDetails::MouseButton));
 
-	AddKey(FKeyDetails(EKeys::Tab, "Tab"));
-	AddKey(FKeyDetails(EKeys::Enter, "Enter"));
-	AddKey(FKeyDetails(EKeys::Pause, "Pause"));
+	AddKey(FKeyDetails(EKeys::Tab, "Tab", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Enter, "Enter", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Pause, "Pause", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::CapsLock,"Caps Lock", "Caps"));
-	AddKey(FKeyDetails(EKeys::Escape, "Escape", "Esc"));
-	AddKey(FKeyDetails(EKeys::SpaceBar,"Space Bar",  "Space"));
-	AddKey(FKeyDetails(EKeys::PageUp, "Page Up", "PgUp"));
-	AddKey(FKeyDetails(EKeys::PageDown, "Page Down", "PgDn"));
-	AddKey(FKeyDetails(EKeys::End,"End", "End"));
-	AddKey(FKeyDetails(EKeys::Home, "Home", "Home"));
+	AddKey(FKeyDetails(EKeys::CapsLock,"Caps Lock", FKeyDetails::KeyboardKey, "Caps"));
+	AddKey(FKeyDetails(EKeys::Escape, "Escape", FKeyDetails::KeyboardKey, "Esc"));
+	AddKey(FKeyDetails(EKeys::SpaceBar,"Space Bar", FKeyDetails::KeyboardKey, "Space"));
+	AddKey(FKeyDetails(EKeys::PageUp, "Page Up", FKeyDetails::KeyboardKey, "PgUp"));
+	AddKey(FKeyDetails(EKeys::PageDown, "Page Down", FKeyDetails::KeyboardKey, "PgDn"));
+	AddKey(FKeyDetails(EKeys::End,"End", FKeyDetails::KeyboardKey, "End"));
+	AddKey(FKeyDetails(EKeys::Home, "Home", FKeyDetails::KeyboardKey, "Home"));
 
-	AddKey(FKeyDetails(EKeys::Left, "Left", "Left"));
-	AddKey(FKeyDetails(EKeys::Up, "Up", "Up"));
-	AddKey(FKeyDetails(EKeys::Right, "Right", "Right"));
-	AddKey(FKeyDetails(EKeys::Down, "Down", "Down"));
+	AddKey(FKeyDetails(EKeys::Left, "Left", FKeyDetails::KeyboardKey, "Left"));
+	AddKey(FKeyDetails(EKeys::Up, "Up", FKeyDetails::KeyboardKey, "Up"));
+	AddKey(FKeyDetails(EKeys::Right, "Right", FKeyDetails::KeyboardKey, "Right"));
+	AddKey(FKeyDetails(EKeys::Down, "Down", FKeyDetails::KeyboardKey, "Down"));
 
-	AddKey(FKeyDetails(EKeys::Insert, "Insert", "Ins"));
+	AddKey(FKeyDetails(EKeys::Insert, "Insert", FKeyDetails::KeyboardKey, "Ins"));
 
-    AddKey(FKeyDetails(EKeys::Zero, "0"));
-	AddKey(FKeyDetails(EKeys::One, "1"));
-	AddKey(FKeyDetails(EKeys::Two, "2"));
-	AddKey(FKeyDetails(EKeys::Three, "3"));
-	AddKey(FKeyDetails(EKeys::Four, "4"));
-	AddKey(FKeyDetails(EKeys::Five, "5"));
-	AddKey(FKeyDetails(EKeys::Six, "6"));
-	AddKey(FKeyDetails(EKeys::Seven, "7"));
-	AddKey(FKeyDetails(EKeys::Eight, "8"));
-	AddKey(FKeyDetails(EKeys::Nine, "9"));
+    AddKey(FKeyDetails(EKeys::Zero, "0", FKeyDetails::KeyboardKey ));
+	AddKey(FKeyDetails(EKeys::One, "1", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Two, "2", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Three, "3", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Four, "4", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Five, "5", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Six, "6", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Seven, "7", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Eight, "8", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Nine, "9", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::A, "A"));
-	AddKey(FKeyDetails(EKeys::B, "B"));
-	AddKey(FKeyDetails(EKeys::C, "C"));
-	AddKey(FKeyDetails(EKeys::D, "D"));
-	AddKey(FKeyDetails(EKeys::E, "E"));
-	AddKey(FKeyDetails(EKeys::F, "F"));
-	AddKey(FKeyDetails(EKeys::G, "G"));
-	AddKey(FKeyDetails(EKeys::H, "H"));
-	AddKey(FKeyDetails(EKeys::I, "I"));
-	AddKey(FKeyDetails(EKeys::J, "J"));
-	AddKey(FKeyDetails(EKeys::K, "K"));
-	AddKey(FKeyDetails(EKeys::L, "L"));
-	AddKey(FKeyDetails(EKeys::M, "M"));
-	AddKey(FKeyDetails(EKeys::N, "N"));
-	AddKey(FKeyDetails(EKeys::O, "O"));
-	AddKey(FKeyDetails(EKeys::P, "P"));
-	AddKey(FKeyDetails(EKeys::Q, "Q"));
-	AddKey(FKeyDetails(EKeys::R, "R"));
-	AddKey(FKeyDetails(EKeys::S, "S"));
-	AddKey(FKeyDetails(EKeys::T, "T"));
-	AddKey(FKeyDetails(EKeys::U, "U"));
-	AddKey(FKeyDetails(EKeys::V, "V"));
-	AddKey(FKeyDetails(EKeys::W, "W"));
-	AddKey(FKeyDetails(EKeys::X, "X"));
-	AddKey(FKeyDetails(EKeys::Y, "Y"));
-	AddKey(FKeyDetails(EKeys::Z, "Z"));
+	AddKey(FKeyDetails(EKeys::A, "A", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::B, "B", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::C, "C", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::D, "D", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::E, "E", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F, "F", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::G, "G", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::H, "H", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::I, "I", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::J, "J", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::K, "K", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::L, "L", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::M, "M", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::N, "N", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::O, "O", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::P, "P", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Q, "Q", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::R, "R", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::S, "S", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::T, "T", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::U, "U", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::V, "V", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::W, "W", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::X, "X", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Y, "Y", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Z, "Z", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::NumPadZero, "Num 0"));
-	AddKey(FKeyDetails(EKeys::NumPadOne, "Num 1"));
-	AddKey(FKeyDetails(EKeys::NumPadTwo, "Num 2"));
-	AddKey(FKeyDetails(EKeys::NumPadThree, "Num 3"));
-	AddKey(FKeyDetails(EKeys::NumPadFour, "Num 4"));
-	AddKey(FKeyDetails(EKeys::NumPadFive, "Num 5"));
-	AddKey(FKeyDetails(EKeys::NumPadSix, "Num 6"));
-	AddKey(FKeyDetails(EKeys::NumPadSeven, "Num 7"));
-	AddKey(FKeyDetails(EKeys::NumPadEight, "Num 8"));
-	AddKey(FKeyDetails(EKeys::NumPadNine,"Num 9"));
+	AddKey(FKeyDetails(EKeys::NumPadZero, "Num 0", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadOne, "Num 1", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadTwo, "Num 2", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadThree, "Num 3", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadFour, "Num 4", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadFive, "Num 5", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadSix, "Num 6", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadSeven, "Num 7", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadEight, "Num 8", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::NumPadNine,"Num 9", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::Multiply, "Num *"));
-	AddKey(FKeyDetails(EKeys::Add, "Num +"));
-	AddKey(FKeyDetails(EKeys::Subtract, "Num -"));
-	AddKey(FKeyDetails(EKeys::Decimal, "Num ."));
-	AddKey(FKeyDetails(EKeys::Divide, "Num /"));
+	AddKey(FKeyDetails(EKeys::Multiply, "Num *", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Add, "Num +", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Subtract, "Num -", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Decimal, "Num .", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Divide, "Num /", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::F1, "F1"));
-	AddKey(FKeyDetails(EKeys::F2, "F2"));
-	AddKey(FKeyDetails(EKeys::F3, "F3"));
-	AddKey(FKeyDetails(EKeys::F4, "F4"));
-	AddKey(FKeyDetails(EKeys::F5, "F5"));
-	AddKey(FKeyDetails(EKeys::F6, "F6"));
-	AddKey(FKeyDetails(EKeys::F7, "F7"));
-	AddKey(FKeyDetails(EKeys::F8, "F8"));
-	AddKey(FKeyDetails(EKeys::F9, "F9"));
-	AddKey(FKeyDetails(EKeys::F10, "F10"));
-	AddKey(FKeyDetails(EKeys::F11, "F11"));
-	AddKey(FKeyDetails(EKeys::F12, "F12"));
+	AddKey(FKeyDetails(EKeys::F1, "F1", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F2, "F2", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F3, "F3", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F4, "F4", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F5, "F5", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F6, "F6", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F7, "F7", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F8, "F8", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F9, "F9", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F10, "F10", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F11, "F11", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::F12, "F12", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::NumLock, "Num Lock"));
-	AddKey(FKeyDetails(EKeys::ScrollLock, "Scroll Lock"));
+	AddKey(FKeyDetails(EKeys::NumLock, "Num Lock", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::ScrollLock, "Scroll Lock", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::LeftShift, "Left Shift", FKeyDetails::ModifierKey));
-	AddKey(FKeyDetails(EKeys::RightShift, "Right Shift", FKeyDetails::ModifierKey));
-	AddKey(FKeyDetails(EKeys::LeftControl, "Left Ctrl", FKeyDetails::ModifierKey));
-	AddKey(FKeyDetails(EKeys::RightControl, "Right Ctrl", FKeyDetails::ModifierKey));
-	AddKey(FKeyDetails(EKeys::LeftAlt, "Left Alt", FKeyDetails::ModifierKey));
-	AddKey(FKeyDetails(EKeys::RightAlt, "Right Alt", FKeyDetails::ModifierKey));
-	AddKey(FKeyDetails(EKeys::LeftCommand, "Left Cmd", FKeyDetails::ModifierKey));
-	AddKey(FKeyDetails(EKeys::RightCommand, "Right Cmd", FKeyDetails::ModifierKey));
+	AddKey(FKeyDetails(EKeys::LeftShift, "Left Shift", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::RightShift, "Right Shift", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::LeftControl, "Left Ctrl", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::RightControl, "Right Ctrl", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::LeftAlt, "Left Alt", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::RightAlt, "Right Alt", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::LeftCommand, "Left Cmd", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::RightCommand, "Right Cmd", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::Semicolon, "Semicolon", ";"));
-	AddKey(FKeyDetails(EKeys::Equals, "Equals", "="));
-	AddKey(FKeyDetails(EKeys::Comma, "Comma", ","));
-	AddKey(FKeyDetails(EKeys::Hyphen, "Hyphen", "-"));
-	AddKey(FKeyDetails(EKeys::Underscore, "Underscore", "_"));
-	AddKey(FKeyDetails(EKeys::Period, "Period", "."));
-	AddKey(FKeyDetails(EKeys::Slash, "Slash", "/"));
-	AddKey(FKeyDetails(EKeys::Tilde, "`")); // Yes this is not actually a tilde, it is a long, sad, and old story
-	AddKey(FKeyDetails(EKeys::LeftBracket, "Left Bracket", "["));
-	AddKey(FKeyDetails(EKeys::Backslash, "Backslash", "\\"));
-	AddKey(FKeyDetails(EKeys::RightBracket, "Right Bracket", "]"));
-	AddKey(FKeyDetails(EKeys::Apostrophe, "Apostrophe", "'"));
-	AddKey(FKeyDetails(EKeys::Quote, "Quote", "\""));
+	AddKey(FKeyDetails(EKeys::Semicolon, "Semicolon", ";", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Equals, "Equals", "=", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Comma, "Comma", ",", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Hyphen, "Hyphen", "-", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Underscore, "Underscore", "_", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Period, "Period", ".", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Slash, "Slash", "/", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Tilde, "`", FKeyDetails::KeyboardKey)); // Yes this is not actually a tilde, it is a long, sad, and old story
+	AddKey(FKeyDetails(EKeys::LeftBracket, "Left Bracket", "[", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Backslash, "Backslash", "\\", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::RightBracket, "Right Bracket", "]", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Apostrophe, "Apostrophe", "'", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Quote, "Quote", "\"", FKeyDetails::KeyboardKey));
 
-	AddKey(FKeyDetails(EKeys::LeftParantheses, "Left Parantheses", "("));
-	AddKey(FKeyDetails(EKeys::RightParantheses, "Right Parantheses", ")"));
-	AddKey(FKeyDetails(EKeys::Ampersand, "Ampersand", "&"));
-	AddKey(FKeyDetails(EKeys::Asterix, "Asterisk", "*"));
-	AddKey(FKeyDetails(EKeys::Caret, "Caret", "^"));
-	AddKey(FKeyDetails(EKeys::Dollar, "Dollar", "$"));
-	AddKey(FKeyDetails(EKeys::Exclamation, "Exclamation", "!"));
-	AddKey(FKeyDetails(EKeys::Colon, "Colon", ":"));
+	AddKey(FKeyDetails(EKeys::LeftParantheses, "Left Parantheses", "(", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::RightParantheses, "Right Parantheses", ", FKeyDetails::KeyboardKey)", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Ampersand, "Ampersand", "&", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Asterix, "Asterisk", "*", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Caret, "Caret", "^", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Dollar, "Dollar", "$", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Exclamation, "Exclamation", "!", FKeyDetails::KeyboardKey));
+	AddKey(FKeyDetails(EKeys::Colon, "Colon", ":", FKeyDetails::KeyboardKey));
 
 	AddKey(FKeyDetails(EKeys::A_AccentGrave, std::string(1, char(224))));
 	AddKey(FKeyDetails(EKeys::E_AccentGrave, std::string(1, char(232))));
@@ -325,14 +329,26 @@ void EKeys::AddKey(const FKeyDetails& KeyDetails)
 	//ensureMsgf(!InputKeys.Contains(Key), TEXT("Adding duplicate key '%s'", *Key.ToString());
 	Key.KeyDetails.reset(new FKeyDetails(KeyDetails));
 	InputKeys[Key] = Key.KeyDetails;
+
+	//add unique key
+	if (std::ranges::find(PrettyOrderedKeys, Key) == PrettyOrderedKeys.end()) {
+		PrettyOrderedKeys.push_back(Key);
+	}
 }
 
-void EKeys::GetAllKeys(std::vector<FKey>& OutKeys)
+void EKeys::GetAllKeys(std::vector<FKey>& OutKeys, uint32 FilterFlag)
 {
-    OutKeys.clear();
-
-	auto kv = std::views::keys(InputKeys);
-	OutKeys.assign(kv.begin(),kv.end());
+	if(FilterFlag == FKeyDetails::NoFlags)
+	{
+		OutKeys = PrettyOrderedKeys;
+		return;
+	}
+	OutKeys.clear();
+	std::ranges::copy_if(PrettyOrderedKeys, std::back_inserter(OutKeys), [FilterFlag](FKey & Key)
+	{
+		const auto FoundedKey = InputKeys.find(Key);
+		return FoundedKey!= InputKeys.end() && FoundedKey->second->HasFlags(FilterFlag);
+	});
 }
 
 void EKeys::RemoveKeysWithCategory(const std::string& InCategory)

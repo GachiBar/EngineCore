@@ -54,12 +54,6 @@ bool FKey::IsAnalog() const
 	return (KeyDetails ? KeyDetails->IsAnalog() : false);
 }
 
-bool FKey::IsBindableToActions() const
-{
-	ConditionalLookupKeyDetails();
-	return (KeyDetails ? KeyDetails->IsBindableToActions() : false);
-}
-
 std::string FKey::GetDisplayName(const bool bLongDisplayName) const
 {
 	ConditionalLookupKeyDetails();

@@ -160,7 +160,7 @@ struct EKeys
 
     static void Initialize();
 	static void AddKey(const FKeyDetails& KeyDetails);
-	static void GetAllKeys(std::vector<FKey>& OutKeys);
+	static void GetAllKeys(std::vector<FKey>& OutKeys, uint32 FilterFlag = FKeyDetails::NoFlags);
 	static std::shared_ptr<FKeyDetails> GetKeyDetails(const FKey Key);
 	static void RemoveKeysWithCategory(const std::string& InCategory);
 
@@ -180,6 +180,7 @@ private:
 		std::string PaletteIcon;
 	};
 
+	static std::vector<FKey> PrettyOrderedKeys;
 	static std::map<FKey, std::shared_ptr<FKeyDetails> > InputKeys;
 	static  std::map<std::string, FCategoryDisplayInfo> MenuCategoryDisplayInfo;
 	static bool bInitialized;

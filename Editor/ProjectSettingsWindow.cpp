@@ -135,7 +135,7 @@ bool ProjectSettingsWindow::draw_action_mappings_menu()
 					with_Combo(("###ActionMapping_" + Map.ToString()).c_str(), Map.ToString().c_str(), ImGuiComboFlags_NoArrowButton)
 					{
 						std::vector<FKey> Keys;
-						EKeys::GetAllKeys(Keys);
+						EKeys::GetAllKeys(Keys,FKeyDetails::EKeyFlags::MouseButton | FKeyDetails::EKeyFlags::KeyboardKey);
 						for (auto& Key : Keys)
 						{
 							if (ImGui::Selectable(Key.ToString().c_str(), Key == Map))

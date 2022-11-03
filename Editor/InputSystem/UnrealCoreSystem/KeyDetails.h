@@ -14,32 +14,31 @@ struct FKeyDetails
 {
 	enum EKeyFlags
 	{
-		MouseButton				 = BIT_FLAG(2),
-		ModifierKey				 = BIT_FLAG(3),
-		Axis1D					 = BIT_FLAG(5),
-		UpdateAxisWithoutSamples = BIT_FLAG(7),
-		NotActionBindableKey	 = BIT_FLAG(8),
-		Deprecated				 = BIT_FLAG(9),
+		KeyboardKey				= BIT_FLAG(3),
+		MouseKey				= BIT_FLAG(4),
 
-		// All axis representations
-		ButtonAxis				 = BIT_FLAG(10),		// Analog 1D axis emulating a digital button press. E.g. Gamepad right stick up
-		Axis2D					 = BIT_FLAG(11),
-
+		MouseButton				= BIT_FLAG(5),
+		ButtonAxis				= BIT_FLAG(6),
+		Axis1D					= BIT_FLAG(7),
 		NoFlags                  = 0,
 	};
 
 	FKeyDetails(const FKey InKey, const optional<string>& InLongDisplayName, const uint32 InKeyFlags = 0, const string InMenuCategory = "", const optional<string>& InShortDisplayName = "" );
 	FKeyDetails(const FKey InKey, const optional<string>& InLongDisplayName, const optional<string>& InShortDisplayName, const uint32 InKeyFlags = 0, const std::string InMenuCategory = "");
 
-	bool IsMouseButton() const { return bIsMouseButton != 0; }
+	bool IsMouseButton() const { return ( KeyFlags & EKeyFlags::MouseButton) != 0; }
 	bool IsAxis1D() const { return AxisType == EInputAxisType::Axis1D; }
 	bool IsButtonAxis() const { return AxisType == EInputAxisType::Button; }	// Analog 1D axis emulating a digital button press.
 	bool IsAnalog() const { return IsAxis1D(); }
 	bool IsDigital() const { return !IsAnalog(); }
-	bool IsBindableToActions() const { return bIsBindableToActions != 0; }
 	std::string GetMenuCategory() const { return MenuCategory; }
 	std::string GetDisplayName(const bool bLongDisplayName = true) const;
 	const FKey& GetKey() const { return Key; }
+
+	bool HasFlags(const uint32 InKeyFlags) const
+	{
+		return KeyFlags & InKeyFlags;
+	}
 
 private:
 	friend struct EKeys;
@@ -57,10 +56,9 @@ private:
 
 	std::string MenuCategory;
 
-	uint8 bIsMouseButton : 1;
-	uint8 bShouldUpdateAxisWithoutSamples : 1;
-	uint8 bIsBindableToActions : 1;
 	EInputAxisType AxisType;
+
+	uint32 KeyFlags;
 
 	optional<string> LongDisplayName;
 	optional<string> ShortDisplayName;
