@@ -19,6 +19,8 @@ public:
 
     static bool IsMouseMessage(UINT msg);
 
+    static bool IsMouseButton(UINT msg);
+
     static bool IsKeyboardMessage(UINT msg);
 
     void ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);

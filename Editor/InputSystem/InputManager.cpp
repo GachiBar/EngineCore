@@ -55,6 +55,28 @@ bool InputManager::IsMouseMessage(UINT msg)
 	}
 }
 
+bool InputManager::IsMouseButton(UINT msg)
+{
+	switch (msg)
+	{
+	case WM_LBUTTONDBLCLK:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_MBUTTONDBLCLK:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONDBLCLK:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_XBUTTONDBLCLK:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
+		return true;
+	default:
+		return false;
+	}
+}
+
 bool InputManager::IsKeyboardMessage(UINT msg)
 {
 	switch (msg)
@@ -240,7 +262,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			GetMessageHandler()->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
 		}
-		else
+		else if(IsMouseButton(msg))
 		{
 			POINT CursorPoint;
 			CursorPoint.x = GET_X_LPARAM(lparam);
@@ -316,7 +338,6 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 		
 	}
-	
 	else if (msg == WM_CLOSE)
 	{
 		if (app->GetMainWindow())
