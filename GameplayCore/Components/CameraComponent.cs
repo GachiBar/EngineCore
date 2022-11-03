@@ -16,11 +16,6 @@ namespace GameplayCore.Components
         public float Near { get; set; } = 0.1f;
         public float Far { get; set; } = 100.0f;
 
-        public override void Initialize()
-        {
-            _transformComponent.Position = 5 * Vector3.BackwardRH;
-        }
-
         public override void Render()
         {
             if (_transformComponent != null)

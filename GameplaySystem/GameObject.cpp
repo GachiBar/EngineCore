@@ -148,6 +148,18 @@ std::shared_ptr<Component> GameObject::operator[](size_t index) const {
     return std::shared_ptr<Component>(new Component(component));
 }
 
+bool operator== (const GameObject& lhs, const GameObject& rhs) {
+    return lhs.GetInternal().get_internal_ptr() == rhs.GetInternal().get_internal_ptr();
+}
+
+bool operator== (const GameObject& lhs, const mono::mono_object& rhs) {
+    return lhs.GetInternal().get_internal_ptr() == rhs.get_internal_ptr();
+}
+
+bool operator== (const mono::mono_object& lhs, const GameObject& rhs) {
+    return lhs.get_internal_ptr() == rhs.GetInternal().get_internal_ptr();
+}
+
 void GameObject::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore", "GameObject");
 

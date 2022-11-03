@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
 #include "../GameplaySystem/ComponentProperty.h"
 #include "../monowrapper/monopp/mono_assembly.h"
@@ -33,24 +34,30 @@ struct std::hash<ComponentData>
 	}
 };
 
-
 class PropertyWindow
 {
 public:
 	PropertyWindow(const mono::mono_assembly& assembly);
 	~PropertyWindow();
-	void draw_imgui(std::shared_ptr<engine::GameObject> gameObject);
+	void draw_imgui(
+		std::shared_ptr<engine::Scene> scene, 
+		std::shared_ptr<engine::GameObject> gameObject);
 
 private:	
+	static const size_t kGameObjectNameMaxSize = 15;
+
 	const char** available_components_items;
+	char** scene_game_objects_names;
+	size_t scene_game_objects_names_size;
 
 	const mono::mono_assembly& assembly;
 	std::vector<ComponentData> components_names;
-	std::unordered_set<ComponentData> added_components;
+	std::unordered_set<ComponentData> added_components;	
 
 	void CacheComponentsData();
 	void DrawGameObjectProperties(std::shared_ptr<engine::GameObject> gameObject);
 	void DrawComponentProperties(
+		std::shared_ptr<engine::Scene> scene,
 		std::shared_ptr<engine::GameObject> gameObject, 
 		std::shared_ptr<engine::Component> component);
 	void DrawAddComponentPanel(std::shared_ptr<engine::GameObject> gameObject);
@@ -70,10 +77,15 @@ private:
 	void DrawVector3Property(engine::ComponentProperty property);
 	void DrawVector4Property(engine::ComponentProperty property);
 	void DrawStringProperty(engine::ComponentProperty property);
-	void DrawGameObjectProperty(engine::ComponentProperty property);
+	void DrawGameObjectProperty(
+		std::shared_ptr<engine::Scene> scene,
+		std::shared_ptr<engine::GameObject> gameObject,
+		engine::ComponentProperty property);
 
 	void ParseFullName(
 		const std::string& fullName, 
 		std::string& namespace_out, 
 		std::string& name_out);
+	void CopyAsNullTerminated(char* destination, const std::string& source);
+	void ChangeSceneGameObjectNamesSize(size_t size);
 };

@@ -183,8 +183,8 @@ void EditorLayer::OnGuiRender()
 
     ImGui::End();
 
-    gvm->draw_imgui();
+    gvm->draw_imgui();    
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
-    properties->draw_imgui(selected_go);
+    properties->draw_imgui(GetApp()->GetEngine()->GetScene(), selected_go);
     SettingsWindow->draw_imgui();
 }

@@ -3,6 +3,7 @@
 #include "../monowrapper/monopp/mono_property_invoker.h"
 
 #include <string>
+#include <optional>
 
 namespace engine {
 
@@ -37,7 +38,7 @@ public:
 
 	std::string GetName();
 
-	mono::mono_object GetValue();
+	std::optional<mono::mono_object> GetValue();
 
 	void SetValue(void* data);
 	
