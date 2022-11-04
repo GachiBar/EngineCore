@@ -46,8 +46,9 @@ private:
 	static const size_t kGameObjectNameMaxSize = 15;
 
 	const char** available_components_items;
-	char** scene_game_objects_names;
-	size_t scene_game_objects_names_size;
+	void** game_objects_pointers;
+	char** game_objects_names;
+	size_t game_objects_copasity;
 
 	const mono::mono_assembly& assembly;
 	std::vector<ComponentData> components_names;
@@ -86,5 +87,5 @@ private:
 		std::string& namespace_out, 
 		std::string& name_out);
 	void CopyAsNullTerminated(char* destination, const std::string& source);
-	void ChangeSceneGameObjectNamesSize(size_t size);
+	void ChangeGameObjectResourcesCopasity(size_t size);
 };

@@ -15,7 +15,7 @@ bool operator==(const ComponentData& lhs, const ComponentData& rhs)
 
 PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
 	: assembly(assembly)
-	, scene_game_objects_names_size(0)
+	, game_objects_copasity(0)
 {
 	CacheComponentsData();
 	available_components_items = new const char* [components_names.size()];
@@ -25,14 +25,15 @@ PropertyWindow::~PropertyWindow()
 {
 	delete[] available_components_items;
 
-	if (scene_game_objects_names_size > 0)
+	if (game_objects_copasity > 0)
 	{
-		for (size_t i = 0; i < scene_game_objects_names_size; ++i)
+		for (size_t i = 0; i < game_objects_copasity; ++i)
 		{
-			delete[] scene_game_objects_names[i];
+			delete[] game_objects_names[i];
 		}
 
-		delete[] scene_game_objects_names;
+		delete[] game_objects_pointers;
+		delete[] game_objects_names;
 	}
 }
 
@@ -428,42 +429,56 @@ void PropertyWindow::DrawGameObjectProperty(
 	std::shared_ptr<engine::GameObject> gameObject, 
 	engine::ComponentProperty property)
 {
-	static const std::string none = "None";
 	auto monoObject = property.GetValue();
 
-	if (scene->Count() > scene_game_objects_names_size) 
+	if (scene->Count() > game_objects_copasity)
 	{
-		ChangeSceneGameObjectNamesSize(scene->Count() * 2);
+		ChangeGameObjectResourcesCopasity(scene->Count() * 2);
 	}
 
-	auto current = scene_game_objects_names;
-	auto temp = scene_game_objects_names;
-	CopyAsNullTerminated(*temp, none);
-	std::advance(temp, 1);
+	auto current = game_objects_names;
+	auto tempPointers = game_objects_pointers;
+	auto tempNames = game_objects_names;
+
+	tempPointers[0] = nullptr;
+	CopyAsNullTerminated(*tempNames, "None");
+
+	std::advance(tempPointers, 1);
+	std::advance(tempNames, 1);
 
 	for (size_t i = 0; i < scene->Count(); ++i) 
 	{
 		auto otherGameObject = (*scene)[i];
 
-		if (otherGameObject == gameObject) 
+		if (*otherGameObject == *gameObject) 
 		{
 			continue;
 		}
 		if (monoObject.has_value() && *otherGameObject == monoObject.value())
 		{
-			current = temp;
+			current = tempNames;
 		}
 
-		auto name = otherGameObject->Name();
-		CopyAsNullTerminated(*temp, name);
-		std::advance(temp, 1);
+		tempPointers[0] = otherGameObject->GetInternal().get_internal_ptr();
+		CopyAsNullTerminated(*tempNames, otherGameObject->Name());
+
+		std::advance(tempPointers, 1);
+		std::advance(tempNames, 1);
 	}
 
-	int selected = std::distance(scene_game_objects_names, current);
+	int selected = std::distance(game_objects_names, current);
 
-	if (ImGui::Combo("Add", &selected, scene_game_objects_names, scene->Count()))
+	if (ImGui::Combo("Add", &selected, game_objects_names, scene->Count()))
 	{
-		std::string name(scene_game_objects_names[selected]);
+		auto t = game_objects_pointers[selected];
+		property.SetValue(t);
+		//auto ippp = 0;
+		//if (selected == 0) 
+		//{
+		//	property.SetValue(nullptr);
+		//}
+
+		//std::string name(game_objects_names[selected]);
 		// TODO: use name to find game object in scene and set as property value.
 	}
 }
@@ -484,23 +499,25 @@ void PropertyWindow::CopyAsNullTerminated(char* destination, const std::string& 
 	destination[source.size()] = '\0';
 }
 
-void PropertyWindow::ChangeSceneGameObjectNamesSize(size_t size)
+void PropertyWindow::ChangeGameObjectResourcesCopasity(size_t size)
 {
-	if (scene_game_objects_names_size > 0) 
+	if (game_objects_copasity > 0)
 	{
-		for (size_t i = 0; i < scene_game_objects_names_size; ++i)
+		for (size_t i = 0; i < game_objects_copasity; ++i)
 		{
-			delete[] scene_game_objects_names[i];
+			delete[] game_objects_names[i];
 		}
 
-		delete[] scene_game_objects_names;
+		delete[] game_objects_pointers;
+		delete[] game_objects_names;
 	}
 
-	scene_game_objects_names_size = size;
-	scene_game_objects_names = new char* [scene_game_objects_names_size];
+	game_objects_copasity = size;
+	game_objects_pointers = new void* [game_objects_copasity];
+	game_objects_names = new char* [game_objects_copasity];
 
-	for (size_t i = 0; i < scene_game_objects_names_size; ++i)
+	for (size_t i = 0; i < game_objects_copasity; ++i)
 	{
-		scene_game_objects_names[i] = new char[kGameObjectNameMaxSize];
+		game_objects_names[i] = new char[kGameObjectNameMaxSize];
 	}
 }

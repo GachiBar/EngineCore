@@ -1,5 +1,7 @@
 #include "EditorApplication.h"
 #include "EditorLayer.h"
+#include "../GameplaySystem/Component.h"
+
 #include <iostream>
 
 EditorApplication::EditorApplication()
