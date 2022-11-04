@@ -27,6 +27,10 @@ void ComponentProperty::SetValue(void* data) {
 	property_invoker_.set_value(component_.GetInternal(), data);
 }
 
+void ComponentProperty::SetValue(const mono::mono_object& value) {
+	SetValue(value.get_internal_ptr());
+}
+
 ComponentProperty::ComponentProperty(const Component& component, std::string name)
 	: component_(component)
 	, name_(name)	

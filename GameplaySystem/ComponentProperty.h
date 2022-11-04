@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../monowrapper/monopp/mono_string.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
 
 #include <string>
@@ -41,6 +42,7 @@ public:
 	std::optional<mono::mono_object> GetValue();
 
 	void SetValue(void* data);
+	void SetValue(const mono::mono_object& value);
 	
 private:
 	const Component& component_;

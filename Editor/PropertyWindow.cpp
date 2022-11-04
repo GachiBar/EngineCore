@@ -419,9 +419,10 @@ void PropertyWindow::DrawStringProperty(engine::ComponentProperty property)
 
 	if (ImGui::InputText(property.GetName().c_str(), buffer, bufferSize)) 
 	{
-		std::string newContent(buffer);
-		mono::mono_string newValue(mono::mono_domain::get_current_domain(), newContent);
-		property.SetValue(newValue.get_internal_ptr());
+		auto domain = mono::mono_domain::get_current_domain();
+		std::string newContent(buffer);		
+		mono::mono_string newValue(domain, newContent);
+		property.SetValue(newValue);
 	}
 }
 
