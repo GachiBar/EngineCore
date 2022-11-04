@@ -3,8 +3,8 @@
 #include <string>
 
 #include "imgui/imgui.h"
-#include "InputSystem/InputManager.h"
-#include "InputSystem/UnrealCoreSystem/InputSettings.h"
+#include "InputManager.h"
+#include "InputCoreSystem/InputSettings.h"
 #include "libs/imgui_sugar.hpp"
 
 void ProjectSettingsWindow::draw_imgui()

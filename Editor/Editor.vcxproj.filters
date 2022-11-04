@@ -19,32 +19,8 @@
     <Filter Include="ImGUI">
       <UniqueIdentifier>{97fc801d-eecc-491d-bd69-c2edfe137f17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="InputSystem">
-      <UniqueIdentifier>{0ca7dd2c-f6e5-4ad8-8f04-0adb4c48b707}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs">
-      <UniqueIdentifier>{917df45b-4449-414a-9406-3714e91334c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ImGuizmo">
       <UniqueIdentifier>{dd1d7e40-77dc-4d24-b59d-04667fa69257}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs\ini">
-      <UniqueIdentifier>{fcd64c00-a226-449d-821b-b82e87eef028}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="InputSystem\UnrealCoreSystem">
-      <UniqueIdentifier>{525eaf9b-29e6-47db-9a96-a594f3e96575}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="InputSystem\UnrealCoreSystem\NameMapping">
-      <UniqueIdentifier>{231c0537-a998-45a9-b0c2-0b6a68b69cf7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="InputSystem\UnrealCoreSystem\InputEvent">
-      <UniqueIdentifier>{95ee5bba-c080-4d5c-8aad-81e227d1b62a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="InputSystem\UnrealCoreSystem\Windows">
-      <UniqueIdentifier>{f34f285f-2912-4a0c-bbce-f24def6ec4c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="InputSystem\UnrealCoreSystem\MessageHandler">
-      <UniqueIdentifier>{25abe477-81f3-4bd3-be9d-803884c97516}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,12 +47,6 @@
     </ClCompile>
     <ClCompile Include="LayerStack.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\Mouse.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\InputManager.cpp">
-      <Filter>InputSystem</Filter>
     </ClCompile>
     <ClCompile Include="EditorLayer.cpp">
       <Filter>Source Files</Filter>
@@ -111,48 +81,6 @@
     <ClCompile Include="PropertyWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="libs\ini\IniReaderWriter.cpp">
-      <Filter>libs\ini</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\ConfigReaderWriterFactory.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigReaderWriter.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\Keys.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\InputKeyManager.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\GenericPlatformInput.cpp">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\InputSettings.cpp">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\KeyDetails.cpp">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\KeyStruct.cpp">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\WindowsPlatformInput.cpp">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\Windows\GenericWindow.cpp">
-      <Filter>InputSystem\UnrealCoreSystem\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\Windows\WindowsWindow.cpp">
-      <Filter>InputSystem\UnrealCoreSystem\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\MessageHandler\WindowsApplicationMessageHandler.cpp">
-      <Filter>InputSystem\UnrealCoreSystem\MessageHandler</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\UnrealCoreSystem\NameMapping\PlayerInput.cpp">
-      <Filter>InputSystem\UnrealCoreSystem\NameMapping</Filter>
-    </ClCompile>
     <ClCompile Include="ProjectSettingsWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -176,23 +104,11 @@
     <ClInclude Include="EditorApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Delegates.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LayerStack.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\Mouse.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\InputManager.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\nameof.hpp">
-      <Filter>libs</Filter>
     </ClInclude>
     <ClInclude Include="EditorLayer.h">
       <Filter>Header Files</Filter>
@@ -230,80 +146,8 @@
     <ClInclude Include="PropertyWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libs\ini\ini.h">
-      <Filter>libs\ini</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\ini\IniReaderWriter.h">
-      <Filter>libs\ini</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\magic_enum.hpp">
-      <Filter>libs</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\ConfigReaderWriter.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\ConfigReaderWriterFactory.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\NameMapping\NamingStructs.h">
-      <Filter>InputSystem\UnrealCoreSystem\NameMapping</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\GenericPlatformInput.h">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\InputKeyManager.h">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\InputSettings.h">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\KeyDetails.h">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\Keys.h">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\KeyStruct.h">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\WindowsPlatformInput.h">
-      <Filter>InputSystem\UnrealCoreSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\Windows\GenericWindow.h">
-      <Filter>InputSystem\UnrealCoreSystem\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\Windows\GenericWindowDefinition.h">
-      <Filter>InputSystem\UnrealCoreSystem\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\Windows\WindowsWindow.h">
-      <Filter>InputSystem\UnrealCoreSystem\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\MessageHandler\GenericApplicationMessageHandler.h">
-      <Filter>InputSystem\UnrealCoreSystem\MessageHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\MessageHandler\WindowsApplicationMessageHandler.h">
-      <Filter>InputSystem\UnrealCoreSystem\MessageHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\NameMapping\PlayerInput.h">
-      <Filter>InputSystem\UnrealCoreSystem\NameMapping</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\InputEvent\Events.h">
-      <Filter>InputSystem\UnrealCoreSystem\InputEvent</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\MathUtility.h">
-      <Filter>libs</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\MemoryUtility.h">
-      <Filter>libs</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\UnrealCoreSystem\NameMapping\ActionMapping.h">
-      <Filter>InputSystem\UnrealCoreSystem\NameMapping</Filter>
-    </ClInclude>
     <ClInclude Include="ProjectSettingsWindow.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\imgui_sugar.hpp">
-      <Filter>libs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

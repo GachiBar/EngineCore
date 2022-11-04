@@ -3,11 +3,8 @@
 #include "imgui/imgui.h"
 #include "../GameplaySystem/Component.h"
 #include "../monowrapper/monopp/mono_domain.h"
-#include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
-#include "../monowrapper/monopp/mono_property_invoker.h"
 #include "../monowrapper/monopp/mono_string.h"
-#include "../Editor/InputSystem/InputManager.h"
 
 #include <format>
 

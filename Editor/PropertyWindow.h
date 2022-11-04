@@ -2,7 +2,6 @@
 
 #include "../GameplaySystem/GameObject.h"
 #include "../GameplaySystem/ComponentProperty.h"
-#include "../monowrapper/monopp/mono_assembly.h"
 
 #include <memory>
 #include <unordered_set>

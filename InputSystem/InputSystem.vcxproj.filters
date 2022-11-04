@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="InputSystem">
+      <UniqueIdentifier>{264b0f6c-1708-473c-bc20-f34d7896ef48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputCoreSystem">
+      <UniqueIdentifier>{b8654cf6-ffa2-4b23-89a7-ad3e1090996c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputCoreSystem\InputEvent">
+      <UniqueIdentifier>{1553c46d-3930-4cb9-84e7-b3bc730abbdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputCoreSystem\MessageHandler">
+      <UniqueIdentifier>{4d743381-74c6-44c5-8a76-18b0519eed72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InputCoreSystem\NameMapping">
+      <UniqueIdentifier>{a4bb6156-22f2-4522-a4d6-5974ab51c2be}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\GenericPlatformInput.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\InputKeyManager.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\InputSettings.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\KeyDetails.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\Keys.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\KeyStruct.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\WindowsPlatformInput.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\InputEvent\Events.h">
+      <Filter>InputCoreSystem\InputEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\MessageHandler\GenericApplicationMessageHandler.h">
+      <Filter>InputCoreSystem\MessageHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\MessageHandler\WindowsApplicationMessageHandler.h">
+      <Filter>InputCoreSystem\MessageHandler</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\NameMapping\ActionMapping.h">
+      <Filter>InputCoreSystem\NameMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\NameMapping\NamingStructs.h">
+      <Filter>InputCoreSystem\NameMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="InputCoreSystem\NameMapping\PlayerInput.h">
+      <Filter>InputCoreSystem\NameMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigReaderWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigReaderWriterFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IniReaderWriter.h">
+      <Filter>InputCoreSystem</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\GenericPlatformInput.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\InputKeyManager.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\InputSettings.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\KeyDetails.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\Keys.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\KeyStruct.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\WindowsPlatformInput.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\MessageHandler\WindowsApplicationMessageHandler.cpp">
+      <Filter>InputCoreSystem\MessageHandler</Filter>
+    </ClCompile>
+    <ClCompile Include="InputCoreSystem\NameMapping\PlayerInput.cpp">
+      <Filter>InputCoreSystem\NameMapping</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigReaderWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigReaderWriterFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IniReaderWriter.cpp">
+      <Filter>InputCoreSystem</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
