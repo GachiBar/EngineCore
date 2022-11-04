@@ -1,8 +1,5 @@
 #include "EditorApplication.h"
 #include "EditorLayer.h"
-#include "../GameplaySystem/Component.h"
-#include "../monowrapper/monopp/mono_property.h"
-#include "../monowrapper/monopp/mono_property_invoker.h"
 #include <iostream>
 
 EditorApplication::EditorApplication()

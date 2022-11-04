@@ -1,10 +1,6 @@
 #include "SceneHierarchyWindow.h"
-#include "../monowrapper/monopp/mono_method.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
-#include "../monowrapper/monopp/mono_property_invoker.h"
-#include "../Editor/InputSystem/InputManager.h"
 #include "imgui/imgui.h"
-#include "format"
+#include "../GameplaySystem/Scene.h"
 
 void SceneHierarchyWindow::draw_imgui(const engine::Scene& scene)
 {

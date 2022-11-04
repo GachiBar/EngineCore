@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Application.h"
-#include "MainWindow.h"
-#include "Layer.h"
 
 class EditorApplication final : public Application
 {

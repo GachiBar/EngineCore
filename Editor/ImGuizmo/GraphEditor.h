@@ -25,9 +25,6 @@
 //
 #pragma once
 
-#include <vector>
-#include <stdint.h>
-#include <string>
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 

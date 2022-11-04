@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{093ee3e1-b662-4acf-bd21-f3b0484f4ef2}</ProjectGuid>
-    <RootNamespace>Editor</RootNamespace>
+    <ProjectGuid>{079141c1-0e94-4cf4-9a36-eeed43b67e45}</ProjectGuid>
+    <RootNamespace>Core</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -71,20 +71,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</IncludePath>
-    <LibraryPath>$(SolutionDir)vendor\mono\lib;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)vendor\mono\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(SolutionDir)vendor\mono\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</IncludePath>
+    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(SolutionDir)vendor\mono\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,18 +110,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mono\include;$(SolutionDir)Core;$(SolutionDir)InputSystem</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)vendor\mono\lib\Debug;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -150,69 +134,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="EditorApplication.h" />
-    <ClInclude Include="EditorLayer.h" />
-    <ClInclude Include="GameViewWindow.h" />
-    <ClInclude Include="ImGuiLayer.h" />
-    <ClInclude Include="ImGuizmo\GraphEditor.h" />
-    <ClInclude Include="ImGuizmo\ImCurveEdit.h" />
-    <ClInclude Include="ImGuizmo\ImGradient.h" />
-    <ClInclude Include="ImGuizmo\ImGuizmo.h" />
-    <ClInclude Include="ImGuizmo\ImSequencer.h" />
-    <ClInclude Include="ImGuizmo\ImZoomSlider.h" />
-    <ClInclude Include="Layer.h" />
-    <ClInclude Include="LayerStack.h" />
-    <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="MenuBar.h" />
-    <ClInclude Include="ProjectSettingsWindow.h" />
-    <ClInclude Include="PropertyWindow.h" />
-    <ClInclude Include="SceneHierarchyWindow.h" />
-    <ClInclude Include="SliderWidget.h" />
-    <ClInclude Include="Visual.h" />
-    <ClInclude Include="Widget.h" />
+    <ClInclude Include="Definitions.h" />
+    <ClInclude Include="Interfaces\IApplication.h" />
+    <ClInclude Include="Interfaces\IWindowsApplication.h" />
+    <ClInclude Include="libs\Delegates.h" />
+    <ClInclude Include="libs\imgui_sugar.hpp" />
+    <ClInclude Include="libs\ini\ini.h" />
+    <ClInclude Include="libs\magic_enum.hpp" />
+    <ClInclude Include="libs\MathUtility.h" />
+    <ClInclude Include="libs\MemoryUtility.h" />
+    <ClInclude Include="libs\nameof.hpp" />
+    <ClInclude Include="Windows\GenericWindow.h" />
+    <ClInclude Include="Windows\GenericWindowDefinition.h" />
+    <ClInclude Include="Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="EditorApplication.cpp" />
-    <ClCompile Include="EditorLayer.cpp" />
-    <ClCompile Include="GameViewWindow.cpp" />
-    <ClCompile Include="ImGuiLayer.cpp" />
-    <ClCompile Include="ImGuizmo\GraphEditor.cpp" />
-    <ClCompile Include="ImGuizmo\ImCurveEdit.cpp" />
-    <ClCompile Include="ImGuizmo\ImGradient.cpp" />
-    <ClCompile Include="ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="ImGuizmo\ImSequencer.cpp" />
-    <ClCompile Include="Layer.cpp" />
-    <ClCompile Include="LayerStack.cpp" />
-    <ClCompile Include="MainWindow.cpp" />
-    <ClCompile Include="MenuBar.cpp" />
-    <ClCompile Include="ProjectSettingsWindow.cpp" />
-    <ClCompile Include="PropertyWindow.cpp" />
-    <ClCompile Include="SceneHierarchyWindow.cpp" />
-    <ClCompile Include="SliderWidget.cpp" />
-    <ClCompile Include="Visual.cpp" />
-    <ClCompile Include="Widget.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\DX11RenderEngine\DX11RenderEngine\DX11RenderEngine.vcxproj">
-      <Project>{6bd7be35-e16c-474a-b507-9883ae657e1e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\DX11RenderEngine\GachiRenderSystem\GachiRenderSystem.vcxproj">
-      <Project>{5effd051-4bb4-44bd-9364-4fba2e1fd74d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\DX11RenderEngine\SimpleMath\SimpleMath.vcxproj">
-      <Project>{a8b84bff-0299-4f72-91b1-afe9574b2128}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Core.vcxproj">
-      <Project>{079141c1-0e94-4cf4-9a36-eeed43b67e45}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\GameplaySystem\GameplaySystem.vcxproj">
-      <Project>{7afbd61b-fc45-42b8-9895-4a68cdcb3359}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\InputSystem\InputSystem.vcxproj">
-      <Project>{4f8b6eb6-d028-4c38-9d69-227347502957}</Project>
-    </ProjectReference>
+    <ClCompile Include="Windows\GenericWindow.cpp" />
+    <ClCompile Include="Windows\WindowsWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

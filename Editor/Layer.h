@@ -3,8 +3,8 @@
 #include <string>
 
 #include "Application.h"
-#include "InputSystem/UnrealCoreSystem/InputEvent/Events.h"
 
+struct FInputEvent;
 class LayerStack;
 
 class Layer

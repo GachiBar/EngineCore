@@ -1,19 +1,11 @@
 
 #include "ImGuiLayer.h"
 
-//#include <imgui/imgui.h>
 
 #include "Application.h"
 #include "LayerStack.h"
-//#include "../../FNADx11RenderDevice/include/D3D11Renderer.h"
-//#include "../../DX11RenderEngine/DX11RenderEngine/source/CoreRenderSystem/Graphics.h"
-#include <iostream>
 
 #include "imgui/imgui_impl_dx11.h"
-#include "ImGuizmo/ImGuizmo.h"
-#include "libs/nameof.hpp"
-//#include "imgui/backends/imgui_impl_win32.h"
-//#include "imgui/backends/imgui_impl_dx11.h"
 
 namespace Renderer
 {
@@ -60,8 +52,6 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::OnInputEvent(FInputEvent* e)
 {
-	auto t = NAMEOF_TYPE_RTTI(*e);
-	std::cout << t << std::endl;
 	if (m_BlockEvents)
 	{
 		ImGuiIO& io = ImGui::GetIO();
