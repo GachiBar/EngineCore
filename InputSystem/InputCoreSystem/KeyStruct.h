@@ -37,15 +37,10 @@ struct FKey
 
 	friend std::ostream& operator<<(std::ostream& os, const FKey& Key);
 
-	FKey& operator =(const FKey& value)
-	{
-		this->KeyName = value.KeyName;
-		return *this;
-	}
 private:
 	std::string KeyName;
 
-	mutable class std::shared_ptr<struct FKeyDetails> KeyDetails;
+	mutable std::shared_ptr<struct FKeyDetails> KeyDetails;
 
 	void ConditionalLookupKeyDetails() const;
 	void ResetKey() const;

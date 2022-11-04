@@ -39,7 +39,9 @@ public:
 	/** The keys which open the console. */
 	std::vector<FKey> ConsoleKeys;
 
-	void RemoveInvalidKeys();
+	static void RemoveInvalidKeys(std::map<std::string, std::set<FInputAxisKeyMapping>>& InAxisMappings);
+
+	static void RemoveInvalidKeys(std::map<std::string, std::set<FKey>>& InActionMappings);
 
 	void GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings);
 

@@ -14,11 +14,6 @@ InputSettings::InputSettings()
 	ConfigReaderWriter.reset(ConfigFactory.Create());
 }
 
-void InputSettings::RemoveInvalidKeys()
-{
-	//TODO Remove from config ini config
-}
-
 void InputSettings::SaveKeyMappingsToFile() const
 {
 	ConfigReaderWriter->SaveAxisInput(AxisMappings);
@@ -29,6 +24,28 @@ void InputSettings::LoadKeyMappingsFromConfig()
 {
 	ConfigReaderWriter->GetActionsFromIni(ActionMappings);
 	ConfigReaderWriter->GetAxisFromIni(AxisMappings);
+}
+
+void InputSettings::RemoveInvalidKeys(std::map<std::string, std::set<FInputAxisKeyMapping>>& InAxisMappings)
+{
+	std::ranges::for_each(InAxisMappings, [](std::pair<const std::string, std::set<FInputAxisKeyMapping>>& AxisMapping)
+		{
+			std::erase_if(AxisMapping.second, [](FInputAxisKeyMapping const& KeyMapping)
+				{
+					return KeyMapping.Key.IsValid();
+				});
+		});
+}
+
+void InputSettings::RemoveInvalidKeys(std::map<std::string, std::set<FKey>>& InActionMappings)
+{
+	std::ranges::for_each(InActionMappings, [](std::pair<const std::string, std::set<FKey>>& ActionMapping)
+		{
+			std::erase_if(ActionMapping.second, [](FKey const& Key)
+				{
+					return Key.IsValid();
+				});
+		});
 }
 
 void InputSettings::GetActionMappingByName(const std::string& InActionName, std::set<FKey>& OutMappings)
