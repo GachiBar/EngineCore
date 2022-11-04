@@ -16,6 +16,12 @@ mono_object::mono_object(const mono_domain& domain, const mono_type& type)
 {
 	mono_runtime_object_init(object_);
 }
+
+auto mono_object::unbox() const -> void*
+{
+	return mono_object_unbox(object_);
+}
+
 auto mono_object::get_type() const -> const mono_type&
 {
 	return type_;

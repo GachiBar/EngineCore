@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameplayCore.Mathematics;
+using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
 {
@@ -12,6 +13,7 @@ namespace GameplayCore.Components
 
         public int ChildrenCount => _children.Count;
 
+        [HideInInspector]
         public TransformComponent Parent
         {
             get => _parent;
@@ -39,14 +41,16 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Quaternion LocalRotation { get; set; } = Quaternion.Identity;
 
+        [HideInInspector]
         public Vector3 LocalEuler
         {
             get
             {
                 Quaternion.ToEuler(LocalRotation, out var yaw, out var pitch, out var roll);
-                return new Vector3(yaw, pitch, roll) * 180 / MathUtil.Pi;
+                return new Vector3(pitch, yaw, roll) * 180 / MathUtil.Pi;
             }
 
             set
@@ -60,6 +64,7 @@ namespace GameplayCore.Components
 
         public Vector3 LocalPosition { get; set; } = Vector3.Zero;
 
+        [HideInInspector]
         public Quaternion Rotation
         {
             get
@@ -89,6 +94,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Vector3 Euler
         {
             get
@@ -104,6 +110,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Vector3 Scale
         {
             get
@@ -131,6 +138,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [HideInInspector]
         public Vector3 Position
         {
             get
@@ -171,8 +179,8 @@ namespace GameplayCore.Components
                 var model = Matrix.Identity;
                 model *= Matrix.Scaling(LocalScale);
                 model *= Matrix.RotationQuaternion(LocalRotation);
-                model *= Matrix.Translation(LocalPosition);
-                
+                model *= Matrix.Translation(LocalPosition);               
+
                 if (Parent != null)
                 {
                     model *= Parent.ModelMatrix;
@@ -182,6 +190,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [SerializeField]
         private Vector3 EditorEuler
         {
             get => _editorEuler;
@@ -189,7 +198,7 @@ namespace GameplayCore.Components
             {
                 _editorEuler = value;
                 var euler = _editorEuler * MathUtil.Pi / 180.0f;
-                LocalRotation = Quaternion.RotationYawPitchRoll(euler.X, euler.Y, euler.Z);
+                LocalRotation = Quaternion.RotationYawPitchRoll(euler.Y, euler.X, euler.Z);
             }
         }
 

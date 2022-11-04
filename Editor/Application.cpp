@@ -2,11 +2,13 @@
 
 #include <iostream>
 
-#include "Delegates.h"
+#include "libs/Delegates.h"
 #include "Layer.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
-#include "InputSystem/InputManager.h"
-#include "../monowrapper/monopp/mono_jit.h"
+#include "InputManager.h"
+#include "Windows/WindowsWindow.h"
+#include "../GameplaySystem/Component.h"
+#include "InputCoreSystem/InputEvent/Events.h"
+#include "InputCoreSystem/InputSettings.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";
@@ -14,14 +16,14 @@ const char* Application::kDllPath = "GameplayCore.dll";
 Application::Application()
 	: m_LayerStack(this)
 	, m_JitDomain(kMonoLibPath, "KtripRuntime")
-	, m_Domain{ "KtripDomain" }
-	, m_Assembly{ m_Domain, kDllPath }
+	, m_Domain("KtripDomain")
+	, m_Assembly(m_Domain, kDllPath)
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, exit_code_(0)
 {	
-	Scene::CacheMethods(m_Assembly);
-	GameObject::CacheMethods(m_Assembly);
-	Component::CacheMethods(m_Assembly);
+	engine::Scene::CacheMethods(m_Assembly);
+	engine::GameObject::CacheMethods(m_Assembly);
+	engine::Component::CacheMethods(m_Assembly);
 	mono::mono_domain::set_current_domain(m_Domain);
 }
 
@@ -39,7 +41,65 @@ void Application::PushOverlay(Layer* layer)
 
 void Application::OnSetup()
 {
+	EKeys::Initialize();
+	InputManager::getInstance().app = this;
 
+	//input_settings->AddActionMapping("Test", EKeys::A);
+	//input_settings->AddActionMapping("Test", EKeys::W);
+	//input_settings->AddActionMapping("Test", EKeys::SpaceBar);
+	//input_settings->AddActionMapping("Test", EKeys::Enter);
+
+
+	//input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::A,-1.f });
+	//input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::D,1.f });
+	//input_settings->AddAxisMapping("TestAxis", FInputAxisKeyMapping{ EKeys::W,0.5f });
+	//input_settings->AddActionMapping("Test", EKeys::SpaceBar);
+
+	InputManager::getInstance().input_settings->LoadKeyMappingsFromConfig();
+	//input_settings->SaveKeyMappingsToFile();
+	
+	auto wnd = FWindowsWindow::Make();
+	FGenericWindowDefinition wnd_def;
+	wnd_def.Type = EWindowType::Normal;
+	wnd_def.XDesiredPositionOnScreen = 640.f;
+	wnd_def.YDesiredPositionOnScreen = 160.f;
+	wnd_def.WidthDesiredOnScreen = 1286.f;
+	wnd_def.HeightDesiredOnScreen = 726.f;
+	wnd_def.TransparencySupport = EWindowTransparency::None;
+	wnd_def.HasOSWindowBorder = true;
+	wnd_def.AppearsInTaskbar = true;
+	wnd_def.AcceptsInput = true;
+	wnd_def.ActivationPolicy = EWindowActivationPolicy::Always;
+	wnd_def.IsTopmostWindow = false;
+	wnd_def.HasCloseButton = true;
+	wnd_def.SupportsMinimize = true;
+	wnd_def.IsModalWindow = false;
+	wnd_def.IsRegularWindow = true;
+	wnd_def.SizeWillChangeOften = false;
+	wnd_def.ShouldPreserveAspectRatio = false;
+	wnd_def.CornerRadius = 2;
+	wnd_def.ExpectedMaxHeight = -1;
+	wnd_def.ExpectedMaxWidth = -1;
+	wnd_def.Title = L"HelloWindow";
+	wnd_def.Opacity = 1.f;
+	
+	auto t = std::make_shared<FGenericWindowDefinition>(wnd_def);
+	wnd->Initialize(this, t, GetModuleHandle(NULL), nullptr, true);
+
+	auto wnd2 = FWindowsWindow::Make();
+	wnd_def.AcceptsInput = false;
+	wnd2->Initialize(this, t, GetModuleHandle(NULL), wnd, true);
+
+	wnds.push_back(wnd);
+	wnds.push_back(wnd2);
+
+	wnd->Show();
+	//wnd->SetWindowFocus();
+
+	//wnd2->Show();
+	wnd2->Enable(false);
+	wnd2->Hide();
+	SetFocus(wnd->GetHWnd());
 }
 
 void Application::OnStart()
@@ -62,19 +122,7 @@ int Application::Run()
 	if (exit_code_)
 		return exit_code_;
 
-	HINSTANCE instance = GetModuleHandle(nullptr);
-	LPCWSTR window_name = L"Test window";
-	LONG width = 800;
-	LONG height = 600;
-
-	RegisterWindowClass(GetModuleHandle(nullptr), window_name);
-	HWND handle_old = CreateWindowInstance(instance, window_name, width, height);
-	HWND handle_new = CreateWindowInstance(instance, window_name, width, height);
-
-	ShowWindow(handle_old, SW_SHOW);
-	ShowWindow(handle_new, SW_SHOW);
-
-	engine_->Initialize(handle_old, handle_new, width, height);
+	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(), static_cast<FWindowsWindow*>(wnds[1].get())->GetHWnd(), wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
 
 	OnStart();
 	if (exit_code_)
@@ -99,34 +147,32 @@ int Application::Run()
 		ApplyInput();
 		engine_->RunFrame();
 
+		if(InputManager::getInstance().player_input->IsPressed(EKeys::Invalid))
+			std::cout << "Pressed" << std::endl;
+
+		if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
+		{
+			std::cout << "Pressed" << std::endl;
+		}
+		if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
+		{
+			std::cout << "StillPressed" << std::endl;
+		}
+		if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
+		{
+			std::cout << "Released" << std::endl;
+		}
+		
+		std::cout << InputManager::getInstance().player_input->GetAxisValue("TestAxis3");
+
 		InputManager::getInstance().Flush();
 
-		engine_->GetRenderer().BeginFrame();
-
-		engine_->GetScene()->Render();
-		
-		while (!engine_->GetRenderer().Present()) {
-			engine_->GetRenderer().EndFrame();
-			engine_->GetRenderer().ReloadShaders();
-			engine_->GetRenderer().BeginFrame();
-		};
+		engine_->BeginRender();
 
 		for (const auto layer : m_LayerStack)
 			layer->OnGuiRender();
 
-		engine_->GetRenderer().EndFrame();
-
-
-
-
-		//engine_->GetRenderer().BeginFrame()
-		//while (!engine_->GetRenderer().Present()) {
-		//	engine_->GetRenderer().EndFrame();
-		//	engine_->GetRenderer().ReloadShaders();
-		//	engine_->GetRenderer().BeginFrame();
-		//}
-		//
-		//engine_->GetRenderer().EndFrame();
+		engine_->EndRender();
 	}
 
 	OnStop();
@@ -141,40 +187,14 @@ void Application::Close()
 	is_exit_requested = true;
 }
 
-mono::mono_object Application::CreateGameObject(const mono::mono_object& scene) {
-	mono::mono_method create_go_method(scene.get_type(), "CreateGameObject", 0);
-	mono::mono_method_invoker create_go_method_invoker(create_go_method);
-	mono::mono_object go(create_go_method_invoker.invoke(scene));
-
-	mono::mono_method invalidate_scene_method(scene.get_type(), "Invalidate", 0);
-	mono::mono_method_invoker invalidate_scene_method_invoker(invalidate_scene_method);
-	invalidate_scene_method_invoker.invoke(scene);
-
-	return go;
+std::shared_ptr<FGenericWindow> Application::GetMainWindow()
+{
+	return wnds.at(0);
 }
 
-mono::mono_object Application::AddComponent(
-	const mono::mono_assembly& assembly,
-	const mono::mono_object& go,
-	const std::string& name_space,
-	const std::string& name)
+const mono::mono_assembly& Application::GetAssembly() const
 {
-	mono::mono_method add_component_method(go.get_type(), "AddComponent", 1);
-	mono::mono_method_invoker add_component_method_invoker(add_component_method);
-	
-	mono::mono_type component_type = assembly.get_type(name_space, name);
-	MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
-
-	void* params[1];
-	params[0] = reflection_type;
-
-	mono::mono_object component(add_component_method_invoker.invoke(go, params));
-
-	mono::mono_method invalidate_go_method(go.get_type(), "Invalidate", 0);
-	mono::mono_method_invoker invalidate_go_method_invoker(invalidate_go_method);
-	invalidate_go_method_invoker.invoke(go);
-
-	return component;
+	return m_Assembly;
 }
 
 engine::Engine* Application::GetEngine() const
@@ -182,18 +202,26 @@ engine::Engine* Application::GetEngine() const
 	return engine_.get();
 }
 
+WNDPROC Application::GetWndProc()
+{
+	return Application::WndProc;
+}
+
 void Application::ApplyInput()
 {
-	std::shared_ptr<InputEvent> CurrentEvent= InputManager::getInstance().ReadEvent();
-	while (CurrentEvent)
+	std::shared_ptr<FInputEvent> IE;
+
+	while (InputManager::getInstance().ReadEvent(IE))
 	{
+		IE->OnApplyInput(InputManager::getInstance().player_input->GetKeyStates());
 		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
 		{
+			/*
 			if (CurrentEvent->Handled)
 				break;
 			(*it)->OnInputEvent(CurrentEvent.get());
+			*/
 		}
-		CurrentEvent = CurrentEvent = InputManager::getInstance().ReadEvent();
 	}
 }
 
@@ -233,42 +261,4 @@ LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	}
 	
 	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
-void Application::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) 
-{
-	WNDCLASSEX window_class;
-	window_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	window_class.lpfnWndProc = WndProc;
-	window_class.cbClsExtra = 0;
-	window_class.cbWndExtra = 0;
-	window_class.hInstance = instance;
-	window_class.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
-	window_class.hIconSm = window_class.hIcon;
-	window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	window_class.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-	window_class.lpszMenuName = nullptr;
-	window_class.lpszClassName = window_name;
-	window_class.cbSize = sizeof(WNDCLASSEX);
-
-	RegisterClassEx(&window_class);
-}
-
-HWND Application::CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height) {
-	RECT window_rect = { 0, 0, width, height };
-	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
-
-	return CreateWindowEx(
-		WS_EX_APPWINDOW,
-		window_name,
-		window_name,
-		WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_THICKFRAME,
-		(GetSystemMetrics(SM_CXSCREEN) - width) / 2,
-		(GetSystemMetrics(SM_CYSCREEN) - height) / 2,
-		window_rect.right - window_rect.left,
-		window_rect.bottom - window_rect.top,
-		nullptr,
-		nullptr,
-		instance,
-		this);
 }

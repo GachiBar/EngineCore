@@ -1,6 +1,10 @@
 ﻿#include "pch.h"
 #include "Scene.h"
 #include "../monowrapper/monopp/mono_assembly.h"
+#include "../monowrapper/monopp/mono_domain.h"
+#include "../monowrapper/monopp/mono_string.h"
+
+namespace engine {
 
 mono::mono_property_invoker* Scene::count_ = nullptr;
 mono::mono_method_invoker* Scene::get_item_ = nullptr;
@@ -11,6 +15,8 @@ mono::mono_method_invoker* Scene::fixed_update_ = nullptr;
 mono::mono_method_invoker* Scene::update_ = nullptr;
 mono::mono_method_invoker* Scene::render_ = nullptr;
 mono::mono_method_invoker* Scene::invalidate_ = nullptr;
+mono::mono_method_invoker* Scene::serialize_ = nullptr;
+mono::mono_method_invoker* Scene::deserialize_ = nullptr;
 
 mono::mono_method_invoker* Scene::create_game_object_ = nullptr;
 mono::mono_method_invoker* Scene::delete_game_object_ = nullptr;
@@ -25,7 +31,8 @@ size_t Scene::Count() const {
     assert(count_ != nullptr && kIsNotCachedErrorMessage);
 
     mono::mono_object value(count_->get_value(object_));
-    int count = value.unbox<int>();
+    int count = *reinterpret_cast<int*>(value.unbox());
+
     assert(count >= 0 && "Count less then zero.");
 
     return static_cast<size_t>(count);
@@ -34,7 +41,14 @@ size_t Scene::Count() const {
 Scene::Scene(const mono::mono_assembly& assembly)
     : assembly_(assembly)
     , object_(assembly.get_type("GameplayCore", "Scene").new_instance())
-{}
+    , handle_(0)
+{
+    handle_ = mono_gchandle_new(object_.get_internal_ptr(), true);
+}
+
+Scene::~Scene() {
+    mono_gchandle_free(handle_);
+}
 
 std::shared_ptr<GameObject> Scene::CreateGameObject() {
     mono::mono_object object(create_game_object_->invoke(object_));
@@ -43,7 +57,7 @@ std::shared_ptr<GameObject> Scene::CreateGameObject() {
 }
 
 void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
-    void* params[1] = {game_object->GetInternal().get_internal_ptr()};
+    void* params[1] = { game_object->GetInternal().get_internal_ptr() };
     delete_game_object_->invoke(object_, params);
     Invalidate();
     game_object.reset();
@@ -51,35 +65,61 @@ void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
 
 void Scene::Initialize() {
     assert(initialize_ != nullptr && kIsNotCachedErrorMessage);
+
     initialize_->invoke(object_);
 }
 
 void Scene::FixedUpdate() {
     assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
+
     fixed_update_->invoke(object_);
 }
 
 void Scene::Update() {
     assert(update_ != nullptr && kIsNotCachedErrorMessage);
+
     update_->invoke(object_);
 }
 
 void Scene::Render() {
     assert(render_ != nullptr && kIsNotCachedErrorMessage);
+
     render_->invoke(object_);
 }
 
 void Scene::Terminate() {
     assert(terminate_ != nullptr && kIsNotCachedErrorMessage);
+
     terminate_->invoke(object_);
 }
 
 void Scene::Invalidate() {
     assert(invalidate_ != nullptr && kIsNotCachedErrorMessage);
+
     invalidate_->invoke(object_);
 }
 
-std::shared_ptr<GameObject> Scene::operator[](size_t index) {
+std::string Scene::Serialize()
+{
+    mono::mono_object result(serialize_->invoke(object_));
+    mono::mono_string json(result);
+    // Call method serialize
+    return json.as_utf8();
+}
+
+void Scene::Deserialize(const std::string& data)
+{
+    auto domain = mono::mono_domain::get_current_domain();
+    mono::mono_string json(domain, data);
+
+    void* params[1];
+    params[0] = json.get_internal_ptr();
+
+    deserialize_->invoke(object_, params);
+    // Call method deserialize
+}
+
+std::shared_ptr<GameObject> Scene::operator[](size_t index) const {
     assert(get_item_ != nullptr && kIsNotCachedErrorMessage);
 
     void* args[1];
@@ -121,4 +161,12 @@ void Scene::CacheMethods(const mono::mono_assembly& assembly) {
 
     mono::mono_method delete_game_object_method(type, "DeleteGameObject", 1);
     delete_game_object_ = new mono::mono_method_invoker(delete_game_object_method);
+
+    mono::mono_method serialize_method(type, "Serialize", 0);
+    serialize_ = new mono::mono_method_invoker(serialize_method);
+
+    mono::mono_method deserialize_method(type, "Deserialize", 1);
+    deserialize_ = new mono::mono_method_invoker(deserialize_method);
 }
+
+} // namespace engine

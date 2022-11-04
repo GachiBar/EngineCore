@@ -1,20 +1,11 @@
 
 #include "ImGuiLayer.h"
 
-//#include <imgui/imgui.h>
 
 #include "Application.h"
 #include "LayerStack.h"
-//#include "../../FNADx11RenderDevice/include/D3D11Renderer.h"
-//#include "../../DX11RenderEngine/DX11RenderEngine/source/CoreRenderSystem/Graphics.h"
-#include <iostream>
 
 #include "imgui/imgui_impl_dx11.h"
-#include "InputSystem/InputEvent.h"
-#include "ImGuizmo/ImGuizmo.h"
-#include "libs/nameof.hpp"
-//#include "imgui/backends/imgui_impl_win32.h"
-//#include "imgui/backends/imgui_impl_dx11.h"
 
 namespace Renderer
 {
@@ -59,15 +50,13 @@ void ImGuiLayer::OnDetach()
 	ImGui::DestroyContext();
 }
 
-void ImGuiLayer::OnInputEvent(InputEvent* e)
+void ImGuiLayer::OnInputEvent(FInputEvent* e)
 {
-	auto t = NAMEOF_TYPE_RTTI(*e);
-	std::cout << t << std::endl;
 	if (m_BlockEvents)
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		e->Handled |= e->IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-		e->Handled |= e->IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		//e->Handled |= e->IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+		//e->Handled |= e->IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 	}
 }
 

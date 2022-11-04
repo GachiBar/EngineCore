@@ -19,12 +19,6 @@
     <Filter Include="ImGUI">
       <UniqueIdentifier>{97fc801d-eecc-491d-bd69-c2edfe137f17}</UniqueIdentifier>
     </Filter>
-    <Filter Include="InputSystem">
-      <UniqueIdentifier>{0ca7dd2c-f6e5-4ad8-8f04-0adb4c48b707}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libs">
-      <UniqueIdentifier>{917df45b-4449-414a-9406-3714e91334c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ImGuizmo">
       <UniqueIdentifier>{dd1d7e40-77dc-4d24-b59d-04667fa69257}</UniqueIdentifier>
     </Filter>
@@ -53,15 +47,6 @@
     </ClCompile>
     <ClCompile Include="LayerStack.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\Keyboard.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\Mouse.cpp">
-      <Filter>InputSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="InputSystem\InputManager.cpp">
-      <Filter>InputSystem</Filter>
     </ClCompile>
     <ClCompile Include="EditorLayer.cpp">
       <Filter>Source Files</Filter>
@@ -96,6 +81,9 @@
     <ClCompile Include="PropertyWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Visual.h">
@@ -103,24 +91,6 @@
     </ClInclude>
     <ClInclude Include="Widget.h">
       <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imconfig.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imgui_internal.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_rectpack.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_textedit.h">
-      <Filter>ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>ImGUI</Filter>
     </ClInclude>
     <ClInclude Include="SliderWidget.h">
       <Filter>UI</Filter>
@@ -134,29 +104,11 @@
     <ClInclude Include="EditorApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Delegates.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LayerStack.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\Keyboard.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\Mouse.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\InputManager.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="InputSystem\InputEvent.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="libs\nameof.hpp">
-      <Filter>libs</Filter>
     </ClInclude>
     <ClInclude Include="EditorLayer.h">
       <Filter>Header Files</Filter>
@@ -182,9 +134,6 @@
     <ClInclude Include="ImGuiLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InputSystem\InputKeys.h">
-      <Filter>InputSystem</Filter>
-    </ClInclude>
     <ClInclude Include="GameViewWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -195,6 +144,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PropertyWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectSettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

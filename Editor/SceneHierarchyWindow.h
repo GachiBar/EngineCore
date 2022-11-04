@@ -1,7 +1,9 @@
 #pragma once
-#include <string>
+
+#include "../GameplaySystem/GameObject.h"
+
 #include <vector>
-#include "Delegates.h"
+#include "libs/Delegates.h"
 
 namespace mono
 {
@@ -17,10 +19,8 @@ class SceneHierarchyWindow
 {
 public:
 
-	void draw_imgui(const mono::mono_object& scene);
+	void draw_imgui(const engine::Scene& scene);
 
-	Delegate<void, std::shared_ptr<mono::mono_object>& > OnSelectGameObjectInHierarchy;
-
-	std::vector< std::shared_ptr<mono::mono_object>> GetGameObjects(const mono::mono_object& scene);
+	Delegate<void, std::shared_ptr<engine::GameObject>&> OnSelectGameObjectInHierarchy;
 };
 

@@ -1,18 +1,8 @@
 #include "EditorLayer.h"
 
-//#include <imgui/imgui.h>
-
 #include "Application.h"
 #include "LayerStack.h"
-//#include "../../FNADx11RenderDevice/include/D3D11Renderer.h"
-//#include "../../DX11RenderEngine/DX11RenderEngine/source/CoreRenderSystem/Graphics.h"
-#include <iostream>
-
-#include "InputSystem/InputEvent.h"
-#include "ImGuizmo/ImGuizmo.h"
-#include "libs/nameof.hpp"
-//#include "imgui/backends/imgui_impl_win32.h"
-//#include "imgui/backends/imgui_impl_dx11.h"
+#include <fstream>
 
 namespace Renderer
 {
@@ -27,9 +17,10 @@ void EditorLayer::OnAttach()
 {
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
-    properties = std::make_shared<PropertyWindow>();
+    properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
+    SettingsWindow = std::make_shared<ProjectSettingsWindow>();
 
-	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<mono::mono_object>& go)
+	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
 	{
 		selected_go = go;
 	});
@@ -117,12 +108,27 @@ void EditorLayer::OnGuiRender()
 
             if (ImGui::MenuItem("Open...", "Ctrl+O"))
             {
+                std::ifstream ifs("..\\File_1.txt");
+                std::string content((std::istreambuf_iterator<char>(ifs)),
+                    (std::istreambuf_iterator<char>()));
+
+                GetApp()->GetEngine()->GetScene()->Deserialize(content);
                 //OpenScene();
             }
 
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
                 //SaveScene();
+                std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
+                std::ofstream file_handler;
+                // File Open
+                file_handler.open("..\\File_1.txt");
+
+                // Write to the file
+                file_handler << json;
+
+                // File Close
+                file_handler.close();
             }
 
             if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
@@ -168,6 +174,7 @@ void EditorLayer::OnGuiRender()
     ImGui::End();
 
     gvm->draw_imgui();
-    hierarchy->draw_imgui((GetApp()->GetEngine()->GetScene()->GetInternal()));
+    hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
     properties->draw_imgui(selected_go);
+    SettingsWindow->draw_imgui();
 }
