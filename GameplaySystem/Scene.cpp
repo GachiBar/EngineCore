@@ -109,7 +109,7 @@ std::string Scene::Serialize()
 
 void Scene::Deserialize(const std::string& data)
 {
-    auto domain = mono::mono_domain::get_current_domain();
+    auto& domain = mono::mono_domain::get_current_domain();
     mono::mono_string json(domain, data);
 
     void* params[1];

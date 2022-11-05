@@ -8,11 +8,15 @@ namespace GameplayCore
 {
     [Serializable]
     public class GameObject : IReadOnlyList<Component>
-    {
+    {        
+        private const int MaxNameSize = 15;
+
         /// <summary>
         /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.
         /// </summary>
         private Guid _guid;
+
+        private string _name;
 
         /// <summary>
         /// Flag that determines whether the <see cref="_updatableComponents"/> is in a valid state.
@@ -51,7 +55,26 @@ namespace GameplayCore
         /// <summary>
         /// Name of <see cref="GameObject"/>.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        { 
+            get => _name;
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException($"{nameof(Name)} can not be null.");
+                }
+
+                var name = value.Trim();
+
+                if (name.Length > MaxNameSize || string.IsNullOrEmpty(name))
+                {
+                    throw new ArgumentOutOfRangeException($"{nameof(Name)} length should be in range (0, {MaxNameSize}].");
+                }
+
+                _name = name;
+            }
+        }
 
         #region IReadOnlyList
 
@@ -217,6 +240,7 @@ namespace GameplayCore
                     ComponentRemoved?.Invoke(this, component);
                 }
 
+                _removedComponents.Clear();
                 _updatableComponents = _componentsMap.Values.ToList();
                 _isUpdatableComponentsInvalid = false;
             }

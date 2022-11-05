@@ -41,6 +41,10 @@ public:
     void Invalidate();
 
     std::shared_ptr<Component> operator[](size_t index) const;
+    
+    friend bool operator== (const GameObject& lhs, const GameObject& rhs);
+    friend bool operator== (const GameObject& lhs, const mono::mono_object& rhs);
+    friend bool operator== (const mono::mono_object& lhs, const GameObject& rhs);
 
     static void CacheMethods(const mono::mono_assembly& assembly);
 

@@ -54,6 +54,7 @@ public:
 	auto get_nested_types() const -> std::vector<mono_type>;
 
 	auto is_derived_from(const mono_type& type) const -> bool;
+	auto is_abstract() -> bool;
 
 	auto get_namespace() const -> const std::string&;
 
