@@ -17,14 +17,14 @@ Application::Application()
 	: m_LayerStack(this)
 	, m_JitDomain(kMonoLibPath, "KtripRuntime")
 	, m_Domain("KtripDomain")
-	, m_Assembly(m_Domain, kDllPath)
+	, m_Assembly(m_Domain.get_assembly(kDllPath))
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, exit_code_(0)
 {	
+	mono::mono_domain::set_current_domain(m_Domain);
 	engine::Scene::CacheMethods(m_Assembly);
 	engine::GameObject::CacheMethods(m_Assembly);
-	engine::Component::CacheMethods(m_Assembly);
-	mono::mono_domain::set_current_domain(m_Domain);
+	engine::Component::CacheMethods(m_Assembly);	
 }
 
 void Application::PushLayer(Layer* layer)

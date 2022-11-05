@@ -173,7 +173,7 @@ void PropertyWindow::DrawComponentProperties(
 				DrawVector4Property(property);
 				break;
 			case engine::PropertyType::kString:
-				DrawStringProperty(property);
+				DrawStringProperty(gameObject, component, property);
 				break;
 			case engine::PropertyType::kGameObject:
 				DrawGameObjectProperty(scene, gameObject, property);
@@ -399,7 +399,10 @@ void PropertyWindow::DrawVector4Property(engine::ComponentProperty property)
 	}
 }
 
-void PropertyWindow::DrawStringProperty(engine::ComponentProperty property)
+void PropertyWindow::DrawStringProperty(
+	std::shared_ptr<engine::GameObject> gameObject, 
+	std::shared_ptr<engine::Component> component,
+	engine::ComponentProperty property)
 {
 	const size_t bufferSize = 256;
 	char buffer[bufferSize];
@@ -417,8 +420,8 @@ void PropertyWindow::DrawStringProperty(engine::ComponentProperty property)
 
 	if (ImGui::InputText(property.GetName().c_str(), buffer, bufferSize)) 
 	{
-		auto domain = mono::mono_domain::get_current_domain();
-		std::string newContent(buffer);		
+		auto& domain = mono::mono_domain::get_current_domain();
+		std::string newContent(buffer);
 		mono::mono_string newValue(domain, newContent);
 		property.SetValue(newValue);
 	}
@@ -468,18 +471,10 @@ void PropertyWindow::DrawGameObjectProperty(
 
 	int selected = std::distance(game_objects_names, current);
 
-	if (ImGui::Combo("Add", &selected, game_objects_names, scene->Count()))
+	if (ImGui::Combo(property.GetName().c_str(), &selected, game_objects_names, scene->Count()))
 	{
-		auto t = game_objects_pointers[selected];
-		property.SetValue(t);
-		//auto ippp = 0;
-		//if (selected == 0) 
-		//{
-		//	property.SetValue(nullptr);
-		//}
-
-		//std::string name(game_objects_names[selected]);
-		// TODO: use name to find game object in scene and set as property value.
+		auto gameObject = game_objects_pointers[selected];
+		property.SetValue(gameObject);
 	}
 }
 
