@@ -84,7 +84,7 @@ uint32 GenericPlatformInput::GetStandardPrintableKeyMap(uint32* KeyCodes, std::s
 	ADDKEYMAP( '-', ("Hyphen") );
 	ADDKEYMAP( '.', ("Period") );
 	ADDKEYMAP( '/', ("Slash") );
-	ADDKEYMAP( '`', ("Tilde") );
+	ADDKEYMAP( '~', ("Tilde") );
 	ADDKEYMAP( '[', ("LeftBracket") );
 	ADDKEYMAP( '\\', ("Backslash") );
 	ADDKEYMAP( ']', ("RightBracket") );

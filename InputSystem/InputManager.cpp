@@ -9,7 +9,7 @@
 InputManager& InputManager::getInstance()
 {
 	static InputManager instance;
-	
+
 	// Instantiated on first use.
 	return instance;
 }
@@ -123,7 +123,6 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// lparam bit 30 will be ZERO for new presses, or ONE if this is a repeat
 		bool bIsRepeat = (lparam & 0x40000000) != 0;
-
 		switch (Win32Key)
 		{
 		case VK_MENU:
@@ -158,9 +157,9 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 
 		// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
-		const unsigned int CharCode = ::MapVirtualKey(Win32Key, MAPVK_VK_TO_CHAR);
+		const unsigned int CharCode = TranslateVirtualKeyToCharCode(Win32Key);
 
-		GetMessageHandler()->OnKeyDown(ActualKey, CharCode, bIsRepeat);
+		GetMessageHandler()->OnKeyDown(ActualKey, CharCode, bIsRepeat, IsShiftPressed() && Win32Key != VK_SHIFT);
 	}
 	else if (msg == WM_KEYUP || msg == WM_SYSKEYUP)
 	{
@@ -206,20 +205,19 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 
 		// Get the character code from the virtual key pressed.  If 0, no translation from virtual key to character exists
-		unsigned int CharCode = ::MapVirtualKey(Win32Key, MAPVK_VK_TO_CHAR);
+		const unsigned int CharCode = TranslateVirtualKeyToCharCode(Win32Key);
 
 		// Key up events are never repeats
 		const bool bIsRepeat = false;
 
-		GetMessageHandler()->OnKeyUp(ActualKey, CharCode, bIsRepeat);
+		GetMessageHandler()->OnKeyUp(ActualKey, CharCode, bIsRepeat,IsShiftPressed() && Win32Key!=VK_SHIFT);
 	}
 	// ************ END KEYBOARD MESSAGES ************ //
 
 	// ************ MOUSE MESSAGES ************ //
 	else if (IsMouseMessage(msg))
 	{
-
-		if(msg == WM_MOUSEMOVE || msg==WM_NCMOUSEMOVE)
+		if (msg == WM_MOUSEMOVE || msg == WM_NCMOUSEMOVE)
 		{
 			POINT CursorPoint;
 			CursorPoint.x = GET_X_LPARAM(lparam);
@@ -227,7 +225,6 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 
 			GetMessageHandler()->OnMouseMove();
-			
 		}
 		else if (msg == WM_MOUSEWHEEL || msg == WM_MOUSEHWHEEL)
 		{
@@ -242,7 +239,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			GetMessageHandler()->OnMouseWheel(static_cast<float>(WheelDelta) * SpinFactor, CursorPos);
 		}
-		else if(IsMouseButton(msg))
+		else if (IsMouseButton(msg))
 		{
 			POINT CursorPoint;
 			CursorPoint.x = GET_X_LPARAM(lparam);
@@ -316,7 +313,6 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				GetMessageHandler()->OnMouseDown(app->GetMainWindow(), MouseButton, CursorPos);
 			}
 		}
-		
 	}
 	else if (msg == WM_CLOSE)
 	{
@@ -326,7 +322,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			GetMessageHandler()->OnWindowClose(app->GetMainWindow());
 		}
 	}
-	else if(msg == WM_SIZING)
+	else if (msg == WM_SIZING)
 	{
 		if (app->GetMainWindow())
 		{
@@ -352,19 +348,17 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 		}
 	}
-	else if(msg == WM_SIZE)
+	else if (msg == WM_SIZE)
 	{
-	const bool bIsFullscreen = (app->GetMainWindow()->GetWindowMode() == EWindowMode::Type::Fullscreen);
+		const bool bIsFullscreen = (app->GetMainWindow()->GetWindowMode() == EWindowMode::Type::Fullscreen);
 
-	// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
+		// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
 		if (!bIsFullscreen)
 		{
 			GetMessageHandler()->OnResizingWindow(app->GetMainWindow());
 		}
-		
 	}
 	// ************ END MOUSE MESSAGES ************ //
-	
 }
 
 std::pair<float, float> InputManager::GetMousePosition() const
@@ -399,14 +393,138 @@ InputManager::InputManager() : app(nullptr),
 	player_input->SetInputSettings(input_settings.get());
 }
 
+bool InputManager::IsShiftPressed() const
+{
+	return player_input->IsPressed(EKeys::LeftShift);
+}
+
+unsigned InputManager::TranslateVirtualKeyToCharCode(int wParam) const
+{
+	unsigned int result = ::MapVirtualKey(wParam, MAPVK_VK_TO_CHAR);
+
+	if (IsShiftPressed()) // Check if shift key is down (fairly accurate)
+	{
+		if (wParam >= '0' && wParam <= '9') // Keys 0-9
+		{
+			switch (wParam)
+				// 0x30-0x39 is 0-9 respectively
+			{
+			case 0x30:
+				result = ')';
+				break;
+			case 0x31:
+				result = '!';
+				break;
+			case 0x32:
+				result = '@';
+				break;
+			case 0x33:
+				result = '#';
+				break;
+			case 0x34:
+				result = '$';
+				break;
+			case 0x35:
+				result = '%';
+				break;
+			case 0x36:
+				result = '^';
+				break;
+			case 0x37:
+				result = '&';
+				break;
+			case 0x38:
+				result = '*';
+				break;
+			case 0x39:
+				result = '(';
+				break;
+			default:;
+			}
+		}
+	}
+	switch (wParam)
+		// Check for other keys
+	{
+	case VK_OEM_2:
+		if (IsShiftPressed())
+			result = '?';
+		else
+			result = '/';
+		break;
+	case VK_OEM_3:
+		if (IsShiftPressed())
+			result = '~';
+		else
+			result = '`';
+		break;
+	case VK_OEM_4:
+		if (IsShiftPressed())
+			result = '{';
+		else
+			result = '[';
+		break;
+	case VK_OEM_5:
+		if (IsShiftPressed())
+			result = '|';
+		else
+			result = '\\';
+		break;
+	case VK_OEM_6:
+		if (IsShiftPressed())
+			result = '}';
+		else
+			result = ']';
+		break;
+	case VK_OEM_7:
+		if (IsShiftPressed())
+			result = '\"';
+		else
+			result = '\'';
+		break;
+	case 0xBC: //comma
+		if (IsShiftPressed())
+			result = '<';
+		else
+			result = ',';
+		break;
+	case 0xBE: //Period
+		if (IsShiftPressed())
+			result = '>';
+		else
+			result = '.';
+		break;
+	case 0xBA: //Semi Colon same as VK_OEM_1
+		if (IsShiftPressed())
+			result = ':';
+		else
+			result = ';';
+		break;
+	case 0xBD: //Minus
+		if (IsShiftPressed())
+			result = '_';
+		else
+			result = '-';
+		break;
+	case 0xBB: //Equal
+		if (IsShiftPressed())
+			result = '+';
+		else
+			result = '=';
+		break;
+	default: ;
+	}
+	return result;
+}
+
+
 void InputManager::Flush()
 {
-	
 	//KeyStates flush
 	for (auto& KeyState : player_input->GetKeyStates())
 	{
 		KeyState.second.FlushEvents();
 	}
-	
+
 	mouse.Flush();
 }

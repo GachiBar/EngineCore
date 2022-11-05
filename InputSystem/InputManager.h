@@ -9,7 +9,7 @@
 
 class IApplication;
 
-class InputManager
+class InputManager final
 {
 public:
     static InputManager& getInstance();
@@ -47,6 +47,10 @@ private:
     InputManager();
 
     Mouse mouse;
+
+    bool IsShiftPressed() const;
+
+    unsigned int TranslateVirtualKeyToCharCode(int wParam) const;
 public:
     InputManager(InputManager const&) = delete;
     void operator=(InputManager const&) = delete;

@@ -62,12 +62,13 @@ void InputKeyManager::InitKeyMappings()
  * Retrieves the key mapped to the specified key or character code.
  *
  * @param	KeyCode	the key code to get the name for
+ * @param CharCode
  */
-FKey InputKeyManager::GetKeyFromCodes(const uint32 KeyCode, const uint32 CharCode) const
+FKey InputKeyManager::GetKeyFromCodes(const uint32 KeyCode, const uint32 CharCode, bool IsChar) const
 {
 	FKey ResultKey = EKeys::Invalid;
 
-	if (KeyMapVirtualToEnum.contains(KeyCode))
+	if (KeyMapVirtualToEnum.contains(KeyCode)&& !IsChar)
 		ResultKey = KeyMapVirtualToEnum.at(KeyCode);
 
 	if(ResultKey == EKeys::Invalid && KeyMapCharToEnum.contains(CharCode))

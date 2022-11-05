@@ -6,8 +6,8 @@
 struct WindowsApplicationMessageHandler : public FGenericApplicationMessageHandler
 {
 	virtual bool OnKeyChar(const wchar_t Character, const bool IsRepeat) override;
-	virtual bool OnKeyDown( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat ) override;
-	virtual bool OnKeyUp( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat ) override;
+	virtual bool OnKeyDown( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat, const bool IsModified) override;
+	virtual bool OnKeyUp( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat, const bool IsModified) override;
 	virtual void OnInputLanguageChanged() override;
 	virtual bool OnMouseDown( const std::shared_ptr< FGenericWindow >& PlatformWindow, const EMouseButtons::Type Button ) override;
 	virtual bool OnMouseDown( const std::shared_ptr< FGenericWindow >& PlatformWindow, const EMouseButtons::Type Button, const FVector2D CursorPos ) override;
