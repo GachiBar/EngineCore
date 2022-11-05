@@ -13,6 +13,10 @@ public:
 
 	std::shared_ptr<engine::Scene> scene;
 
+	engine::GameObject* GetCamera() const;
+
+	std::shared_ptr<engine::GameObject> test_go;
+
 protected:
-	//std::shared_ptr<MainWindow> mw;
+	std::shared_ptr<engine::GameObject> camera_go;
 };

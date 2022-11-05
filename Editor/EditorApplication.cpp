@@ -13,9 +13,13 @@ void EditorApplication::OnSetup()
 	Application::OnSetup();
 
 	scene = std::make_shared<engine::Scene>(m_Assembly);
+
+	camera_go = scene->CreateGameObject();
+	test_go = scene->CreateGameObject();
+
 	auto game_object_1 = scene->CreateGameObject();
 	auto game_object_2 = scene->CreateGameObject();
-	//auto game_object_3 = scene->CreateGameObject();
+
 
 	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");	
@@ -23,7 +27,15 @@ void EditorApplication::OnSetup()
 
 	game_object_2->AddComponent("GameplayCore.Components", "CameraComponent");
 	game_object_2->AddComponent("GameplayCore.Components", "TransformComponent");
-	
+
+
+	camera_go->AddComponent("GameplayCore.Components", "CameraComponent");
+	camera_go->AddComponent("GameplayCore.Components", "TransformComponent");
+
+
+	test_go->AddComponent("GameplayCore.Components", "MeshRenderComponent");
+	test_go->AddComponent("GameplayCore.Components", "TransformComponent");
+
 	//game_object_3->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	//auto transform = game_object_3->AddComponent("GameplayCore.Components", "TransformComponent");
 	//auto property = transform->GetProperty("LocalPosition");
@@ -49,4 +61,9 @@ void EditorApplication::OnStart()
 	Application::OnStart();
 	const auto editor_layer = new EditorLayer(&m_LayerStack);
 	PushLayer(editor_layer);
+}
+
+engine::GameObject* EditorApplication::GetCamera() const
+{
+	return camera_go.get();
 }

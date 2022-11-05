@@ -15,6 +15,8 @@
 #include <algorithm>
 
 namespace engine {
+	DirectX::SimpleMath::Matrix Engine::m_projection{};
+	DirectX::SimpleMath::Matrix Engine::m_view{};
 
 std::shared_ptr<Scene> Engine::GetScene() {
 	return scene_;
@@ -64,7 +66,9 @@ void Engine::Internal_SetViewProjection(
 	float ellapsed, 
 	DirectX::SimpleMath::Matrix view,
 	DirectX::SimpleMath::Matrix projection) 
-{		
+{
+	m_view = view;
+	m_projection = projection;
 	renderer->SetRenderData({ellapsed, view, projection});
 }
 
@@ -115,6 +119,16 @@ void Engine::EndRender() {
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	return renderer_.ProcessMessages(hwnd, msg, wparam, lparam);
+}
+
+DirectX::SimpleMath::Matrix& Engine::GetViewMatrix()
+{
+	return m_view;
+}
+
+DirectX::SimpleMath::Matrix& Engine::GetProjectionMatrix()
+{
+	return m_projection;
 }
 
 void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
