@@ -173,7 +173,7 @@ void PropertyWindow::DrawComponentProperties(
 				DrawVector4Property(property);
 				break;
 			case engine::PropertyType::kString:
-				DrawStringProperty(gameObject, component, property);
+				DrawStringProperty(property);
 				break;
 			case engine::PropertyType::kGameObject:
 				DrawGameObjectProperty(scene, gameObject, property);
@@ -399,10 +399,7 @@ void PropertyWindow::DrawVector4Property(engine::ComponentProperty property)
 	}
 }
 
-void PropertyWindow::DrawStringProperty(
-	std::shared_ptr<engine::GameObject> gameObject, 
-	std::shared_ptr<engine::Component> component,
-	engine::ComponentProperty property)
+void PropertyWindow::DrawStringProperty(engine::ComponentProperty property)
 {
 	const size_t bufferSize = 256;
 	char buffer[bufferSize];

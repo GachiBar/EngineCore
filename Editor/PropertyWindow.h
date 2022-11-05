@@ -76,10 +76,7 @@ private:
 	void DrawVector2Property(engine::ComponentProperty property);
 	void DrawVector3Property(engine::ComponentProperty property);
 	void DrawVector4Property(engine::ComponentProperty property);
-	void DrawStringProperty(
-		std::shared_ptr<engine::GameObject> gameObject, 
-		std::shared_ptr<engine::Component> component,
-		engine::ComponentProperty property);
+	void DrawStringProperty(engine::ComponentProperty property);
 	void DrawGameObjectProperty(
 		std::shared_ptr<engine::Scene> scene,
 		std::shared_ptr<engine::GameObject> gameObject,
