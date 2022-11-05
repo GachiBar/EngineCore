@@ -37,9 +37,9 @@ bool WindowsApplicationMessageHandler::OnKeyChar(const wchar_t Character, const 
 	return true;
 }
 
-bool WindowsApplicationMessageHandler::OnKeyDown(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat)
+bool WindowsApplicationMessageHandler::OnKeyDown(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat, const bool IsModified)
 {
-	const FKey Key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
+	const FKey Key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode, IsModified && CharacterCode != 0);
 	const FKeyEvent KeyEvent(Key, IsRepeat, IsRepeat ? IE_Repeat : IE_Pressed, CharacterCode, KeyCode);
 
 	InputStack.push(std::make_shared<FKeyEvent>(KeyEvent));
@@ -47,9 +47,9 @@ bool WindowsApplicationMessageHandler::OnKeyDown(const int32 KeyCode, const uint
 	return true;
 }
 
-bool WindowsApplicationMessageHandler::OnKeyUp(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat)
+bool WindowsApplicationMessageHandler::OnKeyUp(const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat, const bool IsModified)
 {
-	const FKey Key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
+	const FKey Key = InputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode, IsModified && CharacterCode!=0);
 	const FKeyEvent KeyEvent(Key, IsRepeat, IE_Released, CharacterCode, KeyCode);
 
 	InputStack.push(std::make_shared<FKeyEvent>(KeyEvent));

@@ -74,12 +74,12 @@ public:
 		return false;
 	}
 
-	virtual bool OnKeyDown( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat ) 
+	virtual bool OnKeyDown( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat, const bool IsModified)
 	{
 		return false;
 	}
 
-	virtual bool OnKeyUp( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat )
+	virtual bool OnKeyUp( const int32 KeyCode, const uint32 CharacterCode, const bool IsRepeat , const bool IsModified)
 	{
 		return false;
 	}
