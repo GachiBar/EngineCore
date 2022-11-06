@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Application.h"
+#include "EditorInputMode.h"
 
 class EditorApplication final : public Application
 {
@@ -13,6 +14,16 @@ public:
 
 	std::shared_ptr<engine::Scene> scene;
 
+	engine::GameObject* GetCamera() const;
+
+	std::shared_ptr<engine::GameObject> test_go;
+
+	
+	void SetEditorOnlyInputMode();
+
+	void SetGameOnlyOnlyInputMode();
 protected:
-	//std::shared_ptr<MainWindow> mw;
+	EEditorInputMode::Type editor_input_mode;
+
+	std::shared_ptr<engine::GameObject> camera_go;
 };

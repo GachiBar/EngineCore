@@ -4,6 +4,10 @@
 #include "LayerStack.h"
 #include <fstream>
 
+#include "EditorApplication.h"
+#include "../GameplaySystem/Component.h"
+#include "ImGuizmo/ImGuizmo.h"
+
 namespace Renderer
 {
 	class D3D11Renderer;
@@ -15,7 +19,9 @@ EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selec
 
 void EditorLayer::OnAttach()
 {
-	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
+	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture);
+    gvm->editor_layer = this;
+
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
@@ -39,6 +45,8 @@ void EditorLayer::OnDetach()
 
 void EditorLayer::OnGuiRender()
 {
+    ImGuizmo::BeginFrame();
+
     bool p_open = true;
     //ImGui::ShowDemoWindow(&p_open);
 
@@ -173,10 +181,47 @@ void EditorLayer::OnGuiRender()
         ImGui::EndMenuBar();
     }
 
-    ImGui::End();
 
-    gvm->draw_imgui();    
+    //Gizmos
+    EditorApplication* Editor = static_cast<EditorApplication*>(GetApp());
+    if(Editor)
+    {
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        float windowWidth = (float)ImGui::GetWindowWidth();
+        float windowHeight = (float)ImGui::GetWindowHeight();
+
+        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+        auto change_mat = [](const DirectX::XMMATRIX mat)
+        {
+            DirectX::XMFLOAT4X4 temp{};
+            DirectX::XMStoreFloat4x4(&temp, mat);
+
+            return temp;
+        };
+
+
+        //auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().unbox());
+        //DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
+
+
+        DirectX::XMFLOAT4X4 v = change_mat(engine::Engine::GetViewMatrix());
+        DirectX::XMFLOAT4X4 p = change_mat(engine::Engine::GetProjectionMatrix());
+        //DirectX::XMFLOAT4X4 w = change_mat(t);
+        //ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
+    }
+    ImGui::End();
+   
+    gvm->draw_imgui(); 
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
     properties->draw_imgui();
     SettingsWindow->draw_imgui();
+
+}
+
+void EditorLayer::OnPostRender()
+{
+    gvm->resize(); 
+    Layer::OnPostRender();
 }

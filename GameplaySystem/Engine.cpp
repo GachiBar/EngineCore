@@ -16,6 +16,9 @@
 
 namespace engine {
 
+DirectX::SimpleMath::Matrix Engine::m_projection{};
+DirectX::SimpleMath::Matrix Engine::m_view{};
+
 std::shared_ptr<Scene> Engine::GetScene() {
 	return scene_;
 }
@@ -34,6 +37,8 @@ Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assem
 	, renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
 	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
 	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
+	, screen_width_property_(GetProperty("GameplayCore", "Screen", "Width"))
+	, screen_height_property_(GetProperty("GameplayCore", "Screen", "Height"))
 	, scene_(nullptr)
 {}
 
@@ -48,24 +53,31 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	ModelLoader::LoadObj(path, model);
 
 	renderer->RegisterModel(id, model);
-	
+
 	DirectX::ScratchImage image;
 	TextureLoader::LoadWic(L"Content\\Breaks.jpg", image);
 
-	renderer->RegisterTexture(id, image.GetImage(0, 0, 0)->width, image.GetImage(0, 0, 0)->height, image.GetImage(0, 0, 0)->pixels, false);
+	renderer->RegisterTexture(
+		id, 
+		image.GetImage(0, 0, 0)->width, 
+		image.GetImage(0, 0, 0)->height,
+		image.GetImage(0, 0, 0)->pixels, 
+		false);
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
-	renderer->DrawModel({id, id, model_matrix});
+	renderer->DrawModel({ id, id, model_matrix });
 }
 
 void Engine::Internal_SetViewProjection(
-	RenderDevice* renderer, 
-	float ellapsed, 
+	RenderDevice* renderer,
+	float ellapsed,
 	DirectX::SimpleMath::Matrix view,
-	DirectX::SimpleMath::Matrix projection) 
-{		
-	renderer->SetRenderData({ellapsed, view, projection});
+	DirectX::SimpleMath::Matrix projection)
+{
+	m_view = view;
+	m_projection = projection;
+	renderer->SetRenderData({ ellapsed, view, projection });
 }
 
 void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {
@@ -88,8 +100,9 @@ void Engine::RunFrame() {
 	lag_ += duration_cast<nanoseconds>(dt_);
 
 	SendTimeData();
+	SendScreenData();
 
-	while (lag_ >= kTimestep) {
+	while (lag_ >= kTimestep) 	{
 		lag_ -= kTimestep;
 		scene_->FixedUpdate();
 	}
@@ -117,9 +130,27 @@ bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
 	return renderer_.ProcessMessages(hwnd, msg, wparam, lparam);
 }
 
+DirectX::SimpleMath::Matrix& Engine::GetViewMatrix() {
+	return m_view;
+}
+
+DirectX::SimpleMath::Matrix& Engine::GetProjectionMatrix() {
+	return m_projection;
+}
+
 void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
-	renderer_.InitDevice({ handle_old, handle_new, width, height });
-	renderer_.InitShaders("..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\");
+	renderer_.CreateDevice(
+	{
+		handle_old,
+		handle_new,
+		{
+			width,
+			height,
+			width,
+			height
+		}
+	});
+	renderer_.InitDevice({ "..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\" });
 }
 
 mono::mono_property Engine::GetProperty(std::string name_space, std::string clazz, std::string property) {
@@ -136,12 +167,19 @@ void Engine::SetupRendererInternalCalls() {
 
 void Engine::SendTimeData() {
 	auto time_type = assembly_.get_type("GameplayCore", "Time");
-	
+
 	float dt = duration<float>(dt_).count();
 	delta_time_property_.set_value(&dt);
 
 	float ellapsed = duration<float>(ellapsed_).count();
 	ellapsed_time_property_.set_value(&ellapsed);
+}
+
+void Engine::SendScreenData() {
+	auto out_texture = renderer_.GetRenderTargetTexture("outTexture");
+
+	screen_width_property_.set_value(&out_texture.width);
+	screen_height_property_.set_value(&out_texture.height);
 }
 
 } // namespace engine
