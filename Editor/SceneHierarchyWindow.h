@@ -1,11 +1,9 @@
 #pragma once
 
 #include "../GameplaySystem/GameObject.h"
-#include "../GameplaySystem/Scene.h"
 
-#include <string>
 #include <vector>
-#include "Delegates.h"
+#include "libs/Delegates.h"
 
 namespace mono
 {

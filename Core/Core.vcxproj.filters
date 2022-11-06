@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="libs">
+      <UniqueIdentifier>{d52f4f88-8a61-4c82-9ae0-f627643aef4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\ini">
+      <UniqueIdentifier>{48eec158-8282-492f-af12-cefed4b1e8db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{d3b49655-0ae1-481d-a5e3-ba973b6ebe3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows">
+      <UniqueIdentifier>{db6ed31c-7839-455a-b7cd-fc2218bc1b13}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="libs\imgui_sugar.hpp">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\magic_enum.hpp">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\MathUtility.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\MemoryUtility.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\nameof.hpp">
+      <Filter>libs</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\ini\ini.h">
+      <Filter>libs\ini</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\GenericWindow.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\GenericWindowDefinition.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\WindowsWindow.h">
+      <Filter>Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\IApplication.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\IWindowsApplication.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\Delegates.h">
+      <Filter>libs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Windows\GenericWindow.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\WindowsWindow.cpp">
+      <Filter>Windows</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

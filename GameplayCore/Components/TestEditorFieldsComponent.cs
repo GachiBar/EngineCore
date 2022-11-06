@@ -177,7 +177,7 @@ namespace GameplayCore.Components
             get => _gameObjectValue;
             set
             {
-                System.Console.WriteLine($"{nameof(GameObjectProperty)} = {value}");
+                System.Console.WriteLine($"{nameof(GameObjectProperty)} = {(value != null ? value.ToString() : "null")}");
                 _gameObjectValue = value;
             }
         }

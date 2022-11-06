@@ -7,7 +7,6 @@
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
-#include "../Editor/InputSystem/InputManager.h"
 
 #include <fstream>
 #include <iostream>

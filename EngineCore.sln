@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31919.166
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameplaySystem", "GameplaySystem\GameplaySystem.vcxproj", "{7AFBD61B-FC45-42B8-9895-4A68CDCB3359}"
 EndProject
@@ -22,10 +22,19 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VMDx11RenderDevice", "..\DX11RenderEngine\VMDx11RenderDevice\VMDx11RenderDevice.vcxproj", "{EED93469-9DCF-4A80-A11F-0D9BCB560B25}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSetup", "TestSetup\TestSetup.vcxproj", "{9C813107-AA79-4804-BAB6-43E99F63B1F4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45} = {079141C1-0E94-4CF4-9A36-EEED43B67E45}
+		{4F8B6EB6-D028-4C38-9D69-227347502957} = {4F8B6EB6-D028-4C38-9D69-227347502957}
+		{A8B84BFF-0299-4F72-91B1-AFE9574B2128} = {A8B84BFF-0299-4F72-91B1-AFE9574B2128}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameplayCore", "GameplayCore\GameplayCore.csproj", "{F94DEA5C-973F-4944-B4E3-931640477A44}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Editor", "Editor\Editor.vcxproj", "{093EE3E1-B662-4ACF-BD21-F3B0484F4EF2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45} = {079141C1-0E94-4CF4-9A36-EEED43B67E45}
+		{4F8B6EB6-D028-4C38-9D69-227347502957} = {4F8B6EB6-D028-4C38-9D69-227347502957}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "monowrapper", "monowrapper\monowrapper.vcxproj", "{7D22E2D2-85F7-4744-BE7D-2AFE0C33DED3}"
 EndProject
@@ -35,7 +44,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleMath", "..\DX11Render
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GachiRenderSystem", "..\DX11RenderEngine\GachiRenderSystem\GachiRenderSystem.vcxproj", "{5EFFD051-4BB4-44BD-9364-4FBA2E1FD74D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineDotnetUnitTests", "EngineDotnetUnitTests\EngineDotnetUnitTests.csproj", "{A64B6AA1-7A21-4632-8FCE-7F2146E3B4D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngineDotnetUnitTests", "EngineDotnetUnitTests\EngineDotnetUnitTests.csproj", "{A64B6AA1-7A21-4632-8FCE-7F2146E3B4D6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InputSystem", "InputSystem\InputSystem.vcxproj", "{4F8B6EB6-D028-4C38-9D69-227347502957}"
+	ProjectSection(ProjectDependencies) = postProject
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45} = {079141C1-0E94-4CF4-9A36-EEED43B67E45}
+		{A8B84BFF-0299-4F72-91B1-AFE9574B2128} = {A8B84BFF-0299-4F72-91B1-AFE9574B2128}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Core", "Core\Core.vcxproj", "{079141C1-0E94-4CF4-9A36-EEED43B67E45}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A8B84BFF-0299-4F72-91B1-AFE9574B2128} = {A8B84BFF-0299-4F72-91B1-AFE9574B2128}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -227,6 +247,30 @@ Global
 		{A64B6AA1-7A21-4632-8FCE-7F2146E3B4D6}.Release|x64.Build.0 = Release|Any CPU
 		{A64B6AA1-7A21-4632-8FCE-7F2146E3B4D6}.Release|x86.ActiveCfg = Release|Any CPU
 		{A64B6AA1-7A21-4632-8FCE-7F2146E3B4D6}.Release|x86.Build.0 = Release|Any CPU
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Debug|Any CPU.Build.0 = Debug|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Debug|x64.ActiveCfg = Debug|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Debug|x64.Build.0 = Debug|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Debug|x86.ActiveCfg = Debug|Win32
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Debug|x86.Build.0 = Debug|Win32
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Release|Any CPU.ActiveCfg = Release|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Release|Any CPU.Build.0 = Release|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Release|x64.ActiveCfg = Release|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Release|x64.Build.0 = Release|x64
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Release|x86.ActiveCfg = Release|Win32
+		{4F8B6EB6-D028-4C38-9D69-227347502957}.Release|x86.Build.0 = Release|Win32
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Debug|Any CPU.Build.0 = Debug|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Debug|x64.ActiveCfg = Debug|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Debug|x64.Build.0 = Debug|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Debug|x86.ActiveCfg = Debug|Win32
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Debug|x86.Build.0 = Debug|Win32
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Release|Any CPU.ActiveCfg = Release|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Release|Any CPU.Build.0 = Release|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Release|x64.ActiveCfg = Release|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Release|x64.Build.0 = Release|x64
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Release|x86.ActiveCfg = Release|Win32
+		{079141C1-0E94-4CF4-9A36-EEED43B67E45}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

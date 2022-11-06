@@ -9,14 +9,11 @@
 #include "../monowrapper/monopp/mono_assembly.h"
 #include "../monowrapper/monopp/mono_type.h"
 #include "../monowrapper/monopp/mono_object.h"
-#include "../monowrapper/monopp/mono_method.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
-#include "InputSystem/UnrealCoreSystem/InputSettings.h"
-#include "InputSystem/UnrealCoreSystem/Keys.h"
-#include "InputSystem/UnrealCoreSystem/NameMapping/PlayerInput.h"
-#include "InputSystem/UnrealCoreSystem/Windows/GenericWindow.h"
 
-class Application
+#include "../Core/Interfaces/IWindowsApplication.h"
+
+
+class Application : public IWindowsApplication
 {
 public:
 	Application();
@@ -38,10 +35,11 @@ public:
 
     void Close();
 
-    std::shared_ptr<FGenericWindow> GetMainWindow();
+    std::shared_ptr<FGenericWindow> GetMainWindow() override;
 
     const mono::mono_assembly& GetAssembly() const;
     engine::Engine* GetEngine() const;
+    virtual WNDPROC GetWndProc() override;
 
     virtual ~Application() = default;
 
@@ -69,8 +67,4 @@ protected:
 private:
     static const char* kMonoLibPath;
     static const char* kDllPath;
-
-   
-    void RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name);
-    HWND CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);
 };

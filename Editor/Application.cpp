@@ -2,12 +2,13 @@
 
 #include <iostream>
 
-#include "Delegates.h"
+#include "libs/Delegates.h"
 #include "Layer.h"
-#include "InputSystem/InputManager.h"
-#include "InputSystem/UnrealCoreSystem/Windows/WindowsWindow.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
+#include "InputManager.h"
+#include "Windows/WindowsWindow.h"
 #include "../GameplaySystem/Component.h"
+#include "InputCoreSystem/InputEvent/Events.h"
+#include "InputCoreSystem/InputSettings.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";
@@ -16,14 +17,14 @@ Application::Application()
 	: m_LayerStack(this)
 	, m_JitDomain(kMonoLibPath, "KtripRuntime")
 	, m_Domain("KtripDomain")
-	, m_Assembly(m_Domain, kDllPath)
+	, m_Assembly(m_Domain.get_assembly(kDllPath))
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, exit_code_(0)
 {	
+	mono::mono_domain::set_current_domain(m_Domain);
 	engine::Scene::CacheMethods(m_Assembly);
 	engine::GameObject::CacheMethods(m_Assembly);
-	engine::Component::CacheMethods(m_Assembly);
-	mono::mono_domain::set_current_domain(m_Domain);
+	engine::Component::CacheMethods(m_Assembly);	
 }
 
 void Application::PushLayer(Layer* layer)
@@ -145,19 +146,22 @@ int Application::Run()
 
 		ApplyInput();
 		engine_->RunFrame();
-		
-		//if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
-		//{
-		//	std::cout << "Pressed" << std::endl;
-		//}
-		//if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
-		//{
-		//	std::cout << "StillPressed" << std::endl;
-		//}
-		//if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
-		//{
-		//	std::cout << "Released" << std::endl;
-		//}
+
+		if(InputManager::getInstance().player_input->IsPressed(EKeys::Invalid))
+			std::cout << "Pressed" << std::endl;
+
+		if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
+		{
+			std::cout << "Pressed" << std::endl;
+		}
+		if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
+		{
+			std::cout << "StillPressed" << std::endl;
+		}
+		if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
+		{
+			std::cout << "Released" << std::endl;
+		}
 		
 		//std::cout << InputManager::getInstance().player_input->GetAxisValue("TestAxis3");
 
@@ -196,6 +200,11 @@ const mono::mono_assembly& Application::GetAssembly() const
 engine::Engine* Application::GetEngine() const
 {
 	return engine_.get();
+}
+
+WNDPROC Application::GetWndProc()
+{
+	return Application::WndProc;
 }
 
 void Application::ApplyInput()
@@ -252,42 +261,4 @@ LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 	}
 	
 	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
-void Application::RegisterWindowClass(HINSTANCE instance, LPCWSTR window_name) 
-{
-	WNDCLASSEX window_class;
-	window_class.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	window_class.lpfnWndProc = WndProc;
-	window_class.cbClsExtra = 0;
-	window_class.cbWndExtra = 0;
-	window_class.hInstance = instance;
-	window_class.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
-	window_class.hIconSm = window_class.hIcon;
-	window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	window_class.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-	window_class.lpszMenuName = nullptr;
-	window_class.lpszClassName = window_name;
-	window_class.cbSize = sizeof(WNDCLASSEX);
-
-	RegisterClassEx(&window_class);
-}
-
-HWND Application::CreateWindowInstance(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height) {
-	RECT window_rect = { 0, 0, width, height };
-	AdjustWindowRect(&window_rect, WS_OVERLAPPEDWINDOW, FALSE);
-
-	return CreateWindowEx(
-		WS_EX_APPWINDOW,
-		window_name,
-		window_name,
-		WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_THICKFRAME,
-		(GetSystemMetrics(SM_CXSCREEN) - width) / 2,
-		(GetSystemMetrics(SM_CYSCREEN) - height) / 2,
-		window_rect.right - window_rect.left,
-		window_rect.bottom - window_rect.top,
-		nullptr,
-		nullptr,
-		instance,
-		this);
 }

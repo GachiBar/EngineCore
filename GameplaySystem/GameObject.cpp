@@ -40,7 +40,7 @@ std::string GameObject::Name() const {
 void GameObject::Name(std::string& value) {
     assert(name_ != nullptr && kIsNotCachedErrorMessage);
 
-    auto domain = mono::mono_domain::get_current_domain();
+    auto& domain = mono::mono_domain::get_current_domain();
     mono::mono_string name(domain, value);
     name_->set_value(object_, name.get_internal_ptr());
 }
