@@ -6,6 +6,8 @@
 #include "SceneHierarchyWindow.h"
 #include "ProjectSettingsWindow.h"
 
+class ExplorerWindow;
+
 class EditorLayer final : public Layer
 {
 public:
@@ -24,6 +26,7 @@ public:
 	std::shared_ptr<PropertyWindow> properties;
 	std::shared_ptr<MenuBar> menu_bar;
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
+	std::shared_ptr<ExplorerWindow> explorer;
 	
 private:
 	std::shared_ptr<engine::GameObject> selected_go;

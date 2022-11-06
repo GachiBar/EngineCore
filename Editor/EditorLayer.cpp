@@ -4,6 +4,8 @@
 #include "LayerStack.h"
 #include <fstream>
 
+#include "Windows/ExplorerWindow.h"
+
 namespace Renderer
 {
 	class D3D11Renderer;
@@ -19,6 +21,7 @@ void EditorLayer::OnAttach()
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
+    explorer = std::make_shared<ExplorerWindow>();
 
 	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
 	{
@@ -177,4 +180,5 @@ void EditorLayer::OnGuiRender()
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
     properties->draw_imgui(GetApp()->GetEngine()->GetScene(), selected_go);
     SettingsWindow->draw_imgui();
+    explorer->draw();
 }

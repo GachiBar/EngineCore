@@ -171,6 +171,7 @@
     <ClInclude Include="SliderWidget.h" />
     <ClInclude Include="Visual.h" />
     <ClInclude Include="Widget.h" />
+    <ClInclude Include="Windows\ExplorerWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="SliderWidget.cpp" />
     <ClCompile Include="Visual.cpp" />
     <ClCompile Include="Widget.cpp" />
+    <ClCompile Include="Windows\ExplorerWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DX11RenderEngine\DX11RenderEngine\DX11RenderEngine.vcxproj">
