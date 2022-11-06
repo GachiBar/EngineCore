@@ -10,6 +10,7 @@
 
 BEGIN_MONO_INCLUDE
 #include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/tabledefs.h>
 END_MONO_INCLUDE
 
 namespace mono
@@ -183,6 +184,11 @@ void mono_type::generate_meta()
 auto mono_type::is_derived_from(const mono_type& type) const -> bool
 {
 	return mono_class_is_subclass_of(class_, type.get_internal_ptr(), false) != 0;
+}
+auto mono_type::is_abstract() -> bool
+{
+	size_t flags = mono_class_get_flags(class_);
+	return (flags & TYPE_ATTRIBUTE_ABSTRACT) == TYPE_ATTRIBUTE_ABSTRACT;
 }
 auto mono_type::get_namespace() const -> const std::string&
 {

@@ -40,7 +40,7 @@ std::string GameObject::Name() const {
 void GameObject::Name(std::string& value) {
     assert(name_ != nullptr && kIsNotCachedErrorMessage);
 
-    auto domain = mono::mono_domain::get_current_domain();
+    auto& domain = mono::mono_domain::get_current_domain();
     mono::mono_string name(domain, value);
     name_->set_value(object_, name.get_internal_ptr());
 }
@@ -146,6 +146,18 @@ std::shared_ptr<Component> GameObject::operator[](size_t index) const {
 
     mono::mono_object component(get_item_->invoke(object_, args));
     return std::shared_ptr<Component>(new Component(component));
+}
+
+bool operator== (const GameObject& lhs, const GameObject& rhs) {
+    return lhs.GetInternal().get_internal_ptr() == rhs.GetInternal().get_internal_ptr();
+}
+
+bool operator== (const GameObject& lhs, const mono::mono_object& rhs) {
+    return lhs.GetInternal().get_internal_ptr() == rhs.get_internal_ptr();
+}
+
+bool operator== (const mono::mono_object& lhs, const GameObject& rhs) {
+    return lhs.get_internal_ptr() == rhs.GetInternal().get_internal_ptr();
 }
 
 void GameObject::CacheMethods(const mono::mono_assembly& assembly) {

@@ -19,7 +19,9 @@ EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selec
 
 void EditorLayer::OnAttach()
 {
-	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetGameTexture());
+	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture);
+    gvm->editor_layer = this;
+
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
@@ -198,20 +200,20 @@ void EditorLayer::OnGuiRender()
         };
 
 
-        auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().unbox());
-        DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
+        //auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().unbox());
+        //DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
 
 
         DirectX::XMFLOAT4X4 v = change_mat(engine::Engine::GetViewMatrix());
         DirectX::XMFLOAT4X4 p = change_mat(engine::Engine::GetProjectionMatrix());
-        DirectX::XMFLOAT4X4 w = change_mat(t);
-        ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
+        //DirectX::XMFLOAT4X4 w = change_mat(t);
+        //ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
     }
     ImGui::End();
 
-    gvm->draw_imgui();
+    gvm->draw_imgui();    
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
-    properties->draw_imgui(selected_go);
+    properties->draw_imgui(GetApp()->GetEngine()->GetScene(), selected_go);
     SettingsWindow->draw_imgui();
 
 }

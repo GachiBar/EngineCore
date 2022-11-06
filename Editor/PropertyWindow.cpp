@@ -8,72 +8,38 @@
 
 #include <format>
 
-bool ComponentData::operator== (const ComponentData& other)
-{
-	return this->FullName == other.FullName;
-}
-
-bool ComponentData::operator< (const ComponentData& other)
-{
-	return this->FullName < other.FullName;
-}
-
 bool operator==(const ComponentData& lhs, const ComponentData& rhs)
 {
-	return lhs.FullName == rhs.FullName;
+	return lhs.NameSpace == rhs.NameSpace && lhs.Name == rhs.Name;
 }
 
 PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
 	: assembly(assembly)
+	, game_objects_copasity(0)
 {
-	auto baseComponentType = assembly.get_type("GameplayCore.Components", "Component");
-	auto typeNames = assembly.dump_type_names();
+	CacheComponentsData();
+	available_components_items = new const char* [components_names.size()];
+}
 
-	for (auto typeName : typeNames) 
+PropertyWindow::~PropertyWindow()
+{
+	delete[] available_components_items;
+
+	if (game_objects_copasity > 0)
 	{
-		mono::mono_type type;
-
-		try 
+		for (size_t i = 0; i < game_objects_copasity; ++i)
 		{
-			size_t lastDotPosition = typeName.find_last_of(".");
-			std::string nameSpace = typeName.substr(0, lastDotPosition);
-			std::string name = typeName.substr(lastDotPosition + 1, typeName.size() - lastDotPosition - 1);
-			type = assembly.get_type(nameSpace, name);
-		}
-		catch (mono::mono_exception& ex) 
-		{
-			continue;
+			delete[] game_objects_names[i];
 		}
 
-		bool isComponent = false;
-
-		// TODO: check, is class abstract.
-		while (type.has_base_type()) 
-		{
-			if (type.is_derived_from(baseComponentType))
-			{
-				isComponent = true;
-				break;
-			}
-
-			type = type.get_base_type();
-		}
-
-		if (isComponent) 
-		{
-			ComponentData componentData
-			{ 
-				type.get_namespace(), 
-				type.get_name(), 
-				type.get_namespace() + "." + type.get_name()
-			};
-			
-			components_names.push_back(componentData);
-		}
+		delete[] game_objects_pointers;
+		delete[] game_objects_names;
 	}
 }
 
-void PropertyWindow::draw_imgui(std::shared_ptr<engine::GameObject> gameObject)
+void PropertyWindow::draw_imgui(
+	std::shared_ptr<engine::Scene> scene, 
+	std::shared_ptr<engine::GameObject> gameObject)
 {
 	ImGui::Begin("Property Window");
 	if (!gameObject.get())
@@ -83,18 +49,64 @@ void PropertyWindow::draw_imgui(std::shared_ptr<engine::GameObject> gameObject)
 	}
 
 	DrawGameObjectProperties(gameObject);
+	added_components.clear();
 
 	for (size_t i = 0; i < gameObject->Count(); ++i)
 	{
 		// We nead push id to allow multiple buttons with same names ("Remove").
 		ImGui::PushID(i);
+
 		auto component = (*gameObject)[i];
-		DrawComponentProperties(gameObject, component);
+		auto componentType = component->GetInternal().get_type();
+		added_components.insert({ componentType.get_namespace(), componentType.get_name() });
+
+		DrawComponentProperties(scene, gameObject, component);
 		ImGui::PopID();
 	}
 
 	DrawAddComponentPanel(gameObject);
 	ImGui::End();
+}
+
+void PropertyWindow::CacheComponentsData()
+{
+	auto baseComponentType = assembly.get_type("GameplayCore.Components", "Component");
+	auto typeNames = assembly.dump_type_names();
+
+	for (auto typeName : typeNames)
+	{
+		mono::mono_type type;
+
+		try
+		{
+			std::string nameSpace;
+			std::string name;
+			ParseFullName(typeName, nameSpace, name);
+			type = assembly.get_type(nameSpace, name);
+		}
+		catch (mono::mono_exception& ex)
+		{
+			continue;
+		}
+
+		bool isComponent = false;
+
+		while (type.has_base_type() && !type.is_abstract())
+		{
+			if (type.is_derived_from(baseComponentType))
+			{
+				isComponent = true;
+				break;
+			}
+			
+			type = type.get_base_type();
+		}
+
+		if (isComponent)
+		{
+			components_names.push_back({ type.get_namespace(), type.get_name() });
+		}
+	}
 }
 
 void PropertyWindow::DrawGameObjectProperties(std::shared_ptr<engine::GameObject> gameObject)
@@ -105,9 +117,10 @@ void PropertyWindow::DrawGameObjectProperties(std::shared_ptr<engine::GameObject
 }
 
 void PropertyWindow::DrawComponentProperties(
+	std::shared_ptr<engine::Scene> scene,
 	std::shared_ptr<engine::GameObject> gameObject, 
 	std::shared_ptr<engine::Component> component)
-{
+{	
 	if (ImGui::CollapsingHeader(component->Name().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 		auto editablePropertiesNames = component->GetEditablePropertiesNames();
 
@@ -163,7 +176,7 @@ void PropertyWindow::DrawComponentProperties(
 				DrawStringProperty(property);
 				break;
 			case engine::PropertyType::kGameObject:
-				DrawGameObjectProperty(property);
+				DrawGameObjectProperty(scene, gameObject, property);
 				break;
 			case engine::PropertyType::kUndefined:
 			default:
@@ -174,36 +187,44 @@ void PropertyWindow::DrawComponentProperties(
 		if (ImGui::Button("Remove")) {
 			gameObject->RemoveComponent(component);
 		}
-
-		// TODO: mono_class_get_parent
 	}
-
 }
 
 void PropertyWindow::DrawAddComponentPanel(std::shared_ptr<engine::GameObject> gameObject)
 {
-	char** items = new char*[components_names.size()];
+	size_t availableComponentsCount = components_names.size() - added_components.size();
+	auto temp = components_names.begin();
 
-	for (size_t i = 0; i < components_names.size(); ++i)
+	for (size_t i = 0; i < availableComponentsCount; ++i) 
 	{
-		items[i] = components_names[i].FullName.data();
+		while (added_components.contains(*temp)) 
+		{
+			std::advance(temp, 1);
+		}
+
+		available_components_items[i] = temp->FullName.data();
+		std::advance(temp, 1);
 	}
 
-	static int itemCurrent = 0;
+	int selected = 0;
 
-	if (ImGui::Combo("combo", &itemCurrent, items, components_names.size())) 
+	if (ImGui::Combo("Add", &selected, available_components_items, availableComponentsCount))
 	{		
-		auto componentData = components_names[itemCurrent];
-		gameObject->AddComponent(componentData.NameSpace, componentData.Name);
+		std::string fullName(available_components_items[selected]);
+		std::string nameSpace;
+		std::string name;
+		ParseFullName(fullName, nameSpace, name);
+
+		gameObject->AddComponent(nameSpace, name);
 		gameObject->Invalidate();
 	}
-
-	delete[] items;
 }
 
 void PropertyWindow::DrawFloatProperty(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<float*>(property.GetValue().unbox());
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	auto value = reinterpret_cast<float*>(monoObject.unbox());
 
 	if (ImGui::InputFloat(property.GetName().c_str(), value))
 	{
@@ -213,7 +234,9 @@ void PropertyWindow::DrawFloatProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawDoubleProperty(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<double*>(property.GetValue().unbox());
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	auto value = reinterpret_cast<double*>(monoObject.unbox());
 
 	if (ImGui::InputDouble(property.GetName().c_str(), value))
 	{
@@ -223,7 +246,9 @@ void PropertyWindow::DrawDoubleProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawBoolProperty(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<bool*>(property.GetValue().unbox());
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	bool* value = reinterpret_cast<bool*>(monoObject.unbox());
 
 	if (ImGui::Checkbox(property.GetName().c_str(), value))
 	{
@@ -233,7 +258,9 @@ void PropertyWindow::DrawBoolProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawByteProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImS8 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S8, value, &step))
@@ -244,7 +271,9 @@ void PropertyWindow::DrawByteProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawShortProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImS16 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S16, value, &step))
@@ -255,7 +284,9 @@ void PropertyWindow::DrawShortProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawIntProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImS32 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S32, value, &step))
@@ -266,7 +297,9 @@ void PropertyWindow::DrawIntProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawLongProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImS64 step = 1;
 	
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_S64, value, &step))
@@ -277,7 +310,9 @@ void PropertyWindow::DrawLongProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawUByteProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImU8 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U8, value, &step))
@@ -288,7 +323,9 @@ void PropertyWindow::DrawUByteProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawUShortProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImU16 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U16, value, &step))
@@ -299,7 +336,9 @@ void PropertyWindow::DrawUShortProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawUIntProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImU32 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U32, value, &step))
@@ -310,7 +349,9 @@ void PropertyWindow::DrawUIntProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawULongProperty(engine::ComponentProperty property)
 {
-	void* value = property.GetValue().unbox();
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	void* value = monoObject.unbox();
 	ImU64 step = 1;
 
 	if (ImGui::InputScalar(property.GetName().c_str(), ImGuiDataType_U64, value, &step))
@@ -321,7 +362,9 @@ void PropertyWindow::DrawULongProperty(engine::ComponentProperty property)
 
 void PropertyWindow::DrawVector2Property(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<DirectX::SimpleMath::Vector2*>(property.GetValue().unbox());
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	auto value = reinterpret_cast<DirectX::SimpleMath::Vector2*>(monoObject.unbox());
 	float vector[2] = { value->x, value->y };
 
 	if (ImGui::InputFloat2(property.GetName().c_str(), vector))
@@ -332,7 +375,9 @@ void PropertyWindow::DrawVector2Property(engine::ComponentProperty property)
 
 void PropertyWindow::DrawVector3Property(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<DirectX::SimpleMath::Vector3*>(property.GetValue().unbox());
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	auto value = reinterpret_cast<DirectX::SimpleMath::Vector3*>(monoObject.unbox());
 	float vector[3] = { value->x, value->y, value->z };
 
 	if (ImGui::InputFloat3(property.GetName().c_str(), vector))
@@ -343,7 +388,9 @@ void PropertyWindow::DrawVector3Property(engine::ComponentProperty property)
 
 void PropertyWindow::DrawVector4Property(engine::ComponentProperty property)
 {
-	auto value = reinterpret_cast<DirectX::SimpleMath::Vector4*>(property.GetValue().unbox());
+	// We can just get value, because value types can not be null.
+	auto monoObject = property.GetValue().value();
+	auto value = reinterpret_cast<DirectX::SimpleMath::Vector4*>(monoObject.unbox());
 	float vector[4] = { value->x, value->y, value->z, value->w };
 
 	if (ImGui::InputFloat4(property.GetName().c_str(), vector))
@@ -356,20 +403,113 @@ void PropertyWindow::DrawStringProperty(engine::ComponentProperty property)
 {
 	const size_t bufferSize = 256;
 	char buffer[bufferSize];
+	buffer[0] = '\0';
 
-	mono::mono_string value(property.GetValue());
-	std::string content = value.as_utf8();	
-	content.copy(buffer, bufferSize);
-	buffer[content.size()] = '\0';
+	auto mono_object = property.GetValue();	
+
+	if (mono_object.has_value()) 
+	{
+		mono::mono_string value(mono_object.value());
+		std::string content = value.as_utf8();
+		content.copy(buffer, bufferSize);
+		buffer[content.size()] = '\0';
+	}
 
 	if (ImGui::InputText(property.GetName().c_str(), buffer, bufferSize)) 
 	{
+		auto& domain = mono::mono_domain::get_current_domain();
 		std::string newContent(buffer);
-		mono::mono_string newValue(mono::mono_domain::get_current_domain(), newContent);
-		property.SetValue(newValue.get_internal_ptr());
+		mono::mono_string newValue(domain, newContent);
+		property.SetValue(newValue);
 	}
 }
 
-void PropertyWindow::DrawGameObjectProperty(engine::ComponentProperty property)
+void PropertyWindow::DrawGameObjectProperty(
+	std::shared_ptr<engine::Scene> scene,
+	std::shared_ptr<engine::GameObject> gameObject, 
+	engine::ComponentProperty property)
 {
+	auto monoObject = property.GetValue();
+
+	if (scene->Count() > game_objects_copasity)
+	{
+		ChangeGameObjectResourcesCopasity(scene->Count() * 2);
+	}
+
+	auto current = game_objects_names;
+	auto tempPointers = game_objects_pointers;
+	auto tempNames = game_objects_names;
+
+	tempPointers[0] = nullptr;
+	CopyAsNullTerminated(*tempNames, "None");
+
+	std::advance(tempPointers, 1);
+	std::advance(tempNames, 1);
+
+	for (size_t i = 0; i < scene->Count(); ++i) 
+	{
+		auto otherGameObject = (*scene)[i];
+
+		if (*otherGameObject == *gameObject) 
+		{
+			continue;
+		}
+		if (monoObject.has_value() && *otherGameObject == monoObject.value())
+		{
+			current = tempNames;
+		}
+
+		tempPointers[0] = otherGameObject->GetInternal().get_internal_ptr();
+		CopyAsNullTerminated(*tempNames, otherGameObject->Name());
+
+		std::advance(tempPointers, 1);
+		std::advance(tempNames, 1);
+	}
+
+	int selected = std::distance(game_objects_names, current);
+
+	if (ImGui::Combo(property.GetName().c_str(), &selected, game_objects_names, scene->Count()))
+	{
+		auto gameObject = game_objects_pointers[selected];
+		property.SetValue(gameObject);
+	}
+}
+
+void PropertyWindow::ParseFullName(
+	const std::string& fullName, 
+	std::string& namespace_out, 
+	std::string& name_out)
+{
+	size_t lastDotPosition = fullName.find_last_of(".");
+	namespace_out = fullName.substr(0, lastDotPosition);
+	name_out = fullName.substr(lastDotPosition + 1, fullName.size() - lastDotPosition - 1);
+}
+
+void PropertyWindow::CopyAsNullTerminated(char* destination, const std::string& source)
+{
+	source.copy(destination, source.size());
+	destination[source.size()] = '\0';
+}
+
+void PropertyWindow::ChangeGameObjectResourcesCopasity(size_t size)
+{
+	if (game_objects_copasity > 0)
+	{
+		for (size_t i = 0; i < game_objects_copasity; ++i)
+		{
+			delete[] game_objects_names[i];
+		}
+
+		delete[] game_objects_pointers;
+		delete[] game_objects_names;
+	}
+
+	game_objects_copasity = size;
+	game_objects_pointers = new void* [game_objects_copasity];
+	game_objects_names = new char* [game_objects_copasity];
+
+	for (size_t i = 0; i < game_objects_copasity; ++i)
+	{
+		game_objects_names[i] = new char[kGameObjectNameMaxSize];
+	}
 }

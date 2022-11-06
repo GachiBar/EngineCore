@@ -12,13 +12,23 @@ std::string ComponentProperty::GetName() {
 	return name_;
 }
 
-mono::mono_object ComponentProperty::GetValue() {
-	mono::mono_object value(property_invoker_.get_value(component_.GetInternal()));
-	return value;
+std::optional<mono::mono_object> ComponentProperty::GetValue() {
+	auto raw_value = property_invoker_.get_value(component_.GetInternal());
+
+	if (raw_value != nullptr) {
+		mono::mono_object value(property_invoker_.get_value(component_.GetInternal()));
+		return value;
+	}
+
+	return {};
 }
 
 void ComponentProperty::SetValue(void* data) {
 	property_invoker_.set_value(component_.GetInternal(), data);
+}
+
+void ComponentProperty::SetValue(const mono::mono_object& value) {
+	SetValue(value.get_internal_ptr());
 }
 
 ComponentProperty::ComponentProperty(const Component& component, std::string name)

@@ -1,11 +1,17 @@
 #pragma once
 
+#include "imgui/imgui.h"
+
+
+class EditorLayer;
 
 class GameViewWindow
 {
     void* Texture;
     bool isPlaying = false;
     bool windowIsHovered;
+
+   
 public:
     GameViewWindow(void* Texture);
     void draw_imgui();
@@ -13,8 +19,9 @@ public:
     bool getWantCaptureMouse() {
         return windowIsHovered;
     }
-
+    EditorLayer* editor_layer;
 private:
+    ImVec2 last_window_size;
     /*
     ImVec2 getLargestSizeForViewport() {
         ImVec2 windowSize = ImGui::GetContentRegionAvail();
