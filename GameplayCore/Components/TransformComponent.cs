@@ -193,7 +193,7 @@ namespace GameplayCore.Components
             }
         }
 
-        [SerializeField, InspectorName("Rotation")]
+        [SerializeField, InspectorName("Rotation"), Slider(-180.0f, 180.0f)]
         private Vector3 EditorEuler
         {
             get => _editorEuler;

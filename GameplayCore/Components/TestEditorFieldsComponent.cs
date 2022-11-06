@@ -1,4 +1,5 @@
-﻿using GameplayCore.Mathematics;
+﻿using GameplayCore.Editor;
+using GameplayCore.Mathematics;
 
 namespace GameplayCore.Components
 {
@@ -21,6 +22,7 @@ namespace GameplayCore.Components
         private string _stringValue = "TestString";
         private GameObject _gameObjectValue;
 
+        [Slider(-10.0f, 10.0f)]
         public float FloatProperty 
         {
             get => _floatValue;
@@ -131,6 +133,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [Slider(-10.0f, 10.0f)]
         public Vector2 Vector2Property 
         { 
             get => _vector2Value;
@@ -141,6 +144,7 @@ namespace GameplayCore.Components
             }
         }
 
+        [Slider(-10.0f, 10.0f)]
         public Vector3 Vector3Property
         {
             get => _vector3Value;
@@ -151,7 +155,7 @@ namespace GameplayCore.Components
             }
         }
 
-
+        [Slider(-10.0f, 10.0f)]
         public Vector4 Vector4Property
         {
             get => _vector4Value;

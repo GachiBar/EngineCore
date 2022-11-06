@@ -12,6 +12,7 @@
 const std::string PropertyWindow::kHideInInspectorAttribute = "GameplayCore.Serialization.HideInInspectorAttribute";
 const std::string PropertyWindow::kSerializeFieldAttribute = "GameplayCore.Serialization.SerializeFieldAttribute";
 const std::string PropertyWindow::kInspectorNameAttribute = "GameplayCore.Editor.InspectorNameAttribute";
+const std::string PropertyWindow::kSliderAttribute = "GameplayCore.Editor.SliderAttribute";
 
 bool operator==(const ComponentData& lhs, const ComponentData& rhs)
 {
@@ -261,9 +262,22 @@ void PropertyWindow::DrawFloatProperty(
 	auto monoObject = property.GetValue().value();
 	auto value = reinterpret_cast<float*>(monoObject.unbox());
 
-	if (ImGui::InputFloat(propertyName.c_str(), value))
+	float min = 0;
+	float max = 0;
+
+	if (IsSliderProperty(attributes, min, max)) 
 	{
-		property.SetValue(value);
+		if (ImGui::SliderFloat(propertyName.c_str(), value, min, max))
+		{
+			property.SetValue(value);
+		}
+	}
+	else 
+	{
+		if (ImGui::InputFloat(propertyName.c_str(), value))
+		{
+			property.SetValue(value);
+		}
 	}
 }
 
@@ -424,9 +438,22 @@ void PropertyWindow::DrawVector2Property(
 	auto value = reinterpret_cast<DirectX::SimpleMath::Vector2*>(monoObject.unbox());
 	float vector[2] = { value->x, value->y };
 
-	if (ImGui::InputFloat2(propertyName.c_str(), vector))
+	float min = 0;
+	float max = 0;
+
+	if (IsSliderProperty(attributes, min, max))
 	{
-		property.SetValue(vector);
+		if (ImGui::SliderFloat2(propertyName.c_str(), vector, min, max))
+		{
+			property.SetValue(vector);
+		}
+	}
+	else
+	{
+		if (ImGui::InputFloat2(propertyName.c_str(), vector))
+		{
+			property.SetValue(vector);
+		}
 	}
 }
 
@@ -439,9 +466,22 @@ void PropertyWindow::DrawVector3Property(
 	auto value = reinterpret_cast<DirectX::SimpleMath::Vector3*>(monoObject.unbox());
 	float vector[3] = { value->x, value->y, value->z };
 
-	if (ImGui::InputFloat3(propertyName.c_str(), vector))
+	float min = 0;
+	float max = 0;
+
+	if (IsSliderProperty(attributes, min, max))
 	{
-		property.SetValue(vector);
+		if (ImGui::SliderFloat3(propertyName.c_str(), vector, min, max))
+		{
+			property.SetValue(vector);
+		}
+	}
+	else
+	{
+		if (ImGui::InputFloat3(propertyName.c_str(), vector))
+		{
+			property.SetValue(vector);
+		}
 	}
 }
 
@@ -454,9 +494,22 @@ void PropertyWindow::DrawVector4Property(
 	auto value = reinterpret_cast<DirectX::SimpleMath::Vector4*>(monoObject.unbox());
 	float vector[4] = { value->x, value->y, value->z, value->w };
 
-	if (ImGui::InputFloat4(propertyName.c_str(), vector))
+	float min = 0;
+	float max = 0;
+
+	if (IsSliderProperty(attributes, min, max))
 	{
-		property.SetValue(vector);
+		if (ImGui::SliderFloat4(propertyName.c_str(), vector, min, max))
+		{
+			property.SetValue(vector);
+		}
+	}
+	else
+	{
+		if (ImGui::InputFloat4(propertyName.c_str(), vector))
+		{
+			property.SetValue(vector);
+		}
 	}
 }
 
@@ -578,6 +631,29 @@ void PropertyWindow::ChangeGameObjectResourcesCopasity(size_t size)
 	}
 }
 
+std::string PropertyWindow::GetPropertyName(
+	const engine::ComponentProperty& property,
+	const std::vector<mono::mono_object>& attributes)
+{
+	auto predicate = [](auto attr)
+	{
+		return attr.get_type().get_fullname() == kInspectorNameAttribute;
+	};
+
+	auto nameAttribute = std::find_if(attributes.begin(), attributes.end(), predicate);
+
+	if (nameAttribute == attributes.end())
+	{
+		return property.GetName();
+	}
+
+	auto nameProperty = nameAttribute->get_type().get_property("Name");
+	mono::mono_property_invoker invoker(nameProperty);
+	mono::mono_object value(invoker.get_value(*nameAttribute));
+	mono::mono_string result(value);
+	return result.as_utf8();
+}
+
 bool PropertyWindow::IsEditableProperty(
 	const engine::ComponentProperty& property, 
 	const std::vector<mono::mono_object>& attributes)
@@ -593,7 +669,7 @@ bool PropertyWindow::IsEditableProperty(
 		{
 			auto predicate = [](auto attr)
 			{
-				return IsFullNameEqualTo(attr, kHideInInspectorAttribute);
+				return attr.get_type().get_fullname() == kHideInInspectorAttribute;
 			};
 
 			return std::find_if(attributes.begin(), attributes.end(), predicate) == attributes.end();
@@ -602,7 +678,7 @@ bool PropertyWindow::IsEditableProperty(
 		{
 			auto predicate = [](auto attr) 
 			{
-				return IsFullNameEqualTo(attr, kSerializeFieldAttribute);
+				return attr.get_type().get_fullname() == kSerializeFieldAttribute;
 			};
 
 			return std::find_if(attributes.begin(), attributes.end(), predicate) != attributes.end();
@@ -614,32 +690,31 @@ bool PropertyWindow::IsEditableProperty(
 	}
 }
 
-bool PropertyWindow::IsFullNameEqualTo(
-	const mono::mono_object& obj,
-	const std::string& fullname)
-{
-	return obj.get_type().get_fullname() == fullname;
-}
-
-std::string PropertyWindow::GetPropertyName(
-	const engine::ComponentProperty& property,
-	const std::vector<mono::mono_object>& attributes) 
+bool PropertyWindow::IsSliderProperty(
+	const std::vector<mono::mono_object>& attributes,
+	float& min_out, 
+	float& max_out)
 {
 	auto predicate = [](auto attr)
 	{
-		return attr.get_type().get_fullname() == kInspectorNameAttribute;
+		return attr.get_type().get_fullname() == kSliderAttribute;
 	};
 
-	auto nameAttribute = std::find_if(attributes.begin(), attributes.end(), predicate);
+	auto it = std::find_if(attributes.begin(), attributes.end(), predicate);
 
-	if (nameAttribute == attributes.end()) 
-	{
-		return property.GetName();
+	if (it == attributes.end()) {
+		return false;
 	}
-	
-	auto name_property = nameAttribute->get_type().get_property("Name");
-	mono::mono_property_invoker invoker(name_property);
-	mono::mono_object value(invoker.get_value(*nameAttribute));
-	mono::mono_string result(value);
-	return result.as_utf8();
+
+	auto minProperty = it->get_type().get_property("Min");
+	mono::mono_property_invoker minInvoker(minProperty);
+	mono::mono_object minResult(minInvoker.get_value(*it));
+	min_out = *reinterpret_cast<float*>(minResult.unbox());
+
+	auto maxProperty = it->get_type().get_property("Max");
+	mono::mono_property_invoker maxInvoker(maxProperty);
+	mono::mono_object maxResult(maxInvoker.get_value(*it));
+	max_out = *reinterpret_cast<float*>(maxResult.unbox());
+
+	return true;
 }

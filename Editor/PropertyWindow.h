@@ -52,6 +52,7 @@ private:
 	static const std::string kHideInInspectorAttribute;
 	static const std::string kSerializeFieldAttribute;
 	static const std::string kInspectorNameAttribute;
+	static const std::string kSliderAttribute;
 
 	static const size_t kGameObjectNameMaxSize = 15;
 
@@ -147,15 +148,16 @@ private:
 
 	void ChangeGameObjectResourcesCopasity(size_t size);
 
-	static bool IsEditableProperty(
-		const engine::ComponentProperty& property, 
-		const std::vector<mono::mono_object>& attributes);
-
-	static bool IsFullNameEqualTo(
-		const mono::mono_object& obj, 
-		const std::string& fullname);
-
 	static std::string GetPropertyName(
 		const engine::ComponentProperty& property,
 		const std::vector<mono::mono_object>& attributes);
+
+	static bool IsEditableProperty(
+		const engine::ComponentProperty& property,
+		const std::vector<mono::mono_object>& attributes);
+
+	static bool IsSliderProperty(
+		const std::vector<mono::mono_object>& attributes,
+		float& min_out,
+		float& max_out);
 };
