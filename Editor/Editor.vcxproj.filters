@@ -149,5 +149,8 @@
     <ClInclude Include="ProjectSettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EditorInputMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

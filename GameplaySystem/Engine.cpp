@@ -14,12 +14,13 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
-namespace engine
-{
-    std::shared_ptr<Scene> Engine::GetScene()
-    {
-        return scene_;
-    }
+namespace engine {
+	DirectX::SimpleMath::Matrix Engine::m_projection{};
+	DirectX::SimpleMath::Matrix Engine::m_view{};
+
+std::shared_ptr<Scene> Engine::GetScene() {
+	return scene_;
+}
 
     void Engine::SetScene(std::shared_ptr<Scene> scene)
     {
@@ -66,14 +67,16 @@ namespace engine
         renderer->DrawModel({id, id, model_matrix});
     }
 
-    void Engine::Internal_SetViewProjection(
-        RenderDevice* renderer,
-        float ellapsed,
-        DirectX::SimpleMath::Matrix view,
-        DirectX::SimpleMath::Matrix projection)
-    {
-        renderer->SetRenderData({ellapsed, view, projection});
-    }
+void Engine::Internal_SetViewProjection(
+	RenderDevice* renderer, 
+	float ellapsed, 
+	DirectX::SimpleMath::Matrix view,
+	DirectX::SimpleMath::Matrix projection) 
+{
+	m_view = view;
+	m_projection = projection;
+	renderer->SetRenderData({ellapsed, view, projection});
+}
 
     void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height)
     {
@@ -132,9 +135,18 @@ namespace engine
         return renderer_.ProcessMessages(hwnd, msg, wparam, lparam);
     }
 
-    void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height)
-    {
-        renderer_.CreateDevice(
+DirectX::SimpleMath::Matrix& Engine::GetViewMatrix()
+{
+	return m_view;
+}
+
+DirectX::SimpleMath::Matrix& Engine::GetProjectionMatrix()
+{
+	return m_projection;
+}
+
+void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
+ renderer_.CreateDevice(
             {
                 handle_old,
                 handle_new,
@@ -146,7 +158,7 @@ namespace engine
                 }
             });
         renderer_.InitDevice({"..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\"});
-    }
+}
 
     mono::mono_property Engine::GetProperty(std::string name_space, std::string clazz, std::string property)
     {
