@@ -12,7 +12,6 @@ mono::mono_method_invoker* Component::terminate_;
 mono::mono_method_invoker* Component::fixed_update_;
 mono::mono_method_invoker* Component::update_;
 mono::mono_method_invoker* Component::render_;
-mono::mono_method_invoker* Component::get_editable_properties_names_;
 
 const char kIsNotCachedErrorMessage[] = "Component methods are not cached.";
 
@@ -26,6 +25,16 @@ std::string Component::Name() const {
 
 ComponentProperty Component::GetProperty(std::string name) {
     return ComponentProperty(*this, name);
+}
+
+std::vector<ComponentProperty> Component::GetProperties() {
+    std::vector<ComponentProperty> properties;
+
+    for (auto property : object_.get_type().get_properties()) {
+        properties.push_back(ComponentProperty(* this, property));
+    }
+
+    return properties;
 }
 
 Component::Component(mono::mono_object object)
@@ -70,27 +79,8 @@ void Component::Terminate() {
     terminate_->invoke(object_);
 }
 
-std::vector<std::string> Component::GetEditablePropertiesNames() {
-    std::vector<std::string> names;
-    auto raw_object = get_editable_properties_names_->invoke(object_);
-    auto raw_array = (MonoArray*)raw_object;
-    mono::mono_array properties_names(raw_array);
-
-    for (int i = 0; i < properties_names.get_length(); ++i) {
-        mono::mono_object name_object(properties_names.get(i));
-        mono::mono_string name_string(name_object);
-        std::string name = name_string.as_utf8();
-        names.push_back(name);
-    }
-
-    return names;
-}
-
 void Component::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore.Components", "Component");
-
-    mono::mono_method get_editable_properties_names_method(type, "GetEditablePropertiesNames", 0);
-    get_editable_properties_names_ = new mono::mono_method_invoker(get_editable_properties_names_method);
 
     mono::mono_method initialize_method(type, "Initialize", 0);
     initialize_ = new mono::mono_method_invoker(initialize_method);

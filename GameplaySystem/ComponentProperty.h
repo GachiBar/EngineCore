@@ -35,9 +35,11 @@ class ComponentProperty {
 	friend class Component;
 
 public:
-	PropertyType GetType();
+	const mono::mono_property& GetInternal() const;
+	std::vector<mono::mono_object> GetAttributes() const;
+	PropertyType GetType() const;
 
-	std::string GetName();
+	std::string GetName() const;
 
 	std::optional<mono::mono_object> GetValue();
 
@@ -46,12 +48,12 @@ public:
 	
 private:
 	const Component& component_;
-	const std::string name_;	
 	const mono::mono_property property_;
 	const mono::mono_property_invoker property_invoker_;
 	const PropertyType type_;
 
 	ComponentProperty(const Component& component, std::string name);
+	ComponentProperty(const Component& component, mono::mono_property property);
 };
 
 PropertyType NameToPropertyType(const std::string& name);

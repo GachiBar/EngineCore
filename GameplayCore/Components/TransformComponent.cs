@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameplayCore.Mathematics;
 using GameplayCore.Serialization;
+using GameplayCore.Editor;
 
 namespace GameplayCore.Components
 {
@@ -190,7 +191,7 @@ namespace GameplayCore.Components
             }
         }
 
-        [SerializeField]
+        [SerializeField, InspectorName("Rotation")]
         private Vector3 EditorEuler
         {
             get => _editorEuler;

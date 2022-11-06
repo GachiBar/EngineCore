@@ -4,12 +4,34 @@
 
 namespace engine {
 
-PropertyType ComponentProperty::GetType() {
+const mono::mono_property& ComponentProperty::GetInternal() const {
+	return property_;
+}
+
+std::vector<mono::mono_object> ComponentProperty::GetAttributes() const {
+	std::vector<mono::mono_object> attributes;
+	auto component_class = component_.GetInternal().get_type().get_internal_ptr();
+	auto property = property_.get_internal_ptr();
+	auto ainfo = mono_custom_attrs_from_property(component_class, property);
+
+	if (ainfo != nullptr) {
+		for (size_t i = 0; i < ainfo->num_attrs; ++i) {
+			auto centry = &ainfo->attrs[i];
+			auto attribute_class = mono_method_get_class(centry->ctor);
+			auto attribute = mono_custom_attrs_get_attr(ainfo, attribute_class);
+			attributes.push_back(mono::mono_object(attribute));
+		}
+	}
+
+	return attributes;
+}
+
+PropertyType ComponentProperty::GetType() const {
 	return type_;
 }
 
-std::string ComponentProperty::GetName() {
-	return name_;
+std::string ComponentProperty::GetName() const {
+	return property_.get_name();
 }
 
 std::optional<mono::mono_object> ComponentProperty::GetValue() {
@@ -33,8 +55,14 @@ void ComponentProperty::SetValue(const mono::mono_object& value) {
 
 ComponentProperty::ComponentProperty(const Component& component, std::string name)
 	: component_(component)
-	, name_(name)	
 	, property_(component.GetInternal().get_type().get_property(name))
+	, property_invoker_(property_)
+	, type_(NameToPropertyType(property_.get_type().get_name()))
+{}
+
+ComponentProperty::ComponentProperty(const Component& component, mono::mono_property property)
+	: component_(component)
+	, property_(std::move(property))
 	, property_invoker_(property_)
 	, type_(NameToPropertyType(property_.get_type().get_name()))
 {}
