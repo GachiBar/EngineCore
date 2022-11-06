@@ -34,11 +34,13 @@ std::shared_ptr<Scene> Engine::GetScene() {
 
     Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
         : domain_(domain)
-          , assembly_(assembly)
-          , renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
-          , delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
-          , ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
-          , scene_(nullptr)
+        , assembly_(assembly)
+        , renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
+        , delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
+        , ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
+        , screen_width_property_(GetProperty("GameplayCore", "Screen", "Width"))
+        , screen_height_property_(GetProperty("GameplayCore", "Screen", "Height"))
+        , scene_(nullptr)
     {
     }
 
@@ -101,6 +103,7 @@ void Engine::Internal_SetViewProjection(
         lag_ += duration_cast<nanoseconds>(dt_);
 
         SendTimeData();
+        SendScreenData();
 
         while (lag_ >= kTimestep)
         {
@@ -146,7 +149,7 @@ DirectX::SimpleMath::Matrix& Engine::GetProjectionMatrix()
 }
 
 void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
- renderer_.CreateDevice(
+    renderer_.CreateDevice(
             {
                 handle_old,
                 handle_new,
@@ -157,31 +160,39 @@ void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t
                     height
                 }
             });
-        renderer_.InitDevice({"..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\"});
+    renderer_.InitDevice({"..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\"});
 }
 
-    mono::mono_property Engine::GetProperty(std::string name_space, std::string clazz, std::string property)
-    {
-        return assembly_.get_type(name_space, clazz).get_property(property);
-    }
+mono::mono_property Engine::GetProperty(std::string name_space, std::string clazz, std::string property)
+{
+    return assembly_.get_type(name_space, clazz).get_property(property);
+}
 
-    void Engine::SetupRendererInternalCalls()
-    {
-        mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_RegisterModel", Internal_RegisterModel);
-        mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
-        mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_SetViewProjection", Internal_SetViewProjection);
+void Engine::SetupRendererInternalCalls()
+{
+    mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_RegisterModel", Internal_RegisterModel);
+    mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
+    mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_SetViewProjection", Internal_SetViewProjection);
 
-        renderer_property_.set_value(&renderer_);
-    }
+    renderer_property_.set_value(&renderer_);
+}
 
-    void Engine::SendTimeData()
-    {
-        auto time_type = assembly_.get_type("GameplayCore", "Time");
+void Engine::SendTimeData()
+{
+    auto time_type = assembly_.get_type("GameplayCore", "Time");
 
-        float dt = duration<float>(dt_).count();
-        delta_time_property_.set_value(&dt);
+    float dt = duration<float>(dt_).count();
+    delta_time_property_.set_value(&dt);
 
-        float ellapsed = duration<float>(ellapsed_).count();
-        ellapsed_time_property_.set_value(&ellapsed);
-    }
+    float ellapsed = duration<float>(ellapsed_).count();
+    ellapsed_time_property_.set_value(&ellapsed);
+}
+
+void Engine::SendScreenData() {
+    auto out_texture = renderer_.GetRenderTargetTexture("outTexture");
+    
+    screen_width_property_.set_value(&out_texture.width);
+    screen_height_property_.set_value(&out_texture.height);
+}
+
 } // namespace engine
