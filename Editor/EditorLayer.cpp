@@ -210,10 +210,16 @@ void EditorLayer::OnGuiRender()
         //ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
     }
     ImGui::End();
-
-    gvm->draw_imgui();    
+   
+    gvm->draw_imgui(); 
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
     properties->draw_imgui(GetApp()->GetEngine()->GetScene(), selected_go);
     SettingsWindow->draw_imgui();
 
+}
+
+void EditorLayer::OnPostRender()
+{
+    gvm->resize(); 
+    Layer::OnPostRender();
 }

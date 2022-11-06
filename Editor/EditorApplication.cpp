@@ -37,7 +37,12 @@ void EditorApplication::OnSetup()
 
 	test_go->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	test_go->AddComponent("GameplayCore.Components", "TransformComponent");
+	
+	auto transform = game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");
 
+	auto property = transform->GetProperty("LocalPosition");
+	DirectX::SimpleMath::Vector3 position(0, 0, -5);
+	property.SetValue(&position);
 	//game_object_3->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	//auto transform = game_object_3->AddComponent("GameplayCore.Components", "TransformComponent");
 	//auto property = transform->GetProperty("LocalPosition");

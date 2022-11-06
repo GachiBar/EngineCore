@@ -16,6 +16,7 @@ public:
 	virtual void OnDetach() override;
 	//virtual void OnInputEvent(InputEvent* e) override;
 	virtual void OnGuiRender() override;
+	virtual void OnPostRender() override;
 
 	void SetBlockEvents(bool block) { m_BlockEvents = block; }
 
