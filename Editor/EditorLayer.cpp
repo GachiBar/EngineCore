@@ -23,7 +23,9 @@ void EditorLayer::OnAttach()
 	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
 	{
 		selected_go = go;
+        properties->SetGameObject(go);
 	});
+    properties->SetScene(GetApp()->GetEngine()->GetScene());
 
 	auto& io = ImGui::GetIO();
 
@@ -175,6 +177,6 @@ void EditorLayer::OnGuiRender()
 
     gvm->draw_imgui();    
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
-    properties->draw_imgui(GetApp()->GetEngine()->GetScene(), selected_go);
+    properties->draw_imgui();
     SettingsWindow->draw_imgui();
 }

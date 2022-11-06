@@ -18,6 +18,33 @@ bool operator==(const ComponentData& lhs, const ComponentData& rhs)
 	return lhs.NameSpace == rhs.NameSpace && lhs.Name == rhs.Name;
 }
 
+std::shared_ptr<engine::Scene> PropertyWindow::GetScene()
+{
+	return scene;
+}
+
+void PropertyWindow::SetScene(std::shared_ptr<engine::Scene> scene) 
+{
+	this->scene = scene;
+	this->game_object = nullptr;
+	// TODO: bind to GameObjectAdded
+	// TODO: bind to GameObjectRemoved.
+}
+
+std::shared_ptr<engine::GameObject> PropertyWindow::GetGameObject()
+{
+	return game_object;
+}
+
+void PropertyWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObject)
+{
+	this->game_object = gameObject;
+	// TODO:	Update game object list.
+	// TODO: bind to ComponentAdded.
+	// TODO: bind to ComponentRemoved.
+	// TODO:	Update avaliable components list.
+}
+
 PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
 	: assembly(assembly)
 	, game_objects_copasity(0)
@@ -42,34 +69,32 @@ PropertyWindow::~PropertyWindow()
 	}
 }
 
-void PropertyWindow::draw_imgui(
-	std::shared_ptr<engine::Scene> scene, 
-	std::shared_ptr<engine::GameObject> gameObject)
+void PropertyWindow::draw_imgui()
 {
 	ImGui::Begin("Property Window");
-	if (!gameObject.get())
+	if (!game_object.get())
 	{
 		ImGui::End();
 		return;
 	}
 
-	DrawGameObjectProperties(gameObject);
+	DrawGameObjectProperties();
 	added_components.clear();
 
-	for (size_t i = 0; i < gameObject->Count(); ++i)
+	for (size_t i = 0; i < game_object->Count(); ++i)
 	{
 		// We nead push id to allow multiple buttons with same names ("Remove").
 		ImGui::PushID(i);
 
-		auto component = (*gameObject)[i];
+		auto component = (*game_object)[i];
 		auto componentType = component->GetInternal().get_type();
 		added_components.insert({ componentType.get_namespace(), componentType.get_name() });
 
-		DrawComponentProperties(scene, gameObject, component);
+		DrawComponentProperties(component);
 		ImGui::PopID();
 	}
 
-	DrawAddComponentPanel(gameObject);
+	DrawAddComponentPanel();
 	ImGui::End();
 }
 
@@ -114,17 +139,14 @@ void PropertyWindow::CacheComponentsData()
 	}
 }
 
-void PropertyWindow::DrawGameObjectProperties(std::shared_ptr<engine::GameObject> gameObject)
+void PropertyWindow::DrawGameObjectProperties()
 {
 	if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::Text(std::format("{}: {}", "Name", gameObject->Name()).c_str());
+		ImGui::Text(std::format("{}: {}", "Name", game_object->Name()).c_str());
 	}
 }
 
-void PropertyWindow::DrawComponentProperties(
-	std::shared_ptr<engine::Scene> scene,
-	std::shared_ptr<engine::GameObject> gameObject, 
-	std::shared_ptr<engine::Component> component)
+void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> component)
 {	
 	if (ImGui::CollapsingHeader(component->Name().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 		auto properties = component->GetProperties();
@@ -186,7 +208,7 @@ void PropertyWindow::DrawComponentProperties(
 				DrawStringProperty(property, attributes);
 				break;
 			case engine::PropertyType::kGameObject:
-				DrawGameObjectProperty(scene, gameObject, property, attributes);
+				DrawGameObjectProperty(property, attributes);
 				break;
 			case engine::PropertyType::kUndefined:
 			default:
@@ -196,12 +218,12 @@ void PropertyWindow::DrawComponentProperties(
 
 		if (ImGui::Button("Remove")) 
 		{
-			gameObject->RemoveComponent(component);
+			game_object->RemoveComponent(component);
 		}
 	}
 }
 
-void PropertyWindow::DrawAddComponentPanel(std::shared_ptr<engine::GameObject> gameObject)
+void PropertyWindow::DrawAddComponentPanel()
 {
 	size_t availableComponentsCount = components_names.size() - added_components.size();
 	auto temp = components_names.begin();
@@ -226,8 +248,8 @@ void PropertyWindow::DrawAddComponentPanel(std::shared_ptr<engine::GameObject> g
 		std::string name;
 		ParseFullName(fullName, nameSpace, name);
 
-		gameObject->AddComponent(nameSpace, name);
-		gameObject->Invalidate();
+		game_object->AddComponent(nameSpace, name);
+		game_object->Invalidate();
 	}
 }
 
@@ -467,8 +489,6 @@ void PropertyWindow::DrawStringProperty(
 }
 
 void PropertyWindow::DrawGameObjectProperty(
-	std::shared_ptr<engine::Scene> scene,
-	std::shared_ptr<engine::GameObject> gameObject, 
 	engine::ComponentProperty property,
 	const std::vector<mono::mono_object>& attributes)
 {
@@ -494,7 +514,7 @@ void PropertyWindow::DrawGameObjectProperty(
 	{
 		auto otherGameObject = (*scene)[i];
 
-		if (*otherGameObject == *gameObject) 
+		if (*otherGameObject == *game_object) 
 		{
 			continue;
 		}

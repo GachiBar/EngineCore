@@ -61,8 +61,10 @@ namespace GameplayCore.Components
             }
         }
 
+        [InspectorName("Scale")]
         public Vector3 LocalScale { get; set; } = Vector3.One;
 
+        [InspectorName("Position")]
         public Vector3 LocalPosition { get; set; } = Vector3.Zero;
 
         [HideInInspector]

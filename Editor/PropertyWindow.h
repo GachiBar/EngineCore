@@ -36,13 +36,17 @@ struct std::hash<ComponentData>
 class PropertyWindow
 {
 public:
+	std::shared_ptr<engine::Scene> GetScene();
+	void SetScene(std::shared_ptr<engine::Scene> scene);
+
+	std::shared_ptr<engine::GameObject> GetGameObject();
+	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
+
 	PropertyWindow(const mono::mono_assembly& assembly);
 
 	~PropertyWindow();
 
-	void draw_imgui(
-		std::shared_ptr<engine::Scene> scene, 
-		std::shared_ptr<engine::GameObject> gameObject);
+	void draw_imgui();
 
 private:	
 	static const std::string kHideInInspectorAttribute;
@@ -50,6 +54,9 @@ private:
 	static const std::string kInspectorNameAttribute;
 
 	static const size_t kGameObjectNameMaxSize = 15;
+
+	std::shared_ptr<engine::Scene> scene;
+	std::shared_ptr<engine::GameObject> game_object;
 
 	const char** available_components_items;
 	void** game_objects_pointers;
@@ -62,14 +69,11 @@ private:
 
 	void CacheComponentsData();
 
-	void DrawGameObjectProperties(std::shared_ptr<engine::GameObject> gameObject);
+	void DrawGameObjectProperties();
 
-	void DrawComponentProperties(
-		std::shared_ptr<engine::Scene> scene,
-		std::shared_ptr<engine::GameObject> gameObject, 
-		std::shared_ptr<engine::Component> component);
+	void DrawComponentProperties(std::shared_ptr<engine::Component> component);
 
-	void DrawAddComponentPanel(std::shared_ptr<engine::GameObject> gameObject);
+	void DrawAddComponentPanel();
 
 	void DrawFloatProperty(
 		engine::ComponentProperty property, 
@@ -132,8 +136,6 @@ private:
 		const std::vector<mono::mono_object>& attributes);
 
 	void DrawGameObjectProperty(
-		std::shared_ptr<engine::Scene> scene,
-		std::shared_ptr<engine::GameObject> gameObject,
 		engine::ComponentProperty property,
 		const std::vector<mono::mono_object>& attributes);
 
