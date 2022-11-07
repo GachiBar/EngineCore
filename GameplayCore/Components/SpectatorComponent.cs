@@ -1,6 +1,4 @@
 ﻿using GameplayCore.Mathematics;
-using System;
-using System.CodeDom;
 
 namespace GameplayCore.Components
 {
