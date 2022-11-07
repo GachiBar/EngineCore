@@ -74,5 +74,8 @@
     <ClCompile Include="Windows\WindowsWindow.cpp">
       <Filter>Windows</Filter>
     </ClCompile>
+    <ClCompile Include="libs\Delegates.cpp">
+      <Filter>libs</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

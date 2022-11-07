@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Object.h"
+#include "../Core/libs/Delegates.h"
 #include "../monowrapper/monopp/mono_object.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
@@ -21,6 +22,12 @@ public:
     std::string Name() const;
     void Name(std::string& value);
     size_t Count() const;
+
+    DECLARE_EVENT(ComponentAddedEvent, GameObject, GameObject&, std::shared_ptr<Component>)
+    ComponentAddedEvent ComponentAdded;
+
+    DECLARE_EVENT(ComponentRemovedEvent, GameObject, GameObject&, std::shared_ptr<Component>)
+    ComponentRemovedEvent ComponentRemoved;
 
     GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
 

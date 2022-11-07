@@ -149,6 +149,7 @@
     <ClInclude Include="Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="libs\Delegates.cpp" />
     <ClCompile Include="Windows\GenericWindow.cpp" />
     <ClCompile Include="Windows\WindowsWindow.cpp" />
   </ItemGroup>

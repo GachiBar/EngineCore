@@ -9,11 +9,6 @@
 #include <mono/metadata/reflection.h>
 #include <format>
 
-bool operator==(const ComponentData& lhs, const ComponentData& rhs)
-{
-	return lhs.NameSpace == rhs.NameSpace && lhs.Name == rhs.Name;
-}
-
 std::shared_ptr<engine::Scene> PropertyWindow::GetScene()
 {
 	return scene;
@@ -23,8 +18,6 @@ void PropertyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
 {
 	this->scene = scene;
 	this->game_object = nullptr;
-	// TODO: bind to GameObjectAdded
-	// TODO: bind to GameObjectRemoved.
 }
 
 std::shared_ptr<engine::GameObject> PropertyWindow::GetGameObject()
@@ -34,11 +27,21 @@ std::shared_ptr<engine::GameObject> PropertyWindow::GetGameObject()
 
 void PropertyWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObject)
 {
+	if (game_object != nullptr) 
+	{		
+		gameObject->ComponentAdded.RemoveObject(this);
+		gameObject->ComponentRemoved.RemoveObject(this);
+	}
+
 	this->game_object = gameObject;
-	// TODO:	Update game object list.
-	// TODO: bind to ComponentAdded.
-	// TODO: bind to ComponentRemoved.
-	// TODO:	Update avaliable components list.
+
+	if (game_object != nullptr)
+	{
+		gameObject->ComponentAdded.AddRaw(this, &PropertyWindow::OnComponentAdded);
+		gameObject->ComponentRemoved.AddRaw(this, &PropertyWindow::OnComponentRemoved);
+
+		FindAvaliableComponents();
+	}
 }
 
 PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
@@ -75,7 +78,6 @@ void PropertyWindow::draw_imgui()
 	}
 
 	DrawGameObjectProperties();
-	added_components.clear();
 
 	for (size_t i = 0; i < game_object->Count(); ++i)
 	{
@@ -84,7 +86,6 @@ void PropertyWindow::draw_imgui()
 
 		auto component = (*game_object)[i];
 		auto componentType = component->GetInternal().get_type();
-		added_components.insert({ componentType.get_namespace(), componentType.get_name() });
 
 		DrawComponentProperties(component);
 		ImGui::PopID();
@@ -130,7 +131,7 @@ void PropertyWindow::CacheComponentsData()
 
 		if (isComponent)
 		{
-			components_names.push_back({ type.get_namespace(), type.get_name() });
+			components_names.push_back(type.get_fullname());
 		}
 	}
 }
@@ -221,23 +222,9 @@ void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> 
 
 void PropertyWindow::DrawAddComponentPanel()
 {
-	size_t availableComponentsCount = components_names.size() - added_components.size();
-	auto temp = components_names.begin();
-
-	for (size_t i = 0; i < availableComponentsCount; ++i) 
-	{
-		while (added_components.contains(*temp)) 
-		{
-			std::advance(temp, 1);
-		}
-
-		available_components_items[i] = temp->FullName.data();
-		std::advance(temp, 1);
-	}
-
 	int selected = 0;
 
-	if (ImGui::Combo("Add", &selected, available_components_items, availableComponentsCount))
+	if (ImGui::Combo("Add", &selected, available_components_items, avaliable_components_count))
 	{		
 		std::string fullName(available_components_items[selected]);
 		std::string nameSpace;
@@ -624,6 +611,42 @@ void PropertyWindow::ChangeGameObjectResourcesCopasity(size_t size)
 	for (size_t i = 0; i < game_objects_copasity; ++i)
 	{
 		game_objects_names[i] = new char[kGameObjectNameMaxSize];
+	}
+}
+
+void PropertyWindow::OnComponentAdded(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component)
+{
+	FindAvaliableComponents();
+}
+
+void PropertyWindow::OnComponentRemoved(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component)
+{
+	FindAvaliableComponents();
+}
+
+void PropertyWindow::FindAvaliableComponents()
+{
+	std::unordered_set<std::string> addedComponents;
+
+	for (size_t i = 0; i < game_object->Count(); ++i)
+	{
+		auto component = (*game_object)[i];
+		auto componentType = component->GetInternal().get_type();
+		addedComponents.insert(componentType.get_fullname());
+	}
+
+	avaliable_components_count = components_names.size() - addedComponents.size();
+	auto temp = components_names.begin();
+
+	for (size_t i = 0; i < avaliable_components_count; ++i)
+	{
+		while (addedComponents.contains(*temp))
+		{
+			std::advance(temp, 1);
+		}
+
+		available_components_items[i] = temp->data();
+		std::advance(temp, 1);
 	}
 }
 
