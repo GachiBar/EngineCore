@@ -42,7 +42,6 @@ void Application::PushOverlay(Layer* layer)
 void Application::OnSetup()
 {
 	EKeys::Initialize();
-	InputManager::getInstance().app = this;
 
 	//input_settings->AddActionMapping("Test", EKeys::A);
 	//input_settings->AddActionMapping("Test", EKeys::W);
@@ -100,6 +99,8 @@ void Application::OnSetup()
 	wnd2->Enable(false);
 	wnd2->Hide();
 	SetFocus(wnd->GetHWnd());
+
+	InputManager::getInstance().RegisterInputDevice(this);
 }
 
 void Application::OnStart()

@@ -184,6 +184,7 @@ bool WindowsApplicationMessageHandler::OnMouseWheel(const float Delta, const FVe
 
 bool WindowsApplicationMessageHandler::OnMouseMove()
 {
+	/*
 	POINT p;
 	GetCursorPos(&p);
 	const FVector2D CurrentCursorPosition = {static_cast<float>(p.x), static_cast<float>(p.y)};
@@ -221,6 +222,25 @@ bool WindowsApplicationMessageHandler::OnMouseMove()
 
 		InputManager::getInstance().GetMouseDevice().SetPos(p.x, p.y);
 	}
+	*/
+	return true;
+}
+
+bool WindowsApplicationMessageHandler::OnRawMouseMove(const int32 X, const int32 Y)
+{
+	const FVector2D LastCursorPosition = InputManager::getInstance().GetMouseDevice().GetCurPosFloatPoint();
+	
+	if(X !=0)
+	{
+		FPointerEvent MouseEventX(IE_Axis,LastCursorPosition+FVector2D(X,Y),LastCursorPosition, InputManager::getInstance().GetMouseDevice().GetPressedButtons(),EKeys::MouseX,0);
+		InputStack.push(std::make_shared<FPointerEvent>(MouseEventX));
+	}
+	if(Y!=0)
+	{
+		FPointerEvent MouseEventY(IE_Axis, LastCursorPosition + FVector2D(X, Y), LastCursorPosition, InputManager::getInstance().GetMouseDevice().GetPressedButtons(), EKeys::MouseY, 0);
+		InputStack.push(std::make_shared<FPointerEvent>(MouseEventY));
+	}
+	InputManager::getInstance().GetMouseDevice().SetPos(LastCursorPosition.x+X, LastCursorPosition.y + Y);
 
 	return true;
 }
