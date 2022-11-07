@@ -260,7 +260,7 @@ void PropertyWindow::DrawFloatProperty(
 	float min = 0;
 	float max = 0;
 
-	if (IsSliderProperty(attributes, min, max)) 
+	if (TryGetSliderConstraints(attributes, min, max))
 	{
 		if (ImGui::SliderFloat(propertyName.c_str(), &value, min, max))
 		{
@@ -436,7 +436,7 @@ void PropertyWindow::DrawVector2Property(
 	float min = 0;
 	float max = 0;
 
-	if (IsSliderProperty(attributes, min, max))
+	if (TryGetSliderConstraints(attributes, min, max))
 	{
 		if (ImGui::SliderFloat2(propertyName.c_str(), vector, min, max))
 		{
@@ -464,7 +464,7 @@ void PropertyWindow::DrawVector3Property(
 	float min = 0;
 	float max = 0;
 
-	if (IsSliderProperty(attributes, min, max))
+	if (TryGetSliderConstraints(attributes, min, max))
 	{
 		if (ImGui::SliderFloat3(propertyName.c_str(), vector, min, max))
 		{
@@ -492,7 +492,7 @@ void PropertyWindow::DrawVector4Property(
 	float min = 0;
 	float max = 0;
 
-	if (IsSliderProperty(attributes, min, max))
+	if (TryGetSliderConstraints(attributes, min, max))
 	{
 		if (ImGui::SliderFloat4(propertyName.c_str(), vector, min, max))
 		{
@@ -679,7 +679,7 @@ bool PropertyWindow::IsEditableProperty(
 	return false;
 }
 
-bool PropertyWindow::IsSliderProperty(
+bool PropertyWindow::TryGetSliderConstraints(
 	const std::vector<engine::Attribute>& attributes,
 	float& min_out, 
 	float& max_out)

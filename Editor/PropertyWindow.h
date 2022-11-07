@@ -140,6 +140,7 @@ private:
 		const std::string& fullName, 
 		std::string& namespace_out, 
 		std::string& name_out);
+
 	void CopyAsNullTerminated(char* destination, const std::string& source);
 
 	void ChangeGameObjectResourcesCopasity(size_t size);
@@ -152,7 +153,7 @@ private:
 		const engine::Property& property,
 		const std::vector<engine::Attribute>& attributes);
 
-	static bool IsSliderProperty(
+	static bool TryGetSliderConstraints(
 		const std::vector<engine::Attribute>& attributes,
 		float& min_out,
 		float& max_out);
