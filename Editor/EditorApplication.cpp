@@ -7,6 +7,7 @@
 EditorApplication::EditorApplication()
 	: Application() //,mw(new MainWindow)
 	, scene(nullptr)
+	,Camera(new EditorCamera())
 {
 }
 
@@ -38,11 +39,7 @@ void EditorApplication::OnSetup()
 	test_go->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	test_go->AddComponent("GameplayCore.Components", "TransformComponent");
 
-	//game_object_3->AddComponent("GameplayCore.Components", "MeshRenderComponent");
-	//auto transform = game_object_3->AddComponent("GameplayCore.Components", "TransformComponent");
-	//auto property = transform->GetProperty("LocalPosition");
-	//DirectX::SimpleMath::Vector3 position(0, 0, 1);
-	//property.SetValue(&position);
+	Camera->go = camera_go.get();
 
 	for (size_t i = 0; i < scene->Count(); ++i) {
 		std::cout << "go:" << i << "\n";
@@ -62,10 +59,21 @@ void EditorApplication::OnStart()
 {
 	Application::OnStart();
 	const auto editor_layer = new EditorLayer(&m_LayerStack);
+	Camera->owner_layer = editor_layer;
 	PushLayer(editor_layer);
 }
 
 engine::GameObject* EditorApplication::GetCamera() const
 {
 	return camera_go.get();
+}
+
+void EditorApplication::SetEditorOnlyInputMode()
+{
+	editor_input_mode = EEditorInputMode::Type::GameOnlyMode;
+}
+
+void EditorApplication::SetGameOnlyOnlyInputMode()
+{
+	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
 }

@@ -14,6 +14,7 @@ public:
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
+	virtual void OnUpdate(float const dt);
 	//virtual void OnInputEvent(InputEvent* e) override;
 	virtual void OnGuiRender() override;
 

@@ -41,6 +41,17 @@ void EditorLayer::OnDetach()
 	
 }
 
+void EditorLayer::OnUpdate(float const dt)
+{
+	Layer::OnUpdate(dt);
+
+    auto EditorApp = static_cast<EditorApplication*>(GetApp());
+    if(EditorApp)
+    {
+        EditorApp->Camera->Tick(dt);
+    }
+}
+
 void EditorLayer::OnGuiRender()
 {
     ImGuizmo::BeginFrame();
@@ -200,14 +211,14 @@ void EditorLayer::OnGuiRender()
         };
 
 
-        //auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().unbox());
-        //DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
+        auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().value().unbox());
+        DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
 
 
         DirectX::XMFLOAT4X4 v = change_mat(engine::Engine::GetViewMatrix());
         DirectX::XMFLOAT4X4 p = change_mat(engine::Engine::GetProjectionMatrix());
-        //DirectX::XMFLOAT4X4 w = change_mat(t);
-        //ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
+        DirectX::XMFLOAT4X4 w = change_mat(t);
+        ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
     }
     ImGui::End();
 

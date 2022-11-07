@@ -147,6 +147,9 @@ int Application::Run()
 		ApplyInput();
 		engine_->RunFrame();
 
+		for (const auto layer : m_LayerStack)
+			layer->OnUpdate(engine_->kDt);;
+
 		if(InputManager::getInstance().player_input->IsPressed(EKeys::Invalid))
 			std::cout << "Pressed" << std::endl;
 
@@ -163,7 +166,7 @@ int Application::Run()
 			std::cout << "Released" << std::endl;
 		}
 		
-		//std::cout << InputManager::getInstance().player_input->GetAxisValue("TestAxis3");
+		std::cout << InputManager::getInstance().player_input->GetKeyValue(EKeys::MouseX);
 
 		InputManager::getInstance().Flush();
 
