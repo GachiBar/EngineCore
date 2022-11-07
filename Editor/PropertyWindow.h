@@ -2,7 +2,8 @@
 
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
-#include "../GameplaySystem/ComponentProperty.h"
+#include "../GameplaySystem/Property.h"
+#include "../GameplaySystem/Attribute.h"
 
 #include <memory>
 #include <unordered_set>
@@ -49,11 +50,6 @@ public:
 	void draw_imgui();
 
 private:	
-	static const std::string kHideInInspectorAttribute;
-	static const std::string kSerializeFieldAttribute;
-	static const std::string kInspectorNameAttribute;
-	static const std::string kSliderAttribute;
-
 	static const size_t kGameObjectNameMaxSize = 15;
 
 	std::shared_ptr<engine::Scene> scene;
@@ -77,68 +73,68 @@ private:
 	void DrawAddComponentPanel();
 
 	void DrawFloatProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawDoubleProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawBoolProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawByteProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawShortProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawIntProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawLongProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawUByteProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawUShortProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawUIntProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawULongProperty(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawVector2Property(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawVector3Property(
-		engine::ComponentProperty property, 
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawVector4Property(
-		engine::ComponentProperty property,
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property,
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawStringProperty(
-		engine::ComponentProperty property,
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property,
+		const std::vector<engine::Attribute>& attributes);
 
 	void DrawGameObjectProperty(
-		engine::ComponentProperty property,
-		const std::vector<mono::mono_object>& attributes);
+		engine::Property property,
+		const std::vector<engine::Attribute>& attributes);
 
 	void ParseFullName(
 		const std::string& fullName, 
@@ -149,15 +145,15 @@ private:
 	void ChangeGameObjectResourcesCopasity(size_t size);
 
 	static std::string GetPropertyName(
-		const engine::ComponentProperty& property,
-		const std::vector<mono::mono_object>& attributes);
+		const engine::Property& property,
+		const std::vector<engine::Attribute>& attributes);
 
 	static bool IsEditableProperty(
-		const engine::ComponentProperty& property,
-		const std::vector<mono::mono_object>& attributes);
+		const engine::Property& property,
+		const std::vector<engine::Attribute>& attributes);
 
 	static bool IsSliderProperty(
-		const std::vector<mono::mono_object>& attributes,
+		const std::vector<engine::Attribute>& attributes,
 		float& min_out,
 		float& max_out);
 };

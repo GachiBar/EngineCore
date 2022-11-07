@@ -112,7 +112,6 @@ void Engine::RunFrame() {
 
 void Engine::BeginRender() {
 	renderer_.BeginFrame();
-
 	scene_->Render();
 
 	while (!renderer_.Present()) {
@@ -153,8 +152,8 @@ void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t
 	renderer_.InitDevice({ "..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\" });
 }
 
-mono::mono_property Engine::GetProperty(std::string name_space, std::string clazz, std::string property) {
-	return assembly_.get_type(name_space, clazz).get_property(property);
+mono::mono_property Engine::GetProperty(std::string name_space, std::string klass, std::string property) {
+	return assembly_.get_type(name_space, klass).get_property(property);
 }
 
 void Engine::SetupRendererInternalCalls() {

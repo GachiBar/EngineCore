@@ -228,6 +228,11 @@ namespace GameplayCore.Components
             }
         }
 
+        public TransformComponent GetChild(int index)
+        {
+            return _children[index];
+        }
+
         public bool IsChildOf(TransformComponent transform)
         {
             TransformComponent temp = this;
