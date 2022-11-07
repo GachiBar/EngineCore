@@ -18,6 +18,7 @@ public:
 	virtual void OnDetach() override;
 	//virtual void OnInputEvent(InputEvent* e) override;
 	virtual void OnGuiRender() override;
+	virtual void OnPostRender() override;
 
 	void SetBlockEvents(bool block) { m_BlockEvents = block; }
 
@@ -29,6 +30,7 @@ public:
 	std::shared_ptr<ExplorerWindow> explorer;
 	
 private:
+	std::shared_ptr<engine::GameObject> editor_camera;
 	std::shared_ptr<engine::GameObject> selected_go;
 
 	bool m_BlockEvents = true;

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Object.h"
 #include "../monowrapper/monopp/mono_object.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
@@ -11,20 +12,17 @@ namespace engine {
 class Scene;
 class Component;
 
-class GameObject {
-    friend class Scene;
-
+class GameObject : public Object {
 public:
     // TODO: Find way to sync links
     // TODO: Write getting reference type from mono_type
     // TODO: Write dem funcs
     // Add & Get can be linked to one instance btw
-    const mono::mono_object& GetInternal() const;
     std::string Name() const;
     void Name(std::string& value);
     size_t Count() const;
-        
-    ~GameObject();
+
+    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
 
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
     std::shared_ptr<Component> AddComponent(const mono::mono_type& component_type);
@@ -41,18 +39,11 @@ public:
     void Invalidate();
 
     std::shared_ptr<Component> operator[](size_t index) const;
-    
-    friend bool operator== (const GameObject& lhs, const GameObject& rhs);
-    friend bool operator== (const GameObject& lhs, const mono::mono_object& rhs);
-    friend bool operator== (const mono::mono_object& lhs, const GameObject& rhs);
 
     static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:
-    uint32_t handle_;
-
     const mono::mono_assembly& assembly_;
-    mono::mono_object object_;
 
     static mono::mono_property_invoker* name_;
     static mono::mono_property_invoker* count_;
@@ -68,9 +59,7 @@ private:
     static mono::mono_method_invoker* render_;
     static mono::mono_method_invoker* terminate_;
 
-    static mono::mono_method_invoker* invalidate_;
-
-    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
+    static mono::mono_method_invoker* invalidate_;    
 };
 
 } // namespace engine

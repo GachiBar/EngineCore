@@ -8,7 +8,9 @@
 
 namespace engine {
 
-class Component;
+class Object;
+class Method;
+class Attribute;
 
 enum class PropertyType {
 	kUndefined,
@@ -30,28 +32,36 @@ enum class PropertyType {
 	kGameObject,
 };
 
-class ComponentProperty {
-
-	friend class Component;
-
+class Property {
 public:
-	PropertyType GetType();
+	const mono::mono_property& GetInternal() const;
+	
+	std::vector<Attribute> GetAttributes() const;
+	
+	PropertyType GetType() const;
+	
+	std::string GetName() const;
 
-	std::string GetName();
+	bool CanRead() const;
+	bool CanWrite() const;
 
-	std::optional<mono::mono_object> GetValue();
+	Method GetGetMethod() const;
+	Method GetSetMethod() const;
+
+	Property(const Object& object, const std::string& property_name);
+	Property(const Object& object, mono::mono_property property);
+
+	std::optional<Object> GetValue();
 
 	void SetValue(void* data);
 	void SetValue(const mono::mono_object& value);
-	
+	void SetValue(const Object& value);
+
 private:
-	const Component& component_;
-	const std::string name_;	
+	const Object& object_;
 	const mono::mono_property property_;
 	const mono::mono_property_invoker property_invoker_;
 	const PropertyType type_;
-
-	ComponentProperty(const Component& component, std::string name);
 };
 
 PropertyType NameToPropertyType(const std::string& name);

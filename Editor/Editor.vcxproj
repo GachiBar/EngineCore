@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="EditorApplication.h" />
+    <ClInclude Include="EditorInputMode.h" />
     <ClInclude Include="EditorLayer.h" />
     <ClInclude Include="GameViewWindow.h" />
     <ClInclude Include="ImGuiLayer.h" />

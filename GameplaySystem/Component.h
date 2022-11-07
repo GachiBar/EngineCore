@@ -1,20 +1,21 @@
 ﻿#pragma once
 
-#include "ComponentProperty.h"
+#include "Object.h"
+#include "GameObject.h"
 #include "../monowrapper/monopp/mono_object.h"
+#include "../monowrapper/monopp/mono_property_invoker.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 
 namespace engine {
 
-class Component {
+class Component : public Object{
     friend class GameObject;
 
 public:
-    const mono::mono_object& GetInternal() const;
     std::string Name() const;
-    ComponentProperty GetProperty(std::string name);
+    std::shared_ptr<GameObject> GameObject();
 
-    ~Component();
+    Component(const mono::mono_assembly& assembly , mono::mono_object object);
 
     void Initialize();
     void FixedUpdate();
@@ -22,23 +23,18 @@ public:
     void Render();
     void Terminate();
 
-    std::vector<std::string> GetEditablePropertiesNames();
-
     static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:
-    uint32_t handle_;
+    const mono::mono_assembly& assembly_;
 
-    mono::mono_object object_;
+    static mono::mono_property_invoker* game_object_;
 
     static mono::mono_method_invoker* initialize_;
     static mono::mono_method_invoker* fixed_update_;
     static mono::mono_method_invoker* update_;
     static mono::mono_method_invoker* render_;
-    static mono::mono_method_invoker* terminate_;
-    static mono::mono_method_invoker* get_editable_properties_names_;  
-
-    Component(mono::mono_object object);
+    static mono::mono_method_invoker* terminate_;    
 };
 
 } // namespace engine

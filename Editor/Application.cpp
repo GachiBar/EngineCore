@@ -173,6 +173,9 @@ int Application::Run()
 			layer->OnGuiRender();
 
 		engine_->EndRender();
+		
+		for (const auto layer : m_LayerStack)
+			layer->OnPostRender();
 	}
 
 	OnStop();

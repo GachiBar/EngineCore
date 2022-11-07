@@ -20,6 +20,7 @@ public:
 
 	const float	kDt = 16.0f / 1000;
 
+
 	std::shared_ptr<Scene> GetScene();
 	void SetScene(std::shared_ptr<Scene> scene);
 	RenderDevice& GetRenderer();
@@ -34,9 +35,14 @@ public:
 	void RunFrame();
 	void BeginRender();
 	void EndRender();
-	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);	
-	
+	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+	static DirectX::SimpleMath::Matrix& GetViewMatrix();
+	static DirectX::SimpleMath::Matrix& GetProjectionMatrix();
 private:
+	static DirectX::SimpleMath::Matrix m_projection;
+	static DirectX::SimpleMath::Matrix m_view;
+
 	RenderDevice renderer_;
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
@@ -50,6 +56,9 @@ private:
 	mono::mono_property_invoker renderer_property_;
 	mono::mono_property_invoker delta_time_property_;
 	mono::mono_property_invoker ellapsed_time_property_;
+
+	mono::mono_property_invoker screen_width_property_;
+	mono::mono_property_invoker screen_height_property_;
 
 	std::shared_ptr<Scene> scene_;
 
@@ -65,6 +74,7 @@ private:
 	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
 	void SetupRendererInternalCalls();
 	void SendTimeData();
+	void SendScreenData();
 };
 
 } // namespace engine
