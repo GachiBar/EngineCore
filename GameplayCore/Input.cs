@@ -1,15 +1,35 @@
-﻿using GameplayCore.Mathematics;
+﻿using System;
 using System.Runtime.CompilerServices;
+using GameplayCore.Mathematics;
 
 namespace GameplayCore
 {
     public static class Input
     {
+        private static string[] _keysNames;
+
+        static Input()
+        {
+            _keysNames = Enum.GetNames(typeof(Keys));
+        }
+
         public static Vector2 MousePosition { get; private set; }
+
+        public static bool IsPressed(Keys key)
+        {
+            var keyName = _keysNames[(int)key];
+            return IsPressed(keyName);
+        }
 
         public static bool IsPressed(string keyName)
         {
             return Internal_IsPressed(keyName);
+        }
+
+        public static bool WasJustPressed(Keys key)
+        {
+            var keyName = _keysNames[(int)key];
+            return WasJustPressed(keyName);
         }
 
         public static bool WasJustPressed(string keyName)
@@ -17,24 +37,30 @@ namespace GameplayCore
             return Internal_WasJustPressed(keyName);
         }
 
+        public static bool WasJustReleased(Keys key)
+        {
+            var keyName = _keysNames[(int)key];
+            return WasJustReleased(keyName);
+        }
+
         public static bool WasJustReleased(string keyName)
         {
             return Internal_WasJustReleased(keyName);
         }
 
-        public static bool IsActionPressed(string keyName)
+        public static bool IsActionPressed(string actionName)
         {
-            return Internal_IsActionPressed(keyName);
+            return Internal_IsActionPressed(actionName);
         }
 
-        public static bool WasActionJustPressed(string keyName)
+        public static bool WasActionJustPressed(string actionName)
         {
-            return Internal_WasActionJustPressed(keyName);
+            return Internal_WasActionJustPressed(actionName);
         }
 
-        public static bool WasActionJustReleased(string keyName)
+        public static bool WasActionJustReleased(string actionName)
         {
-            return Internal_WasActionJustReleased(keyName);
+            return Internal_WasActionJustReleased(actionName);
         }
 
         public static float GetKeyValue(string keyName)
@@ -42,9 +68,15 @@ namespace GameplayCore
             return Internal_GetKeyValue(keyName);
         }
 
-        public static float GetAxisValue(string axis)
+        public static float GetKeyValue(Keys key)
         {
-            return Internal_GetAxisValue(axis);
+            var keyName = _keysNames[(int)key];
+            return Internal_GetKeyValue(keyName);
+        }
+
+        public static float GetAxisValue(string axisName)
+        {
+            return Internal_GetAxisValue(axisName);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -58,17 +90,17 @@ namespace GameplayCore
 
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static bool Internal_IsActionPressed(string keyName);
+        extern private static bool Internal_IsActionPressed(string actionName);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static bool Internal_WasActionJustPressed(string keyName);
+        extern private static bool Internal_WasActionJustPressed(string actionName);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static bool Internal_WasActionJustReleased(string keyName);
+        extern private static bool Internal_WasActionJustReleased(string actonName);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static float Internal_GetKeyValue(string keyName);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static float Internal_GetAxisValue(string axis_name);
+        extern private static float Internal_GetAxisValue(string axisName);
     }
 }

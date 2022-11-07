@@ -16,24 +16,22 @@ namespace GameplayCore.Components
 
         public override void Update()
         {
-            var dx = Input.GetKeyValue("MouseX");
-            var dy = Input.GetKeyValue("MouseY");
+            var dx = Input.GetKeyValue(Keys.MouseX);
+            var dy = Input.GetKeyValue(Keys.MouseY);
 
             _yaw -= dx * _weight * Sensivity;
             _pitch -= dy * _weight * Sensivity;
             _pitch = MathUtil.Clamp(_pitch, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
 
             var rotation = Matrix.RotationYawPitchRoll(_yaw, _pitch, 0);
-            var direction = GetDirection();
-            direction = 
-                direction.X * rotation.Right + 
-                direction.Y * Vector3.Up + 
-                direction.Z * rotation.Forward;
+            var axis = GetAxis();
+            var direction = 
+                axis.X * rotation.Right + 
+                axis.Y * Vector3.Up + 
+                axis.Z * rotation.Forward;
 
-            _transformComponent.Position += direction * Velocity * Time.DeltaTime;          
-            _transformComponent.Rotation = Quaternion.RotationMatrix(rotation);
-
-            Console.WriteLine($"x: {dx} y: {dy}");
+            _transformComponent.LocalPosition += direction * Velocity * Time.DeltaTime;          
+            _transformComponent.LocalRotation = Quaternion.RotationMatrix(rotation);
         }
 
         protected override void OnAttach(GameObject gameObject)
@@ -66,35 +64,33 @@ namespace GameplayCore.Components
             }
         }
 
-        private Vector3 GetDirection()
+        private Vector3 GetAxis()
         {
             var direction = Vector3.Zero;
 
-            if (Input.IsPressed("A"))
+            if (Input.IsPressed(Keys.A))
             {
-                direction += Vector3.Left;
+                direction -= Vector3.UnitX;
             }
-            if (Input.IsPressed("D"))
+            if (Input.IsPressed(Keys.D))
             {
-                direction += Vector3.Right;
+                direction += Vector3.UnitX;
             }
-            // TODO: why -?
-            if (Input.IsPressed("W"))
+            if (Input.IsPressed(Keys.W))
             {
-                direction -= Vector3.ForwardRH;
+                direction += Vector3.UnitZ;
             }
-            // TODO: why -?
-            if (Input.IsPressed("S"))
+            if (Input.IsPressed(Keys.S))
             {
-                direction -= Vector3.BackwardRH;
+                direction -= Vector3.UnitZ;
             }
-            if (Input.IsPressed("SpaceBar"))
+            if (Input.IsPressed(Keys.SpaceBar))
             {
-                direction += Vector3.Up;
+                direction += Vector3.UnitY;
             }
-            if (Input.IsPressed("LeftShift"))
+            if (Input.IsPressed(Keys.LeftShift))
             {
-                direction += Vector3.Down;
+                direction -= Vector3.UnitY;
             }
 
             return direction;
