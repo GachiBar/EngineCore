@@ -2,7 +2,8 @@
 
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
-#include "../GameplaySystem/ComponentProperty.h"
+#include "../GameplaySystem/Property.h"
+#include "../GameplaySystem/Attribute.h"
 
 #include <memory>
 #include <unordered_set>
@@ -36,14 +37,23 @@ struct std::hash<ComponentData>
 class PropertyWindow
 {
 public:
+	std::shared_ptr<engine::Scene> GetScene();
+	void SetScene(std::shared_ptr<engine::Scene> scene);
+
+	std::shared_ptr<engine::GameObject> GetGameObject();
+	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
+
 	PropertyWindow(const mono::mono_assembly& assembly);
+
 	~PropertyWindow();
-	void draw_imgui(
-		std::shared_ptr<engine::Scene> scene, 
-		std::shared_ptr<engine::GameObject> gameObject);
+
+	void draw_imgui();
 
 private:	
 	static const size_t kGameObjectNameMaxSize = 15;
+
+	std::shared_ptr<engine::Scene> scene;
+	std::shared_ptr<engine::GameObject> game_object;
 
 	const char** available_components_items;
 	void** game_objects_pointers;
@@ -55,37 +65,96 @@ private:
 	std::unordered_set<ComponentData> added_components;	
 
 	void CacheComponentsData();
-	void DrawGameObjectProperties(std::shared_ptr<engine::GameObject> gameObject);
-	void DrawComponentProperties(
-		std::shared_ptr<engine::Scene> scene,
-		std::shared_ptr<engine::GameObject> gameObject, 
-		std::shared_ptr<engine::Component> component);
-	void DrawAddComponentPanel(std::shared_ptr<engine::GameObject> gameObject);
 
-	void DrawFloatProperty(engine::ComponentProperty property);
-	void DrawDoubleProperty(engine::ComponentProperty property);
-	void DrawBoolProperty(engine::ComponentProperty property);
-	void DrawByteProperty(engine::ComponentProperty property);
-	void DrawShortProperty(engine::ComponentProperty property);
-	void DrawIntProperty(engine::ComponentProperty property);
-	void DrawLongProperty(engine::ComponentProperty property);
-	void DrawUByteProperty(engine::ComponentProperty property);
-	void DrawUShortProperty(engine::ComponentProperty property);
-	void DrawUIntProperty(engine::ComponentProperty property);
-	void DrawULongProperty(engine::ComponentProperty property);
-	void DrawVector2Property(engine::ComponentProperty property);
-	void DrawVector3Property(engine::ComponentProperty property);
-	void DrawVector4Property(engine::ComponentProperty property);
-	void DrawStringProperty(engine::ComponentProperty property);
+	void DrawGameObjectProperties();
+
+	void DrawComponentProperties(std::shared_ptr<engine::Component> component);
+
+	void DrawAddComponentPanel();
+
+	void DrawFloatProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawDoubleProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawBoolProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawByteProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawShortProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawIntProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawLongProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawUByteProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawUShortProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawUIntProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawULongProperty(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawVector2Property(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawVector3Property(
+		engine::Property property, 
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawVector4Property(
+		engine::Property property,
+		const std::vector<engine::Attribute>& attributes);
+
+	void DrawStringProperty(
+		engine::Property property,
+		const std::vector<engine::Attribute>& attributes);
+
 	void DrawGameObjectProperty(
-		std::shared_ptr<engine::Scene> scene,
-		std::shared_ptr<engine::GameObject> gameObject,
-		engine::ComponentProperty property);
+		engine::Property property,
+		const std::vector<engine::Attribute>& attributes);
 
 	void ParseFullName(
 		const std::string& fullName, 
 		std::string& namespace_out, 
 		std::string& name_out);
+
 	void CopyAsNullTerminated(char* destination, const std::string& source);
+
 	void ChangeGameObjectResourcesCopasity(size_t size);
+
+	static std::string GetPropertyName(
+		const engine::Property& property,
+		const std::vector<engine::Attribute>& attributes);
+
+	static bool IsEditableProperty(
+		const engine::Property& property,
+		const std::vector<engine::Attribute>& attributes);
+
+	static bool TryGetSliderConstraints(
+		const std::vector<engine::Attribute>& attributes,
+		float& min_out,
+		float& max_out);
 };

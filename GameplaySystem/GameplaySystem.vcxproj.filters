@@ -45,7 +45,16 @@
     <ClInclude Include="TextureLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentProperty.h">
+    <ClInclude Include="Property.h">
+      <Filter>Header Files\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>Header Files\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Attribute.h">
+      <Filter>Header Files\Wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="Method.h">
       <Filter>Header Files\Wrappers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,7 +77,16 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Wrappers</Filter>
     </ClCompile>
-    <ClCompile Include="ComponentProperty.cpp">
+    <ClCompile Include="Property.cpp">
+      <Filter>Source Files\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Attribute.cpp">
+      <Filter>Source Files\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Method.cpp">
       <Filter>Source Files\Wrappers</Filter>
     </ClCompile>
   </ItemGroup>

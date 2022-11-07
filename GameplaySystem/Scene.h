@@ -6,14 +6,11 @@
 
 namespace engine {
 
-class Scene
-{
+class Scene : public Object {
 public:
-	const mono::mono_object& GetInternal() const;
 	size_t Count() const;
 
 	Scene(const mono::mono_assembly& assembly);
-	~Scene();
 
 	std::shared_ptr<GameObject> CreateGameObject();
 	void DeleteGameObject(std::shared_ptr<GameObject> game_object);
@@ -33,10 +30,7 @@ public:
 	static void CacheMethods(const mono::mono_assembly& assembly);
 
 private:
-	uint32_t handle_;
-
 	const mono::mono_assembly& assembly_;
-	mono::mono_object object_;
 
 	static mono::mono_property_invoker* count_;
 	static mono::mono_method_invoker* get_item_;

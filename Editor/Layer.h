@@ -17,6 +17,7 @@ public:
 	virtual void OnDetach() {}
 	virtual void OnUpdate(float const dt) {}
 	virtual void OnGuiRender() {}
+	virtual void OnPostRender() {}
 	virtual void OnInputEvent(FInputEvent* event) {}
 
 	const std::string& GetName() const { return m_DebugName; }

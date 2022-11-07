@@ -23,14 +23,10 @@ mono::mono_method_invoker* Scene::delete_game_object_ = nullptr;
 
 const char kIsNotCachedErrorMessage[] = "Scene methods are not cached.";
 
-const mono::mono_object& Scene::GetInternal() const {
-    return object_;
-}
-
 size_t Scene::Count() const {
     assert(count_ != nullptr && kIsNotCachedErrorMessage);
 
-    mono::mono_object value(count_->get_value(object_));
+    mono::mono_object value(count_->get_value(GetInternal()));
     int count = *reinterpret_cast<int*>(value.unbox());
 
     assert(count >= 0 && "Count less then zero.");
@@ -39,26 +35,19 @@ size_t Scene::Count() const {
 }
 
 Scene::Scene(const mono::mono_assembly& assembly)
-    : assembly_(assembly)
-    , object_(assembly.get_type("GameplayCore", "Scene").new_instance())
-    , handle_(0)
-{
-    handle_ = mono_gchandle_new(object_.get_internal_ptr(), true);
-}
-
-Scene::~Scene() {
-    mono_gchandle_free(handle_);
-}
+    : Object(assembly.get_type("GameplayCore", "Scene").new_instance())
+    , assembly_(assembly)
+{}
 
 std::shared_ptr<GameObject> Scene::CreateGameObject() {
-    mono::mono_object object(create_game_object_->invoke(object_));
+    mono::mono_object object(create_game_object_->invoke(GetInternal()));
     Invalidate();
-    return std::shared_ptr<GameObject>(new GameObject(assembly_, std::move(object)));
+    return std::make_shared<GameObject>(assembly_, std::move(object));
 }
 
 void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
     void* params[1] = { game_object->GetInternal().get_internal_ptr() };
-    delete_game_object_->invoke(object_, params);
+    delete_game_object_->invoke(GetInternal(), params);
     Invalidate();
     game_object.reset();
 }
@@ -66,42 +55,42 @@ void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
 void Scene::Initialize() {
     assert(initialize_ != nullptr && kIsNotCachedErrorMessage);
 
-    initialize_->invoke(object_);
+    initialize_->invoke(GetInternal());
 }
 
 void Scene::FixedUpdate() {
     assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
 
-    fixed_update_->invoke(object_);
+    fixed_update_->invoke(GetInternal());
 }
 
 void Scene::Update() {
     assert(update_ != nullptr && kIsNotCachedErrorMessage);
 
-    update_->invoke(object_);
+    update_->invoke(GetInternal());
 }
 
 void Scene::Render() {
     assert(render_ != nullptr && kIsNotCachedErrorMessage);
 
-    render_->invoke(object_);
+    render_->invoke(GetInternal());
 }
 
 void Scene::Terminate() {
     assert(terminate_ != nullptr && kIsNotCachedErrorMessage);
 
-    terminate_->invoke(object_);
+    terminate_->invoke(GetInternal());
 }
 
 void Scene::Invalidate() {
     assert(invalidate_ != nullptr && kIsNotCachedErrorMessage);
 
-    invalidate_->invoke(object_);
+    invalidate_->invoke(GetInternal());
 }
 
 std::string Scene::Serialize()
 {
-    mono::mono_object result(serialize_->invoke(object_));
+    mono::mono_object result(serialize_->invoke(GetInternal()));
     mono::mono_string json(result);
     // Call method serialize
     return json.as_utf8();
@@ -115,7 +104,7 @@ void Scene::Deserialize(const std::string& data)
     void* params[1];
     params[0] = json.get_internal_ptr();
 
-    deserialize_->invoke(object_, params);
+    deserialize_->invoke(GetInternal(), params);
     // Call method deserialize
 }
 
@@ -125,8 +114,8 @@ std::shared_ptr<GameObject> Scene::operator[](size_t index) const {
     void* args[1];
     args[0] = &index;
 
-    mono::mono_object component(get_item_->invoke(object_, args));
-    return std::shared_ptr<GameObject>(new GameObject(assembly_, component));
+    mono::mono_object component(get_item_->invoke(GetInternal(), args));
+    return std::make_shared<GameObject>(assembly_, component);
 }
 
 void Scene::CacheMethods(const mono::mono_assembly& assembly) {

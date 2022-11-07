@@ -25,7 +25,8 @@ namespace GameplayCore.Components
                 var target = _transformComponent.Position + _transformComponent.Forward;
                 var up = _transformComponent.Up;
                 var view = Matrix.LookAtRH(eye, target, up);
-                var projection = Matrix.PerspectiveFovRH(fow, 800.0f / 600, Near, Far);
+                float aspect = (float)Screen.Width / Screen.Height;
+                var projection = Matrix.PerspectiveFovRH(fow, aspect, Near, Far);
                 EngineApi.Render.SetViewProjection(Time.EllapsedTime, view, projection);
             }
         }
