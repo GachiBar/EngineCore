@@ -8,32 +8,6 @@
 #include <memory>
 #include <unordered_set>
 
-struct ComponentData
-{
-	const std::string NameSpace;
-	const std::string Name;
-	const std::string FullName;
-
-	ComponentData(std::string nameSpace, std::string name)
-		: NameSpace(std::move(nameSpace))
-		, Name(std::move(name))
-		, FullName(NameSpace + "." + Name)
-	{}
-
-	friend bool operator== (const ComponentData& lhs, const ComponentData& rhs);
-};
-
-template<>
-struct std::hash<ComponentData>
-{
-	size_t operator()(const ComponentData& componentData) const noexcept
-	{
-		size_t hash1 = std::hash<std::string>{}(componentData.NameSpace);
-		size_t hash2 = std::hash<std::string>{}(componentData.Name);
-		return hash1 ^ (hash2 << 1);
-	}
-};
-
 class PropertyWindow
 {
 public:
@@ -56,13 +30,14 @@ private:
 	std::shared_ptr<engine::GameObject> game_object;
 
 	const char** available_components_items;
+	size_t avaliable_components_count;
+
 	void** game_objects_pointers;
 	char** game_objects_names;
 	size_t game_objects_copasity;
 
 	const mono::mono_assembly& assembly;
-	std::vector<ComponentData> components_names;
-	std::unordered_set<ComponentData> added_components;	
+	std::vector<std::string> components_names;
 
 	void CacheComponentsData();
 
@@ -144,6 +119,10 @@ private:
 	void CopyAsNullTerminated(char* destination, const std::string& source);
 
 	void ChangeGameObjectResourcesCopasity(size_t size);
+
+	void OnComponentAdded(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component);
+	void OnComponentRemoved(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component);
+	void FindAvaliableComponents();
 
 	static std::string GetPropertyName(
 		const engine::Property& property,

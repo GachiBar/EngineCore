@@ -208,6 +208,9 @@
     <ProjectReference Include="..\..\DX11RenderEngine\SimpleMath\SimpleMath.vcxproj">
       <Project>{a8b84bff-0299-4f72-91b1-afe9574b2128}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Core\Core.vcxproj">
+      <Project>{079141c1-0e94-4cf4-9a36-eeed43b67e45}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\InputSystem\InputSystem.vcxproj">
       <Project>{4f8b6eb6-d028-4c38-9d69-227347502957}</Project>
     </ProjectReference>
