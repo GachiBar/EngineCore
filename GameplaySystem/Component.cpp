@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Component.h"
+#include "GameObject.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 #include "../monowrapper/monopp/mono_property.h"
 #include "../monowrapper/monopp/mono_string.h"
@@ -7,90 +8,67 @@
 
 namespace engine {
 
-mono::mono_method_invoker* Component::initialize_;
-mono::mono_method_invoker* Component::terminate_;
-mono::mono_method_invoker* Component::fixed_update_;
-mono::mono_method_invoker* Component::update_;
-mono::mono_method_invoker* Component::render_;
-mono::mono_method_invoker* Component::get_editable_properties_names_;
+mono::mono_property_invoker* Component::game_object_ = nullptr;
+
+mono::mono_method_invoker* Component::initialize_ = nullptr;
+mono::mono_method_invoker* Component::terminate_ = nullptr;
+mono::mono_method_invoker* Component::fixed_update_ = nullptr;
+mono::mono_method_invoker* Component::update_ = nullptr;
+mono::mono_method_invoker* Component::render_ = nullptr;
 
 const char kIsNotCachedErrorMessage[] = "Component methods are not cached.";
 
-const mono::mono_object& Component::GetInternal() const {
-    return object_;
-}
-
 std::string Component::Name() const {
-    return object_.get_type().get_name();
+    return GetInternal().get_type().get_name();
 }
 
-ComponentProperty Component::GetProperty(std::string name) {
-    return ComponentProperty(*this, name);
+std::shared_ptr<GameObject> Component::GameObject() {
+    assert(game_object_ != nullptr && kIsNotCachedErrorMessage);
+
+    mono::mono_object result(game_object_->get_value(GetInternal()));
+    return std::make_shared<engine::GameObject>(assembly_, result);
 }
 
-Component::Component(mono::mono_object object)
-    : object_(std::move(object))
-    , handle_(0)
-{
-    handle_ = mono_gchandle_new(object_.get_internal_ptr(), true);
-    mono::mono_type type = object_.get_type();
-}
-
-Component::~Component() {
-    mono_gchandle_free(handle_);
-}
+Component::Component(const mono::mono_assembly& assembly, mono::mono_object object)
+    : Object(std::move(object))
+    , assembly_(assembly)
+{}
 
 void Component::Initialize() {
     assert(initialize_ != nullptr && kIsNotCachedErrorMessage);
 
-    initialize_->invoke(object_);
+    initialize_->invoke(GetInternal());
 }
 
 void Component::FixedUpdate() {
     assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
 
-    fixed_update_->invoke(object_);
+    fixed_update_->invoke(GetInternal());
 }
 
 void Component::Update() {
     assert(update_ != nullptr && kIsNotCachedErrorMessage);
 
-    update_->invoke(object_);
+    update_->invoke(GetInternal());
 }
 
 void Component::Render() {
     assert(render_ != nullptr && kIsNotCachedErrorMessage);
 
-    render_->invoke(object_);
+    render_->invoke(GetInternal());
 }
 
 void Component::Terminate() {
     assert(terminate_ != nullptr && kIsNotCachedErrorMessage);
 
-    terminate_->invoke(object_);
-}
-
-std::vector<std::string> Component::GetEditablePropertiesNames() {
-    std::vector<std::string> names;
-    auto raw_object = get_editable_properties_names_->invoke(object_);
-    auto raw_array = (MonoArray*)raw_object;
-    mono::mono_array properties_names(raw_array);
-
-    for (int i = 0; i < properties_names.get_length(); ++i) {
-        mono::mono_object name_object(properties_names.get(i));
-        mono::mono_string name_string(name_object);
-        std::string name = name_string.as_utf8();
-        names.push_back(name);
-    }
-
-    return names;
+    terminate_->invoke(GetInternal());
 }
 
 void Component::CacheMethods(const mono::mono_assembly& assembly) {
     mono::mono_type type = assembly.get_type("GameplayCore.Components", "Component");
 
-    mono::mono_method get_editable_properties_names_method(type, "GetEditablePropertiesNames", 0);
-    get_editable_properties_names_ = new mono::mono_method_invoker(get_editable_properties_names_method);
+    mono::mono_property game_object_property(type, "GameObject");
+    game_object_ = new mono::mono_property_invoker(game_object_property);
 
     mono::mono_method initialize_method(type, "Initialize", 0);
     initialize_ = new mono::mono_method_invoker(initialize_method);

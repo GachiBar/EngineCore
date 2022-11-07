@@ -17,6 +17,7 @@ public:
 	virtual void OnUpdate(float const dt);
 	//virtual void OnInputEvent(InputEvent* e) override;
 	virtual void OnGuiRender() override;
+	virtual void OnPostRender() override;
 
 	void SetBlockEvents(bool block) { m_BlockEvents = block; }
 

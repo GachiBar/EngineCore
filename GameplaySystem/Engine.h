@@ -57,6 +57,9 @@ private:
 	mono::mono_property_invoker delta_time_property_;
 	mono::mono_property_invoker ellapsed_time_property_;
 
+	mono::mono_property_invoker screen_width_property_;
+	mono::mono_property_invoker screen_height_property_;
+
 	std::shared_ptr<Scene> scene_;
 
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
@@ -71,6 +74,7 @@ private:
 	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
 	void SetupRendererInternalCalls();
 	void SendTimeData();
+	void SendScreenData();
 };
 
 } // namespace engine

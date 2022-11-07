@@ -1,19 +1,25 @@
 #pragma once
 
+#include "SimpleMath.h"
 
-namespace engine
-{
-	class GameObject;
-}
-
+struct RenderDevice;
 class EditorLayer;
 
-class EditorCamera
+class EditorCamera final
 {
 public:
-	EditorLayer* owner_layer;
+	DirectX::SimpleMath::Matrix View;
+	DirectX::SimpleMath::Matrix Proj;
 
-	engine::GameObject* go;
+	float mouse_sensitivity = 1.f;
+
+	DirectX::SimpleMath::Matrix GetCameraMatrix() const;
+
+	DirectX::SimpleMath::Vector3 CameraPos;
+
+	virtual void UpdateProjectionMatrix();
+
+	EditorLayer* owner_layer;
 
 	void Tick(float dt);
 

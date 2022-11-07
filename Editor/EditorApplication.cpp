@@ -17,7 +17,7 @@ void EditorApplication::OnSetup()
 
 	scene = std::make_shared<engine::Scene>(m_Assembly);
 
-	camera_go = scene->CreateGameObject();
+	//camera_go = scene->CreateGameObject();
 	test_go = scene->CreateGameObject();
 
 	auto game_object_1 = scene->CreateGameObject();
@@ -32,14 +32,24 @@ void EditorApplication::OnSetup()
 	game_object_2->AddComponent("GameplayCore.Components", "TransformComponent");
 
 
-	camera_go->AddComponent("GameplayCore.Components", "CameraComponent");
-	camera_go->AddComponent("GameplayCore.Components", "TransformComponent");
+	//camera_go->AddComponent("GameplayCore.Components", "CameraComponent");
+	//camera_go->AddComponent("GameplayCore.Components", "TransformComponent");
 
 
 	test_go->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	test_go->AddComponent("GameplayCore.Components", "TransformComponent");
+	
+	auto transform = game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");
 
-	Camera->go = camera_go.get();
+	auto property = transform->GetProperty("LocalPosition");
+	DirectX::SimpleMath::Vector3 position(0, 0, -5);
+	property.SetValue(&position);
+	//Camera->go = camera_go.get();
+	//game_object_3->AddComponent("GameplayCore.Components", "MeshRenderComponent");
+	//auto transform = game_object_3->AddComponent("GameplayCore.Components", "TransformComponent");
+	//auto property = transform->GetProperty("LocalPosition");
+	//DirectX::SimpleMath::Vector3 position(0, 0, 1);
+	//property.SetValue(&position);
 
 	for (size_t i = 0; i < scene->Count(); ++i) {
 		std::cout << "go:" << i << "\n";

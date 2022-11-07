@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameplayCore.Mathematics;
 using GameplayCore.Serialization;
+using GameplayCore.Editor;
 
 namespace GameplayCore.Components
 {
@@ -60,8 +61,10 @@ namespace GameplayCore.Components
             }
         }
 
+        [InspectorName("Scale")]
         public Vector3 LocalScale { get; set; } = Vector3.One;
 
+        [InspectorName("Position")]
         public Vector3 LocalPosition { get; set; } = Vector3.Zero;
 
         [HideInInspector]
@@ -190,7 +193,7 @@ namespace GameplayCore.Components
             }
         }
 
-        [SerializeField]
+        [SerializeField, InspectorName("Rotation"), Slider(-180.0f, 180.0f)]
         private Vector3 EditorEuler
         {
             get => _editorEuler;
@@ -223,6 +226,11 @@ namespace GameplayCore.Components
             {
                 _children[0].Parent = null;
             }
+        }
+
+        public TransformComponent GetChild(int index)
+        {
+            return _children[index];
         }
 
         public bool IsChildOf(TransformComponent transform)

@@ -10,8 +10,9 @@ class GameViewWindow
     void* Texture;
     bool isPlaying = false;
     bool windowIsHovered;
+    ImVec2 wsize;
 
-   
+
 public:
     GameViewWindow(void* Texture);
     void draw_imgui();
@@ -19,6 +20,8 @@ public:
     bool getWantCaptureMouse() {
         return windowIsHovered;
     }
+
+    void resize();
     EditorLayer* editor_layer;
 private:
     ImVec2 last_window_size;

@@ -29,7 +29,9 @@ void EditorLayer::OnAttach()
 	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
 	{
 		selected_go = go;
+        properties->SetGameObject(go);
 	});
+    properties->SetScene(GetApp()->GetEngine()->GetScene());
 
 	auto& io = ImGui::GetIO();
 
@@ -211,20 +213,26 @@ void EditorLayer::OnGuiRender()
         };
 
 
-        auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().value().unbox());
-        DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
+        //auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().unbox());
+        //DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
 
 
         DirectX::XMFLOAT4X4 v = change_mat(engine::Engine::GetViewMatrix());
         DirectX::XMFLOAT4X4 p = change_mat(engine::Engine::GetProjectionMatrix());
-        DirectX::XMFLOAT4X4 w = change_mat(t);
-        ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
+        //DirectX::XMFLOAT4X4 w = change_mat(t);
+        //ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
     }
     ImGui::End();
-
-    gvm->draw_imgui();    
+   
+    gvm->draw_imgui(); 
     hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
-    properties->draw_imgui(GetApp()->GetEngine()->GetScene(), selected_go);
+    properties->draw_imgui();
     SettingsWindow->draw_imgui();
 
+}
+
+void EditorLayer::OnPostRender()
+{
+    gvm->resize(); 
+    Layer::OnPostRender();
 }
