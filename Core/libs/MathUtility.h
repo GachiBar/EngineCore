@@ -45,6 +45,14 @@ struct FMath
 	static inline bool IsNearlyZero(float Value, float ErrorTolerance = std::numeric_limits<float>::epsilon());
 
 	static inline bool IsNearlyZero(double Value, double ErrorTolerance = std::numeric_limits<double>::epsilon());
+
+	/** Clamps X to be between Min and Max, inclusive */
+	template< class T >
+	static constexpr inline T Clamp(const T X, const T Min, const T Max)
+	{
+		return (X < Min) ? Min : (X < Max) ? X : Max;
+	}
+
 };
 
 

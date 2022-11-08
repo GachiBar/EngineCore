@@ -47,10 +47,11 @@ void EditorLayer::OnUpdate(float const dt)
 {
 	Layer::OnUpdate(dt);
 
-    auto EditorApp = static_cast<EditorApplication*>(GetApp());
-    if(EditorApp)
+	if(const auto EditorApp = static_cast<EditorApplication*>(GetApp()))
     {
-        EditorApp->Camera->Tick(dt);
+        if(gvm->IsCameraEditorInputMode())
+			EditorApp->Camera->Tick(dt);
+        EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
     }
 }
 

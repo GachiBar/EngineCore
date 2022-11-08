@@ -13,15 +13,18 @@ public:
 
 	float mouse_sensitivity = 1.f;
 
-	DirectX::SimpleMath::Matrix GetCameraMatrix() const;
+	
 
-	DirectX::SimpleMath::Vector3 CameraPos;
-
-	virtual void UpdateProjectionMatrix();
+	
+	void UpdateEditorViewProjectionMatrix(float dt) const;
 
 	EditorLayer* owner_layer;
 
 	void Tick(float dt);
+private:
+	virtual void UpdateProjectionMatrix();
+
+	DirectX::SimpleMath::Vector3 CameraPos;
 
 	float Yaw = 0;
 	float Pitch = 0;

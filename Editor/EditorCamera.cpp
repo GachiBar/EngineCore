@@ -5,19 +5,17 @@
 #include "../GameplaySystem/Component.h"
 #include "EditorLayer.h"
 #include "RenderEngine.h"
-
-//TODO get this from input settings
-static float mouse_sensitivity = 1.f;
-
-DirectX::SimpleMath::Matrix EditorCamera::GetCameraMatrix() const
-{
-	return View * Proj;
-}
+#include "libs/MathUtility.h"
 
 void EditorCamera::UpdateProjectionMatrix()
 {
 	auto out_texture = owner_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture");
 	Proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XMConvertToRadians(60.f), (float)out_texture.width/ (float)out_texture.height, 0.1f, 100000.f);
+}
+
+void EditorCamera::UpdateEditorViewProjectionMatrix(float dt) const
+{
+	owner_layer->GetApp()->GetEngine()->GetRenderer().SetRenderData({ dt,View,Proj });
 }
 
 void EditorCamera::Tick(float dt)
@@ -30,7 +28,7 @@ void EditorCamera::Tick(float dt)
 	Pitch -= player_input->GetKeyValue(EKeys::MouseY) * 0.003f * mouse_sensitivity;
 	auto rotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(Yaw, Pitch, 0);
 
-	const float WheelAxisValue = player_input->GetAxisValue("Editor_WheelAxis");
+	const float WheelAxisValue = player_input->GetKeyValue(EKeys::MouseWheelAxis);
 	if(WheelAxisValue >0.f)
 	{
 		velocity_magnitude += 1;
@@ -39,7 +37,7 @@ void EditorCamera::Tick(float dt)
 	{
 		velocity_magnitude -= 1;
 	}
-
+	velocity_magnitude = FMath::Clamp(velocity_magnitude, 1.f, 10.f);
 	auto velDirection = Vector3::Zero;
 
 	if (player_input->IsPressed(EKeys::W)) velDirection += Vector3(1.f, 0.f, 0.f);
@@ -68,5 +66,5 @@ void EditorCamera::Tick(float dt)
 	View = DirectX::SimpleMath::Matrix::CreateLookAt(CameraPos, CameraPos + rotMat.Forward(), rotMat.Up());
 	UpdateProjectionMatrix();
 
-	owner_layer->GetApp()->GetEngine()->GetRenderer().SetRenderData({ dt,View,Proj });
+	//UpdateEditorViewProjectionMatrix(dt);
 }
