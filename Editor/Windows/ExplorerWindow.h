@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 
+class Application;
 struct FileData;
 enum FileType;
 class ID3D11ShaderResourceView;
@@ -12,7 +13,7 @@ class ID3D11ShaderResourceView;
 class ExplorerWindow
 {
 public:
-    ExplorerWindow();
+    ExplorerWindow(const Application* app);
     void draw();
 
 private:
@@ -20,11 +21,12 @@ private:
     void load_files_textures();
     
     bool draw_button_with_icon(const std::string& name, FileType type);
-    ID3D11ShaderResourceView* get_texture(const char* filename);
+    ID3D11ShaderResourceView* get_texture(const char* filename) const;
     void on_file_picked(const std::filesystem::path& path);
 
     std::filesystem::path current_path;
-    std::map<FileType, ID3D11ShaderResourceView*> textures; 
+    std::map<FileType, ID3D11ShaderResourceView*> textures;
+    const Application* app;
 };
 
 struct FileData

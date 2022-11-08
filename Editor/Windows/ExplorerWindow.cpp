@@ -3,12 +3,15 @@
 #include <iostream>
 
 #include "imgui/imgui.h"
+#include "../GameplaySystem/Engine.h"
+#include "../Application.h"
 
 namespace fs = std::filesystem;
 
-ExplorerWindow::ExplorerWindow()
+ExplorerWindow::ExplorerWindow(const Application* app)
 {
-    current_path = fs::relative(fs::current_path(), fs::current_path());
+    this->app = app;
+    current_path = fs::relative(fs::current_path() / "Assets", fs::current_path());
     load_files_textures();
 }
 
@@ -99,15 +102,22 @@ const std::vector<FileData>& ExplorerWindow::get_files_data() const
     return data;
 }
 
-ID3D11ShaderResourceView* ExplorerWindow::get_texture(const char* filename)
+ID3D11ShaderResourceView* ExplorerWindow::get_texture(const char* filename) const
 {
-    return nullptr;
+    RenderDevice& device = app->GetEngine()->GetRenderer();
+    
+    size_t id = std::strlen(filename);
+    device.RegisterTexture(id, filename);
+    const RenderDevice::Texture texture = device.GetTexture(id);
+    
+    return static_cast<ID3D11ShaderResourceView*>(texture.texture);
 }
 
 void ExplorerWindow::load_files_textures()
 {
-    textures[FileType::PlainText] = get_texture("Icons/TextIcon.png");
-    textures[FileType::Directory] = get_texture("Icons/FolderIcon.png");
+    const fs::path icons_path = fs::current_path() / "vendor" / "Icons";
+    textures[FileType::PlainText] = get_texture(absolute((icons_path / "files.png")).generic_string().c_str());
+    textures[FileType::Directory] = get_texture((icons_path / "folder.png").generic_string().c_str());
 }
 
 void ExplorerWindow::on_file_picked(const std::filesystem::path& path)

@@ -26,7 +26,7 @@ void EditorLayer::OnAttach()
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
-    explorer = std::make_shared<ExplorerWindow>();
+    explorer = std::make_shared<ExplorerWindow>(GetApp());
 
 	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
 	{
