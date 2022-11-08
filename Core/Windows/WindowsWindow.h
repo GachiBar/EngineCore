@@ -89,6 +89,8 @@ public:
 	virtual bool IsForegroundWindow() const override;
 	virtual bool IsFullscreenSupported() const override;
 	virtual void SetText(std::wstring const & Text) override;
+	IApplication* GetOwningApplication() override;
+
 private:
 
 	/** Protect the constructor; only TSharedRefs of this class can be made. */

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GenericApplicationMessageHandler.h"
-#include "../KeyStruct.h"
 
 struct WindowsApplicationMessageHandler : public FGenericApplicationMessageHandler
 {
@@ -19,8 +18,8 @@ struct WindowsApplicationMessageHandler : public FGenericApplicationMessageHandl
 	virtual bool OnMouseWheel( const float Delta, const FVector2D CursorPos ) override;
 	virtual bool OnMouseMove() override;
 	virtual bool OnRawMouseMove(const int32 X, const int32 Y) override;
-	virtual void OnSizeChanged(const std::shared_ptr< FGenericWindow >& PlatformWindow, const int32 Width, const int32 Height, bool bWasMinimized) override;
-	virtual void OnResizingWindow( const std::shared_ptr< FGenericWindow >& PlatformWindow ) override;
+	virtual void OnSizeChanged(const std::shared_ptr< FGenericWindow >& PlatformWindow, const int32 Width, const int32 Height) override;
+	virtual void OnResizingWindow(const std::shared_ptr< FGenericWindow >& PlatformWindow, bool bWasMinimized) override;
 	virtual void OnMovedWindow( const std::shared_ptr< FGenericWindow >& PlatformWindow, const int32 X, const int32 Y ) override;
 	virtual bool OnApplicationActivationChanged( const bool InAppActivated) override;
 	virtual void OnWindowClose( const std::shared_ptr< FGenericWindow >& PlatformWindow ) override;

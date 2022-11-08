@@ -19,7 +19,7 @@ EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selec
 
 void EditorLayer::OnAttach()
 {
-	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture);
+	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture,this);
     gvm->editor_layer = this;
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>();

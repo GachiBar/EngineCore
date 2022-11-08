@@ -37,8 +37,12 @@ public:
 
     std::shared_ptr<FGenericWindow> GetMainWindow() override;
 
+    engine::Engine* GetEngine() const override;
+    void ResizeBackBuffer(int32 InWidth, int32 InHeight) override;
+    void ResizeViewport(int32 InWidth, int32 InHeight) override;
+    
+
     const mono::mono_assembly& GetAssembly() const;
-    engine::Engine* GetEngine() const;
     virtual WNDPROC GetWndProc() override;
 
     virtual ~Application() = default;
@@ -49,8 +53,10 @@ protected:
     bool is_exit_requested = false;
 
     void ApplyInput();
+public:
 
-    LayerStack m_LayerStack;
+protected:
+	LayerStack m_LayerStack;
     std::vector<std::shared_ptr<FGenericWindow>> wnds;
 
     mono::mono_jit_domain m_JitDomain;

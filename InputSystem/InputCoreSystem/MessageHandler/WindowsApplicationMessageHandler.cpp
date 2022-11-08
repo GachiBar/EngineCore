@@ -246,11 +246,12 @@ bool WindowsApplicationMessageHandler::OnRawMouseMove(const int32 X, const int32
 }
 
 void WindowsApplicationMessageHandler::OnSizeChanged(const std::shared_ptr<FGenericWindow>& PlatformWindow,
-                                                     const int32 Width, const int32 Height, bool bWasMinimized)
+                                                     const int32 Width, const int32 Height)
 {
+		PlatformWindow->OnSizeChanged(Width, Height);
 }
 
-void WindowsApplicationMessageHandler::OnResizingWindow(const std::shared_ptr<FGenericWindow>& PlatformWindow)
+void WindowsApplicationMessageHandler::OnResizingWindow(const std::shared_ptr<FGenericWindow>& PlatformWindow, bool bWasMinimized)
 {
 	// Flush the rendering command queue to ensure that there aren't pending viewport draw commands for the old viewport size.
 	//Renderer->FlushCommands();

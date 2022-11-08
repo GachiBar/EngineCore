@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "Windows/GenericWindow.h"
+
 EditorApplication::EditorApplication()
 	: Application() //,mw(new MainWindow)
 	, scene(nullptr)
@@ -62,7 +64,6 @@ void EditorApplication::OnSetup()
 	}
 
 	engine_->SetScene(scene);
-
 }
 
 void EditorApplication::OnStart()
@@ -71,6 +72,9 @@ void EditorApplication::OnStart()
 	const auto editor_layer = new EditorLayer(&m_LayerStack);
 	Camera->owner_layer = editor_layer;
 	PushLayer(editor_layer);
+
+	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::on_resize_viewport);
+	
 }
 
 engine::GameObject* EditorApplication::GetCamera() const

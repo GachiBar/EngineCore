@@ -151,24 +151,6 @@ int Application::Run()
 		for (const auto layer : m_LayerStack)
 			layer->OnUpdate(engine_->kDt);;
 
-		if(InputManager::getInstance().player_input->IsPressed(EKeys::Invalid))
-			std::cout << "Pressed" << std::endl;
-
-		if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
-		{
-			std::cout << "Pressed" << std::endl;
-		}
-		if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
-		{
-			std::cout << "StillPressed" << std::endl;
-		}
-		if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
-		{
-			std::cout << "Released" << std::endl;
-		}
-		
-		std::cout << InputManager::getInstance().player_input->GetKeyValue(EKeys::MouseX);
-
 		InputManager::getInstance().Flush();
 
 		engine_->BeginRender();
@@ -207,6 +189,16 @@ const mono::mono_assembly& Application::GetAssembly() const
 engine::Engine* Application::GetEngine() const
 {
 	return engine_.get();
+}
+
+void Application::ResizeBackBuffer(int32 InWidth, int32 InHeight)
+{
+	GetEngine()->GetRenderer().ResizeBackBuffer(InWidth, InHeight);
+}
+
+void Application::ResizeViewport(int32 InWidth, int32 InHeight)
+{
+	GetEngine()->GetRenderer().ResizeViewport(InWidth, InHeight);
 }
 
 WNDPROC Application::GetWndProc()

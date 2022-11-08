@@ -350,15 +350,16 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	{
 		if (app->GetMainWindow())
 		{
-			// @todo Fullscreen - Perform deferred resize
-			// Note WM_SIZE provides the client dimension which is not equal to the window dimension if there is a windows border 
-			const int32 NewWidth = (int)(short)(LOWORD(lparam));
-			const int32 NewHeight = (int)(short)(HIWORD(lparam));
+			PRECT rectp = (PRECT)lparam;
+
+			int width = rectp->right-rectp->left;
+			int height = rectp->bottom - rectp->top;
+
 
 			const FGenericWindowDefinition& Definition = app->GetMainWindow()->GetDefinition();
 			if (Definition.IsRegularWindow && !Definition.HasOSWindowBorder)
 			{
-				static_cast<FWindowsWindow*>(app->GetMainWindow().get())->AdjustWindowRegion(NewWidth, NewHeight);
+				static_cast<FWindowsWindow*>(app->GetMainWindow().get())->AdjustWindowRegion(width, height);
 			}
 
 			const bool bWasMinimized = (wparam == SIZE_MINIMIZED);
@@ -368,20 +369,22 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
 			if (!bIsFullscreen)
 			{
-				GetMessageHandler()->OnSizeChanged(app->GetMainWindow(), NewWidth, NewHeight, bWasMinimized);
+				GetMessageHandler()->OnSizeChanged(app->GetMainWindow(), width, height);
 			}
 		}
 	}
 	else if (msg == WM_SIZE)
 	{
-		if(app)
+		if(app && app->GetMainWindow())
 		{
 			const bool bIsFullscreen = (app->GetMainWindow()->GetWindowMode() == EWindowMode::Type::Fullscreen);
 
 			// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
 			if (!bIsFullscreen)
 			{
-				GetMessageHandler()->OnResizingWindow(app->GetMainWindow());
+				const bool bWasMinimized = (wparam == SIZE_MINIMIZED);
+
+				GetMessageHandler()->OnResizingWindow(app->GetMainWindow(),bWasMinimized);
 			}
 		}
 	}
@@ -431,7 +434,7 @@ void InputManager::RegisterInputDevice(IApplication* InApp)
 
 	if (RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])) == FALSE)
 	{
-		auto errorCode = GetLastError();
+		const auto errorCode = GetLastError();
 		std::cout << "ERROR: " << errorCode << std::endl;
 	}
 }
