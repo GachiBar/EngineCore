@@ -185,5 +185,17 @@ namespace GameplayCore.Components
                 _gameObjectValue = value;
             }
         }
+
+        public override void Initialize()
+        {
+            var transform = GameObject.GetComponent<TransformComponent>();
+
+            if (transform != null)
+            {
+                var child = GameObject.Scene.CreateGameObject();
+                var childTransform = child.AddComponent<TransformComponent>();
+                childTransform.Parent = transform;
+            }
+        }
     }
 }

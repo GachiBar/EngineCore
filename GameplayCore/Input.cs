@@ -88,7 +88,6 @@ namespace GameplayCore
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static bool Internal_WasJustReleased(string keyName);
 
-
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static bool Internal_IsActionPressed(string actionName);
 
@@ -100,6 +99,7 @@ namespace GameplayCore
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static float Internal_GetKeyValue(string keyName);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static float Internal_GetAxisValue(string axisName);
     }

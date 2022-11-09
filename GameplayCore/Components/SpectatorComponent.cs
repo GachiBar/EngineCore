@@ -14,22 +14,25 @@ namespace GameplayCore.Components
 
         public override void Update()
         {
-            var dx = Input.GetKeyValue(Keys.MouseX);
-            var dy = Input.GetKeyValue(Keys.MouseY);
+            if (_transformComponent != null)
+            {
+                var dx = Input.GetKeyValue(Keys.MouseX);
+                var dy = Input.GetKeyValue(Keys.MouseY);
 
-            _yaw -= dx * _weight * Sensivity;
-            _pitch -= dy * _weight * Sensivity;
-            _pitch = MathUtil.Clamp(_pitch, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
+                _yaw -= dx * _weight * Sensivity;
+                _pitch -= dy * _weight * Sensivity;
+                _pitch = MathUtil.Clamp(_pitch, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
 
-            var rotation = Matrix.RotationYawPitchRoll(_yaw, _pitch, 0);
-            var axis = GetAxis();
-            var direction = 
-                axis.X * rotation.Right + 
-                axis.Y * Vector3.Up + 
-                axis.Z * rotation.Forward;
+                var rotation = Matrix.RotationYawPitchRoll(_yaw, _pitch, 0);
+                var axis = GetAxis();
+                var direction =
+                    axis.X * rotation.Right +
+                    axis.Y * Vector3.Up +
+                    axis.Z * rotation.Forward;
 
-            _transformComponent.LocalPosition += direction * Velocity * Time.DeltaTime;          
-            _transformComponent.LocalRotation = Quaternion.RotationMatrix(rotation);
+                _transformComponent.LocalPosition += direction * Velocity * Time.DeltaTime;
+                _transformComponent.LocalRotation = Quaternion.RotationMatrix(rotation);
+            }
         }
 
         protected override void OnAttach(GameObject gameObject)
