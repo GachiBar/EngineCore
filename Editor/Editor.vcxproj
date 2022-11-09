@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="EditorApplication.h" />
+    <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorInputMode.h" />
     <ClInclude Include="EditorLayer.h" />
     <ClInclude Include="GameViewWindow.h" />
@@ -177,6 +178,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="EditorApplication.cpp" />
+    <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorLayer.cpp" />
     <ClCompile Include="GameViewWindow.cpp" />
     <ClCompile Include="ImGuiLayer.cpp" />

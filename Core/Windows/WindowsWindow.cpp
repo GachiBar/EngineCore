@@ -901,6 +901,11 @@ void FWindowsWindow::SetText( std::wstring const & Text )
 	SetWindowText(HWnd, Text.c_str());
 }
 
+IApplication* FWindowsWindow::GetOwningApplication()
+{
+	return OwningApplication;
+}
+
 bool FWindowsWindow::IsRegularWindow() const
 {
 	return Definition->IsRegularWindow;

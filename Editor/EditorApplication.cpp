@@ -4,9 +4,12 @@
 
 #include <iostream>
 
+#include "Windows/GenericWindow.h"
+
 EditorApplication::EditorApplication()
 	: Application() //,mw(new MainWindow)
 	, scene(nullptr)
+	,Camera(new EditorCamera())
 {
 }
 
@@ -15,9 +18,6 @@ void EditorApplication::OnSetup()
 	Application::OnSetup();
 
 	scene = std::make_shared<engine::Scene>(m_Assembly);
-
-	//camera_go = scene->CreateGameObject();
-	//test_go = scene->CreateGameObject();
 
 	auto game_object_1 = scene->CreateGameObject();
 	auto game_object_2 = scene->CreateGameObject();
@@ -30,16 +30,10 @@ void EditorApplication::OnSetup()
 	game_object_2->AddComponent("GameplayCore.Components", "TransformComponent");
 	game_object_2->AddComponent("GameplayCore.Components", "SpectatorComponent");
 
-	//camera_go->AddComponent("GameplayCore.Components", "CameraComponent");
-	//camera_go->AddComponent("GameplayCore.Components", "TransformComponent");
 
-	//test_go->AddComponent("GameplayCore.Components", "MeshRenderComponent");
-	//test_go->AddComponent("GameplayCore.Components", "TransformComponent");
 
-	auto localPositionProperty = transform->GetProperty("LocalPosition");
-	DirectX::SimpleMath::Vector3 position(0, 0, -5);
-	localPositionProperty.SetValue(&position);
 
+	
 	//game_object_3->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	//auto transform = game_object_3->AddComponent("GameplayCore.Components", "TransformComponent");
 	//auto property = transform->GetProperty("LocalPosition");
@@ -57,17 +51,30 @@ void EditorApplication::OnSetup()
 	}
 
 	engine_->SetScene(scene);
-
 }
 
 void EditorApplication::OnStart()
 {
 	Application::OnStart();
 	const auto editor_layer = new EditorLayer(&m_LayerStack);
+	Camera->owner_layer = editor_layer;
 	PushLayer(editor_layer);
+
+	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::on_resize_viewport);
+	
 }
 
 engine::GameObject* EditorApplication::GetCamera() const
 {
 	return camera_go.get();
+}
+
+void EditorApplication::SetEditorOnlyInputMode()
+{
+	editor_input_mode = EEditorInputMode::Type::GameOnlyMode;
+}
+
+void EditorApplication::SetGameOnlyOnlyInputMode()
+{
+	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
 }

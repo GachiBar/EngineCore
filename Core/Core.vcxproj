@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Interfaces\IApplication.h" />
+    <ClInclude Include="Interfaces\IRender.h" />
     <ClInclude Include="Interfaces\IWindowsApplication.h" />
     <ClInclude Include="libs\Delegates.h" />
     <ClInclude Include="libs\imgui_sugar.hpp" />

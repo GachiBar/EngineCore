@@ -42,7 +42,6 @@ void Application::PushOverlay(Layer* layer)
 void Application::OnSetup()
 {
 	EKeys::Initialize();
-	InputManager::getInstance().app = this;
 
 	//input_settings->AddActionMapping("Test", EKeys::A);
 	//input_settings->AddActionMapping("Test", EKeys::W);
@@ -100,6 +99,8 @@ void Application::OnSetup()
 	wnd2->Enable(false);
 	wnd2->Hide();
 	SetFocus(wnd->GetHWnd());
+
+	InputManager::getInstance().RegisterInputDevice(this);
 }
 
 void Application::OnStart()
@@ -147,25 +148,8 @@ int Application::Run()
 		ApplyInput();
 		engine_->RunFrame();
 
-		if(InputManager::getInstance().player_input->IsPressed(EKeys::Invalid))
-			std::cout << "Pressed" << std::endl;
-
-		if(InputManager::getInstance().player_input->WasActionJustPressed("Test2"))
-		{
-			std::cout << "Pressed" << std::endl;
-		}
-		if (InputManager::getInstance().player_input->IsActionPressed("Test2"))
-		{
-			std::cout << "StillPressed" << std::endl;
-		}
-		if (InputManager::getInstance().player_input->WasActionJustReleased("Test2"))
-		{
-			std::cout << "Released" << std::endl;
-		}
-		
-		//std::cout << InputManager::getInstance().player_input->GetAxisValue("TestAxis3");
-
-		InputManager::getInstance().Flush();
+		for (const auto layer : m_LayerStack)
+			layer->OnUpdate(engine_->kDt);;
 
 		engine_->BeginRender();
 
@@ -176,6 +160,8 @@ int Application::Run()
 		
 		for (const auto layer : m_LayerStack)
 			layer->OnPostRender();
+
+		InputManager::getInstance().Flush();
 	}
 
 	OnStop();
@@ -203,6 +189,16 @@ const mono::mono_assembly& Application::GetAssembly() const
 engine::Engine* Application::GetEngine() const
 {
 	return engine_.get();
+}
+
+void Application::ResizeBackBuffer(int32 InWidth, int32 InHeight)
+{
+	GetEngine()->GetRenderer().ResizeBackBuffer(InWidth, InHeight);
+}
+
+void Application::ResizeViewport(int32 InWidth, int32 InHeight)
+{
+	GetEngine()->GetRenderer().ResizeViewport(InWidth, InHeight);
 }
 
 WNDPROC Application::GetWndProc()

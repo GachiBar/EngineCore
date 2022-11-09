@@ -1,7 +1,12 @@
 #pragma once
 
-#include "imgui/imgui.h"
+#include <string>
 
+#include "imgui/imgui.h"
+#include <Windows.h>
+
+#include "Definitions.h"
+#include "ImGuizmo/ImGuizmo.h"
 
 class EditorLayer;
 
@@ -9,45 +14,34 @@ class GameViewWindow
 {
     void* Texture;
     bool isPlaying = false;
-    bool windowIsHovered;
     ImVec2 wsize;
 
 
 public:
-    GameViewWindow(void* Texture);
+    GameViewWindow(void* InTexture, EditorLayer* InEditorLayer);
+
+    void update();
+
     void draw_imgui();
 
-    bool getWantCaptureMouse() {
-        return windowIsHovered;
-    }
-
+    void on_resize_viewport(int32 InWidth,int32 InHeight);
     void resize();
     EditorLayer* editor_layer;
+
+    bool IsInCameraEditorInputMode() const;
+
+    void SwitchOperationMode();
 private:
+    bool bInFocus = false;
+
+    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::WORLD;
+    ImGuizmo::OPERATION CurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+
+    void draw_gizmos();
+    std::string SelectedRenderTarget;
+    POINT  LastCursorPos;
+
+    bool bIsEditorInputMode = false;
     ImVec2 last_window_size;
-    /*
-    ImVec2 getLargestSizeForViewport() {
-        ImVec2 windowSize = ImGui::GetContentRegionAvail();
-
-        float aspectWidth = windowSize.x;
-        float aspectHeight = aspectWidth / (16.0f / 9.0f);
-        if (aspectHeight > windowSize.y) {
-            // We must switch to pillarbox mode
-            aspectHeight = windowSize.y;
-            aspectWidth = aspectHeight * (16.0f / 9.0f);
-        }
-
-        return {aspectWidth, aspectHeight};
-    }
-
-    ImVec2 getCenteredPositionForViewport(ImVec2 aspectSize) {
-        ImVec2 windowSize=ImGui::GetContentRegionAvail();
-
-        float viewportX = (windowSize.x / 2.0f) - (aspectSize.x / 2.0f);
-        float viewportY = (windowSize.y / 2.0f) - (aspectSize.y / 2.0f);
-
-        return {viewportX + ImGui::GetCursorPosX(), viewportY + ImGui::GetCursorPosY()};
-    }
-    */
 };
 

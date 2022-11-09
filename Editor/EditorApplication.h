@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Application.h"
+#include "EditorCamera.h"
 #include "EditorInputMode.h"
 
 class EditorApplication final : public Application
@@ -18,6 +19,7 @@ public:
 
 	std::shared_ptr<engine::GameObject> test_go;
 
+	std::shared_ptr < EditorCamera> Camera;
 	
 	void SetEditorOnlyInputMode();
 

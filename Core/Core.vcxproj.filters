@@ -66,6 +66,9 @@
     <ClInclude Include="libs\Delegates.h">
       <Filter>libs</Filter>
     </ClInclude>
+    <ClInclude Include="Interfaces\IRender.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Windows\GenericWindow.cpp">

@@ -16,6 +16,7 @@ public:
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
+	void OnUpdate(float const dt) override;
 	//virtual void OnInputEvent(InputEvent* e) override;
 	virtual void OnGuiRender() override;
 	virtual void OnPostRender() override;
@@ -28,7 +29,9 @@ public:
 	std::shared_ptr<MenuBar> menu_bar;
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
 	std::shared_ptr<ExplorerWindow> explorer;
-	
+
+	engine::GameObject* GetSelectedGo();
+
 private:
 	std::shared_ptr<engine::GameObject> editor_camera;
 	std::shared_ptr<engine::GameObject> selected_go;
