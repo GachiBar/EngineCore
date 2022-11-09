@@ -21,6 +21,7 @@ void EditorApplication::OnSetup()
 
 	auto game_object_1 = scene->CreateGameObject();
 	auto game_object_2 = scene->CreateGameObject();
+	auto game_object_3 = scene->CreateGameObject();
 
 	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	auto transform = game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");

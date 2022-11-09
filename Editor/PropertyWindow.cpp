@@ -81,16 +81,11 @@ void PropertyWindow::draw_imgui()
 
 	for (size_t i = 0; i < game_object->Count(); ++i)
 	{
-		// We nead push id to allow multiple buttons with same names ("Remove").
-		ImGui::PushID(i);
-
 		auto component = (*game_object)[i];
-		auto componentType = component->GetInternal().get_type();
-
 		DrawComponentProperties(component);
-		ImGui::PopID();
 	}
 
+	ImGui::Separator();
 	DrawAddComponentPanel();
 	ImGui::End();
 }
@@ -138,14 +133,20 @@ void PropertyWindow::CacheComponentsData()
 
 void PropertyWindow::DrawGameObjectProperties()
 {
-	if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) {
-		ImGui::Text(std::format("{}: {}", "Name", game_object->Name()).c_str());
+	if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) 
+	{
+		auto nameProperty = game_object->GetProperty("Name");
+		auto attributes = nameProperty.GetAttributes();
+		DrawStringProperty(nameProperty, attributes);
 	}
 }
 
 void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> component)
 {	
-	if (ImGui::CollapsingHeader(component->Name().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+	bool visible = true;
+
+	if (ImGui::CollapsingHeader(component->Name().c_str(), &visible, ImGuiTreeNodeFlags_DefaultOpen)) 
+	{
 		auto properties = component->GetProperties();
 		
 		for (auto property : properties) 
@@ -212,11 +213,11 @@ void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> 
 				break;
 			}
 		}
+	}
 
-		if (ImGui::Button("Remove")) 
-		{
-			game_object->RemoveComponent(component);
-		}
+	if (!visible) 
+	{
+		game_object->RemoveComponent(component);
 	}
 }
 

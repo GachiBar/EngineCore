@@ -92,7 +92,13 @@ std::shared_ptr<Component> GameObject::GetComponent(const mono::mono_type& compo
     MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
     void* params[1] = { reflection_type };
 
-    mono::mono_object component(get_component_->invoke(GetInternal(), params));
+    auto raw_component = get_component_->invoke(GetInternal(), params);
+
+    if (raw_component == nullptr) {
+        return nullptr;
+    }
+
+    mono::mono_object component(raw_component);
     return std::shared_ptr<Component>(new Component(assembly_, std::move(component)));
 }
 
