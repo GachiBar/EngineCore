@@ -1,5 +1,6 @@
 #include "InputManager.h"
 
+#include <iostream>
 #include <windowsx.h>
 
 #include "../Core/Windows/WindowsWindow.h"
@@ -21,7 +22,7 @@ Mouse& InputManager::GetMouseDevice()
 
 bool InputManager::IsInputMessage(UINT msg)
 {
-	if (IsMouseMessage(msg) || IsKeyboardMessage(msg))
+	if (IsMouseMessage(msg) || IsKeyboardMessage(msg) || msg == WM_INPUT || msg==WM_SIZE || msg==WM_SIZING)
 	{
 		return true;
 	}
@@ -97,6 +98,29 @@ bool InputManager::IsKeyboardMessage(UINT msg)
 
 void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	if(msg==WM_INPUT)
+	{
+		UINT dwSize = 0;
+		GetRawInputData(reinterpret_cast<HRAWINPUT>(lparam), RID_INPUT, nullptr, &dwSize, sizeof(RAWINPUTHEADER));
+		LPBYTE lpb = new BYTE[dwSize];
+		if (lpb == nullptr) {
+			return;
+		}
+		if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
+			OutputDebugString(TEXT("GetRawInputData does not return correct size !\n"));
+
+		RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(lpb);
+
+		if (raw->header.dwType == RIM_TYPEMOUSE)
+		{
+			GetMessageHandler()->OnRawMouseMove(raw->data.mouse.lLastX, raw->data.mouse.lLastY);
+			delete[] lpb;
+			return;
+		}
+
+		delete[] lpb;
+	}
+
 	if (msg == WM_KILLFOCUS)
 		Flush();
 	else if (msg == WM_INPUTLANGCHANGE || msg == WM_INPUTLANGCHANGEREQUEST)
@@ -224,7 +248,7 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CursorPoint.y = GET_Y_LPARAM(lparam);
 
 
-			GetMessageHandler()->OnMouseMove();
+			//GetMessageHandler()->OnMouseMove();
 		}
 		else if (msg == WM_MOUSEWHEEL || msg == WM_MOUSEHWHEEL)
 		{
@@ -326,15 +350,16 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	{
 		if (app->GetMainWindow())
 		{
-			// @todo Fullscreen - Perform deferred resize
-			// Note WM_SIZE provides the client dimension which is not equal to the window dimension if there is a windows border 
-			const int32 NewWidth = (int)(short)(LOWORD(lparam));
-			const int32 NewHeight = (int)(short)(HIWORD(lparam));
+			PRECT rectp = (PRECT)lparam;
+
+			int width = rectp->right-rectp->left;
+			int height = rectp->bottom - rectp->top;
+
 
 			const FGenericWindowDefinition& Definition = app->GetMainWindow()->GetDefinition();
 			if (Definition.IsRegularWindow && !Definition.HasOSWindowBorder)
 			{
-				static_cast<FWindowsWindow*>(app->GetMainWindow().get())->AdjustWindowRegion(NewWidth, NewHeight);
+				static_cast<FWindowsWindow*>(app->GetMainWindow().get())->AdjustWindowRegion(width, height);
 			}
 
 			const bool bWasMinimized = (wparam == SIZE_MINIMIZED);
@@ -344,18 +369,23 @@ void InputManager::ProcessInput(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
 			if (!bIsFullscreen)
 			{
-				GetMessageHandler()->OnSizeChanged(app->GetMainWindow(), NewWidth, NewHeight, bWasMinimized);
+				GetMessageHandler()->OnSizeChanged(app->GetMainWindow(), width, height);
 			}
 		}
 	}
 	else if (msg == WM_SIZE)
 	{
-		const bool bIsFullscreen = (app->GetMainWindow()->GetWindowMode() == EWindowMode::Type::Fullscreen);
-
-		// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
-		if (!bIsFullscreen)
+		if(app && app->GetMainWindow())
 		{
-			GetMessageHandler()->OnResizingWindow(app->GetMainWindow());
+			const bool bIsFullscreen = (app->GetMainWindow()->GetWindowMode() == EWindowMode::Type::Fullscreen);
+
+			// When in fullscreen Windows rendering size should be determined by the application. Do not adjust based on WM_SIZE messages.
+			if (!bIsFullscreen)
+			{
+				const bool bWasMinimized = (wparam == SIZE_MINIMIZED);
+
+				GetMessageHandler()->OnResizingWindow(app->GetMainWindow(),bWasMinimized);
+			}
 		}
 	}
 	// ************ END MOUSE MESSAGES ************ //
@@ -384,6 +414,29 @@ void InputManager::SetPlayerInput(PlayerInput* InPlayerEnums)
 FGenericApplicationMessageHandler* InputManager::GetMessageHandler()
 {
 	return player_input->MessageHandler.get();
+}
+
+void InputManager::RegisterInputDevice(IApplication* InApp)
+{
+	app = InApp;
+
+	RAWINPUTDEVICE Rid[2];
+
+	Rid[0].usUsagePage = 0x01;
+	Rid[0].usUsage = 0x02;
+	Rid[0].dwFlags = 0; // adds HID mouse and also ignores legacy mouse messages
+	Rid[0].hwndTarget = static_cast<FWindowsWindow*>(app->GetMainWindow().get())->GetHWnd();
+
+	Rid[1].usUsagePage = 0x01;
+	Rid[1].usUsage = 0x06;
+	Rid[1].dwFlags = 0; // adds HID keyboard and also ignores legacy keyboard messages
+	Rid[1].hwndTarget = static_cast<FWindowsWindow*>(app->GetMainWindow().get())->GetHWnd();
+
+	if (RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])) == FALSE)
+	{
+		const auto errorCode = GetLastError();
+		std::cout << "ERROR: " << errorCode << std::endl;
+	}
 }
 
 InputManager::InputManager() : app(nullptr),

@@ -37,12 +37,13 @@ public:
 
 	FGenericApplicationMessageHandler* GetMessageHandler();
 
-    IApplication* app;
+    void RegisterInputDevice(IApplication* InApp);
 
     std::shared_ptr<InputSettings> input_settings;
     std::shared_ptr<PlayerInput> player_input;
 
 private:
+    IApplication* app;
 
     InputManager();
 

@@ -5,8 +5,9 @@
 
 #include "SimpleMath.h"
 #include "../InputEvent/Events.h"
-#include "../WindowsPlatformInput.h"
+#include "../../../Core/Interfaces/IApplication.h"
 #include "../../../Core/Windows/GenericWindow.h"
+
 
 struct FInputEvent;
 
@@ -148,12 +149,12 @@ public:
 		return false;
 	}
 
-	virtual void OnSizeChanged(const std::shared_ptr< FGenericWindow >& PlatformWindow, const int32 Width, const int32 Height, bool bWasMinimized)
+	virtual void OnSizeChanged(const std::shared_ptr< FGenericWindow >& PlatformWindow, const int32 Width, const int32 Height)
 	{
-
+		
 	}
 
-	virtual void OnResizingWindow( const std::shared_ptr< FGenericWindow >& Window )
+	virtual void OnResizingWindow(const std::shared_ptr< FGenericWindow >& Window, bool bWasMinimized)
 	{
 
 	}

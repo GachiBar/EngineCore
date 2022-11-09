@@ -16,7 +16,7 @@ namespace GameplayCore.Components
         public float Near { get; set; } = 0.1f;
         public float Far { get; set; } = 100.0f;
 
-        public override void Render()
+        public override void Update()
         {
             if (_transformComponent != null)
             {

@@ -5,6 +5,10 @@
 
 #include <SimpleMath.h>
 #include "../Definitions.h"
+#include "../Interfaces/IApplication.h"
+#include "../libs/Delegates.h"
+
+class IApplication;
 
 namespace EWindowMode
 {
@@ -159,7 +163,15 @@ public:
 	/** Shows or hides native window buttons on platforms that use them */
 	virtual void SetNativeWindowButtonsVisibility(bool bVisible);
 
-protected:
+	virtual IApplication* GetOwningApplication() = 0;
 
+	virtual void OnSizeChanged(int32 InWidth, int32 InHeight)
+	{
+		GetOwningApplication()->ResizeViewport(InWidth, InHeight);
+		WindowSizeChangedEvent.Broadcast(InWidth, InHeight);
+	}
+
+	MulticastDelegate<int32, int32> WindowSizeChangedEvent;
+protected:
 	std::shared_ptr< FGenericWindowDefinition > Definition;
 };

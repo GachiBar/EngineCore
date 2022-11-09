@@ -152,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="EditorApplication.h" />
+    <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorInputMode.h" />
     <ClInclude Include="EditorLayer.h" />
     <ClInclude Include="GameViewWindow.h" />
@@ -172,10 +173,12 @@
     <ClInclude Include="SliderWidget.h" />
     <ClInclude Include="Visual.h" />
     <ClInclude Include="Widget.h" />
+    <ClInclude Include="Windows\ExplorerWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="EditorApplication.cpp" />
+    <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorLayer.cpp" />
     <ClCompile Include="GameViewWindow.cpp" />
     <ClCompile Include="ImGuiLayer.cpp" />
@@ -194,6 +197,7 @@
     <ClCompile Include="SliderWidget.cpp" />
     <ClCompile Include="Visual.cpp" />
     <ClCompile Include="Widget.cpp" />
+    <ClCompile Include="Windows\ExplorerWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DX11RenderEngine\DX11RenderEngine\DX11RenderEngine.vcxproj">
