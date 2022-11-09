@@ -13,16 +13,12 @@ public:
 
 	float mouse_sensitivity = 1.f;
 
-	
-
-	
 	void UpdateEditorViewProjectionMatrix(float dt) const;
-
+	void UpdateProjectionMatrix();
 	EditorLayer* owner_layer;
 
 	void Tick(float dt);
 private:
-	virtual void UpdateProjectionMatrix();
 
 	DirectX::SimpleMath::Vector3 CameraPos;
 

@@ -26,10 +26,11 @@ public:
 	std::shared_ptr<PropertyWindow> properties;
 	std::shared_ptr<MenuBar> menu_bar;
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
-	
-private:
-	std::shared_ptr<engine::GameObject> editor_camera;
+
+
 	std::shared_ptr<engine::GameObject> selected_go;
+private:
+	
 
 	bool m_BlockEvents = true;
 	bool m_ShowPhysicsColliders = false;

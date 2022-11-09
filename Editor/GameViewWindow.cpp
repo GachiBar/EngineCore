@@ -1,16 +1,35 @@
 #include "GameViewWindow.h"
 
-#include <iostream>
-
+#include "EditorApplication.h"
 #include "imgui/imgui.h"
 #include "libs/MathUtility.h"
 #include "EditorLayer.h"
+#include "InputManager.h"
+#include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
+#include "../GameplaySystem/Component.h"
 
 GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
                                                                              editor_layer(InEditorLayer)
 {
 	SelectedRenderTarget = *editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList().rbegin();
+}
+
+void GameViewWindow::update()
+{
+	if(bInFocus && !IsInCameraEditorInputMode())
+	{
+		const auto input = InputManager::getInstance().player_input;
+		if (input->WasJustPressed(EKeys::W))
+			CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+		if (input->WasJustPressed(EKeys::E))
+			CurrentGizmoOperation = ImGuizmo::ROTATE;
+		if (input->WasJustPressed(EKeys::R))
+			CurrentGizmoOperation = ImGuizmo::SCALE;
+		if (input->WasJustPressed(EKeys::C))
+			SwitchOperationMode();
+	}
+	
 }
 
 void GameViewWindow::draw_imgui()
@@ -57,6 +76,12 @@ void GameViewWindow::draw_imgui()
 				ShowCursor(true);
 				bIsEditorInputMode = false;
 			}
+
+			if (!isPlaying && editor_layer->selected_go.get())
+			{
+				draw_gizmos();
+			}
+			bInFocus = ImGui::IsWindowFocused();
 		}
 
 		if(!isPlaying)
@@ -113,7 +138,84 @@ void GameViewWindow::resize()
 	}
 }
 
-bool GameViewWindow::IsCameraEditorInputMode() const
+bool GameViewWindow::IsInCameraEditorInputMode() const
 {
 	return bIsEditorInputMode;
+}
+
+void GameViewWindow::SwitchOperationMode()
+{
+	CurrentOperationMode = CurrentOperationMode == ImGuizmo::WORLD ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
+}
+
+void GameViewWindow::draw_gizmos()
+{
+	auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
+
+	if (!isPlaying && editor_layer->selected_go.get())
+	{
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist();
+		float windowWidth = (float)ImGui::GetWindowWidth();
+		float windowHeight = (float)ImGui::GetWindowHeight();
+
+		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+		auto change_mat = [](const DirectX::XMMATRIX mat)
+		{
+			DirectX::XMFLOAT4X4 temp{};
+			XMStoreFloat4x4(&temp, mat);
+			return temp;
+		};
+
+		auto value = static_cast<float*>(editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().value().Unbox());
+
+		DirectX::XMFLOAT4X4 v = change_mat(Editor->Camera->View);
+		DirectX::XMFLOAT4X4 p = change_mat(Editor->Camera->Proj);
+		DirectX::XMFLOAT4X4 w = DirectX::XMFLOAT4X4(value);
+
+		DirectX::XMFLOAT4X4 delta = {};
+		ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], CurrentGizmoOperation, CurrentOperationMode, &w.m[0][0]);
+
+		if(ImGuizmo::IsUsing())
+		{
+			float trans[3];
+			float rot[3];
+			float scale[3];
+
+			ImGuizmo::DecomposeMatrixToComponents(&w.m[0][0], trans, rot, scale);
+
+			auto rot_quat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(w); //DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rot[0], rot[1], rot[2]);
+			float rot_quat_representaion[4] = { rot_quat.x,rot_quat.y,rot_quat.z ,rot_quat.w, };
+
+			switch (CurrentGizmoOperation) {
+
+			case ImGuizmo::TRANSLATE_X:
+			case ImGuizmo::TRANSLATE_Y:
+			case ImGuizmo::TRANSLATE_Z:
+			case ImGuizmo::TRANSLATE:
+				editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalPosition").SetValue(trans);
+				break;
+
+			case ImGuizmo::ROTATE_X:
+			case ImGuizmo::ROTATE_Y:
+			case ImGuizmo::ROTATE_Z:
+			case ImGuizmo::ROTATE_SCREEN:
+			case ImGuizmo::ROTATE:
+				editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalRotation").SetValue(rot_quat_representaion);
+				break;
+
+			case ImGuizmo::SCALE_X:
+			case ImGuizmo::SCALE_Y:
+			case ImGuizmo::SCALE_Z:
+			case ImGuizmo::SCALE:
+				editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalScale").SetValue(scale);
+				break;
+
+			default: ;
+			}
+			
+			
+		}
+	}
 }

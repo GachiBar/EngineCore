@@ -6,6 +6,7 @@
 #include <Windows.h>
 
 #include "Definitions.h"
+#include "ImGuizmo/ImGuizmo.h"
 
 class EditorLayer;
 
@@ -18,15 +19,25 @@ class GameViewWindow
 
 public:
     GameViewWindow(void* InTexture, EditorLayer* InEditorLayer);
+
+    void update();
+
     void draw_imgui();
 
     void on_resize_viewport(int32 InWidth,int32 InHeight);
     void resize();
     EditorLayer* editor_layer;
 
-    bool IsCameraEditorInputMode() const;
+    bool IsInCameraEditorInputMode() const;
 
+    void SwitchOperationMode();
 private:
+    bool bInFocus = false;
+
+    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::WORLD;
+    ImGuizmo::OPERATION CurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+
+    void draw_gizmos();
     std::string SelectedRenderTarget;
     POINT  LastCursorPos;
 

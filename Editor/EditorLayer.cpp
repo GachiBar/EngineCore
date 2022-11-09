@@ -49,10 +49,13 @@ void EditorLayer::OnUpdate(float const dt)
 
 	if(const auto EditorApp = static_cast<EditorApplication*>(GetApp()))
     {
-        if(gvm->IsCameraEditorInputMode())
+        if(gvm->IsInCameraEditorInputMode())
 			EditorApp->Camera->Tick(dt);
+        EditorApp->Camera->UpdateProjectionMatrix();
         EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
     }
+
+    gvm->update();
 }
 
 void EditorLayer::OnGuiRender()
@@ -191,37 +194,6 @@ void EditorLayer::OnGuiRender()
         }
 
         ImGui::EndMenuBar();
-    }
-
-
-    //Gizmos
-    EditorApplication* Editor = static_cast<EditorApplication*>(GetApp());
-    if(Editor)
-    {
-        ImGuizmo::SetOrthographic(false);
-        ImGuizmo::SetDrawlist();
-        float windowWidth = (float)ImGui::GetWindowWidth();
-        float windowHeight = (float)ImGui::GetWindowHeight();
-
-        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
-
-        auto change_mat = [](const DirectX::XMMATRIX mat)
-        {
-            DirectX::XMFLOAT4X4 temp{};
-            DirectX::XMStoreFloat4x4(&temp, mat);
-
-            return temp;
-        };
-
-
-        //auto value = static_cast<float*>(Editor->test_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().unbox());
-        //DirectX::SimpleMath::Matrix t{DirectX::XMFLOAT4X4(value)};
-
-
-        DirectX::XMFLOAT4X4 v = change_mat(engine::Engine::GetViewMatrix());
-        DirectX::XMFLOAT4X4 p = change_mat(engine::Engine::GetProjectionMatrix());
-        //DirectX::XMFLOAT4X4 w = change_mat(t);
-        //ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::WORLD, &w.m[0][0]);
     }
     ImGui::End();
    

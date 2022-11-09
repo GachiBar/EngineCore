@@ -151,8 +151,6 @@ int Application::Run()
 		for (const auto layer : m_LayerStack)
 			layer->OnUpdate(engine_->kDt);;
 
-		InputManager::getInstance().Flush();
-
 		engine_->BeginRender();
 
 		for (const auto layer : m_LayerStack)
@@ -162,6 +160,8 @@ int Application::Run()
 		
 		for (const auto layer : m_LayerStack)
 			layer->OnPostRender();
+
+		InputManager::getInstance().Flush();
 	}
 
 	OnStop();
