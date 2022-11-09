@@ -21,10 +21,11 @@ public:
 
 private:
 	std::shared_ptr<engine::Scene> scene;
+	std::shared_ptr<engine::GameObject> selected;
 	const mono::mono_assembly& assembly;
 
-	void BuildTree(engine::Component& transform, int id);
+	void BuildTree(engine::Component& transform);
 
-	static bool SelectableTreeNode(const char* label, bool* isSelected);
+	bool IsSelected(std::shared_ptr<engine::GameObject> gameObject);
 };
 
