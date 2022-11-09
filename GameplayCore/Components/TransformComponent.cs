@@ -55,7 +55,7 @@ namespace GameplayCore.Components
             {
                 _localRotation = value;
                 Quaternion.ToEuler(_localRotation, out var yaw, out var pitch, out var roll);
-                _editorEuler = new Vector3(yaw, pitch, roll) * 180 / MathUtil.Pi;
+                _editorEuler = new Vector3(pitch, yaw, roll) * 180 / MathUtil.Pi;
             }
         }
 
@@ -223,7 +223,7 @@ namespace GameplayCore.Components
             {
                 _editorEuler = value;
                 var euler = _editorEuler * MathUtil.Pi / 180.0f;
-                LocalRotation = Quaternion.RotationYawPitchRoll(euler.X, euler.Y, euler.Z);
+                _localRotation = Quaternion.RotationYawPitchRoll(euler.Y, euler.X, euler.Z);
             }
         }
 
