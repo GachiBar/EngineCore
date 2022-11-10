@@ -4,6 +4,7 @@
 #include "LayerStack.h"
 #include <fstream>
 
+#include "Windows/ExplorerWindow.h"
 #include "EditorApplication.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
@@ -22,15 +23,18 @@ void EditorLayer::OnAttach()
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture,this);
     gvm->editor_layer = this;
 
-	hierarchy = std::make_shared<SceneHierarchyWindow>();
+	hierarchy = std::make_shared<SceneHierarchyWindow>(GetApp()->GetAssembly());
     properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
+    explorer = std::make_shared<ExplorerWindow>(GetApp());
 
-	hierarchy.get()->OnSelectGameObjectInHierarchy.BindLambda([&](std::shared_ptr<engine::GameObject>& go)
+	hierarchy.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)
 	{
 		selected_go = go;
         properties->SetGameObject(go);
 	});
+
+    hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
     properties->SetScene(GetApp()->GetEngine()->GetScene());
 
 	auto& io = ImGui::GetIO();
@@ -198,14 +202,19 @@ void EditorLayer::OnGuiRender()
     ImGui::End();
    
     gvm->draw_imgui(); 
-    hierarchy->draw_imgui(*GetApp()->GetEngine()->GetScene());
+    hierarchy->draw_imgui();
     properties->draw_imgui();
     SettingsWindow->draw_imgui();
-
+    explorer->draw();
 }
 
 void EditorLayer::OnPostRender()
 {
     gvm->resize(); 
     Layer::OnPostRender();
+}
+
+engine::GameObject* EditorLayer::GetSelectedGo()
+{
+    return selected_go.get();
 }

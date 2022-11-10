@@ -60,21 +60,39 @@ private:
 	mono::mono_property_invoker screen_width_property_;
 	mono::mono_property_invoker screen_height_property_;
 
+	mono::mono_property_invoker mouse_position_property_;
+
 	std::shared_ptr<Scene> scene_;
+
+	void InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height);	
+
+	void SetupRendererInternalCalls();
+	void SetupInputInternalCalls();
+
+	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
+
+	void SendTimeData();
+	void SendScreenData();
+	void SendInputData();
 
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
 	static void Internal_SetViewProjection(
-		RenderDevice* renderer, 
-		float ellapsed, 
-		DirectX::SimpleMath::Matrix view, 
+		RenderDevice* renderer,
+		float ellapsed,
+		DirectX::SimpleMath::Matrix view,
 		DirectX::SimpleMath::Matrix projection);
 
-	void InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height);
-	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
-	void SetupRendererInternalCalls();
-	void SendTimeData();
-	void SendScreenData();
+	static bool Internal_IsPressed(MonoString* key_name);
+	static bool Internal_WasJustPressed(MonoString* key_name);
+	static bool Internal_WasJustReleased(MonoString* key_name);
+
+	static bool Internal_IsActionPressed(MonoString* action_name);
+	static bool Internal_WasActionJustPressed(MonoString* action_name);
+	static bool Internal_WasActionJustReleased(MonoString* action_name);
+
+	static float Internal_GetKeyValue(MonoString* key_name);
+	static float Internal_GetAxisValue(MonoString* axis_name);
 };
 
 } // namespace engine

@@ -101,7 +101,7 @@ namespace GameplayCore
             _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
             Scene = scene;
-            Name = $"GameObject{scene.Count}";
+            Name = $"GameObject({scene.Count})";
         }
 
         public void Initialize()

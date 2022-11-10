@@ -77,7 +77,7 @@ void GameViewWindow::draw_imgui()
 				bIsEditorInputMode = false;
 			}
 
-			if (!isPlaying && editor_layer->selected_go.get())
+			if (!isPlaying && editor_layer->GetSelectedGo())
 			{
 				draw_gizmos();
 			}
@@ -152,7 +152,7 @@ void GameViewWindow::draw_gizmos()
 {
 	auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
 
-	if (!isPlaying && editor_layer->selected_go.get())
+	if (!isPlaying && editor_layer->GetSelectedGo())
 	{
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();
@@ -168,7 +168,7 @@ void GameViewWindow::draw_gizmos()
 			return temp;
 		};
 
-		auto value = static_cast<float*>(editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().value().Unbox());
+		auto value = static_cast<float*>(editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().value().Unbox());
 
 		DirectX::XMFLOAT4X4 v = change_mat(Editor->Camera->View);
 		DirectX::XMFLOAT4X4 p = change_mat(Editor->Camera->Proj);
@@ -194,7 +194,7 @@ void GameViewWindow::draw_gizmos()
 			case ImGuizmo::TRANSLATE_Y:
 			case ImGuizmo::TRANSLATE_Z:
 			case ImGuizmo::TRANSLATE:
-				editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalPosition").SetValue(trans);
+				editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalPosition").SetValue(trans);
 				break;
 
 			case ImGuizmo::ROTATE_X:
@@ -202,14 +202,14 @@ void GameViewWindow::draw_gizmos()
 			case ImGuizmo::ROTATE_Z:
 			case ImGuizmo::ROTATE_SCREEN:
 			case ImGuizmo::ROTATE:
-				editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalRotation").SetValue(rot_quat_representaion);
+				editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalRotation").SetValue(rot_quat_representaion);
 				break;
 
 			case ImGuizmo::SCALE_X:
 			case ImGuizmo::SCALE_Y:
 			case ImGuizmo::SCALE_Z:
 			case ImGuizmo::SCALE:
-				editor_layer->selected_go->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalScale").SetValue(scale);
+				editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalScale").SetValue(scale);
 				break;
 
 			default: ;

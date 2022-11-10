@@ -33,7 +33,6 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
-
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
