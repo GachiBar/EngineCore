@@ -168,10 +168,10 @@ void Engine::SendInputData() {
 
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::vector<ModelVertex> verticies;
-	std::vector<uint16_t> indexes;
+	std::vector<uint32_t> indexes;
 	size_t primitiveCount = 0;
 
-	ModelData model(verticies, indexes, EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0);
+	ModelMesh model(EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes);
 
 	std::string path = "Content\\Cube.obj";
 	ModelLoader::LoadObj(path, model);
@@ -185,8 +185,8 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 		id,
 		image.GetImage(0, 0, 0)->width,
 		image.GetImage(0, 0, 0)->height,
-		image.GetImage(0, 0, 0)->pixels,
-		false);
+		image.GetImage(0, 0, 0)->pixels
+		);
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {

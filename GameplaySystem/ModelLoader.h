@@ -9,7 +9,7 @@ namespace engine {
 
 class ModelLoader {
 public:
-	static bool LoadObj(const std::string& path, ModelData& model) {
+	static bool LoadObj(const std::string& path, ModelMesh& model) {
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(
 			path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder);
@@ -21,7 +21,7 @@ public:
 			return false;
 		}
 
-		model.verticies.clear();
+		model.vertices.clear();
 		model.indexes.clear();
 		model.pt = EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST;
 
@@ -32,7 +32,7 @@ public:
 	}
 
 private:
-	static void ProcessNode(ModelData& model, const aiScene* scene, const aiNode* node) {
+	static void ProcessNode(ModelMesh& model, const aiScene* scene, const aiNode* node) {
 		for (size_t i = 0; i < node->mNumMeshes; i++)
 		{
 			const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -45,7 +45,7 @@ private:
 		}
 	}
 
-	static void ProcessMesh(ModelData& model, const aiScene* scene, const aiMesh* mesh)
+	static void ProcessMesh(ModelMesh& model, const aiScene* scene, const aiMesh* mesh)
 	{
 		using namespace DirectX::SimpleMath;
 
@@ -61,10 +61,10 @@ private:
 				vertex.texcoord = ToVector2(mesh->mTextureCoords[0][i]);
 			}
 			else {
-				vertex.texcoord = Vector2{ 0.0f, 0.0f };
+				vertex.texcoord = float2{ 0.0f, 0.0f };
 			}
 
-			model.verticies.push_back(vertex);
+			model.vertices.push_back(vertex);
 		}
 
 		for (size_t i = 0; i < mesh->mNumFaces; ++i) {
