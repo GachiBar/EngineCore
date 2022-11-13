@@ -19,17 +19,17 @@ void SceneHierarchyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
 
 SceneHierarchyWindow::SceneHierarchyWindow(const mono::mono_assembly& assembly)
     : assembly(assembly)
+    , tree_level_id_(0)
 {}
 
 void SceneHierarchyWindow::draw_imgui()
 {
     ImGui::Begin("Scene Hierarchy");
     std::vector<std::shared_ptr<engine::GameObject>> transfomlessGameObjects;
-    
+    tree_level_id_ = 0;
+
     if (ImGui::CollapsingHeader("With transform", ImGuiTreeNodeFlags_DefaultOpen)) 
     {
-        int id = 0;
-
         for (size_t i = 0; i < scene->Count(); ++i)
         {
             auto gameObject = (*scene)[i];
@@ -48,8 +48,8 @@ void SceneHierarchyWindow::draw_imgui()
                 continue;
             }
 
-            BuildTree(*transform, id);
-            id += 1;
+            BuildTree(*transform);
+            tree_level_id_ += 1;
         }
     } 
 
@@ -58,28 +58,27 @@ void SceneHierarchyWindow::draw_imgui()
         for (size_t i = 0; i < transfomlessGameObjects.size(); ++i)
         {
             auto gameObject = transfomlessGameObjects[i];
-;
-            ImGui::PushID(i);
+            ImGui::PushID(tree_level_id_);
+
             if (ImGui::Selectable(gameObject->Name().c_str(), IsSelected(gameObject)))
             {
                 selected = gameObject;
                 GameObjectSelected.Broadcast(gameObject);
             }
+
+            tree_level_id_ += 1;
             ImGui::PopID();
         }
     }
 
     scene->Invalidate();
-
     ImGui::End();
 }
 
-void SceneHierarchyWindow::BuildTree(engine::Component& transform, int id)
+void SceneHierarchyWindow::BuildTree(engine::Component& transform)
 {
-    ImGui::PushID(id);
-
+    ImGui::PushID(tree_level_id_);
     auto gameObject = transform.GameObject();
-
     auto childrenCountProperty = transform.GetProperty("ChildrenCount");
     auto childrenCountObject = childrenCountProperty.GetValue().value();
     auto childrenCount = childrenCountObject.Unbox<size_t>();
@@ -105,6 +104,7 @@ void SceneHierarchyWindow::BuildTree(engine::Component& transform, int id)
             GameObjectSelected.Broadcast(gameObject);
         }        
 
+        DrawPopup(gameObject);
         auto getChildMethod = transform.GetMethod("GetChild", 1);
 
         for (size_t i = 0; i < childrenCount; ++i)
@@ -113,21 +113,25 @@ void SceneHierarchyWindow::BuildTree(engine::Component& transform, int id)
             params[0] = &i;
 
             auto childObject = getChildMethod.Invoke(params).value();
-            engine::Component childTransform(assembly, childObject.GetInternal());
-            BuildTree(childTransform, id + 1);  
+            engine::Component childTransform(assembly, childObject.GetInternal());            
+            BuildTree(childTransform);
+            tree_level_id_ += 1;
         }
                 
         ImGui::TreePop();
-    }
-        
-    DrawPopup(gameObject);
+    } 
 
-    if (!isExpanded && ImGui::IsItemClicked())
+    if (!isExpanded) 
     {
-        selected = gameObject;
-        GameObjectSelected.Broadcast(gameObject);
-    }
+        if (ImGui::IsItemClicked())
+        {
+            selected = gameObject;
+            GameObjectSelected.Broadcast(gameObject);
+        }
 
+        DrawPopup(gameObject);
+    }
+    
     ImGui::PopID();
 }
 
@@ -137,7 +141,8 @@ void SceneHierarchyWindow::DrawPopup(std::shared_ptr<engine::GameObject> gameObj
     {
         if (ImGui::Selectable("Delete"))
         {
-            scene->DeleteGameObject(gameObject);
+            auto transform = gameObject->GetComponent("GameplayCore.Components", "TransformComponent");
+            DeleteHierarchy(*transform);
         }
 
         ImGui::Separator();
@@ -163,4 +168,25 @@ void SceneHierarchyWindow::DrawPopup(std::shared_ptr<engine::GameObject> gameObj
 bool SceneHierarchyWindow::IsSelected(std::shared_ptr<engine::GameObject> gameObject) 
 {
     return selected != nullptr && *gameObject == *selected;
+}
+
+void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
+{
+    auto gameObject = transform.GameObject();
+    auto childrenCountProperty = transform.GetProperty("ChildrenCount");
+    auto childrenCountObject = childrenCountProperty.GetValue().value();
+    auto childrenCount = childrenCountObject.Unbox<size_t>();
+    auto getChildMethod = transform.GetMethod("GetChild", 1);
+
+    for (size_t i = 0; i < childrenCount; ++i)
+    {
+        void* params[1];
+        params[0] = &i;
+
+        auto childObject = getChildMethod.Invoke(params).value();
+        engine::Component childTransform(assembly, childObject.GetInternal());
+        DeleteHierarchy(childTransform);
+    }
+
+    scene->DeleteGameObject(gameObject);
 }
