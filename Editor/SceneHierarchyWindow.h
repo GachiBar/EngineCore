@@ -21,16 +21,34 @@ public:
 	GameObjectSelectedEvent GameObjectSelected;
 
 private:
-	int tree_level_id_;
+	struct DragAndDropRequest
+	{
+		std::shared_ptr<engine::GameObject> source = nullptr;
+		std::shared_ptr<engine::GameObject> target = nullptr;
+
+		bool IsRequested();
+		void Reset();
+	};
+		
+	int tree_level_id;
+	DragAndDropRequest drag_and_drop_request;
 
 	std::shared_ptr<engine::Scene> scene;
 	std::shared_ptr<engine::GameObject> selected;
 	const mono::mono_assembly& assembly;
 
-	void BuildTree(engine::Component& transform);
+	void DrawWithTransformHeaderPopup();
+
+	void DrawHierarchy(engine::Component& transform);
+	void DrawSelected(std::shared_ptr<engine::GameObject> gameObject);
+	void SetupDragSource(std::shared_ptr<engine::GameObject> gameObject);
+	void SetupDropSource(std::shared_ptr<engine::GameObject> gameObject);
 	void DrawPopup(std::shared_ptr<engine::GameObject> gameObject);
 
 	bool IsSelected(std::shared_ptr<engine::GameObject> gameObject);
 	void DeleteHierarchy(engine::Component& transform);
+
+	void ProcessWithTransformHeaderDragAndDrop();
+	void ProcessHierarchyDragAndDrop();
 };
 

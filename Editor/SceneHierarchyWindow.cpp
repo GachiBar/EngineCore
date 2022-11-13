@@ -19,17 +19,20 @@ void SceneHierarchyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
 
 SceneHierarchyWindow::SceneHierarchyWindow(const mono::mono_assembly& assembly)
     : assembly(assembly)
-    , tree_level_id_(0)
+    , tree_level_id(0)
 {}
 
 void SceneHierarchyWindow::draw_imgui()
 {
     ImGui::Begin("Scene Hierarchy");
     std::vector<std::shared_ptr<engine::GameObject>> transfomlessGameObjects;
-    tree_level_id_ = 0;
+    tree_level_id = 0;
 
     if (ImGui::CollapsingHeader("With transform", ImGuiTreeNodeFlags_DefaultOpen)) 
     {
+        DrawWithTransformHeaderPopup();
+        ProcessWithTransformHeaderDragAndDrop();
+
         for (size_t i = 0; i < scene->Count(); ++i)
         {
             auto gameObject = (*scene)[i];
@@ -48,17 +51,21 @@ void SceneHierarchyWindow::draw_imgui()
                 continue;
             }
 
-            BuildTree(*transform);
-            tree_level_id_ += 1;
+            DrawHierarchy(*transform);
+            tree_level_id += 1;
         }
-    } 
+    }        
+    else 
+    {
+        DrawWithTransformHeaderPopup();
+    }    
 
     if (ImGui::CollapsingHeader("Without transform", ImGuiTreeNodeFlags_DefaultOpen)) 
     {
         for (size_t i = 0; i < transfomlessGameObjects.size(); ++i)
         {
             auto gameObject = transfomlessGameObjects[i];
-            ImGui::PushID(tree_level_id_);
+            ImGui::PushID(tree_level_id);
 
             if (ImGui::Selectable(gameObject->Name().c_str(), IsSelected(gameObject)))
             {
@@ -66,18 +73,36 @@ void SceneHierarchyWindow::draw_imgui()
                 GameObjectSelected.Broadcast(gameObject);
             }
 
-            tree_level_id_ += 1;
+            tree_level_id += 1;
             ImGui::PopID();
         }
     }
 
+    ProcessHierarchyDragAndDrop();
     scene->Invalidate();
     ImGui::End();
 }
 
-void SceneHierarchyWindow::BuildTree(engine::Component& transform)
+void SceneHierarchyWindow::DrawWithTransformHeaderPopup()
 {
-    ImGui::PushID(tree_level_id_);
+    if (ImGui::BeginPopupContextItem())
+    {
+        if (ImGui::Selectable("Create empty"))
+        {
+            auto child = scene->CreateGameObject();
+            scene->Invalidate();
+
+            child->AddComponent("GameplayCore.Components", "TransformComponent");
+            child->Invalidate();
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
+void SceneHierarchyWindow::DrawHierarchy(engine::Component& transform)
+{
+    ImGui::PushID(tree_level_id);
     auto gameObject = transform.GameObject();
     auto childrenCountProperty = transform.GetProperty("ChildrenCount");
     auto childrenCountObject = childrenCountProperty.GetValue().value();
@@ -95,16 +120,13 @@ void SceneHierarchyWindow::BuildTree(engine::Component& transform)
     }
 
     bool isExpanded = ImGui::TreeNodeEx(gameObject->Name().c_str(), flags);
+    DrawSelected(gameObject);
+    SetupDragSource(gameObject);
+    SetupDropSource(gameObject);
+    DrawPopup(gameObject);
 
     if (isExpanded)
     {
-        if (ImGui::IsItemClicked())
-        {
-            selected = gameObject;
-            GameObjectSelected.Broadcast(gameObject);
-        }        
-
-        DrawPopup(gameObject);
         auto getChildMethod = transform.GetMethod("GetChild", 1);
 
         for (size_t i = 0; i < childrenCount; ++i)
@@ -114,25 +136,48 @@ void SceneHierarchyWindow::BuildTree(engine::Component& transform)
 
             auto childObject = getChildMethod.Invoke(params).value();
             engine::Component childTransform(assembly, childObject.GetInternal());            
-            BuildTree(childTransform);
-            tree_level_id_ += 1;
+            DrawHierarchy(childTransform);
+            tree_level_id += 1;
         }
                 
         ImGui::TreePop();
     } 
-
-    if (!isExpanded) 
-    {
-        if (ImGui::IsItemClicked())
-        {
-            selected = gameObject;
-            GameObjectSelected.Broadcast(gameObject);
-        }
-
-        DrawPopup(gameObject);
-    }
     
     ImGui::PopID();
+}
+
+void SceneHierarchyWindow::DrawSelected(std::shared_ptr<engine::GameObject> gameObject)
+{
+    if (ImGui::IsItemClicked())
+    {
+        selected = gameObject;
+        GameObjectSelected.Broadcast(gameObject);
+    }
+}
+
+void SceneHierarchyWindow::SetupDragSource(std::shared_ptr<engine::GameObject> gameObject)
+{
+    if (ImGui::BeginDragDropSource())
+    {
+        ImGui::SetDragDropPayload("_TREENODE", &gameObject, sizeof(std::shared_ptr<engine::GameObject>));
+        drag_and_drop_request.source = gameObject;
+        ImGui::Text(gameObject->Name().c_str());
+        ImGui::EndDragDropSource();
+    }
+}
+
+void SceneHierarchyWindow::SetupDropSource(std::shared_ptr<engine::GameObject> gameObject)
+{
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("_TREENODE"))
+        {
+            auto dragged = (std::shared_ptr<engine::GameObject>*)payload->Data;
+            drag_and_drop_request.target = gameObject;
+        }
+
+        ImGui::EndDragDropTarget();
+    }
 }
 
 void SceneHierarchyWindow::DrawPopup(std::shared_ptr<engine::GameObject> gameObject)
@@ -189,4 +234,44 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
     }
 
     scene->DeleteGameObject(gameObject);
+}
+
+void SceneHierarchyWindow::ProcessWithTransformHeaderDragAndDrop()
+{
+    if (ImGui::BeginDragDropTarget())
+    {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("_TREENODE"))
+        {
+            auto dragged = (std::shared_ptr<engine::GameObject>*)payload->Data;
+            auto source = *dragged;
+            auto sourceTransform = source->GetComponent("GameplayCore.Components", "TransformComponent");
+            auto parentProperty = sourceTransform->GetProperty("Parent");
+            parentProperty.SetValue(nullptr);
+        }
+
+        ImGui::EndDragDropTarget();
+    }
+}
+
+void SceneHierarchyWindow::ProcessHierarchyDragAndDrop()
+{
+    if (drag_and_drop_request.IsRequested())
+    {        
+        auto targetTransform = drag_and_drop_request.target->GetComponent("GameplayCore.Components", "TransformComponent");                 
+        auto sourceTransform = drag_and_drop_request.source->GetComponent("GameplayCore.Components", "TransformComponent");
+        auto parentProperty = sourceTransform->GetProperty("Parent");
+        parentProperty.SetValue(*targetTransform);
+        drag_and_drop_request.Reset();
+    }
+}
+
+bool SceneHierarchyWindow::DragAndDropRequest::IsRequested()
+{
+    return source != nullptr && target != nullptr;
+}
+
+void SceneHierarchyWindow::DragAndDropRequest::Reset()
+{
+    source = nullptr;
+    target = nullptr;
 }
