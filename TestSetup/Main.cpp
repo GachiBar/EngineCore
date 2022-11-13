@@ -25,6 +25,7 @@ void StandaloneGameTestApplication::OnSetup() {
 	scene = std::make_shared<engine::Scene>(m_Assembly);
 	auto game_object_1 = scene->CreateGameObject();
 	auto game_object_2 = scene->CreateGameObject();
+	scene->Invalidate();
 
 	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
 	game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");

@@ -67,8 +67,7 @@ std::shared_ptr<Component> GameObject::AddComponent(const mono::mono_type& compo
 
     mono::mono_object component(add_component_->invoke(GetInternal(), params));
     auto result = std::make_shared<Component>(assembly_, std::move(component));
-    Invalidate();
-    
+
     ComponentAdded.Broadcast(*this, result);
     return result;
 }
@@ -78,7 +77,6 @@ void GameObject::RemoveComponent(std::shared_ptr<Component> component) {
     void* params[1] = { reflection_type };
 
     remove_component_->invoke(GetInternal(), params);
-    Invalidate();
 
     ComponentRemoved.Broadcast(*this, component);
     component.reset();

@@ -24,7 +24,8 @@ private:
 	std::shared_ptr<engine::GameObject> selected;
 	const mono::mono_assembly& assembly;
 
-	void BuildTree(engine::Component& transform);
+	void BuildTree(engine::Component& transform, int id);
+	void DrawPopup(std::shared_ptr<engine::GameObject> gameObject);
 
 	bool IsSelected(std::shared_ptr<engine::GameObject> gameObject);
 };

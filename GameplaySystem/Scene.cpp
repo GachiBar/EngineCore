@@ -41,14 +41,12 @@ Scene::Scene(const mono::mono_assembly& assembly)
 
 std::shared_ptr<GameObject> Scene::CreateGameObject() {
     mono::mono_object object(create_game_object_->invoke(GetInternal()));
-    Invalidate();
     return std::make_shared<GameObject>(assembly_, std::move(object));
 }
 
 void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
     void* params[1] = { game_object->GetInternal().get_internal_ptr() };
     delete_game_object_->invoke(GetInternal(), params);
-    Invalidate();
     game_object.reset();
 }
 
