@@ -9,6 +9,7 @@
 #include "InputManager.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
+#include "libs/imgui_sugar.hpp"
 
 namespace Renderer
 {
@@ -114,6 +115,9 @@ void EditorLayer::OnGuiRender()
     // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
     if (!opt_padding)
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    
+    
     ImGui::Begin("DockSpace Demo", &p_open, window_flags);
     if (!opt_padding)
         ImGui::PopStyleVar();
@@ -132,6 +136,7 @@ void EditorLayer::OnGuiRender()
     {
         //ShowDockingDisabledMessage();
     }
+    ImGui::BeginDisabled(gvm->IsPlaying());
 
     if (ImGui::BeginMenuBar())
     {
@@ -209,13 +214,20 @@ void EditorLayer::OnGuiRender()
 
         ImGui::EndMenuBar();
     }
+
+    ImGui::EndDisabled();
+
     ImGui::End();
-   
-    gvm->draw_imgui(); 
+
+    gvm->draw_imgui();
+
+    ImGui::BeginDisabled(gvm->IsPlaying());
     hierarchy->draw_imgui();
     properties->draw_imgui();
     SettingsWindow->draw_imgui();
     explorer->draw();
+    ImGui::EndDisabled();
+	
 }
 
 void EditorLayer::OnPostRender()
