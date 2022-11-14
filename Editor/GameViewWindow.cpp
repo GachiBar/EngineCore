@@ -168,6 +168,11 @@ void GameViewWindow::draw_gizmos()
 			return temp;
 		};
 
+		if (editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent") == nullptr)
+		{
+			return;
+		}
+
 		auto value = static_cast<float*>(editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().value().Unbox());
 
 		DirectX::XMFLOAT4X4 v = change_mat(Editor->Camera->View);

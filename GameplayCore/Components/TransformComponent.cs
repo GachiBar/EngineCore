@@ -27,7 +27,7 @@ namespace GameplayCore.Components
             {
                 if (value == null)
                 {
-                    Parent?._children.Remove(this);
+                    _parent ?._children.Remove(this);
                     _parent = null;
                     return;
                 }
@@ -42,6 +42,7 @@ namespace GameplayCore.Components
                     throw new ArgumentException("Parent doesn't have to be a child.");
                 }
 
+                _parent?._children.Remove(this);
                 _parent = value;
                 _parent._children.Add(this);
             }
