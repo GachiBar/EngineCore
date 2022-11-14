@@ -180,6 +180,7 @@
     <ClInclude Include="Property.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Attribute.cpp" />
@@ -197,6 +198,7 @@
     </ClCompile>
     <ClCompile Include="Property.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DX11RenderEngine\DX11RenderEngine\DX11RenderEngine.vcxproj">

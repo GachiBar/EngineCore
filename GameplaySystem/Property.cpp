@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Property.h"
 #include "Attribute.h"
+#include "Types.h"
 
 #include <mono/metadata/object.h>
 
@@ -85,26 +86,58 @@ Property::Property(const Object& object, mono::mono_property property)
 	: object_(object)
 	, property_(std::move(property))
 	, property_invoker_(property_)
-	, type_(NameToPropertyType(property_.get_type().get_name()))
+	, type_(NameToPropertyType(property_.get_type().get_fullname()))
 {}
 
 PropertyType NameToPropertyType(const std::string& name) {
-	if (name == "Single"	)	return PropertyType::kFloat;
-	if (name == "Double"	)	return PropertyType::kDouble;
-	if (name == "Boolean"	)	return PropertyType::kBool;
-	if (name == "SByte"		)	return PropertyType::kByte;
-	if (name == "Int16"		)	return PropertyType::kShort;
-	if (name == "Int32"		)	return PropertyType::kInt;
-	if (name == "Int64"		)	return PropertyType::kLong;
-	if (name == "Byte"		)	return PropertyType::kUByte;
-	if (name == "UInt16"	)	return PropertyType::kUShort;
-	if (name == "UInt32"	)	return PropertyType::kUInt;
-	if (name == "UInt64"	)	return PropertyType::kULong;
-	if (name == "Vector2"	)	return PropertyType::kVector2;
-	if (name == "Vector3"	)	return PropertyType::kVector3;
-	if (name == "Vector4"	)	return PropertyType::kVector4;
-	if (name == "String"	)	return PropertyType::kString;
-	if (name == "GameObject")	return PropertyType::kGameObject;
+	if (name == Types::kSingle.full_name) {
+		return PropertyType::kFloat;
+	}		
+	if (name == Types::kDouble.full_name) {
+		return PropertyType::kDouble;
+	}		
+	if (name == Types::kBoolean.full_name) {
+		return PropertyType::kBool;
+	}		
+	if (name == Types::kSByte.full_name) {
+		return PropertyType::kByte;
+	}		
+	if (name == Types::kInt16.full_name) {
+		return PropertyType::kShort;
+	}		
+	if (name == Types::kInt32.full_name) {
+		return PropertyType::kInt;
+	}		
+	if (name == Types::kInt64.full_name) {
+		return PropertyType::kLong;
+	}		
+	if (name == Types::kByte.full_name) {
+		return PropertyType::kUByte;
+	}		
+	if (name == Types::kUInt16.full_name) {
+		return PropertyType::kUShort;
+	}		
+	if (name == Types::kUInt32.full_name) {
+		return PropertyType::kUInt;
+	}		
+	if (name == Types::kUInt64.full_name) {
+		return PropertyType::kULong;
+	}		
+	if (name == Types::kVector2.full_name) {
+		return PropertyType::kVector2;
+	}		
+	if (name == Types::kVector3.full_name) {
+		return PropertyType::kVector3;
+	}		
+	if (name == Types::kVector4.full_name) {
+		return PropertyType::kVector4;
+	}		
+	if (name == Types::kString.full_name) {
+		return PropertyType::kString;
+	}		
+	if (name == Types::kGameObject.full_name) {
+		return PropertyType::kGameObject;
+	}		
 
 	return PropertyType::kUndefined;
 }

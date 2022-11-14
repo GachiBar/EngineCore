@@ -102,6 +102,7 @@ private:
 	}
 
 	void ProcessDragAndDrop();
+
 	void SortGameObjects(
 		std::vector<std::shared_ptr<engine::GameObject>>& roots_out,
 		std::vector<std::shared_ptr<engine::GameObject>>& transformless_out);
