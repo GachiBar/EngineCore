@@ -158,6 +158,11 @@ void GameViewWindow::SwitchOperationMode()
 	CurrentOperationMode = CurrentOperationMode == ImGuizmo::WORLD ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
 }
 
+bool GameViewWindow::IsPlaying() const
+{
+	return bIsPlaying;
+}
+
 void GameViewWindow::draw_gizmos()
 {
 	auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());

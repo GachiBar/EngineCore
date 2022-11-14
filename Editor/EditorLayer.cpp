@@ -57,8 +57,11 @@ void EditorLayer::OnUpdate(float const dt)
     {
         if(gvm->IsInCameraEditorInputMode())
 			EditorApp->Camera->Tick(dt);
-        EditorApp->Camera->UpdateProjectionMatrix();
-        EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
+        if(!gvm->IsPlaying())
+        {
+            EditorApp->Camera->UpdateProjectionMatrix();
+            EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
+        }
     }
 
     if(InputManager::getInstance().player_input->WasJustPressed(EKeys::F11))

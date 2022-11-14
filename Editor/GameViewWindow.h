@@ -34,6 +34,7 @@ public:
     DECLARE_EVENT(ExitGameModeEvent, GameViewWindow)
 	ExitGameModeEvent ExitGameMode;
 
+    bool IsPlaying() const;
 private:
     void* Texture;
     bool bIsPlaying = false;
