@@ -36,8 +36,8 @@ private:
 	std::map<std::string, std::set<FInputAxisKeyMapping>> AxisMappings;
 
 public:
-	/** The keys which open the console. */
-	std::vector<FKey> ConsoleKeys;
+	/** editor keys that work in the game */
+	std::set<FKey> ExclusiveKeys;
 
 	static void RemoveInvalidKeys(std::map<std::string, std::set<FInputAxisKeyMapping>>& InAxisMappings);
 
@@ -54,6 +54,8 @@ public:
 	/** Programmatically remove an axis mapping to the project defaults */
 	void RemoveAxisMapping(std::string const& AxisMap, const FInputAxisKeyMapping& KeyMapping, bool bForceRebuildKeymaps = true);
 
+	void AddDefaultEditorExclusiveKeys();
+	bool IsKeyExclusive(FKey const & InKey) const;
 	
 	void RemoveAction(const std::string& InActionName);
 	void RemoveAllActions();

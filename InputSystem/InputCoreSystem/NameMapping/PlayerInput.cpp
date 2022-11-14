@@ -12,7 +12,7 @@ PlayerInput::PlayerInput():MessageHandler(new WindowsApplicationMessageHandler()
 
 bool PlayerInput::IsPressed(const FKey& InKey) const
 {
-	if (!CanProcessInput())
+	if(!(CanProcessInput() || input_settings->IsKeyExclusive(InKey)))
 		return false;
 
 	if (InKey == EKeys::AnyKey)
@@ -36,7 +36,7 @@ bool PlayerInput::IsPressed(const FKey& InKey) const
 
 bool PlayerInput::WasJustPressed(const FKey& InKey) const
 {
-	if (!CanProcessInput())
+	if (!(CanProcessInput() || input_settings->IsKeyExclusive(InKey)))
 		return false;
 
 	if (InKey == EKeys::AnyKey)
@@ -60,7 +60,7 @@ bool PlayerInput::WasJustPressed(const FKey& InKey) const
 
 bool PlayerInput::WasJustReleased(const FKey& InKey) const
 {
-	if (!CanProcessInput())
+	if (!(CanProcessInput() || input_settings->IsKeyExclusive(InKey)))
 		return false;
 
 	if (InKey == EKeys::AnyKey)
@@ -225,4 +225,14 @@ bool PlayerInput::CanProcessInput() const
 	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
 		return false;
 	return true;
+}
+
+bool PlayerInput::IsKeyExclusiveForEditor(FKey const & InKey) const
+{
+	const auto OwningApp = InputManager::getInstance().GetOwningApp();
+	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
+	if (!CurrentLayer)
+		return false;
+	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
+	return !EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), EEditorInputMode::EditorOnlyMode) && input_settings->IsKeyExclusive(InKey);
 }

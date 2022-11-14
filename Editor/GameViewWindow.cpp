@@ -29,7 +29,6 @@ void GameViewWindow::update()
 		if (input->WasJustPressed(EKeys::C))
 			SwitchOperationMode();
 	}
-	
 }
 
 void GameViewWindow::draw_imgui()
@@ -42,14 +41,23 @@ void GameViewWindow::draw_imgui()
 			if (ImGui::MenuItem("Play", "", bIsPlaying, !bIsPlaying))
 			{
 				if (!bIsPlaying)
+				{
 					EnteringGameMode.Broadcast();
-				bIsPlaying = true;
+					bIsPlaying = true;
+					auto& io = ImGui::GetIO();
+					io.WantCaptureKeyboard = io.WantCaptureMouse = false;
+				}
+
 			}
 			if (ImGui::MenuItem("Stop", "", !bIsPlaying, bIsPlaying))
 			{
 				if (bIsPlaying)
+				{
 					ExitGameMode.Broadcast();
-				bIsPlaying = false;
+					bIsPlaying = false;
+					auto& io = ImGui::GetIO();
+					io.WantCaptureKeyboard = io.WantCaptureMouse = true;
+				}
 			}
 		}
 

@@ -87,7 +87,8 @@ protected:
 	float DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume) const;
 
 	bool CanProcessInput() const;
-	
+	bool IsKeyExclusiveForEditor(FKey const& InKey) const;
+
 	/** A counter used to track the order in which events occurred since the last time the input stack was processed */
 	uint32 EventCount = 0;
 

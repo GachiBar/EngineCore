@@ -111,6 +111,7 @@ void Application::OnStart()
 	//io->SetIniFilename("imgui.ini"); // We don't want to save .ini file
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	
 	//for (const auto layer : m_LayerStack)
 		//layer->OnGuiRender();
 
@@ -147,14 +148,12 @@ int Application::Run()
 		}
 
 		ApplyInput();
-		//engine_->RunFrame();
 
 		for (const auto layer : m_LayerStack)
 		{
 			current_layer_on_update = layer;
 			layer->OnUpdate(engine_->kDt);;
 		}
-		
 	
 		engine_->BeginRender();
 

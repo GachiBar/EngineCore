@@ -61,6 +61,14 @@ void EditorLayer::OnUpdate(float const dt)
         EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
     }
 
+    if(InputManager::getInstance().player_input->WasJustPressed(EKeys::F11))
+    {
+        int a = 42;
+    }
+    if (InputManager::getInstance().player_input->WasJustPressed(EKeys::F10))
+    {
+        int a = 42;
+    }
     gvm->update();
 }
 

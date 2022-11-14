@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "GameLayer.h"
+#include "InputManager.h"
+#include "InputCoreSystem/InputSettings.h"
 #include "Windows/GenericWindow.h"
 
 EditorApplication::EditorApplication()
@@ -16,11 +18,16 @@ EditorApplication::EditorApplication()
 void EditorApplication::OnSetup()
 {
 	Application::OnSetup();
+
+	InputManager::getInstance().input_settings->AddDefaultEditorExclusiveKeys();
 }
 
 void EditorApplication::OnStart()
 {
 	Application::OnStart();
+	const auto game_layer = new GameLayer(&m_LayerStack);
+	PushLayer(game_layer);
+
 	const auto editor_layer = new EditorLayer(&m_LayerStack);
 	Camera->owner_layer = editor_layer;
 	PushLayer(editor_layer);
@@ -28,9 +35,6 @@ void EditorApplication::OnStart()
 	editor_layer->gvm->ExitGameMode.AddRaw(this, &EditorApplication::SetEditorOnlyInputMode);
 
 	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::on_resize_viewport);
-
-	const auto game_layer = new GameLayer(&m_LayerStack);
-	PushLayer(game_layer);
 }
 
 EEditorInputMode::Type EditorApplication::GetCurrentInputMode() const
