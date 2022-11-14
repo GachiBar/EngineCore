@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 #include "imgui/imgui.h"
@@ -35,19 +36,23 @@ public:
 	ExitGameModeEvent ExitGameMode;
 
     bool IsPlaying() const;
+
+    void StartPlay();
+    void StopPlay();
 private:
     void* Texture;
     bool bIsPlaying = false;
     ImVec2 wsize;
 
+    std::optional<std::string> CurrentOperationToString() const;
     bool bInFocus = false;
 
     ImGuizmo::MODE CurrentOperationMode = ImGuizmo::WORLD;
     ImGuizmo::OPERATION CurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 
-    void draw_gizmos();
+    void draw_gizmos() const;
     std::string SelectedRenderTarget;
-    POINT  LastCursorPos;
+    POINT  LastCursorPos{};
 
     bool bIsEditorInputMode = false;
     ImVec2 last_window_size;

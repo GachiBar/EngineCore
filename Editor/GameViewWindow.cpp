@@ -8,6 +8,7 @@
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
 #include "../GameplaySystem/Component.h"
+#include "libs/magic_enum.hpp"
 
 GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
                                                                              editor_layer(InEditorLayer)
@@ -40,35 +41,17 @@ void GameViewWindow::draw_imgui()
 		{
 			if (ImGui::MenuItem("Play", "", bIsPlaying, !bIsPlaying))
 			{
-				if (!bIsPlaying)
-				{
-					EnteringGameMode.Broadcast();
-					bIsPlaying = true;
-					auto& io = ImGui::GetIO();
-					io.WantCaptureKeyboard = io.WantCaptureMouse = false;
-				}
-
+				StartPlay();
 			}
 			if (ImGui::MenuItem("Stop", "", !bIsPlaying, bIsPlaying))
 			{
-				if (bIsPlaying)
-				{
-					ExitGameMode.Broadcast();
-					bIsPlaying = false;
-					auto& io = ImGui::GetIO();
-					io.WantCaptureKeyboard = io.WantCaptureMouse = true;
-				}
+				StopPlay();
 			}
 		}
 
 		with_Child("GameRender")
 		{
-			// Get the size of the child (i.e. the whole draw size of the windows).
-
-			// Because I use the texture from OpenGL, I need to invert the V from the UV.
-			wsize = ImGui::GetWindowSize();
-
-			ImGui::Image(Texture, wsize, ImVec2(0, 0), ImVec2(1, 1));
+			ImGui::Image(Texture, ImGui::GetWindowSize(), ImVec2(0, 0), ImVec2(1, 1));
 
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 			{
@@ -87,7 +70,8 @@ void GameViewWindow::draw_imgui()
 				bIsEditorInputMode = false;
 			}
 
-			if (!bIsPlaying && editor_layer->GetSelectedGo())
+			if (!bIsPlaying && editor_layer->GetSelectedGo() && editor_layer->GetSelectedGo()->GetComponent(
+				"GameplayCore.Components", "TransformComponent"))
 			{
 				draw_gizmos();
 			}
@@ -96,9 +80,11 @@ void GameViewWindow::draw_imgui()
 
 		if(!bIsPlaying)
 		{
-			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
+				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+				ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-			ImVec2 window_pos = ImGui::GetWindowPos(), window_pos_pivot = {1.f,0};
+			ImVec2 window_pos = ImGui::GetWindowPos(), window_pos_pivot = {1.f, 0};
 			window_pos.y += 50;
 			window_pos.x += ImGui::GetWindowSize().x - 10.f;
 			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
@@ -108,7 +94,8 @@ void GameViewWindow::draw_imgui()
 			with_Window("Overlay", &bIsPlaying, window_flags)
 			{
 				const auto RenderTargets = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList();
-				if (ImGui::BeginCombo("###RenderTargetList", SelectedRenderTarget.c_str(), ImGuiComboFlags_NoArrowButton))
+				if (ImGui::BeginCombo("###RenderTargetList", SelectedRenderTarget.c_str(),
+				                      ImGuiComboFlags_NoArrowButton))
 				{
 					for (const auto render_target : RenderTargets)
 					{
@@ -117,12 +104,10 @@ void GameViewWindow::draw_imgui()
 						if (ImGui::Selectable(render_target, is_selected))
 						{
 							SelectedRenderTarget = render_target;
-							Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(SelectedRenderTarget.c_str()).texture;
-							//editor_layer->GetApp()->GetEngine()->GetRenderer().
+							Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
+								SelectedRenderTarget.c_str()).texture;
 						}
-							
 
-						// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
 						if (is_selected)
 							ImGui::SetItemDefaultFocus();
 					}
@@ -135,7 +120,8 @@ void GameViewWindow::draw_imgui()
 
 void GameViewWindow::on_resize_viewport(int32 InWidth, int32 InHeight)
 {
-	Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(SelectedRenderTarget.c_str()).texture;
+	Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(SelectedRenderTarget.c_str()).
+	                        texture;
 }
 
 void GameViewWindow::resize()
@@ -144,7 +130,8 @@ void GameViewWindow::resize()
 	{
 		last_window_size = wsize;
 		editor_layer->GetApp()->GetEngine()->GetRenderer().ResizeViewport(last_window_size.x, last_window_size.y);
-		Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(SelectedRenderTarget.c_str()).texture;
+		Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
+			SelectedRenderTarget.c_str()).texture;
 	}
 }
 
@@ -163,74 +150,85 @@ bool GameViewWindow::IsPlaying() const
 	return bIsPlaying;
 }
 
-void GameViewWindow::draw_gizmos()
+void GameViewWindow::StartPlay()
 {
-	auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
-
-	if (!bIsPlaying && editor_layer->GetSelectedGo())
+	if (!bIsPlaying)
 	{
-		ImGuizmo::SetOrthographic(false);
-		ImGuizmo::SetDrawlist();
-		float windowWidth = (float)ImGui::GetWindowWidth();
-		float windowHeight = (float)ImGui::GetWindowHeight();
+		EnteringGameMode.Broadcast();
+		bIsPlaying = true;
+		auto& io = ImGui::GetIO();
+		io.WantCaptureKeyboard = io.WantCaptureMouse = false;
+	}
+}
 
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+void GameViewWindow::StopPlay()
+{
+	if (bIsPlaying)
+	{
+		ExitGameMode.Broadcast();
+		bIsPlaying = false;
+		auto& io = ImGui::GetIO();
+		io.WantCaptureKeyboard = io.WantCaptureMouse = true;
+	}
+}
 
-		auto change_mat = [](const DirectX::XMMATRIX mat)
-		{
-			DirectX::XMFLOAT4X4 temp{};
-			XMStoreFloat4x4(&temp, mat);
-			return temp;
-		};
+std::optional<std::string> GameViewWindow::CurrentOperationToString() const
+{
+	if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
+	{
+		return "Position";
+	}
+	if (CurrentGizmoOperation & ImGuizmo::ROTATE)
+	{
+		return "Rotation";
+	}
+	if (CurrentGizmoOperation & ImGuizmo::SCALE)
+	{
+		return "Scale";
+	}
+	return std::nullopt;
+}
 
-		auto value = static_cast<float*>(editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("ModelMatrix").GetValue().value().Unbox());
+void GameViewWindow::draw_gizmos() const
+{
+	const auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
 
-		DirectX::XMFLOAT4X4 v = change_mat(Editor->Camera->View);
-		DirectX::XMFLOAT4X4 p = change_mat(Editor->Camera->Proj);
-		DirectX::XMFLOAT4X4 w = DirectX::XMFLOAT4X4(value);
+	ImGuizmo::SetOrthographic(false);
+	ImGuizmo::SetDrawlist();
 
-		DirectX::XMFLOAT4X4 delta = {};
-		ImGuizmo::Manipulate(&v.m[0][0], &p.m[0][0], CurrentGizmoOperation, CurrentOperationMode, &w.m[0][0]);
+	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
-		if(ImGuizmo::IsUsing())
-		{
-			float trans[3];
-			float rot[3];
-			float scale[3];
+	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent");
 
-			ImGuizmo::DecomposeMatrixToComponents(&w.m[0][0], trans, rot, scale);
+	auto value = static_cast<float*>(transform_component->GetProperty("ModelMatrix").GetValue().value().Unbox());
+	auto w = DirectX::XMFLOAT4X4(value);
 
-			auto rot_quat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(w); //DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(rot[0], rot[1], rot[2]);
-			float rot_quat_representaion[4] = { rot_quat.x,rot_quat.y,rot_quat.z ,rot_quat.w, };
+	Manipulate(&Editor->Camera->View.m[0][0], &Editor->Camera->Proj.m[0][0], CurrentGizmoOperation,
+	           CurrentOperationMode, &w.m[0][0]);
 
-			switch (CurrentGizmoOperation) {
+	if (ImGuizmo::IsUsing())
+	{
+		float trans[3];
+		float rot[3];
+		float scale[3];
 
-			case ImGuizmo::TRANSLATE_X:
-			case ImGuizmo::TRANSLATE_Y:
-			case ImGuizmo::TRANSLATE_Z:
-			case ImGuizmo::TRANSLATE:
-				editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalPosition").SetValue(trans);
-				break;
+		ImGuizmo::DecomposeMatrixToComponents(&w.m[0][0], trans, rot, scale);
 
-			case ImGuizmo::ROTATE_X:
-			case ImGuizmo::ROTATE_Y:
-			case ImGuizmo::ROTATE_Z:
-			case ImGuizmo::ROTATE_SCREEN:
-			case ImGuizmo::ROTATE:
-				editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalRotation").SetValue(rot_quat_representaion);
-				break;
+		const auto rot_quat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(w);
+		float rot_quat_representaion[4] = {rot_quat.x, rot_quat.y, rot_quat.z, rot_quat.w,};
 
-			case ImGuizmo::SCALE_X:
-			case ImGuizmo::SCALE_Y:
-			case ImGuizmo::SCALE_Z:
-			case ImGuizmo::SCALE:
-				editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent")->GetProperty("LocalScale").SetValue(scale);
-				break;
+		const std::string property_name = CurrentOperationToString().value_or("Position");
 
-			default: ;
-			}
-			
-			
-		}
+		void* res_data;
+		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
+			res_data = trans;
+		else if (CurrentGizmoOperation & ImGuizmo::ROTATE)
+			res_data = rot_quat_representaion;
+		else if (CurrentGizmoOperation & ImGuizmo::SCALE)
+			res_data = scale;
+		else
+			return;
+
+		transform_component->GetProperty(property_name).SetValue(res_data);
 	}
 }
