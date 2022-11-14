@@ -25,6 +25,9 @@ private:
 	{
 		std::shared_ptr<engine::GameObject> source = nullptr;
 		std::shared_ptr<engine::GameObject> target = nullptr;
+		//std::function<void(
+		//	std::shared_ptr<engine::Object> source,
+		//	std::shared_ptr<engine::Object> target)> handler;
 
 		bool IsRequested();
 		void Reset();
@@ -38,11 +41,12 @@ private:
 	const mono::mono_assembly& assembly;
 
 	void DrawWithTransformHeaderPopup();
+	void DrawWithoutTransformHeaderPopup();
 
 	void DrawHierarchy(engine::Component& transform);
 	void DrawSelected(std::shared_ptr<engine::GameObject> gameObject);
 	void SetupDragSource(std::shared_ptr<engine::GameObject> gameObject);
-	void SetupDropSource(std::shared_ptr<engine::GameObject> gameObject);
+	void SetupDropTarget(std::shared_ptr<engine::GameObject> gameObject);
 	void DrawPopup(std::shared_ptr<engine::GameObject> gameObject);
 
 	bool IsSelected(std::shared_ptr<engine::GameObject> gameObject);
