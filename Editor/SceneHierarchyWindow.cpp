@@ -6,14 +6,11 @@
 #include <format>
 #include <imgui/imgui_internal.h>
 
-std::shared_ptr<engine::Scene> SceneHierarchyWindow::GetScene()
-{
-    return scene;
-}
+#include "../GameplaySystem/Engine.h"
 
-void SceneHierarchyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
+engine::Scene* SceneHierarchyWindow::GetScene() const
 {
-    this->scene = scene;
+    return app->GetEngine()->GetScene().get();
 }
 
 SceneHierarchyWindow::SceneHierarchyWindow(const mono::mono_assembly& assembly)
@@ -27,9 +24,9 @@ void SceneHierarchyWindow::draw_imgui()
 
     if (ImGui::CollapsingHeader("With transform", ImGuiTreeNodeFlags_DefaultOpen)) 
     {
-        for (size_t i = 0; i < scene->Count(); ++i)
+        for (size_t i = 0; i < GetScene()->Count(); ++i)
         {
-            auto gameObject = (*scene)[i];
+            auto gameObject = (*GetScene())[i];
             auto transform = gameObject->GetComponent("GameplayCore.Components", "TransformComponent");
 
             if (transform == nullptr)

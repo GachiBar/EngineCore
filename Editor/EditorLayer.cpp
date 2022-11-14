@@ -6,6 +6,7 @@
 
 #include "Windows/ExplorerWindow.h"
 #include "EditorApplication.h"
+#include "InputManager.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
 
@@ -16,6 +17,7 @@ namespace Renderer
 
 EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selected_go(nullptr)
 {
+    CurrentInputMode = EEditorInputMode::Type::EditorOnlyMode;
 }
 
 void EditorLayer::OnAttach()
@@ -34,8 +36,8 @@ void EditorLayer::OnAttach()
         properties->SetGameObject(go);
 	});
 
-    hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
-    properties->SetScene(GetApp()->GetEngine()->GetScene());
+    hierarchy->app = GetApp();
+    properties->app = GetApp();
 
 	auto& io = ImGui::GetIO();
 

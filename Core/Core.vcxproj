@@ -135,7 +135,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Definitions.h" />
+    <ClInclude Include="Enums\EditorInputMode.h" />
     <ClInclude Include="Interfaces\IApplication.h" />
+    <ClInclude Include="Interfaces\ILayer.h" />
     <ClInclude Include="Interfaces\IRender.h" />
     <ClInclude Include="Interfaces\IWindowsApplication.h" />
     <ClInclude Include="libs\Delegates.h" />

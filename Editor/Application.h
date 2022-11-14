@@ -40,7 +40,9 @@ public:
     engine::Engine* GetEngine() const override;
     void ResizeBackBuffer(int32 InWidth, int32 InHeight) override;
     void ResizeViewport(int32 InWidth, int32 InHeight) override;
-    
+
+    ILayer* GetCurrentUpdateLayer() override;
+    EEditorInputMode::Type GetCurrentInputMode() const override;
 
     const mono::mono_assembly& GetAssembly() const;
     virtual WNDPROC GetWndProc() override;
@@ -56,6 +58,9 @@ protected:
 public:
 
 protected:
+    Layer* current_layer_on_update;
+    
+
 	LayerStack m_LayerStack;
     std::vector<std::shared_ptr<FGenericWindow>> wnds;
 
@@ -68,8 +73,6 @@ protected:
 
     /// Application exit code.
     int exit_code_;
-
-    
 private:
     static const char* kMonoLibPath;
     static const char* kDllPath;

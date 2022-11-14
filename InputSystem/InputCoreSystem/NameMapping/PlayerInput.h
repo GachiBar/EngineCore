@@ -49,13 +49,13 @@ public:
 	PlayerInput();
 
 	/** @return true if InKey is currently held */
-	bool IsPressed(FKey InKey) const;
+	bool IsPressed(const FKey& InKey) const;
 
 	/** @return true if InKey went from up to down since player input was last processed. */
-	bool WasJustPressed(FKey InKey) const;
+	bool WasJustPressed(const FKey& InKey) const;
 
 	/** return true if InKey went from down to up since player input was last processed. */
-	bool WasJustReleased(FKey InKey) const;
+	bool WasJustReleased(const FKey& InKey) const;
 
 	bool IsActionPressed(const std::string& ActionName) const;
 

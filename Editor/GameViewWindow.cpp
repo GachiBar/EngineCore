@@ -42,11 +42,18 @@ void GameViewWindow::draw_imgui()
 			if (ImGui::MenuItem("Play", "", isPlaying, !isPlaying))
 			{
 				isPlaying = true;
+
+				EditorApplication* Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
+				if (Editor)
+					Editor->SetGameOnlyOnlyInputMode();
 				//EventSystem.notify(null, new Event(EventType.GameEngineStartPlay));
 			}
 			if (ImGui::MenuItem("Stop", "", !isPlaying, isPlaying))
 			{
 				isPlaying = false;
+				EditorApplication* Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
+				if (Editor)
+					Editor->SetEditorOnlyInputMode();
 				//EventSystem.notify(null, new Event(EventType.GameEngineStopPlay));
 			}
 		}
@@ -140,7 +147,7 @@ void GameViewWindow::resize()
 
 bool GameViewWindow::IsInCameraEditorInputMode() const
 {
-	return bIsEditorInputMode;
+	return bIsEditorInputMode && !isPlaying;
 }
 
 void GameViewWindow::SwitchOperationMode()

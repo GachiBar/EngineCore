@@ -6,12 +6,11 @@
 
 #include <vector>
 
+#include "Interfaces/IApplication.h"
+
 class SceneHierarchyWindow
 {
 public:
-	std::shared_ptr<engine::Scene> GetScene();
-	void SetScene(std::shared_ptr<engine::Scene> scene);
-
 	SceneHierarchyWindow(const mono::mono_assembly& assembly);
 
 	void draw_imgui();
@@ -19,8 +18,11 @@ public:
 	DECLARE_EVENT(GameObjectSelectedEvent, SceneHierarchyWindow, std::shared_ptr<engine::GameObject>)
 	GameObjectSelectedEvent GameObjectSelected;
 
+	engine::Scene* GetScene() const;
+
+	IApplication* app;
 private:
-	std::shared_ptr<engine::Scene> scene;
+
 	std::shared_ptr<engine::GameObject> selected;
 	const mono::mono_assembly& assembly;
 

@@ -42,6 +42,7 @@ public:
     std::shared_ptr<InputSettings> input_settings;
     std::shared_ptr<PlayerInput> player_input;
 
+    IApplication* GetOwningApp() const;
 private:
     IApplication* app;
 

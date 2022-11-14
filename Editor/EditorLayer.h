@@ -33,6 +33,7 @@ public:
 	engine::GameObject* GetSelectedGo();
 
 private:
+
 	std::shared_ptr<engine::GameObject> editor_camera;
 	std::shared_ptr<engine::GameObject> selected_go;
 

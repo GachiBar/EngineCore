@@ -66,9 +66,6 @@
     <ClCompile Include="ImGuizmo\ImSequencer.cpp">
       <Filter>ImGuizmo</Filter>
     </ClCompile>
-    <ClCompile Include="ImGuiLayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameViewWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -85,6 +82,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EditorCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\ExplorerWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,9 +137,6 @@
     <ClInclude Include="ImGuizmo\ImZoomSlider.h">
       <Filter>ImGuizmo</Filter>
     </ClInclude>
-    <ClInclude Include="ImGuiLayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameViewWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -152,10 +152,13 @@
     <ClInclude Include="ProjectSettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EditorInputMode.h">
+    <ClInclude Include="EditorCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EditorCamera.h">
+    <ClInclude Include="Windows\ExplorerWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

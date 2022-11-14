@@ -9,6 +9,7 @@
 #include "../GameplaySystem/Component.h"
 #include "InputCoreSystem/InputEvent/Events.h"
 #include "InputCoreSystem/InputSettings.h"
+#include "Interfaces/ILayer.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";
@@ -20,7 +21,7 @@ Application::Application()
 	, m_Assembly(m_Domain.get_assembly(kDllPath))
 	, engine_(new engine::Engine(m_Domain, m_Assembly))
 	, exit_code_(0)
-{	
+{
 	mono::mono_domain::set_current_domain(m_Domain);
 	engine::Scene::CacheMethods(m_Assembly);
 	engine::GameObject::CacheMethods(m_Assembly);
@@ -132,25 +133,29 @@ int Application::Run()
 	MSG msg = {};
 	//bool is_exit_requested = false;
 
-	while (!is_exit_requested) 
+	while (!is_exit_requested)
 	{
-		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) 
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-			
-			if (msg.message == WM_QUIT) 
+
+			if (msg.message == WM_QUIT)
 			{
 				is_exit_requested = true;
 			}
 		}
 
 		ApplyInput();
-		engine_->RunFrame();
+		//engine_->RunFrame();
 
 		for (const auto layer : m_LayerStack)
+		{
+			current_layer_on_update = layer;
 			layer->OnUpdate(engine_->kDt);;
-
+		}
+		
+	
 		engine_->BeginRender();
 
 		for (const auto layer : m_LayerStack)
@@ -201,6 +206,16 @@ void Application::ResizeViewport(int32 InWidth, int32 InHeight)
 	GetEngine()->GetRenderer().ResizeViewport(InWidth, InHeight);
 }
 
+ILayer* Application::GetCurrentUpdateLayer()
+{
+	return current_layer_on_update;
+}
+
+EEditorInputMode::Type Application::GetCurrentInputMode() const
+{
+	return EEditorInputMode::Type::GameOnlyMode;
+}
+
 WNDPROC Application::GetWndProc()
 {
 	return Application::WndProc;
@@ -208,6 +223,7 @@ WNDPROC Application::GetWndProc()
 
 void Application::ApplyInput()
 {
+	current_layer_on_update = nullptr;
 	std::shared_ptr<FInputEvent> IE;
 
 	while (InputManager::getInstance().ReadEvent(IE))

@@ -4,14 +4,22 @@
 #include "ActionMapping.h"
 #include "../MessageHandler/WindowsApplicationMessageHandler.h"
 #include "../InputSettings.h"
-
+#include "../../InputManager.h"
 
 PlayerInput::PlayerInput():MessageHandler(new WindowsApplicationMessageHandler())
 {
 }
 
-bool PlayerInput::IsPressed(FKey InKey) const
+bool PlayerInput::IsPressed(const FKey& InKey) const
 {
+	const auto OwningApp = InputManager::getInstance().GetOwningApp();
+	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
+	if(!CurrentLayer)
+		return false;
+	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
+	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
+		return false;
+
 	if (InKey == EKeys::AnyKey)
 	{
 		// Is there any key that is down
@@ -31,8 +39,16 @@ bool PlayerInput::IsPressed(FKey InKey) const
 	return false;
 }
 
-bool PlayerInput::WasJustPressed(FKey InKey) const
+bool PlayerInput::WasJustPressed(const FKey& InKey) const
 {
+	const auto OwningApp = InputManager::getInstance().GetOwningApp();
+	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
+	if (!CurrentLayer)
+		return false;
+	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
+	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
+		return false;
+
 	if (InKey == EKeys::AnyKey)
 	{
 		// Is there any key that has just been pressed
@@ -52,8 +68,16 @@ bool PlayerInput::WasJustPressed(FKey InKey) const
 	return false;
 }
 
-bool PlayerInput::WasJustReleased(FKey InKey) const
+bool PlayerInput::WasJustReleased(const FKey& InKey) const
 {
+	const auto OwningApp = InputManager::getInstance().GetOwningApp();
+	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
+	if (!CurrentLayer)
+		return false;
+	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
+	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
+		return false;
+
 	if (InKey == EKeys::AnyKey)
 	{
 		// Is there any key that has just been pressed
