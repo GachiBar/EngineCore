@@ -39,22 +39,17 @@ void GameViewWindow::draw_imgui()
 	{
 		with_MenuBar
 		{
-			if (ImGui::MenuItem("Play", "", isPlaying, !isPlaying))
+			if (ImGui::MenuItem("Play", "", bIsPlaying, !bIsPlaying))
 			{
-				isPlaying = true;
-
-				EditorApplication* Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
-				if (Editor)
-					Editor->SetGameOnlyOnlyInputMode();
-				//EventSystem.notify(null, new Event(EventType.GameEngineStartPlay));
+				if (!bIsPlaying)
+					EnteringGameMode.Broadcast();
+				bIsPlaying = true;
 			}
-			if (ImGui::MenuItem("Stop", "", !isPlaying, isPlaying))
+			if (ImGui::MenuItem("Stop", "", !bIsPlaying, bIsPlaying))
 			{
-				isPlaying = false;
-				EditorApplication* Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
-				if (Editor)
-					Editor->SetEditorOnlyInputMode();
-				//EventSystem.notify(null, new Event(EventType.GameEngineStopPlay));
+				if (bIsPlaying)
+					ExitGameMode.Broadcast();
+				bIsPlaying = false;
 			}
 		}
 
@@ -84,14 +79,14 @@ void GameViewWindow::draw_imgui()
 				bIsEditorInputMode = false;
 			}
 
-			if (!isPlaying && editor_layer->GetSelectedGo())
+			if (!bIsPlaying && editor_layer->GetSelectedGo())
 			{
 				draw_gizmos();
 			}
 			bInFocus = ImGui::IsWindowFocused();
 		}
 
-		if(!isPlaying)
+		if(!bIsPlaying)
 		{
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
@@ -102,7 +97,7 @@ void GameViewWindow::draw_imgui()
 			window_flags |= ImGuiWindowFlags_NoMove;
 			ImGui::SetNextWindowBgAlpha(0.35f);
 
-			with_Window("Overlay", &isPlaying, window_flags)
+			with_Window("Overlay", &bIsPlaying, window_flags)
 			{
 				const auto RenderTargets = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList();
 				if (ImGui::BeginCombo("###RenderTargetList", SelectedRenderTarget.c_str(), ImGuiComboFlags_NoArrowButton))
@@ -147,7 +142,7 @@ void GameViewWindow::resize()
 
 bool GameViewWindow::IsInCameraEditorInputMode() const
 {
-	return bIsEditorInputMode && !isPlaying;
+	return bIsEditorInputMode && !bIsPlaying;
 }
 
 void GameViewWindow::SwitchOperationMode()
@@ -159,7 +154,7 @@ void GameViewWindow::draw_gizmos()
 {
 	auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
 
-	if (!isPlaying && editor_layer->GetSelectedGo())
+	if (!bIsPlaying && editor_layer->GetSelectedGo())
 	{
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();

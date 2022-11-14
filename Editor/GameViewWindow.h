@@ -7,16 +7,12 @@
 
 #include "Definitions.h"
 #include "ImGuizmo/ImGuizmo.h"
+#include "libs/Delegates.h"
 
 class EditorLayer;
 
 class GameViewWindow
 {
-    void* Texture;
-    bool isPlaying = false;
-    ImVec2 wsize;
-
-
 public:
     GameViewWindow(void* InTexture, EditorLayer* InEditorLayer);
 
@@ -31,7 +27,18 @@ public:
     bool IsInCameraEditorInputMode() const;
 
     void SwitchOperationMode();
+
+    DECLARE_EVENT(EnterToPlayFromEditorEvent, GameViewWindow)
+	EnterToPlayFromEditorEvent EnteringGameMode;
+
+    DECLARE_EVENT(ExitGameModeEvent, GameViewWindow)
+	ExitGameModeEvent ExitGameMode;
+
 private:
+    void* Texture;
+    bool bIsPlaying = false;
+    ImVec2 wsize;
+
     bool bInFocus = false;
 
     ImGuizmo::MODE CurrentOperationMode = ImGuizmo::WORLD;

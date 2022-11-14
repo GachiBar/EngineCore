@@ -24,6 +24,8 @@ void EditorApplication::OnStart()
 	const auto editor_layer = new EditorLayer(&m_LayerStack);
 	Camera->owner_layer = editor_layer;
 	PushLayer(editor_layer);
+	editor_layer->gvm->EnteringGameMode.AddRaw(this, &EditorApplication::SetGameOnlyOnlyInputMode);
+	editor_layer->gvm->ExitGameMode.AddRaw(this, &EditorApplication::SetEditorOnlyInputMode);
 
 	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::on_resize_viewport);
 
@@ -43,10 +45,10 @@ engine::GameObject* EditorApplication::GetCamera() const
 
 void EditorApplication::SetEditorOnlyInputMode()
 {
-	editor_input_mode = EEditorInputMode::Type::GameOnlyMode;
+	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
 }
 
 void EditorApplication::SetGameOnlyOnlyInputMode()
 {
-	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
+	editor_input_mode = EEditorInputMode::Type::GameOnlyMode;
 }
