@@ -84,12 +84,14 @@ protected:
 	/* Returns the summed values of all the components of this axis this frame
 	 * @param KeysToConsume - array to collect the keys associated with this binding that should be consumed
 	 */
-	float DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume);
+	float DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume) const;
 
+	bool CanProcessInput() const;
 	
 	/** A counter used to track the order in which events occurred since the last time the input stack was processed */
 	uint32 EventCount = 0;
 
+	
 protected:
 	InputSettings* input_settings{};
 

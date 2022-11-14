@@ -12,12 +12,7 @@ PlayerInput::PlayerInput():MessageHandler(new WindowsApplicationMessageHandler()
 
 bool PlayerInput::IsPressed(const FKey& InKey) const
 {
-	const auto OwningApp = InputManager::getInstance().GetOwningApp();
-	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
-	if(!CurrentLayer)
-		return false;
-	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
-	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
+	if (!CanProcessInput())
 		return false;
 
 	if (InKey == EKeys::AnyKey)
@@ -41,12 +36,7 @@ bool PlayerInput::IsPressed(const FKey& InKey) const
 
 bool PlayerInput::WasJustPressed(const FKey& InKey) const
 {
-	const auto OwningApp = InputManager::getInstance().GetOwningApp();
-	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
-	if (!CurrentLayer)
-		return false;
-	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
-	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
+	if (!CanProcessInput())
 		return false;
 
 	if (InKey == EKeys::AnyKey)
@@ -70,12 +60,7 @@ bool PlayerInput::WasJustPressed(const FKey& InKey) const
 
 bool PlayerInput::WasJustReleased(const FKey& InKey) const
 {
-	const auto OwningApp = InputManager::getInstance().GetOwningApp();
-	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
-	if (!CurrentLayer)
-		return false;
-	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
-	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
+	if (!CanProcessInput())
 		return false;
 
 	if (InKey == EKeys::AnyKey)
@@ -148,7 +133,7 @@ bool PlayerInput::WasActionJustReleased(const std::string& ActionName) const
 
 float PlayerInput::GetKeyValue(const FKey& InKey) const
 {
-	return KeyStateMap.contains(InKey) ? KeyStateMap.at(InKey).Value.x : 0.f;
+	return CanProcessInput() && KeyStateMap.contains(InKey) ? KeyStateMap.at(InKey).Value.x : 0.f;
 }
 
 float PlayerInput::GetAxisValue(std::string const& AxisName) const
@@ -158,7 +143,7 @@ float PlayerInput::GetAxisValue(std::string const& AxisName) const
 
 	float AxisValue = 0.f;
 
-	if (input_settings->GetAxisMappings().contains(AxisName))
+	if (CanProcessInput() && input_settings->GetAxisMappings().contains(AxisName))
 	{
 		auto& AxisMappings = input_settings->GetAxisMappings().at(AxisName);
 
@@ -174,7 +159,7 @@ float PlayerInput::GetAxisValue(std::string const& AxisName) const
 
 FVector2D PlayerInput::GetProcessedVectorKeyValue(FKey InKey) const
 {
-	return KeyStateMap.contains(InKey) ? KeyStateMap.at(InKey).Value : FVector2D();
+	return CanProcessInput() && KeyStateMap.contains(InKey) ? KeyStateMap.at(InKey).Value : FVector2D();
 }
 
 void PlayerInput::SetInputSettings(InputSettings* InInputSettings)
@@ -205,7 +190,7 @@ bool PlayerInput::IsKeyHandledByAction(FKey Key) const
 	return bIsHandled;
 }
 
-float PlayerInput::DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume)
+float PlayerInput::DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume) const
 {
 	float AxisValue = 0.f;
 
@@ -228,4 +213,16 @@ float PlayerInput::DetermineAxisValue(const std::string& AxisName, std::set<FKey
 	}
 
 	return AxisValue;
+}
+
+bool PlayerInput::CanProcessInput() const
+{
+	const auto OwningApp = InputManager::getInstance().GetOwningApp();
+	const auto CurrentLayer = OwningApp->GetCurrentUpdateLayer();
+	if (!CurrentLayer)
+		return false;
+	const auto LayerInputMode = CurrentLayer->GetCurrentInputMode();
+	if (!EEditorInputMode::IsInputSuitableFor(OwningApp->GetCurrentInputMode(), LayerInputMode))
+		return false;
+	return true;
 }
