@@ -18,6 +18,7 @@ public:
 
 private:
     const std::vector<FileData>& get_files_data() const;
+    FileType get_file_type(const std::filesystem::directory_entry& entry) const;
     void load_files_textures();
     
     bool draw_button_with_icon(const std::string& name, FileType type);
@@ -54,5 +55,10 @@ struct FileData
 enum FileType
 {
     PlainText,
-    Directory
+    Directory,
+    Scene,
+    Prefab,
+    Mesh,
+    Texture,
+    Material
 };

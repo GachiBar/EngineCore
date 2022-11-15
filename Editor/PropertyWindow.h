@@ -121,8 +121,6 @@ private:
 
 	void ChangeGameObjectResourcesCopasity(size_t size);
 
-	void OnComponentAdded(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component);
-	void OnComponentRemoved(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component);
 	void FindAvaliableComponents();
 
 	static std::string GetPropertyName(

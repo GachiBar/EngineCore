@@ -22,21 +22,12 @@ std::shared_ptr<engine::GameObject> PropertyWindow::GetGameObject()
 
 void PropertyWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObject)
 {
-	if (game_object != nullptr) 
-	{		
-		gameObject->ComponentAdded.RemoveObject(this);
-		gameObject->ComponentRemoved.RemoveObject(this);
-	}
-
 	this->game_object = gameObject;
 
-	if (game_object != nullptr)
+	if (game_object != nullptr) 
 	{
-		gameObject->ComponentAdded.AddRaw(this, &PropertyWindow::OnComponentAdded);
-		gameObject->ComponentRemoved.AddRaw(this, &PropertyWindow::OnComponentRemoved);
-
 		FindAvaliableComponents();
-	}
+	}	
 }
 
 PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
@@ -82,7 +73,7 @@ void PropertyWindow::draw_imgui()
 
 	ImGui::Separator();
 	DrawAddComponentPanel();
-	ImGui::End();
+	ImGui::End();	
 }
 
 void PropertyWindow::CacheComponentsData()
@@ -213,6 +204,8 @@ void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> 
 	if (!visible) 
 	{
 		game_object->RemoveComponent(component);
+		game_object->Invalidate();
+		FindAvaliableComponents();
 	}
 }
 
@@ -227,8 +220,9 @@ void PropertyWindow::DrawAddComponentPanel()
 		std::string name;
 		ParseFullName(fullName, nameSpace, name);
 
-		game_object->AddComponent(nameSpace, name);
+		game_object->AddComponent(nameSpace, name);	
 		game_object->Invalidate();
+		FindAvaliableComponents();
 	}
 }
 
@@ -608,16 +602,6 @@ void PropertyWindow::ChangeGameObjectResourcesCopasity(size_t size)
 	{
 		game_objects_names[i] = new char[kGameObjectNameMaxSize];
 	}
-}
-
-void PropertyWindow::OnComponentAdded(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component)
-{
-	FindAvaliableComponents();
-}
-
-void PropertyWindow::OnComponentRemoved(engine::GameObject& gameObject, std::shared_ptr<engine::Component> component)
-{
-	FindAvaliableComponents();
 }
 
 void PropertyWindow::FindAvaliableComponents()

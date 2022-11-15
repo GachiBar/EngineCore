@@ -10,6 +10,7 @@
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
+#include "imgui/imgui.h"
 
 namespace Renderer
 {
@@ -37,7 +38,9 @@ void EditorLayer::OnAttach()
         properties->SetGameObject(go);
 	});
 
-    hierarchy->app = GetApp();
+    hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
+
+    //hierarchy->app = GetApp();
     properties->app = GetApp();
 
 	auto& io = ImGui::GetIO();
