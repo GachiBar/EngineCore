@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using GameplayCore.Mathematics.Interop;
+using Newtonsoft.Json;
 
 namespace GameplayCore.Mathematics
 {
@@ -149,6 +150,7 @@ namespace GameplayCore.Mathematics
         /// <summary>
         /// Gets a value indicting whether this instance is normalized.
         /// </summary>
+        [JsonIgnore]
         public bool IsNormalized
         {
             get { return MathUtil.IsOne((X * X) + (Y * Y) + (Z * Z)); }
@@ -157,6 +159,7 @@ namespace GameplayCore.Mathematics
         /// <summary>
         /// Gets a value indicting whether this vector is zero
         /// </summary>
+        [JsonIgnore]
         public bool IsZero
         {
             get { return X == 0 && Y == 0 && Z == 0; }

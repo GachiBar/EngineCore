@@ -8,12 +8,12 @@ namespace GameplayCore.Components
 {
     public class TransformComponent : Component
     {
-        private TransformComponent _parent;
+        [SerializeField] private TransformComponent _parent;
         private List<TransformComponent> _children;
 
-        private Quaternion _localRotation = Quaternion.Identity;
-        private Vector3 _localScale = Vector3.One;
-        private Vector3 _localPosition = Vector3.Zero;
+        [SerializeField] private Quaternion _localRotation = Quaternion.Identity;
+        [SerializeField] private Vector3 _localScale = Vector3.One;
+        [SerializeField] private Vector3 _localPosition = Vector3.Zero;
 
         private Vector3 _editorEuler;
 

@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using GameplayCore.Mathematics.Interop;
+using GameplayCore.Serialization;
+using Newtonsoft.Json;
 
 namespace GameplayCore.Mathematics
 {
@@ -138,6 +140,7 @@ namespace GameplayCore.Mathematics
         /// <value>
         /// <c>true</c> if this instance is an identity quaternion; otherwise, <c>false</c>.
         /// </value>
+        [JsonIgnore]
         public bool IsIdentity
         {
             get { return this.Equals(Identity); }
@@ -146,6 +149,7 @@ namespace GameplayCore.Mathematics
         /// <summary>
         /// Gets a value indicting whether this instance is normalized.
         /// </summary>
+        [JsonIgnore]
         public bool IsNormalized
         {
             get { return MathUtil.IsOne((X * X) + (Y * Y) + (Z * Z) + (W * W)); }
@@ -155,6 +159,7 @@ namespace GameplayCore.Mathematics
         /// Gets the angle of the quaternion.
         /// </summary>
         /// <value>The quaternion's angle.</value>
+        [JsonIgnore]
         public float Angle
         {
             get
@@ -171,6 +176,7 @@ namespace GameplayCore.Mathematics
         /// Gets the axis components of the quaternion.
         /// </summary>
         /// <value>The axis components of the quaternion.</value>
+        [JsonIgnore]
         public Vector3 Axis
         {
             get
