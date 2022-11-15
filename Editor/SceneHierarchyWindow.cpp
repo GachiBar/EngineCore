@@ -23,7 +23,7 @@ SceneHierarchyWindow::SceneHierarchyWindow(const mono::mono_assembly& assembly)
     , tree_level_id(0)
 {}
 
-void SceneHierarchyWindow::draw_imgui()
+void SceneHierarchyWindow::Draw()
 {
     ImGui::Begin("Scene Hierarchy");
     std::vector<std::shared_ptr<engine::GameObject>> roots;

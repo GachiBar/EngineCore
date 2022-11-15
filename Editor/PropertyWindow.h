@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IEditorWindow.h"
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
 #include "../GameplaySystem/Property.h"
@@ -8,7 +9,7 @@
 #include <memory>
 #include <unordered_set>
 
-class PropertyWindow
+class PropertyWindow : public IEditorWindow
 {
 public:
 	std::shared_ptr<engine::Scene> GetScene();
@@ -19,9 +20,9 @@ public:
 
 	PropertyWindow(const mono::mono_assembly& assembly);
 
-	~PropertyWindow();
+	~PropertyWindow() override;
 
-	void draw_imgui();
+	void Draw() override;
 
 private:	
 	static const size_t kGameObjectNameMaxSize = 15;

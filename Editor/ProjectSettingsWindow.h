@@ -1,11 +1,11 @@
 #pragma once
 
+#include "IEditorWindow.h"
 
-class ProjectSettingsWindow
+class ProjectSettingsWindow : public IEditorWindow
 {
 public:
-	void draw_imgui();
-
+	void Draw() override;
 
 protected:
 	bool draw_action_mappings_menu();

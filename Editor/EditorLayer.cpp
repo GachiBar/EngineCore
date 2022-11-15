@@ -4,7 +4,7 @@
 #include "LayerStack.h"
 #include <fstream>
 
-#include "Windows/ExplorerWindow.h"
+#include "ExplorerWindow.h"
 #include "EditorApplication.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
@@ -201,11 +201,11 @@ void EditorLayer::OnGuiRender()
     }
     ImGui::End();
    
-    gvm->draw_imgui(); 
-    hierarchy->draw_imgui();
-    properties->draw_imgui();
-    SettingsWindow->draw_imgui();
-    explorer->draw();
+    gvm->Draw(); 
+    hierarchy->Draw();
+    properties->Draw();
+    SettingsWindow->Draw();
+    explorer->Draw();
 }
 
 void EditorLayer::OnPostRender()

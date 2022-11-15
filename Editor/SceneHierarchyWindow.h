@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IEditorWindow.h"
 #include "imgui/imgui.h"
 #include "libs/Delegates.h"
 #include "../GameplaySystem/Scene.h"
@@ -8,7 +9,7 @@
 #include <vector>
 #include <functional>
 
-class SceneHierarchyWindow
+class SceneHierarchyWindow : public IEditorWindow
 {
 public:
 	std::shared_ptr<engine::Scene> GetScene();
@@ -16,7 +17,7 @@ public:
 
 	SceneHierarchyWindow(const mono::mono_assembly& assembly);
 
-	void draw_imgui();
+	void Draw() override;
 
 	DECLARE_EVENT(GameObjectSelectedEvent, SceneHierarchyWindow, std::shared_ptr<engine::GameObject>)
 	GameObjectSelectedEvent GameObjectSelected;

@@ -59,7 +59,7 @@ PropertyWindow::~PropertyWindow()
 	}
 }
 
-void PropertyWindow::draw_imgui()
+void PropertyWindow::Draw()
 {
 	ImGui::Begin("Property Window");
 	if (!game_object.get())

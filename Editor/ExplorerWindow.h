@@ -1,4 +1,7 @@
 ﻿#pragma once
+
+#include "IEditorWindow.h"
+
 #include <d3d11.h>
 #include <filesystem>
 #include <string>
@@ -10,11 +13,11 @@ struct FileData;
 enum FileType;
 class ID3D11ShaderResourceView;
 
-class ExplorerWindow
+class ExplorerWindow : public IEditorWindow
 {
 public:
     ExplorerWindow(const Application* app);
-    void draw();
+    void Draw() override;
 
 private:
     const std::vector<FileData>& get_files_data() const;

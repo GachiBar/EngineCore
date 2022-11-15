@@ -1,10 +1,10 @@
 ﻿#include "ExplorerWindow.h"
+#include "Application.h"
 #include <d3d11.h>
 #include <iostream>
 
 #include "imgui/imgui.h"
 #include "../GameplaySystem/Engine.h"
-#include "../Application.h"
 
 namespace fs = std::filesystem;
 
@@ -15,7 +15,7 @@ ExplorerWindow::ExplorerWindow(const Application* app)
     load_files_textures();
 }
 
-void ExplorerWindow::draw()
+void ExplorerWindow::Draw()
 {
     ImGui::Begin("Explorer");
     std::string path = "Current path : ";
