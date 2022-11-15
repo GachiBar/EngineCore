@@ -13,7 +13,8 @@
 class PropertyWindow
 {
 public:
-	engine::Scene* GetScene() const;
+	std::shared_ptr<engine::Scene> GetScene() const;
+	void SetScene(std::shared_ptr<engine::Scene> scene);
 
 	std::shared_ptr<engine::GameObject> GetGameObject();
 	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
@@ -24,10 +25,10 @@ public:
 
 	void draw_imgui();
 
-	IApplication* app;
 private:
 	static const size_t kGameObjectNameMaxSize = 15;
 
+	std::shared_ptr<engine::Scene> scene;
 	std::shared_ptr<engine::GameObject> game_object;
 
 	const char** available_components_items;

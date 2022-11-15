@@ -39,9 +39,7 @@ void EditorLayer::OnAttach()
 	});
 
     hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
-
-    //hierarchy->app = GetApp();
-    properties->app = GetApp();
+    properties->SetScene(GetApp()->GetEngine()->GetScene());
 
 	auto& io = ImGui::GetIO();
 
