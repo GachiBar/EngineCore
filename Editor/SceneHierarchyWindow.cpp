@@ -26,16 +26,21 @@ SceneHierarchyWindow::SceneHierarchyWindow(const mono::mono_assembly& assembly)
 void SceneHierarchyWindow::Draw()
 {
     ImGui::Begin("Scene Hierarchy");
-    std::vector<std::shared_ptr<engine::GameObject>> roots;
-    std::vector<std::shared_ptr<engine::GameObject>> transformless;
-    SortGameObjects(roots, transformless);
-    tree_level_id = 0;
 
-    DrawWithTransform(roots);
-    DrawWithoutTransform(transformless);
-    ProcessDragAndDrop();
+    if (scene != nullptr) 
+    {
+        std::vector<std::shared_ptr<engine::GameObject>> roots;
+        std::vector<std::shared_ptr<engine::GameObject>> transformless;
+        SortGameObjects(roots, transformless);
+        tree_level_id = 0;
 
-    scene->Invalidate();
+        DrawWithTransform(roots);
+        DrawWithoutTransform(transformless);
+        ProcessDragAndDrop();
+
+        scene->Invalidate();
+    }
+
     ImGui::End();
 }
 
@@ -246,6 +251,12 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
         auto childObject = getChildMethod.Invoke(params).value();
         engine::Component childTransform(assembly, childObject.GetInternal());
         DeleteHierarchy(childTransform);
+    }
+
+    if (selected != nullptr && *selected == *gameObject) 
+    {
+        selected = nullptr;
+        GameObjectSelected.Broadcast(nullptr);
     }
 
     scene->DeleteGameObject(gameObject);
