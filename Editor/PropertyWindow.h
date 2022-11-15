@@ -8,11 +8,12 @@
 #include <memory>
 #include <unordered_set>
 
+#include "Interfaces/IApplication.h"
+
 class PropertyWindow
 {
 public:
-	std::shared_ptr<engine::Scene> GetScene();
-	void SetScene(std::shared_ptr<engine::Scene> scene);
+	engine::Scene* GetScene() const;
 
 	std::shared_ptr<engine::GameObject> GetGameObject();
 	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
@@ -23,10 +24,10 @@ public:
 
 	void draw_imgui();
 
-private:	
+	IApplication* app;
+private:
 	static const size_t kGameObjectNameMaxSize = 15;
 
-	std::shared_ptr<engine::Scene> scene;
 	std::shared_ptr<engine::GameObject> game_object;
 
 	const char** available_components_items;

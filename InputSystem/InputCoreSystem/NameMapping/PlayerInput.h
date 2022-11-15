@@ -49,13 +49,13 @@ public:
 	PlayerInput();
 
 	/** @return true if InKey is currently held */
-	bool IsPressed(FKey InKey) const;
+	bool IsPressed(const FKey& InKey) const;
 
 	/** @return true if InKey went from up to down since player input was last processed. */
-	bool WasJustPressed(FKey InKey) const;
+	bool WasJustPressed(const FKey& InKey) const;
 
 	/** return true if InKey went from down to up since player input was last processed. */
-	bool WasJustReleased(FKey InKey) const;
+	bool WasJustReleased(const FKey& InKey) const;
 
 	bool IsActionPressed(const std::string& ActionName) const;
 
@@ -84,12 +84,15 @@ protected:
 	/* Returns the summed values of all the components of this axis this frame
 	 * @param KeysToConsume - array to collect the keys associated with this binding that should be consumed
 	 */
-	float DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume);
+	float DetermineAxisValue(const std::string& AxisName, std::set<FKey>& KeysToConsume) const;
 
-	
+	bool CanProcessInput() const;
+	bool IsKeyExclusiveForEditor(FKey const& InKey) const;
+
 	/** A counter used to track the order in which events occurred since the last time the input stack was processed */
 	uint32 EventCount = 0;
 
+	
 protected:
 	InputSettings* input_settings{};
 

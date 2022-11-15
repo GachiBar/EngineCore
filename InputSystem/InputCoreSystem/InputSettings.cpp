@@ -90,6 +90,16 @@ void InputSettings::RemoveAxisMapping(std::string const& AxisMap, const FInputAx
 	}
 }
 
+void InputSettings::AddDefaultEditorExclusiveKeys()
+{
+	ExclusiveKeys.insert(EKeys::F11);
+}
+
+bool InputSettings::IsKeyExclusive(FKey const& InKey) const
+{
+	return ExclusiveKeys.contains(InKey);
+}
+
 void InputSettings::RemoveAction(const std::string& InActionName)
 {
 	ActionMappings.erase(InActionName);
@@ -167,7 +177,7 @@ std::string InputSettings::GetUniqueActionName(const std::string& BaseActionMapp
 {
 	static int NewMappingCount = 0;
 	std::string NewActionMappingName;
-	bool bFoundUniqueName = false;
+	bool bFoundUniqueName;
 
 	do
 	{
@@ -184,7 +194,7 @@ std::string InputSettings::GetUniqueAxisName(const std::string& BaseAxisMappingN
 {
 	static int NewMappingCount = 0;
 	std::string NewAxisMappingName;
-	bool bFoundUniqueName = false;
+	bool bFoundUniqueName;
 
 	do
 	{

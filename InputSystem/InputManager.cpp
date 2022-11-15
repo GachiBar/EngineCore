@@ -439,6 +439,11 @@ void InputManager::RegisterInputDevice(IApplication* InApp)
 	}
 }
 
+IApplication* InputManager::GetOwningApp() const
+{
+	return app;
+}
+
 InputManager::InputManager() : app(nullptr),
                                input_settings(new InputSettings()),
                                player_input(new PlayerInput())

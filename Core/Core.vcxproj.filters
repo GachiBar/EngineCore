@@ -25,6 +25,9 @@
     <Filter Include="Windows">
       <UniqueIdentifier>{db6ed31c-7839-455a-b7cd-fc2218bc1b13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Enums">
+      <UniqueIdentifier>{06aa79a6-47ab-4fdc-b6d8-5910f9dab279}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\imgui_sugar.hpp">
@@ -68,6 +71,12 @@
     </ClInclude>
     <ClInclude Include="Interfaces\IRender.h">
       <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaces\ILayer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="Enums\EditorInputMode.h">
+      <Filter>Enums</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

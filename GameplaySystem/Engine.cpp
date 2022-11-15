@@ -48,7 +48,6 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
 	SetupRendererInternalCalls();
 	SetupInputInternalCalls();
-	scene_->Initialize();
 }
 
 void Engine::Terminate() {

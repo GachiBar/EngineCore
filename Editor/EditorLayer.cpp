@@ -6,8 +6,11 @@
 
 #include "Windows/ExplorerWindow.h"
 #include "EditorApplication.h"
+#include "InputManager.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
+#include "libs/imgui_sugar.hpp"
+#include "imgui/imgui.h"
 
 namespace Renderer
 {
@@ -16,6 +19,7 @@ namespace Renderer
 
 EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selected_go(nullptr)
 {
+    CurrentInputMode = EEditorInputMode::Type::EditorOnlyMode;
 }
 
 void EditorLayer::OnAttach()
@@ -35,7 +39,9 @@ void EditorLayer::OnAttach()
 	});
 
     hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
-    properties->SetScene(GetApp()->GetEngine()->GetScene());
+
+    //hierarchy->app = GetApp();
+    properties->app = GetApp();
 
 	auto& io = ImGui::GetIO();
 
@@ -55,8 +61,16 @@ void EditorLayer::OnUpdate(float const dt)
     {
         if(gvm->IsInCameraEditorInputMode())
 			EditorApp->Camera->Tick(dt);
-        EditorApp->Camera->UpdateProjectionMatrix();
-        EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
+        if(!gvm->IsPlaying())
+        {
+            EditorApp->Camera->UpdateProjectionMatrix();
+            EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
+        }
+    }
+
+    if(InputManager::getInstance().player_input->WasJustPressed(EKeys::F11))
+    {
+        gvm->StopPlay();
     }
 
     gvm->update();
@@ -104,6 +118,9 @@ void EditorLayer::OnGuiRender()
     // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
     if (!opt_padding)
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    
+    
     ImGui::Begin("DockSpace Demo", &p_open, window_flags);
     if (!opt_padding)
         ImGui::PopStyleVar();
@@ -122,6 +139,7 @@ void EditorLayer::OnGuiRender()
     {
         //ShowDockingDisabledMessage();
     }
+    ImGui::BeginDisabled(gvm->IsPlaying());
 
     if (ImGui::BeginMenuBar())
     {
@@ -199,13 +217,20 @@ void EditorLayer::OnGuiRender()
 
         ImGui::EndMenuBar();
     }
+
+    ImGui::EndDisabled();
+
     ImGui::End();
-   
-    gvm->draw_imgui(); 
+
+    gvm->draw_imgui();
+
+    ImGui::BeginDisabled(gvm->IsPlaying());
     hierarchy->draw_imgui();
     properties->draw_imgui();
     SettingsWindow->draw_imgui();
     explorer->draw();
+    ImGui::EndDisabled();
+	
 }
 
 void EditorLayer::OnPostRender()
