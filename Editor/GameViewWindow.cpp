@@ -32,7 +32,7 @@ void GameViewWindow::update()
 	}
 }
 
-void GameViewWindow::draw_imgui()
+void GameViewWindow::Draw()
 {
 	with_Window("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
 	            | ImGuiWindowFlags_MenuBar)

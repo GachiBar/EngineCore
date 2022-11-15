@@ -7,7 +7,7 @@
 #include "InputCoreSystem/InputSettings.h"
 #include "libs/imgui_sugar.hpp"
 
-void ProjectSettingsWindow::draw_imgui()
+void ProjectSettingsWindow::Draw()
 {
 	static std::string selected = "";
 

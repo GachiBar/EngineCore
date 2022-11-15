@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Attribute.h"
+#include "Types.h"
 
 namespace engine {
 
@@ -13,10 +14,18 @@ Attribute::Attribute(mono::mono_object object)
 {}
 
 AttributeType NameToAttributeType(const std::string& name) {
-	if (name == "GameplayCore.Serialization.HideInInspectorAttribute") return AttributeType::kHideInInspectorAttribute;
-	if (name == "GameplayCore.Serialization.SerializeFieldAttribute" ) return AttributeType::kSerializeFieldAttribute;
-	if (name == "GameplayCore.Editor.InspectorNameAttribute"		 ) return AttributeType::kInspectorNameAttribute;
-	if (name == "GameplayCore.Editor.SliderAttribute"				 ) return AttributeType::kSliderAttribute;
+	if (name == Types::kHideInInspectorAttribute.full_name) {
+		return AttributeType::kHideInInspectorAttribute;
+	}		
+	if (name == Types::kSerializeFieldAttribute.full_name) {
+		return AttributeType::kSerializeFieldAttribute;
+	}		
+	if (name == Types::kInspectorNameAttribute.full_name) {
+		return AttributeType::kInspectorNameAttribute;
+	}		
+	if (name == Types::kSliderAttribute.full_name) {
+		return AttributeType::kSliderAttribute;
+	}		
 
 	return AttributeType::kUndefined;
 }

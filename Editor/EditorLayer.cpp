@@ -4,7 +4,7 @@
 #include "LayerStack.h"
 #include <fstream>
 
-#include "Windows/ExplorerWindow.h"
+#include "ExplorerWindow.h"
 #include "EditorApplication.h"
 #include "InputManager.h"
 #include "../GameplaySystem/Component.h"
