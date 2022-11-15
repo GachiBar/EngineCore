@@ -222,13 +222,13 @@ void EditorLayer::OnGuiRender()
 
     ImGui::End();
 
-    gvm->draw_imgui();
+    gvm->Draw();
 
     ImGui::BeginDisabled(gvm->IsPlaying());
-    hierarchy->draw_imgui();
-    properties->draw_imgui();
-    SettingsWindow->draw_imgui();
-    explorer->draw();
+    hierarchy->Draw();
+    properties->Draw();
+    SettingsWindow->Draw();
+    explorer->Draw();
     ImGui::EndDisabled();
 	
 }
