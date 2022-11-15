@@ -102,6 +102,35 @@ const std::vector<FileData>& ExplorerWindow::get_files_data() const
     return data;
 }
 
+FileType ExplorerWindow::get_file_type(const fs::directory_entry& entry) const
+{
+    if (entry.is_directory())
+        return FileType::Directory;
+
+    // Actually there is should be .meta search, but let it be here for now
+    if (entry.is_regular_file())
+    {
+        switch (fs::path extension = entry.path().filename().extension())
+        {
+            case ".scene":
+                return FileType::Scene;
+            case ".prefab":
+                return FileType::Prefab;
+            case ".mesh":
+                return FileType::Mesh;
+            case ".material":
+                return FileType::Material;
+            case ".texture":
+                return FileType::Texture;
+            case ".txt":
+            default:
+                return FileType::PlainText;
+        }
+    }
+
+    throw std::invalid_argument("Can't handle non-directory and non-file!");
+}
+
 ID3D11ShaderResourceView* ExplorerWindow::get_texture(const char* filename) const
 {
     RenderDevice& device = app->GetEngine()->GetRenderer();
