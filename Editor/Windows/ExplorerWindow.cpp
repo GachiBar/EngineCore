@@ -110,22 +110,19 @@ FileType ExplorerWindow::get_file_type(const fs::directory_entry& entry) const
     // Actually there is should be .meta search, but let it be here for now
     if (entry.is_regular_file())
     {
-        switch (fs::path extension = entry.path().filename().extension())
-        {
-            case ".scene":
-                return FileType::Scene;
-            case ".prefab":
-                return FileType::Prefab;
-            case ".mesh":
-                return FileType::Mesh;
-            case ".material":
-                return FileType::Material;
-            case ".texture":
-                return FileType::Texture;
-            case ".txt":
-            default:
-                return FileType::PlainText;
-        }
+        std::string extension = entry.path().filename().extension().generic_string();
+        if(extension == ".scene")
+            return FileType::Scene;
+        else if (extension == ".prefab")
+            return FileType::Prefab;
+        else if (extension == ".mesh")
+            return FileType::Mesh;
+        else if (extension == ".material")
+            return FileType::Material;
+        else if (extension == ".texture")
+            return FileType::Texture;
+        else if (extension == ".txt")
+            return FileType::PlainText;
     }
 
     throw std::invalid_argument("Can't handle non-directory and non-file!");
