@@ -50,7 +50,7 @@ namespace GameplayCore.Components
 
         [HideInInspector]
         public Quaternion LocalRotation 
-        { 
+        {
             get => _localRotation;
             set
             {
@@ -96,7 +96,7 @@ namespace GameplayCore.Components
             get
             {
                 if (Parent != null)
-                {
+                {                    
                     return LocalRotation * Parent.Rotation;
                 }
                 else

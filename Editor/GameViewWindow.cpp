@@ -10,6 +10,8 @@
 #include "../GameplaySystem/Component.h"
 #include "libs/magic_enum.hpp"
 
+#include <iostream>
+
 GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
                                                                              editor_layer(InEditorLayer)
 {
@@ -199,36 +201,42 @@ void GameViewWindow::draw_gizmos() const
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
 	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent");
+	auto scale_property = transform_component->GetProperty("Scale");
+	auto rotation_property = transform_component->GetProperty("Rotation");
+	auto position_property = transform_component->GetProperty("Position");
+	auto model_property = transform_component->GetProperty("ModelMatrix");
 
-	auto value = static_cast<float*>(transform_component->GetProperty("ModelMatrix").GetValue().value().Unbox());
-	auto w = DirectX::XMFLOAT4X4(value);
+	auto world = model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
 
-	Manipulate(&Editor->Camera->View.m[0][0], &Editor->Camera->Proj.m[0][0], CurrentGizmoOperation,
-	           CurrentOperationMode, &w.m[0][0]);
+	auto isManipulated = Manipulate(
+		*Editor->Camera->View.m, 
+		*Editor->Camera->Proj.m, 
+		CurrentGizmoOperation,	           
+		CurrentOperationMode, 
+		*world.m);
 
-	if (ImGuizmo::IsUsing())
+	if (isManipulated && ImGuizmo::IsUsing())
 	{
-		float trans[3];
-		float rot[3];
-		float scale[3];
+		DirectX::SimpleMath::Vector3 newScale;
+		DirectX::SimpleMath::Quaternion newRotation;
+		DirectX::SimpleMath::Vector3 newPosition;
+		world.Decompose(newScale, newRotation, newPosition);
 
-		ImGuizmo::DecomposeMatrixToComponents(&w.m[0][0], trans, rot, scale);
-
-		const auto rot_quat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(w);
-		float rot_quat_representaion[4] = {rot_quat.x, rot_quat.y, rot_quat.z, rot_quat.w,};
-
-		const std::string property_name = CurrentOperationToString().value_or("Position");
-
-		void* res_data;
 		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
-			res_data = trans;
+		{
+			position_property.SetValue(&newPosition);
+		}			
 		else if (CurrentGizmoOperation & ImGuizmo::ROTATE)
-			res_data = rot_quat_representaion;
+		{
+			rotation_property.SetValue(&newRotation);
+		}			
 		else if (CurrentGizmoOperation & ImGuizmo::SCALE)
-			res_data = scale;
+		{
+			scale_property.SetValue(&newScale);
+		}			
 		else
+		{
 			return;
-
-		transform_component->GetProperty(property_name).SetValue(res_data);
+		}			
 	}
 }
