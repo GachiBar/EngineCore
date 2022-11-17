@@ -201,13 +201,9 @@ void GameViewWindow::draw_gizmos() const
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
 	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent");
-	auto scale_property = transform_component->GetProperty("Scale");
-	auto rotation_property = transform_component->GetProperty("Rotation");
-	auto position_property = transform_component->GetProperty("Position");
-	auto model_property = transform_component->GetProperty("ModelMatrix");
-
+	auto model_property = transform_component->GetProperty("ModelMatrix");	
 	auto world = model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
-
+	
 	auto isManipulated = Manipulate(
 		*Editor->Camera->View.m, 
 		*Editor->Camera->Proj.m, 
@@ -217,22 +213,38 @@ void GameViewWindow::draw_gizmos() const
 
 	if (isManipulated && ImGuizmo::IsUsing())
 	{
-		DirectX::SimpleMath::Vector3 newScale;
-		DirectX::SimpleMath::Quaternion newRotation;
-		DirectX::SimpleMath::Vector3 newPosition;
-		world.Decompose(newScale, newRotation, newPosition);
+		auto scale_property = transform_component->GetProperty("LocalScale");
+		auto rotation_property = transform_component->GetProperty("LocalRotation");
+		auto position_property = transform_component->GetProperty("LocalPosition");
+		auto parent_transform_property = transform_component->GetProperty("Parent");
+		auto model = world;
+		
+		auto parent_transform = parent_transform_property.GetValue();
+
+		if (parent_transform.has_value())
+		{
+			auto parent_model_property = parent_transform->GetProperty("ModelMatrix");
+			auto parent_model = parent_model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
+			model *= parent_model.Invert();
+		}
+		
+		DirectX::SimpleMath::Vector3 new_scale;
+		DirectX::SimpleMath::Quaternion new_rotation;
+		DirectX::SimpleMath::Vector3 new_position;
+
+		model.Decompose(new_scale, new_rotation, new_position);
 
 		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
 		{
-			position_property.SetValue(&newPosition);
+			position_property.SetValue(&new_position);
 		}			
 		else if (CurrentGizmoOperation & ImGuizmo::ROTATE)
 		{
-			rotation_property.SetValue(&newRotation);
+			rotation_property.SetValue(&new_rotation);
 		}			
 		else if (CurrentGizmoOperation & ImGuizmo::SCALE)
-		{
-			scale_property.SetValue(&newScale);
+		{			
+			scale_property.SetValue(&new_scale);
 		}			
 		else
 		{
