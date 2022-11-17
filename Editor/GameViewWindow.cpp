@@ -202,14 +202,14 @@ void GameViewWindow::draw_gizmos() const
 
 	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent");
 	auto model_property = transform_component->GetProperty("ModelMatrix");	
-	auto world = model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
+	auto model = model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
 	
 	auto isManipulated = Manipulate(
 		*Editor->Camera->View.m, 
 		*Editor->Camera->Proj.m, 
 		CurrentGizmoOperation,	           
 		CurrentOperationMode, 
-		*world.m);
+		*model.m);
 
 	if (isManipulated && ImGuizmo::IsUsing())
 	{
@@ -217,7 +217,7 @@ void GameViewWindow::draw_gizmos() const
 		auto rotation_property = transform_component->GetProperty("LocalRotation");
 		auto position_property = transform_component->GetProperty("LocalPosition");
 		auto parent_transform_property = transform_component->GetProperty("Parent");
-		auto model = world;
+		auto new_model = model;
 		
 		auto parent_transform = parent_transform_property.GetValue();
 
@@ -225,14 +225,14 @@ void GameViewWindow::draw_gizmos() const
 		{
 			auto parent_model_property = parent_transform->GetProperty("ModelMatrix");
 			auto parent_model = parent_model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
-			model *= parent_model.Invert();
+			new_model *= parent_model.Invert();
 		}
 		
 		DirectX::SimpleMath::Vector3 new_scale;
 		DirectX::SimpleMath::Quaternion new_rotation;
 		DirectX::SimpleMath::Vector3 new_position;
 
-		model.Decompose(new_scale, new_rotation, new_position);
+		new_model.Decompose(new_scale, new_rotation, new_position);
 
 		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
 		{
