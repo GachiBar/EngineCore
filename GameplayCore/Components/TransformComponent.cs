@@ -97,7 +97,7 @@ namespace GameplayCore.Components
             {
                 if (Parent != null)
                 {                    
-                    return LocalRotation * Parent.Rotation;
+                    return Parent.Rotation * LocalRotation;
                 }
                 else
                 {
