@@ -226,10 +226,6 @@ void GameViewWindow::draw_gizmos() const
 		DirectX::SimpleMath::Quaternion new_rotation;
 		DirectX::SimpleMath::Vector3 new_position;
 
-		DirectX::SimpleMath::Vector3 delta_scale;
-		DirectX::SimpleMath::Quaternion delta_rotation;
-		DirectX::SimpleMath::Vector3 delta_position;
-
 		model.Decompose(new_scale, new_rotation, new_position);
 
 		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
