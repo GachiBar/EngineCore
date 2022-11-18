@@ -197,13 +197,22 @@ void GameViewWindow::draw_gizmos() const
 
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
-
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
 	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent");
-	auto model_property = transform_component->GetProperty("ModelMatrix");	
-	auto model = model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
-	
+	auto scale_property = transform_component->GetProperty("LocalScale");
+	auto rotation_property = transform_component->GetProperty("Rotation");
+	auto position_property = transform_component->GetProperty("Position");
+
+	const auto scale = scale_property.GetValue().value().Unbox<DirectX::SimpleMath::Vector3>();
+	const auto rotation = rotation_property.GetValue().value().Unbox<DirectX::SimpleMath::Quaternion>();
+	const auto position = position_property.GetValue().value().Unbox<DirectX::SimpleMath::Vector3>();
+
+	auto model = Matrix::Identity;
+	model *= Matrix::CreateScale(scale);
+	model *= Matrix::CreateFromQuaternion(rotation);
+	model *= Matrix::CreateTranslation(position);
+
 	auto isManipulated = Manipulate(
 		*Editor->Camera->View.m, 
 		*Editor->Camera->Proj.m, 
@@ -213,26 +222,15 @@ void GameViewWindow::draw_gizmos() const
 
 	if (isManipulated && ImGuizmo::IsUsing())
 	{
-		auto scale_property = transform_component->GetProperty("LocalScale");
-		auto rotation_property = transform_component->GetProperty("LocalRotation");
-		auto position_property = transform_component->GetProperty("LocalPosition");
-		auto parent_transform_property = transform_component->GetProperty("Parent");
-		auto new_model = model;
-		
-		auto parent_transform = parent_transform_property.GetValue();
-
-		if (parent_transform.has_value())
-		{
-			auto parent_model_property = parent_transform->GetProperty("ModelMatrix");
-			auto parent_model = parent_model_property.GetValue().value().Unbox<DirectX::SimpleMath::Matrix>();
-			new_model *= parent_model.Invert();
-		}
-		
 		DirectX::SimpleMath::Vector3 new_scale;
 		DirectX::SimpleMath::Quaternion new_rotation;
 		DirectX::SimpleMath::Vector3 new_position;
 
-		new_model.Decompose(new_scale, new_rotation, new_position);
+		DirectX::SimpleMath::Vector3 delta_scale;
+		DirectX::SimpleMath::Quaternion delta_rotation;
+		DirectX::SimpleMath::Vector3 delta_position;
+
+		model.Decompose(new_scale, new_rotation, new_position);
 
 		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
 		{
