@@ -48,7 +48,7 @@ private:
     std::optional<std::string> CurrentOperationToString() const;
     bool bInFocus = false;
 
-    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::WORLD;
+    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::LOCAL;
     ImGuizmo::OPERATION CurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 
     void draw_gizmos() const;
