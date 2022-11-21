@@ -1,13 +1,20 @@
 #pragma once
 
 #include "RenderEngine.h"
+#include "Scene.h"
+#include "BPLayerInterfaceImplementation.h"
 #include "../monowrapper/monopp/mono_assembly.h"
+
+#include <Jolt/Jolt.h>
+#include <Jolt/RegisterTypes.h>
+#include <Jolt/Core/Factory.h>
+#include <Jolt/Physics/PhysicsSystem.h>
 
 #include <chrono>
 #include <Windows.h>
 #include <SimpleMath.h>
 
-#include "Scene.h"
+JPH_SUPPRESS_WARNINGS
 
 namespace engine {
 
@@ -15,11 +22,8 @@ using namespace std::chrono;
 
 class Engine {
 public:
-	const std::chrono::nanoseconds kTimestep =
-		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
-
-	const float	kDt = 16.0f / 1000;
-
+	static const float kDt;
+	static const std::chrono::nanoseconds kTimestep;
 
 	std::shared_ptr<Scene> GetScene();
 	void SetScene(std::shared_ptr<Scene> scene);
@@ -37,13 +41,19 @@ public:
 	void EndRender();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-	static DirectX::SimpleMath::Matrix& GetViewMatrix();
-	static DirectX::SimpleMath::Matrix& GetProjectionMatrix();
 private:
-	static DirectX::SimpleMath::Matrix m_projection;
-	static DirectX::SimpleMath::Matrix m_view;
+	static const JPH::uint kMaxBodies = 65536;
+	static const JPH::uint kNumBodyMutex = 0;
+	static const JPH::uint kMaxBodyPairs = 65536;
+	static const JPH::uint kMaxContactConstraints = 10240;
 
 	RenderDevice renderer_;
+
+	JPH::TempAllocatorImpl temp_allocator_;
+	BPLayerInterfaceImplementation layer_interface_;
+	JPH::PhysicsSystem physics_system_;
+
+	std::shared_ptr<Scene> scene_;
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
 	nanoseconds dt_ = 0ns;
@@ -56,15 +66,12 @@ private:
 	mono::mono_property_invoker renderer_property_;
 	mono::mono_property_invoker delta_time_property_;
 	mono::mono_property_invoker ellapsed_time_property_;
-
 	mono::mono_property_invoker screen_width_property_;
 	mono::mono_property_invoker screen_height_property_;
-
-	mono::mono_property_invoker mouse_position_property_;
-
-	std::shared_ptr<Scene> scene_;
+	mono::mono_property_invoker mouse_position_property_;	
 
 	void InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height);	
+	void InitPhysicsSystem();
 
 	void SetupRendererInternalCalls();
 	void SetupInputInternalCalls();

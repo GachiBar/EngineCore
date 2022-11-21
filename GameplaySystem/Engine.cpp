@@ -17,8 +17,8 @@
 
 namespace engine {
 
-DirectX::SimpleMath::Matrix Engine::m_projection{};
-DirectX::SimpleMath::Matrix Engine::m_view{};
+const float Engine::kDt = 16.0f / 1000;
+const std::chrono::nanoseconds Engine::kTimestep = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 
 std::shared_ptr<Scene> Engine::GetScene() {
 	return scene_;
@@ -33,7 +33,9 @@ RenderDevice& Engine::GetRenderer() {
 }
 
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
-	: domain_(domain)
+	: temp_allocator_(10 * 1024 * 1024)
+	, scene_(nullptr)
+	, domain_(domain)
 	, assembly_(assembly)
 	, renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
 	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
@@ -41,17 +43,20 @@ Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assem
 	, screen_width_property_(GetProperty("GameplayCore", "Screen", "Width"))
 	, screen_height_property_(GetProperty("GameplayCore", "Screen", "Height"))
 	, mouse_position_property_(GetProperty("GameplayCore", "Input", "MousePosition"))
-	, scene_(nullptr)
 {}
 
 void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
+	InitPhysicsSystem();
 	SetupRendererInternalCalls();
 	SetupInputInternalCalls();
 }
 
 void Engine::Terminate() {
 	scene_->Terminate();
+
+	delete JPH::Factory::sInstance;
+	JPH::Factory::sInstance = nullptr;
 }
 
 void Engine::RunFrame() {
@@ -94,27 +99,36 @@ bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
 	return renderer_.ProcessMessages(hwnd, msg, wparam, lparam);
 }
 
-DirectX::SimpleMath::Matrix& Engine::GetViewMatrix() {
-	return m_view;
-}
-
-DirectX::SimpleMath::Matrix& Engine::GetProjectionMatrix() {
-	return m_projection;
-}
-
 void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
-	renderer_.CreateDevice(
-	{
-		handle_old,
-		handle_new,
-		{
-			width,
-			height,
-			width,
-			height
-		}
-	});
+	WindowSettings window_settings{};
+	window_settings.windowWidth = width;
+	window_settings.windowHeight = height;
+	window_settings.viewportWidth = width;
+	window_settings.viewportHeight = height;
+	
+	RenderEngineCoreSettings render_engine_core_settings{};
+	render_engine_core_settings.hWnd1 = handle_old;
+	render_engine_core_settings.hWnd2 = handle_new;
+	render_engine_core_settings.windowSettings = window_settings;
+
+	renderer_.CreateDevice(render_engine_core_settings);
 	renderer_.InitDevice({ "..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\" });
+}
+
+void Engine::InitPhysicsSystem() 
+{
+	JPH::Factory::sInstance = new JPH::Factory();
+
+	JPH::RegisterTypes();
+
+	physics_system_.Init(
+		kMaxBodies,
+		kNumBodyMutex,
+		kMaxBodyPairs,
+		kMaxContactConstraints,
+		layer_interface_,
+		BroadPhaseLayers::IsCanCollide,
+		CollisionLayers::IsCanCollide);
 }
 
 void Engine::SetupRendererInternalCalls() {
@@ -180,12 +194,11 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	DirectX::ScratchImage image;
 	TextureLoader::LoadWic(L"Content\\Breaks.jpg", image);
 
-	renderer->RegisterTexture(
-		id,
-		image.GetImage(0, 0, 0)->width,
-		image.GetImage(0, 0, 0)->height,
-		image.GetImage(0, 0, 0)->pixels
-		);
+	int texture_width = image.GetImage(0, 0, 0)->width;
+	int texture_height = image.GetImage(0, 0, 0)->height;
+	void* data = image.GetImage(0, 0, 0)->pixels;
+
+	renderer->RegisterTexture(id, texture_width, texture_height, data);
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
@@ -198,8 +211,6 @@ void Engine::Internal_SetViewProjection(
 	DirectX::SimpleMath::Matrix view,
 	DirectX::SimpleMath::Matrix projection)
 {
-	m_view = view;
-	m_projection = projection;
 	renderer->SetRenderData({ ellapsed, view, projection });
 }
 

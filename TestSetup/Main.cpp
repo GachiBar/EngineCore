@@ -1,5 +1,4 @@
 #include <iostream>
-#include <DirectXTex.h>
 
 #include "../GameplaySystem/Engine.h"
 
@@ -37,6 +36,8 @@ int main() {
 	if (HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED); FAILED(result)) {
 		return result;
 	}
+
+	JPH::RegisterDefaultAllocator();
 
 	//StandaloneGameTestApplication app(kDllPath);
 	EditorApplication app;
