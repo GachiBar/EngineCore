@@ -119,9 +119,10 @@ void Application::OnStart()
 	//PushOverlay(m_ImGuiLayer);
 }
 
-int Application::Run()
+int Application::Run(int argc, char* argv[])
 {
 	OnSetup();
+	lm.Initialize(argc, argv);
 	if (exit_code_)
 		return exit_code_;
 

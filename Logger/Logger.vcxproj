@@ -21,9 +21,10 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{079141c1-0e94-4cf4-9a36-eeed43b67e45}</ProjectGuid>
-    <RootNamespace>Core</RootNamespace>
+    <ProjectGuid>{4be9d43d-0651-4bae-b946-bc4395adc7cd}</ProjectGuid>
+    <RootNamespace>Logger</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Logger</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,17 +71,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include\spdlog</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include</IncludePath>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS, _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -94,7 +89,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS, _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -108,10 +103,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,7 +119,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS, _CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -135,29 +130,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Definitions.h" />
-    <ClInclude Include="Enums\EditorInputMode.h" />
-    <ClInclude Include="Interfaces\IApplication.h" />
-    <ClInclude Include="Interfaces\ILayer.h" />
-    <ClInclude Include="Interfaces\IRender.h" />
-    <ClInclude Include="Interfaces\IWindowsApplication.h" />
-    <ClInclude Include="libs\Delegates.h" />
-    <ClInclude Include="libs\imgui_sugar.hpp" />
-    <ClInclude Include="libs\ini\ini.h" />
-    <ClInclude Include="libs\loguru\loguru.hpp" />
-    <ClInclude Include="libs\magic_enum.hpp" />
-    <ClInclude Include="libs\MathUtility.h" />
-    <ClInclude Include="libs\MemoryUtility.h" />
-    <ClInclude Include="libs\nameof.hpp" />
-    <ClInclude Include="Windows\GenericWindow.h" />
-    <ClInclude Include="Windows\GenericWindowDefinition.h" />
-    <ClInclude Include="Windows\WindowsWindow.h" />
+    <ProjectReference Include="..\Core\Core.vcxproj">
+      <Project>{079141c1-0e94-4cf4-9a36-eeed43b67e45}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="libs\Delegates.cpp" />
-    <ClCompile Include="libs\loguru\loguru.cpp" />
-    <ClCompile Include="Windows\GenericWindow.cpp" />
-    <ClCompile Include="Windows\WindowsWindow.cpp" />
+    <ClInclude Include="LogManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LogManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
