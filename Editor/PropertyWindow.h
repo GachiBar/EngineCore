@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IEditorWindow.h"
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
 #include "../GameplaySystem/Property.h"
@@ -8,26 +9,25 @@
 #include <memory>
 #include <unordered_set>
 
-#include "Interfaces/IApplication.h"
-
-class PropertyWindow
+class PropertyWindow : public IEditorWindow
 {
 public:
-	engine::Scene* GetScene() const;
+	std::shared_ptr<engine::Scene> GetScene() const;
+	void SetScene(std::shared_ptr<engine::Scene> scene);
 
 	std::shared_ptr<engine::GameObject> GetGameObject();
 	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
 
 	PropertyWindow(const mono::mono_assembly& assembly);
 
-	~PropertyWindow();
+	~PropertyWindow() override;
 
-	void draw_imgui();
+	void Draw() override;
 
-	IApplication* app;
 private:
 	static const size_t kGameObjectNameMaxSize = 15;
 
+	std::shared_ptr<engine::Scene> scene;
 	std::shared_ptr<engine::GameObject> game_object;
 
 	const char** available_components_items;

@@ -6,20 +6,21 @@
 #include "imgui/imgui.h"
 #include <Windows.h>
 
+#include "IEditorWindow.h"
 #include "Definitions.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/Delegates.h"
 
 class EditorLayer;
 
-class GameViewWindow
+class GameViewWindow : public IEditorWindow
 {
 public:
     GameViewWindow(void* InTexture, EditorLayer* InEditorLayer);
 
     void update();
 
-    void draw_imgui();
+    void Draw() override;
 
     void on_resize_viewport(int32 InWidth,int32 InHeight);
     void resize();
@@ -47,7 +48,7 @@ private:
     std::optional<std::string> CurrentOperationToString() const;
     bool bInFocus = false;
 
-    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::WORLD;
+    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::LOCAL;
     ImGuizmo::OPERATION CurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 
     void draw_gizmos() const;

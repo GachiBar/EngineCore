@@ -154,8 +154,11 @@
     <ClInclude Include="EditorApplication.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorLayer.h" />
+    <ClInclude Include="ExplorerWindow.h" />
     <ClInclude Include="GameLayer.h" />
     <ClInclude Include="GameViewWindow.h" />
+    <ClInclude Include="IEditorWindow.h" />
+    <ClInclude Include="ImGuiLayer.h" />
     <ClInclude Include="ImGuizmo\GraphEditor.h" />
     <ClInclude Include="ImGuizmo\ImCurveEdit.h" />
     <ClInclude Include="ImGuizmo\ImGradient.h" />
@@ -172,7 +175,6 @@
     <ClInclude Include="SliderWidget.h" />
     <ClInclude Include="Visual.h" />
     <ClInclude Include="Widget.h" />
-    <ClInclude Include="Windows\ExplorerWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -180,6 +182,7 @@
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorLayer.cpp" />
     <ClCompile Include="GameLayer.cpp" />
+    <ClCompile Include="ExplorerWindow.cpp" />
     <ClCompile Include="GameViewWindow.cpp" />
     <ClCompile Include="ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="ImGuizmo\ImCurveEdit.cpp" />
@@ -196,7 +199,6 @@
     <ClCompile Include="SliderWidget.cpp" />
     <ClCompile Include="Visual.cpp" />
     <ClCompile Include="Widget.cpp" />
-    <ClCompile Include="Windows\ExplorerWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DX11RenderEngine\DX11RenderEngine\DX11RenderEngine.vcxproj">

@@ -4,7 +4,7 @@
 #include "LayerStack.h"
 #include <fstream>
 
-#include "Windows/ExplorerWindow.h"
+#include "ExplorerWindow.h"
 #include "EditorApplication.h"
 #include "InputManager.h"
 #include "../GameplaySystem/Component.h"
@@ -39,9 +39,7 @@ void EditorLayer::OnAttach()
 	});
 
     hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
-
-    //hierarchy->app = GetApp();
-    properties->app = GetApp();
+    properties->SetScene(GetApp()->GetEngine()->GetScene());
 
 	auto& io = ImGui::GetIO();
 
@@ -224,13 +222,13 @@ void EditorLayer::OnGuiRender()
 
     ImGui::End();
 
-    gvm->draw_imgui();
+    gvm->Draw();
 
     ImGui::BeginDisabled(gvm->IsPlaying());
-    hierarchy->draw_imgui();
-    properties->draw_imgui();
-    SettingsWindow->draw_imgui();
-    explorer->draw();
+    hierarchy->Draw();
+    properties->Draw();
+    SettingsWindow->Draw();
+    explorer->Draw();
     ImGui::EndDisabled();
 	
 }

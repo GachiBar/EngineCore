@@ -10,9 +10,14 @@
 #include <format>
 #include "../GameplaySystem/Engine.h"
 
-engine::Scene* PropertyWindow::GetScene() const
+std::shared_ptr<engine::Scene> PropertyWindow::GetScene() const
 {
-	return app->GetEngine()->GetScene().get();;
+	return scene;
+}
+
+void PropertyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
+{
+	this->scene = scene;
 }
 
 std::shared_ptr<engine::GameObject> PropertyWindow::GetGameObject()
@@ -54,7 +59,7 @@ PropertyWindow::~PropertyWindow()
 	}
 }
 
-void PropertyWindow::draw_imgui()
+void PropertyWindow::Draw()
 {
 	ImGui::Begin("Property Window");
 	if (!game_object.get())
@@ -520,9 +525,9 @@ void PropertyWindow::DrawGameObjectProperty(
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue();
 
-	if (GetScene()->Count() > game_objects_copasity)
+	if (scene->Count() > game_objects_copasity)
 	{
-		auto degree = std::ceil(std::log2(GetScene()->Count()));
+		auto degree = std::ceil(std::log2(scene->Count()));
 		ChangeGameObjectResourcesCopasity(std::pow(2, degree));
 	}
 
@@ -536,9 +541,9 @@ void PropertyWindow::DrawGameObjectProperty(
 	std::advance(tempPointers, 1);
 	std::advance(tempNames, 1);
 
-	for (size_t i = 0; i < GetScene()->Count(); ++i) 
+	for (size_t i = 0; i < scene->Count(); ++i) 
 	{
-		auto otherGameObject = (*GetScene())[i];
+		auto otherGameObject = (*scene)[i];
 
 		if (*otherGameObject == *game_object) 
 		{
@@ -558,7 +563,7 @@ void PropertyWindow::DrawGameObjectProperty(
 
 	int selected = std::distance(game_objects_names, current);
 
-	if (ImGui::Combo(propertyName.c_str(), &selected, game_objects_names, GetScene()->Count()))
+	if (ImGui::Combo(propertyName.c_str(), &selected, game_objects_names, scene->Count()))
 	{
 		auto gameObject = game_objects_pointers[selected];
 		property.SetValue(gameObject);

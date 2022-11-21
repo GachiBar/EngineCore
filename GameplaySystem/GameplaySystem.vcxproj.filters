@@ -57,6 +57,9 @@
     <ClInclude Include="Method.h">
       <Filter>Header Files\Wrappers</Filter>
     </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files\Wrappers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameplaySystem.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files\Wrappers</Filter>
     </ClCompile>
     <ClCompile Include="Method.cpp">
+      <Filter>Source Files\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="Types.cpp">
       <Filter>Source Files\Wrappers</Filter>
     </ClCompile>
   </ItemGroup>

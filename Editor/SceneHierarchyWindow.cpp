@@ -1,5 +1,6 @@
 #include "SceneHierarchyWindow.h"
 #include "imgui/imgui.h"
+#include "../GameplaySystem/Types.h"
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/Component.h"
 
@@ -22,24 +23,31 @@ SceneHierarchyWindow::SceneHierarchyWindow(const mono::mono_assembly& assembly)
     , tree_level_id(0)
 {}
 
-void SceneHierarchyWindow::draw_imgui()
+void SceneHierarchyWindow::Draw()
 {
     ImGui::Begin("Scene Hierarchy");
-    std::vector<std::shared_ptr<engine::GameObject>> roots;
-    std::vector<std::shared_ptr<engine::GameObject>> transformless;
-    SortGameObjects(roots, transformless);
-    tree_level_id = 0;
 
-    DrawWithTransform(roots);
-    DrawWithoutTransform(transformless);
-    ProcessDragAndDrop();
+    if (scene != nullptr) 
+    {
+        std::vector<std::shared_ptr<engine::GameObject>> roots;
+        std::vector<std::shared_ptr<engine::GameObject>> transformless;
+        SortGameObjects(roots, transformless);
+        tree_level_id = 0;
 
-    scene->Invalidate();
+        DrawWithTransform(roots);
+        DrawWithoutTransform(transformless);
+        ProcessDragAndDrop();
+
+        scene->Invalidate();
+    }
+
     ImGui::End();
 }
 
 void SceneHierarchyWindow::DrawWithTransform(const std::vector<std::shared_ptr<engine::GameObject>>& roots) 
 {
+    using namespace engine;
+
     if (ImGui::CollapsingHeader("With transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
         DrawWithTransformHeaderPopup();
@@ -47,7 +55,9 @@ void SceneHierarchyWindow::DrawWithTransform(const std::vector<std::shared_ptr<e
 
         for (auto root : roots) 
         {
-            auto transform = root->GetComponent("GameplayCore.Components", "TransformComponent");
+            auto transform = root->GetComponent(
+                Types::kTransformComponent.name_space, 
+                Types::kTransformComponent.name);
             DrawHierarchy(*transform);
             tree_level_id += 1;
         }
@@ -61,6 +71,8 @@ void SceneHierarchyWindow::DrawWithTransform(const std::vector<std::shared_ptr<e
 
 void SceneHierarchyWindow::DrawWithTransformHeaderPopup()
 {
+    using namespace engine;
+
     if (ImGui::BeginPopupContextItem())
     {
         if (ImGui::Selectable("Create empty"))
@@ -68,7 +80,9 @@ void SceneHierarchyWindow::DrawWithTransformHeaderPopup()
             auto child = scene->CreateGameObject();
             scene->Invalidate();
 
-            child->AddComponent("GameplayCore.Components", "TransformComponent");
+            child->AddComponent(
+                Types::kTransformComponent.name_space, 
+                Types::kTransformComponent.name);
             child->Invalidate();
         }
 
@@ -92,11 +106,15 @@ void SceneHierarchyWindow::DrawWithoutTransformHeaderPopup()
 
 void SceneHierarchyWindow::DrawHierarchyPopup(std::shared_ptr<engine::GameObject> gameObject)
 {
+    using namespace engine;
+
     if (ImGui::BeginPopupContextItem())
     {
         if (ImGui::Selectable("Delete"))
         {
-            auto transform = gameObject->GetComponent("GameplayCore.Components", "TransformComponent");
+            auto transform = gameObject->GetComponent(
+                Types::kTransformComponent.name_space, 
+                Types::kTransformComponent.name);
             DeleteHierarchy(*transform);
         }
 
@@ -104,12 +122,16 @@ void SceneHierarchyWindow::DrawHierarchyPopup(std::shared_ptr<engine::GameObject
 
         if (ImGui::Selectable("Create empty"))
         {
-            auto parentTransform = gameObject->GetComponent("GameplayCore.Components", "TransformComponent");
+            auto parentTransform = gameObject->GetComponent(
+                Types::kTransformComponent.name_space, 
+                Types::kTransformComponent.name);
 
             auto child = scene->CreateGameObject();
             scene->Invalidate();
 
-            auto childTransform = child->AddComponent("GameplayCore.Components", "TransformComponent");
+            auto childTransform = child->AddComponent(
+                Types::kTransformComponent.name_space, 
+                Types::kTransformComponent.name);
             child->Invalidate();
 
             auto parentProperty = childTransform->GetProperty("Parent");
@@ -231,6 +253,12 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
         DeleteHierarchy(childTransform);
     }
 
+    if (selected != nullptr && *selected == *gameObject) 
+    {
+        selected = nullptr;
+        GameObjectSelected.Broadcast(nullptr);
+    }
+
     scene->DeleteGameObject(gameObject);
 }
 
@@ -258,10 +286,14 @@ void SceneHierarchyWindow::SortGameObjects(
     std::vector<std::shared_ptr<engine::GameObject>>& roots_out,
     std::vector<std::shared_ptr<engine::GameObject>>& transformless_out)
 {
+    using namespace engine;
+
     for (size_t i = 0; i < scene->Count(); ++i)
     {
         auto gameObject = (*scene)[i];
-        auto transform = gameObject->GetComponent("GameplayCore.Components", "TransformComponent");
+        auto transform = gameObject->GetComponent(
+            Types::kTransformComponent.name_space, 
+            Types::kTransformComponent.name);
 
         if (transform == nullptr)
         {
@@ -284,11 +316,17 @@ void SceneHierarchyWindow::SortGameObjects(
 
 void SceneHierarchyWindow::WithTransformDragAndDropHandler::Handle(std::shared_ptr<engine::GameObject> source)
 {
-    auto sourceTransform = source->GetComponent("GameplayCore.Components", "TransformComponent");
+    using namespace engine;
+
+    auto sourceTransform = source->GetComponent(
+        Types::kTransformComponent.name_space, 
+        Types::kTransformComponent.name);
 
     if (sourceTransform == nullptr)
     {
-        sourceTransform = source->AddComponent("GameplayCore.Components", "TransformComponent");
+        sourceTransform = source->AddComponent(
+            Types::kTransformComponent.name_space, 
+            Types::kTransformComponent.name);
     }
 
     auto parentProperty = sourceTransform->GetProperty("Parent");
@@ -297,7 +335,11 @@ void SceneHierarchyWindow::WithTransformDragAndDropHandler::Handle(std::shared_p
 
 void SceneHierarchyWindow::WithoutTransformDragAndDropHandler::Handle(std::shared_ptr<engine::GameObject> source)
 {
-    auto sourceTransform = source->GetComponent("GameplayCore.Components", "TransformComponent");
+    using namespace engine;
+
+    auto sourceTransform = source->GetComponent(
+        Types::kTransformComponent.name_space, 
+        Types::kTransformComponent.name);
 
     if (sourceTransform != nullptr)
     {
@@ -311,12 +353,21 @@ SceneHierarchyWindow::HierarchyDragAndDropHandler::HierarchyDragAndDropHandler(s
 
 void SceneHierarchyWindow::HierarchyDragAndDropHandler::Handle(std::shared_ptr<engine::GameObject> source) 
 {
-    auto targetTransform = target->GetComponent("GameplayCore.Components", "TransformComponent");                 
-    auto sourceTransform = source->GetComponent("GameplayCore.Components", "TransformComponent");
+    using namespace engine;
+
+    auto targetTransform = target->GetComponent(
+        Types::kTransformComponent.name_space, 
+        Types::kTransformComponent.name);
+
+    auto sourceTransform = source->GetComponent(
+        Types::kTransformComponent.name_space, 
+        Types::kTransformComponent.name);
 
     if (sourceTransform == nullptr)
     {
-        sourceTransform = source->AddComponent("GameplayCore.Components", "TransformComponent");
+        sourceTransform = source->AddComponent(
+            Types::kTransformComponent.name_space, 
+            Types::kTransformComponent.name);
     }
 
     auto parentProperty = sourceTransform->GetProperty("Parent");
