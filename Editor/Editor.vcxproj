@@ -167,6 +167,7 @@
     <ClInclude Include="ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="LayerStack.h" />
+    <ClInclude Include="LogWindow.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="MenuBar.h" />
     <ClInclude Include="ProjectSettingsWindow.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="Layer.cpp" />
     <ClCompile Include="LayerStack.cpp" />
+    <ClCompile Include="LogWindow.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="MenuBar.cpp" />
     <ClCompile Include="ProjectSettingsWindow.cpp" />

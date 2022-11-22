@@ -28,10 +28,8 @@ public:
     virtual void OnStart();
 
     /// Cleanup after the main loop. Called by Application
-    virtual void OnStop()
-    {
-        lm.Shutdown();
-    }
+    virtual void OnStop();
+
 
     /// Initialize the engine and run the main loop, then return the application exit code
     int Run(int argc, char* argv[]);
@@ -62,7 +60,6 @@ public:
 
 protected:
     Layer* current_layer_on_update;
-    LogManager lm;
 
 	LayerStack m_LayerStack;
     std::vector<std::shared_ptr<FGenericWindow>> wnds;

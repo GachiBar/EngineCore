@@ -31,6 +31,7 @@ void EditorLayer::OnAttach()
     properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
     explorer = std::make_shared<ExplorerWindow>(GetApp());
+    log = std::make_shared<LogWindow>();
 
 	hierarchy.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)
 	{
@@ -44,6 +45,12 @@ void EditorLayer::OnAttach()
 	auto& io = ImGui::GetIO();
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+
+	const std::string str = "SOME_STRING";
+    LogManager::getInstance().Log("Hello %f and %u and %s", 4.56, 30, str.c_str());
+    LogManager::getInstance().LogWarn("Hello %f and %u and %s", 4.56, 30, str.c_str());
+    LogManager::getInstance().LogError("Hello %f and %u and %s", 4.56, 30, str.c_str());
 }
 
 void EditorLayer::OnDetach()
@@ -229,6 +236,8 @@ void EditorLayer::OnGuiRender()
     properties->Draw();
     SettingsWindow->Draw();
     explorer->Draw();
+    log->Draw();
+
     ImGui::EndDisabled();
 	
 }
