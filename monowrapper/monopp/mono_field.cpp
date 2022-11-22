@@ -84,4 +84,15 @@ auto mono_field::is_static() const -> bool
 
 	return (flags & MONO_FIELD_ATTR_STATIC) != 0;
 }
+
+auto mono_field::get_internal_ptr() const -> MonoClassField* 
+{
+	return field_;
+}
+
+auto mono_field::get_internal_vtable_ptr() const -> MonoVTable* 
+{
+	return owning_type_vtable_;
+}
+
 } // namespace mono

@@ -150,6 +150,7 @@
     <ClCompile Include="monopp\mono_domain.cpp" />
     <ClCompile Include="monopp\mono_exception.cpp" />
     <ClCompile Include="monopp\mono_field.cpp" />
+    <ClCompile Include="monopp\mono_field_invoker.cpp" />
     <ClCompile Include="monopp\mono_gc_handle.cpp" />
     <ClCompile Include="monopp\mono_jit.cpp" />
     <ClCompile Include="monopp\mono_jit_domain.cpp" />

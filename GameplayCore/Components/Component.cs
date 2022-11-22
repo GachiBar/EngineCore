@@ -6,7 +6,9 @@ namespace GameplayCore.Components
 {
     public abstract class Component
     {
-        [SerializeField, JsonConverter(typeof(GameObjectGuidJsonConverter))]
+        [SerializeField]
+        [HideInInspector]
+        [JsonConverter(typeof(GameObjectGuidJsonConverter))]
         private GameObject _gameObject = null;
 
         public GameObject GameObject
@@ -36,17 +38,22 @@ namespace GameplayCore.Components
         public virtual void Render() { }
         public virtual void Terminate() { }
 
-        protected virtual void OnAttach(GameObject gameObject) { }
-        protected virtual void OnDetach(GameObject gameObject) { }
+        /// <summary>
+        /// This method called by editor when some field was changed.
+        /// </summary>
+        internal virtual void Invalidate() { }
 
-        string Serialize()
+        internal string Serialize()
         {
             return String.Empty;
         }
 
-        void Deserialize(string data)
+        internal void Deserialize(string data)
         {
 
         }
+
+        protected virtual void OnAttach(GameObject gameObject) { }
+        protected virtual void OnDetach(GameObject gameObject) { }
     }
 }

@@ -8,18 +8,30 @@ namespace GameplayCore.Components
 {
     public class TransformComponent : Component
     {
-        [SerializeField] private TransformComponent _parent;
+        [SerializeField]
+        [HideInInspector]
+        private TransformComponent _parent;
         private List<TransformComponent> _children;
 
-        [SerializeField] private Quaternion _localRotation = Quaternion.Identity;
-        [SerializeField] private Vector3 _localScale = Vector3.One;
-        [SerializeField] private Vector3 _localPosition = Vector3.Zero;
+        [SerializeField]
+        [HideInInspector]
+        private Quaternion _localRotation = Quaternion.Identity;
 
+        [SerializeField]
+        [InspectorName("Scale")]
+        private Vector3 _localScale = Vector3.One;
+
+        [SerializeField]
+        [InspectorName("Position")]
+        private Vector3 _localPosition = Vector3.Zero;
+
+        [SerializeField] 
+        [InspectorName("Rotation")] 
+        [Slider(-180.0f, 180.0f)]
         private Vector3 _editorEuler;
 
         public int ChildrenCount => _children.Count;
 
-        [HideInInspector]
         public TransformComponent Parent
         {
             get => _parent;
@@ -48,7 +60,6 @@ namespace GameplayCore.Components
             }
         }
 
-        [HideInInspector]
         public Quaternion LocalRotation 
         {
             get => _localRotation;
@@ -60,7 +71,6 @@ namespace GameplayCore.Components
             }
         }
 
-        [HideInInspector]
         public Vector3 LocalEuler
         {
             get
@@ -76,21 +86,18 @@ namespace GameplayCore.Components
             }
         }
 
-        [InspectorName("Scale")]
         public Vector3 LocalScale 
         { 
             get => _localScale;
             set => _localScale = value; 
         }
 
-        [InspectorName("Position")]
         public Vector3 LocalPosition 
         { 
             get => _localPosition; 
             set => _localPosition = value; 
         }
 
-        [HideInInspector]
         public Quaternion Rotation
         {
             get
@@ -120,7 +127,6 @@ namespace GameplayCore.Components
             }
         }
 
-        [HideInInspector]
         public Vector3 Euler
         {
             get
@@ -136,7 +142,6 @@ namespace GameplayCore.Components
             }
         }
 
-        [HideInInspector]
         public Vector3 Scale
         {
             get
@@ -164,7 +169,6 @@ namespace GameplayCore.Components
             }
         }
 
-        [HideInInspector]
         public Vector3 Position
         {
             get
@@ -213,18 +217,6 @@ namespace GameplayCore.Components
                 }
 
                 return model;
-            }
-        }
-
-        [SerializeField, InspectorName("Rotation"), Slider(-180.0f, 180.0f)]
-        private Vector3 EditorEuler
-        {
-            get => _editorEuler;
-            set
-            {
-                _editorEuler = value;
-                var euler = _editorEuler * MathUtil.Pi / 180.0f;
-                _localRotation = Quaternion.RotationYawPitchRoll(euler.Y, euler.X, euler.Z);
             }
         }
 
@@ -280,6 +272,12 @@ namespace GameplayCore.Components
         public TransformComponent this[int index]
         {
             get => _children[index];
+        }
+
+        internal override void Invalidate()
+        {
+            var euler = _editorEuler * MathUtil.Pi / 180.0f;
+            _localRotation = Quaternion.RotationYawPitchRoll(euler.Y, euler.X, euler.Z);
         }
 
         private Vector3 Rotate(Vector3 vector, Quaternion rotation)

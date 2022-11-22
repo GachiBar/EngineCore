@@ -4,23 +4,17 @@ namespace GameplayCore.Components
 {
     public class CameraComponent : Component
     {
-        private float _fow = MathUtil.PiOverTwo;
-        private TransformComponent _transformComponent = null;
+        public float FieldOfView = 90;
+        public float Near = 0.1f;
+        public float Far = 100.0f;
 
-        public float FieldOfView 
-        { 
-            get => MathUtil.RadiansToDegrees(_fow); 
-            set => _fow = MathUtil.DegreesToRadians(value); 
-        }
-
-        public float Near { get; set; } = 0.1f;
-        public float Far { get; set; } = 100.0f;
+        private TransformComponent _transformComponent = null;      
 
         public override void Update()
         {
             if (_transformComponent != null)
             {
-                var fow = _fow;
+                var fow = MathUtil.DegreesToRadians(FieldOfView);
                 var eye = _transformComponent.Position;
                 var target = _transformComponent.Position + _transformComponent.Forward;
                 var up = _transformComponent.Up;
