@@ -1,4 +1,4 @@
-#include "PropertyWindow.h"
+#include "GameObjectInspectorWindow.h"
 #include "SimpleMath.h"
 #include "imgui/imgui.h"
 #include "../GameplaySystem/Component.h"
@@ -10,22 +10,22 @@
 #include <mono/metadata/reflection.h>
 #include <format>
 
-std::shared_ptr<engine::Scene> PropertyWindow::GetScene() const
+std::shared_ptr<engine::Scene> GameObjectInspectorWindow::GetScene() const
 {
 	return scene;
 }
 
-void PropertyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
+void GameObjectInspectorWindow::SetScene(std::shared_ptr<engine::Scene> scene)
 {
 	this->scene = scene;
 }
 
-std::shared_ptr<engine::GameObject> PropertyWindow::GetGameObject()
+std::shared_ptr<engine::GameObject> GameObjectInspectorWindow::GetGameObject()
 {
 	return game_object;
 }
 
-void PropertyWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObject)
+void GameObjectInspectorWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObject)
 {
 	this->game_object = gameObject;
 
@@ -35,7 +35,7 @@ void PropertyWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObjec
 	}	
 }
 
-PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
+GameObjectInspectorWindow::GameObjectInspectorWindow(const mono::mono_assembly& assembly)
 	: assembly(assembly)
 	, game_objects_copasity(0)
 {
@@ -43,7 +43,7 @@ PropertyWindow::PropertyWindow(const mono::mono_assembly& assembly)
 	available_components_items = new const char* [components_names.size()];
 }
 
-PropertyWindow::~PropertyWindow()
+GameObjectInspectorWindow::~GameObjectInspectorWindow()
 {
 	delete[] available_components_items;
 
@@ -59,7 +59,7 @@ PropertyWindow::~PropertyWindow()
 	}
 }
 
-void PropertyWindow::Draw()
+void GameObjectInspectorWindow::Draw()
 {
 	ImGui::Begin("Property Window");
 	if (!game_object.get())
@@ -81,7 +81,7 @@ void PropertyWindow::Draw()
 	ImGui::End();	
 }
 
-void PropertyWindow::CacheComponentsData()
+void GameObjectInspectorWindow::CacheComponentsData()
 {
 	auto baseComponentType = assembly.get_type("GameplayCore.Components", "Component");
 	auto typeNames = assembly.dump_type_names();
@@ -122,7 +122,7 @@ void PropertyWindow::CacheComponentsData()
 	}
 }
 
-void PropertyWindow::DrawGameObjectFields()
+void GameObjectInspectorWindow::DrawGameObjectFields()
 {
 	if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) 
 	{
@@ -132,7 +132,7 @@ void PropertyWindow::DrawGameObjectFields()
 	}
 }
 
-void PropertyWindow::DrawComponentFields(std::shared_ptr<engine::Component> component)
+void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Component> component)
 {	
 	bool visible = true;
 
@@ -220,7 +220,7 @@ void PropertyWindow::DrawComponentFields(std::shared_ptr<engine::Component> comp
 	}
 }
 
-void PropertyWindow::DrawAddComponentPanel()
+void GameObjectInspectorWindow::DrawAddComponentPanel()
 {
 	int selected = 0;
 
@@ -237,7 +237,7 @@ void PropertyWindow::DrawAddComponentPanel()
 	}
 }
 
-bool PropertyWindow::DrawFloatField(
+bool GameObjectInspectorWindow::DrawFloatField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -268,7 +268,7 @@ bool PropertyWindow::DrawFloatField(
 	return false;
 }
 
-bool PropertyWindow::DrawDoubleField(
+bool GameObjectInspectorWindow::DrawDoubleField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -285,7 +285,7 @@ bool PropertyWindow::DrawDoubleField(
 	return false;
 }
 
-bool PropertyWindow::DrawBoolField(
+bool GameObjectInspectorWindow::DrawBoolField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -302,7 +302,7 @@ bool PropertyWindow::DrawBoolField(
 	return false;
 }
 
-bool PropertyWindow::DrawByteField(
+bool GameObjectInspectorWindow::DrawByteField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -320,7 +320,7 @@ bool PropertyWindow::DrawByteField(
 	return false;
 }
 
-bool PropertyWindow::DrawShortField(
+bool GameObjectInspectorWindow::DrawShortField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -338,7 +338,7 @@ bool PropertyWindow::DrawShortField(
 	return false;
 }
 
-bool PropertyWindow::DrawIntField(
+bool GameObjectInspectorWindow::DrawIntField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -356,7 +356,7 @@ bool PropertyWindow::DrawIntField(
 	return false;
 }
 
-bool PropertyWindow::DrawLongField(
+bool GameObjectInspectorWindow::DrawLongField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -374,7 +374,7 @@ bool PropertyWindow::DrawLongField(
 	return false;
 }
 
-bool PropertyWindow::DrawUByteField(
+bool GameObjectInspectorWindow::DrawUByteField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -392,7 +392,7 @@ bool PropertyWindow::DrawUByteField(
 	return false;
 }
 
-bool PropertyWindow::DrawUShortField(
+bool GameObjectInspectorWindow::DrawUShortField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
@@ -410,7 +410,7 @@ bool PropertyWindow::DrawUShortField(
 	return false;
 }
 
-bool PropertyWindow::DrawUIntField(
+bool GameObjectInspectorWindow::DrawUIntField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -428,7 +428,7 @@ bool PropertyWindow::DrawUIntField(
 	return false;
 }
 
-bool PropertyWindow::DrawULongField(
+bool GameObjectInspectorWindow::DrawULongField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -446,7 +446,7 @@ bool PropertyWindow::DrawULongField(
 	return false;
 }
 
-bool PropertyWindow::DrawVector2Field(
+bool GameObjectInspectorWindow::DrawVector2Field(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -478,7 +478,7 @@ bool PropertyWindow::DrawVector2Field(
 	return false;
 }
 
-bool PropertyWindow::DrawVector3Field(
+bool GameObjectInspectorWindow::DrawVector3Field(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -510,7 +510,7 @@ bool PropertyWindow::DrawVector3Field(
 	return false;
 }
 
-bool PropertyWindow::DrawVector4Field(
+bool GameObjectInspectorWindow::DrawVector4Field(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -542,7 +542,7 @@ bool PropertyWindow::DrawVector4Field(
 	return false;
 }
 
-bool PropertyWindow::DrawStringField(
+bool GameObjectInspectorWindow::DrawStringField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -573,7 +573,7 @@ bool PropertyWindow::DrawStringField(
 	return false;
 }
 
-bool PropertyWindow::DrawGameObjectField(
+bool GameObjectInspectorWindow::DrawGameObjectField(
 	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -628,7 +628,7 @@ bool PropertyWindow::DrawGameObjectField(
 	return false;
 }
 
-void PropertyWindow::ParseFullName(
+void GameObjectInspectorWindow::ParseFullName(
 	const std::string& fullName, 
 	std::string& namespace_out, 
 	std::string& name_out)
@@ -638,13 +638,13 @@ void PropertyWindow::ParseFullName(
 	name_out = fullName.substr(lastDotPosition + 1, fullName.size() - lastDotPosition - 1);
 }
 
-void PropertyWindow::CopyAsNullTerminated(char* destination, const std::string& source)
+void GameObjectInspectorWindow::CopyAsNullTerminated(char* destination, const std::string& source)
 {
 	source.copy(destination, source.size());
 	destination[source.size()] = '\0';
 }
 
-void PropertyWindow::ChangeGameObjectResourcesCopasity(size_t size)
+void GameObjectInspectorWindow::ChangeGameObjectResourcesCopasity(size_t size)
 {
 	if (game_objects_copasity > 0)
 	{
@@ -667,7 +667,7 @@ void PropertyWindow::ChangeGameObjectResourcesCopasity(size_t size)
 	}
 }
 
-void PropertyWindow::FindAvaliableComponents()
+void GameObjectInspectorWindow::FindAvaliableComponents()
 {
 	std::unordered_set<std::string> addedComponents;
 
@@ -693,7 +693,7 @@ void PropertyWindow::FindAvaliableComponents()
 	}
 }
 
-std::string PropertyWindow::GetFieldName(
+std::string GameObjectInspectorWindow::GetFieldName(
 	const engine::Field& field,
 	const std::vector<engine::Object>& attributes)
 {
@@ -715,7 +715,7 @@ std::string PropertyWindow::GetFieldName(
 	return result.as_utf8();
 }
 
-bool PropertyWindow::IsEditableField(
+bool GameObjectInspectorWindow::IsEditableField(
 	const engine::Field& field, 
 	const std::vector<engine::Object>& attributes)
 {
@@ -738,7 +738,7 @@ bool PropertyWindow::IsEditableField(
 	return field.IsPublic();
 }
 
-bool PropertyWindow::TryGetSliderConstraints(
+bool GameObjectInspectorWindow::TryGetSliderConstraints(
 	const std::vector<engine::Object>& attributes,
 	float& min_out, 
 	float& max_out)

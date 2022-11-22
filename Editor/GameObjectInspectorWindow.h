@@ -8,7 +8,7 @@
 #include <memory>
 #include <unordered_set>
 
-class PropertyWindow : public IEditorWindow
+class GameObjectInspectorWindow : public IEditorWindow
 {
 public:
 	std::shared_ptr<engine::Scene> GetScene() const;
@@ -17,9 +17,9 @@ public:
 	std::shared_ptr<engine::GameObject> GetGameObject();
 	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
 
-	PropertyWindow(const mono::mono_assembly& assembly);
+	GameObjectInspectorWindow(const mono::mono_assembly& assembly);
 
-	~PropertyWindow() override;
+	~GameObjectInspectorWindow() override;
 
 	void Draw() override;
 
