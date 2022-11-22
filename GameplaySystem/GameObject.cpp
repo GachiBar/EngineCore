@@ -28,7 +28,7 @@ const char kIsNotCachedErrorMessage[] = "GameObject methods are not cached.";
 std::string GameObject::Name() const {
     assert(name_ != nullptr && kIsNotCachedErrorMessage);
 
-    mono::mono_object value(name_->get_value(GetInternal()));
+    mono::mono_object value(name_->get_value(GetInternal()).value());
     mono::mono_string name(value);
     return name.as_utf8();
 }
@@ -44,7 +44,7 @@ void GameObject::Name(std::string& value) {
 size_t GameObject::Count() const {
     assert(count_ != nullptr && kIsNotCachedErrorMessage);
 
-    mono::mono_object value(count_->get_value(GetInternal()));
+    mono::mono_object value(count_->get_value(GetInternal()).value());
     int count = *reinterpret_cast<int*>(value.unbox());
     
     assert(count >= 0 && "Count less then zero.");
@@ -65,7 +65,8 @@ std::shared_ptr<Component> GameObject::AddComponent(const mono::mono_type& compo
     MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
     void* params[1] = { reflection_type };
 
-    mono::mono_object component(add_component_->invoke(GetInternal(), params));
+    auto raw_value = add_component_->invoke(GetInternal(), params);
+    mono::mono_object component(raw_value.value());
     auto result = std::make_shared<Component>(assembly_, std::move(component));
 
     ComponentAdded.Broadcast(*this, result);
@@ -92,11 +93,11 @@ std::shared_ptr<Component> GameObject::GetComponent(const mono::mono_type& compo
 
     auto raw_component = get_component_->invoke(GetInternal(), params);
 
-    if (raw_component == nullptr) {
+    if (!raw_component.has_value()) {
         return nullptr;
     }
 
-    mono::mono_object component(raw_component);
+    mono::mono_object component(raw_component.value());
     return std::shared_ptr<Component>(new Component(assembly_, std::move(component)));
 }
 
@@ -142,7 +143,8 @@ std::shared_ptr<Component> GameObject::operator[](size_t index) const {
     void* args[1];
     args[0] = &index;
 
-    mono::mono_object component(get_item_->invoke(GetInternal(), args));
+    auto raw_value = get_item_->invoke(GetInternal(), args);
+    mono::mono_object component(raw_value.value());
     return std::shared_ptr<Component>(new Component(assembly_, component));
 }
 

@@ -7,6 +7,8 @@
 #include "mono_object.h"
 #include "mono_type.h"
 
+#include <optional>
+
 namespace mono
 {
 
@@ -15,26 +17,15 @@ class mono_method_invoker
 public:
 	mono_method_invoker(mono_method method);
 
-	MonoObject* invoke();
-
-	MonoObject* invoke(void** args);
-
-	MonoObject* invoke(const mono_object& object);
-
-	MonoObject* invoke(const mono_object& object, void** args);
-
-	MonoObject* operator()();
-
-	MonoObject* operator()(void** args);
-
-	MonoObject* operator()(const mono_object& object);
-
-	MonoObject* operator()(const mono_object& object, void** args);
+	auto invoke() -> std::optional<mono_object>;
+	auto invoke(void** args) -> std::optional<mono_object>;
+	auto invoke(const mono_object& object) -> std::optional<mono_object>;
+	auto invoke(const mono_object& object, void** args) -> std::optional<mono_object>;
 
 private:
 	mono_method method_;
 
-	MonoObject* invoke(MonoObject* object, void** args);
+	auto invoke(MonoObject* object, void** args) -> std::optional<mono_object>;
 };
 
 } // namespace mono

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Types.h"
 #include "../monowrapper/monopp/mono_string.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
 
@@ -10,37 +11,13 @@ namespace engine {
 
 class Object;
 class Method;
-class Attribute;
-
-enum class PropertyType {
-	kUndefined,
-	kFloat, 
-	kDouble,
-	kBool,
-	kByte,
-	kShort,
-	kInt,
-	kLong,
-	kUByte,
-	kUShort,
-	kUInt,
-	kULong,
-	kVector2,
-	kVector3,
-	kVector4,
-	kString,
-	kGameObject,
-};
 
 class Property {
 public:
 	const mono::mono_property& GetInternal() const;
-	
-	std::vector<Attribute> GetAttributes() const;
-	
-	PropertyType GetType() const;
-	
-	std::string GetName() const;
+	const std::string& GetName() const;
+	const TypeData& GetTypeData() const;
+	std::vector<Object> GetAttributes() const;			
 
 	bool CanRead() const;
 	bool CanWrite() const;
@@ -61,10 +38,8 @@ private:
 	const Object& object_;
 	const mono::mono_property property_;
 	const mono::mono_property_invoker property_invoker_;
-	const PropertyType type_;
+	const TypeData& type_data_;
 };
-
-PropertyType NameToPropertyType(const std::string& name);
 
 } // namespace engine
 
