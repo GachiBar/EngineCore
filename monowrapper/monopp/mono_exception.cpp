@@ -19,13 +19,8 @@ auto get_exception_info(MonoObject* ex) -> mono_thunk_exception::mono_exception_
 	auto stacktrace_prop = type.get_property("StackTrace");
 	mono_property_invoker mutable_stack_prop(stacktrace_prop);
 
-	auto message_mono_obj = mutable_msg_prop.get_value(obj);
-	mono_object message_obj(message_mono_obj);
-	mono_string message(message_obj);
-
-	auto stacktrace_mono_obj = mutable_stack_prop.get_value(obj);
-	mono_object stacktrace_obj(stacktrace_mono_obj);
-	mono_string stacktrace(stacktrace_obj);
+	mono_string message(mutable_msg_prop.get_value(obj).value());
+	mono_string stacktrace(mutable_stack_prop.get_value(obj).value());
 
 	return {exception_typename, message.as_utf8(), stacktrace.as_utf8()};
 }

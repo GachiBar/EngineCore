@@ -169,6 +169,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Component.h" />
+    <ClInclude Include="Field.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameObject.h" />
@@ -184,6 +185,7 @@
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Field.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameplaySystem.cpp" />
     <ClCompile Include="Method.cpp" />

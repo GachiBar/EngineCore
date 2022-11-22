@@ -10,6 +10,10 @@ const mono::mono_property& Property::GetInternal() const {
 	return property_;
 }
 
+const std::string& Property::GetName() const {
+	return property_.get_name();
+}
+
 const TypeData& Property::GetTypeData() const {
 	return type_data_;
 }
@@ -30,10 +34,6 @@ std::vector<Object> Property::GetAttributes() const {
 	}
 
 	return attributes;
-}
-
-std::string Property::GetName() const {
-	return property_.get_name();
 }
 
 bool Property::CanRead() const {
@@ -57,8 +57,8 @@ Method Property::GetSetMethod() const {
 std::optional<Object> Property::GetValue() {
 	auto raw_value = property_invoker_.get_value(object_.GetInternal());
 
-	if (raw_value != nullptr) {
-		mono::mono_object value(property_invoker_.get_value(object_.GetInternal()));
+	if (raw_value.has_value()) {
+		mono::mono_object value(raw_value.value());
 		return { value };
 	}
 

@@ -24,6 +24,20 @@ const std::string& Object::GetFullName() const {
     return object_.get_type().get_fullname();
 }
 
+Field Object::GetField(const std::string& name) const {
+    return Field(*this, name);
+}
+
+std::vector<Field> Object::GetFields() const {
+    std::vector<Field> fields;
+
+    for (auto field : GetInternal().get_type().get_fields()) {
+        fields.emplace_back(*this, field);
+    }
+
+    return fields;
+}
+
 Property Object::GetProperty(const std::string& name) const {
     return Property(*this, name);
 }

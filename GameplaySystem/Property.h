@@ -15,11 +15,9 @@ class Method;
 class Property {
 public:
 	const mono::mono_property& GetInternal() const;
+	const std::string& GetName() const;
 	const TypeData& GetTypeData() const;
-
-	std::vector<Object> GetAttributes() const;	
-	
-	std::string GetName() const;
+	std::vector<Object> GetAttributes() const;			
 
 	bool CanRead() const;
 	bool CanWrite() const;

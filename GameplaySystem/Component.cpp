@@ -25,7 +25,8 @@ std::string Component::Name() const {
 std::shared_ptr<GameObject> Component::GameObject() {
     assert(game_object_ != nullptr && kIsNotCachedErrorMessage);
 
-    mono::mono_object result(game_object_->get_value(GetInternal()));
+    auto raw_value = game_object_->get_value(GetInternal());
+    mono::mono_object result(raw_value.value());
     return std::make_shared<engine::GameObject>(assembly_, result);
 }
 

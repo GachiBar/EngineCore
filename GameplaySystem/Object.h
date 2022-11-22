@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types.h"
+#include "Field.h"
 #include "Property.h"
 #include "Method.h"
 #include "../monowrapper/monopp/mono_object.h"
@@ -18,6 +19,9 @@ class Object {
 
 	 Property GetProperty(const std::string& name) const;
 	 std::vector<Property> GetProperties() const;
+
+	 Field GetField(const std::string& name) const;
+	 std::vector<Field> GetFields() const;
 
 	 Method GetMethod(const std::string& name) const;
 	 Method GetMethod(const std::string& name, int argc) const;
