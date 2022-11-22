@@ -33,6 +33,7 @@ void LogManager::Initialize(int argc, char* argv[])
 		bIsInited = true;
 		loguru::init(argc, argv);
 
+		loguru::g_preamble_file = false;
 		// Put every log message in "everything.log":
 		loguru::add_file("everything.log", loguru::Append, loguru::Verbosity_MAX);
 
@@ -46,7 +47,7 @@ void LogManager::Initialize(int argc, char* argv[])
 
 	std::string str = "SOME_STRING";
 	Log("Hello %f and %u and %s", 4.56,30,str.c_str());
-	LogWarn("Hello %f and %u and %s", 4.56, 30, str.c_str());
+	LogWarning("Hello %f and %u and %s", 4.56, 30, str.c_str());
 	LogError("Hello %f and %u and %s", 4.56, 30, str.c_str());
 	// Only show most relevant things on stderr:
 	//loguru::g_stderr_verbosity = 1;
@@ -71,33 +72,18 @@ void LogManager::Initialize(int argc, char* argv[])
 
 void LogManager::Log(const char* format, ...) const
 {
-	CHECK_F(bIsInited, "Log Manager is not initiated");
-	auto temp = loguru::stacktrace(0);
-	auto temp2 = std::source_location();
-	const std::source_location location =
-		std::source_location::current();
-	std::cout << "file: "
-		<< location.file_name() << "("
-		<< location.line() << ":"
-		<< location.column() << ") `"
-		<< location.function_name() << "`: ";
-
 	FORMAT_LOG_MESSAGE_IMPLEMENTATION
-	RAW_VLOG_F(loguru::Verbosity_INFO, "%s", res.c_str());
+	LOG_F(INFO, "%s", res.c_str());
 }
 
-void LogManager::LogWarn(const char* format, ...) const
+void LogManager::LogWarning(const char* format, ...) const
 {
-	CHECK_F(bIsInited, "Log Manager is not initiated");
-
 	FORMAT_LOG_MESSAGE_IMPLEMENTATION
 	LOG_F(WARNING, "%s", res.c_str());
 }
 
 void LogManager::LogError(const char* format, ...) const
 {
-	CHECK_F(bIsInited, "Log Manager is not initiated");
-
 	FORMAT_LOG_MESSAGE_IMPLEMENTATION
 	LOG_F(ERROR, "%s", res.c_str());
 }
@@ -120,7 +106,28 @@ DirectX::SimpleMath::Vector4 LogManager::GetLevelLogColor(loguru::Verbosity InVe
 void LogManager::Shutdown()
 {
 	LogMessageAdded.RemoveAll();
+	ViewportMessageAdded.RemoveAll();
 	loguru::shutdown();
+}
+
+void LogManager::SetNextMessageNotBroadcastLogViewport()
+{
+	bNotBroadcastNextMessageToLog = true;
+}
+
+bool LogManager::GetNextMessageNotBroadcastLogViewport()
+{
+	return bNotBroadcastNextMessageToLog;
+}
+
+void LogManager::SetNextMessageNotBroadcastLog()
+{
+	bNotBroadcastNextMessageToLog = true;
+}
+
+bool LogManager::GetNextMessageNotBroadcastLog()
+{
+	return bNotBroadcastNextMessageToLog;
 }
 
 LogManager::~LogManager()
@@ -146,8 +153,17 @@ std::string LogManager::format_string(const char* format, va_list args) const
 
 void LogManager::OnLogCallback(void* user_data, loguru::Message const& message)
 {
-	if(const auto log_manager_inst = static_cast<LogManager*>(user_data))
-		log_manager_inst->LogMessageAdded.Broadcast(std::string(message.preamble) + std::string(message.message),message.verbosity);
+	const auto log_manager_inst = static_cast<LogManager*>(user_data);
+
+	if(log_manager_inst && !log_manager_inst->GetNextMessageNotBroadcastLog())
+		log_manager_inst->LogMessageAdded.Broadcast(message);
+	if (log_manager_inst && log_manager_inst->GetNextMessageNotBroadcastLog())
+		log_manager_inst->bNotBroadcastNextMessageToLog = false;
+
+	if (log_manager_inst && !log_manager_inst->GetNextMessageNotBroadcastLogViewport())
+		log_manager_inst->ViewportMessageAdded.Broadcast(message);
+	if (log_manager_inst && log_manager_inst->GetNextMessageNotBroadcastLogViewport())
+		log_manager_inst->bNotBroadcastNextMessageToViewport = false;
 }
 
 #undef FORMAT_LOG_MESSAGE_IMPLEMENTATION

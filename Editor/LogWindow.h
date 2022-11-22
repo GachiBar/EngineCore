@@ -15,7 +15,7 @@ public:
 	void Draw() override;
 	void Clear();
 
-	void OnLogMessageAdded(std::string const& InMessage, loguru::Verbosity InVerbosityLevel);
+	void OnLogMessageAdded(loguru::Message const& InMessage);
 
 protected:
 	void AddLog(std::string const& InMessage, loguru::Verbosity InVerbosityLevel);

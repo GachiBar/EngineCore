@@ -21,19 +21,30 @@ public:
 
 	void Initialize(int argc, char* argv[]);
 
-	DECLARE_EVENT(LogMessageEvent, LogManager, std::string const &, loguru::Verbosity)
-		LogMessageEvent LogMessageAdded;
+	DECLARE_EVENT(LogMessageEvent, LogManager, loguru::Message const&)
+
+	LogMessageEvent LogMessageAdded;
+	LogMessageEvent ViewportMessageAdded;
 
 	void Log(const char* format, ...) const;
-	void LogWarn(const char* format, ...) const;
+	void LogWarning(const char* format, ...) const;
 	void LogError(const char* format, ...) const;
 
 	DirectX::SimpleMath::Vector4 GetLevelLogColor(loguru::Verbosity InVerbosity) const;
 
 	void Shutdown();
 
+	void SetNextMessageNotBroadcastLogViewport();
+	bool GetNextMessageNotBroadcastLogViewport();
+
+	void SetNextMessageNotBroadcastLog();
+	bool GetNextMessageNotBroadcastLog();
+
 	~LogManager();
 private:
+	std::atomic_bool bNotBroadcastNextMessageToLog = false;
+	std::atomic_bool bNotBroadcastNextMessageToViewport = false;
+
 	LogManager();
 
 	bool bIsInited = false;

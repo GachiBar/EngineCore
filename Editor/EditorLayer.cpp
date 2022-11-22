@@ -46,10 +46,9 @@ void EditorLayer::OnAttach()
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-
 	const std::string str = "SOME_STRING";
     LogManager::getInstance().Log("Hello %f and %u and %s", 4.56, 30, str.c_str());
-    LogManager::getInstance().LogWarn("Hello %f and %u and %s", 4.56, 30, str.c_str());
+    LogManager::getInstance().LogWarning("Hello %f and %u and %s", 4.56, 30, str.c_str());
     LogManager::getInstance().LogError("Hello %f and %u and %s", 4.56, 30, str.c_str());
 }
 
@@ -236,10 +235,9 @@ void EditorLayer::OnGuiRender()
     properties->Draw();
     SettingsWindow->Draw();
     explorer->Draw();
-    log->Draw();
-
     ImGui::EndDisabled();
-	
+
+    log->Draw();
 }
 
 void EditorLayer::OnPostRender()

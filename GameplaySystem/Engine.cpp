@@ -15,6 +15,8 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
+#include "../Logger/LogManager.h"
+
 namespace engine {
 
 DirectX::SimpleMath::Matrix Engine::m_projection{};
@@ -136,6 +138,10 @@ void Engine::SetupInputInternalCalls() {
 
 	mono_add_internal_call("GameplayCore.Input::Internal_GetKeyValue", Internal_GetKeyValue);
 	mono_add_internal_call("GameplayCore.Input::Internal_GetAxisValue", Internal_GetAxisValue);
+
+	mono_add_internal_call("GameplayCore.Log::Internal_Log", Internal_Log);
+	mono_add_internal_call("GameplayCore.Log::Internal_LogWarning", Internal_LogWarning);
+	mono_add_internal_call("GameplayCore.Log::Internal_LogError", Internal_LogError);
 }
 
 mono::mono_property Engine::GetProperty(std::string name_space, std::string klass, std::string property) {
@@ -247,4 +253,32 @@ float Engine::Internal_GetAxisValue(MonoString* axis_name) {
 	return InputManager::getInstance().GetPlayerInput()->GetAxisValue(raw_string);
 }
 
+void Engine::Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog)
+{
+	Internal_Log_Implementation(loguru::Verbosity_INFO, message, bPrintToScreen, bPrintToLog);
+}
+
+void Engine::Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog)
+{
+	Internal_Log_Implementation(loguru::Verbosity_WARNING, message, bPrintToScreen, bPrintToLog);
+}
+
+void Engine::Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog)
+{
+	Internal_Log_Implementation(loguru::Verbosity_ERROR, message, bPrintToScreen, bPrintToLog);
+}
+
+void Engine::Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen,
+	bool bPrintToLog)
+{
+	if (!bPrintToLog)
+		LogManager::getInstance().SetNextMessageNotBroadcastLog();
+
+	if (!bPrintToScreen)
+		LogManager::getInstance().SetNextMessageNotBroadcastLogViewport();
+
+	const auto raw_string = mono_string_to_utf8(message);
+	const std::string message_string(raw_string);
+	VLOG_F(verbosity, message_string.c_str());
+}
 } // namespace engine
