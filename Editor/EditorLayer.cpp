@@ -218,6 +218,15 @@ void EditorLayer::OnGuiRender()
 
             if (ImGui::MenuItem("Close", NULL, false, &p_open != NULL))
                 p_open = false;
+
+            if(ImGui::BeginMenu("Windows"))
+            {
+                if(ImGui::MenuItem("Log", NULL, &log->bIsOpen))
+                    log->bIsOpen != log->bIsOpen;
+                
+                ImGui::EndMenu();
+            }
+
             ImGui::EndMenu();
         }
 
@@ -237,7 +246,8 @@ void EditorLayer::OnGuiRender()
     explorer->Draw();
     ImGui::EndDisabled();
 
-    log->Draw();
+    if(log->bIsOpen)
+		log->Draw();
 }
 
 void EditorLayer::OnPostRender()
