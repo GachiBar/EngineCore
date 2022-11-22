@@ -2,13 +2,13 @@
 #include "SimpleMath.h"
 #include "imgui/imgui.h"
 #include "../GameplaySystem/Component.h"
+#include "../GameplaySystem/Engine.h"
 #include "../monowrapper/monopp/mono_domain.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_string.h"
 
 #include <mono/metadata/reflection.h>
 #include <format>
-#include "../GameplaySystem/Engine.h"
 
 std::shared_ptr<engine::Scene> PropertyWindow::GetScene() const
 {
@@ -68,12 +68,12 @@ void PropertyWindow::Draw()
 		return;
 	}
 
-	DrawGameObjectProperties();
+	DrawGameObjectFields();
 
 	for (size_t i = 0; i < game_object->Count(); ++i)
 	{
 		auto component = (*game_object)[i];
-		DrawComponentProperties(component);
+		DrawComponentFields(component);
 	}
 
 	ImGui::Separator();
@@ -122,85 +122,92 @@ void PropertyWindow::CacheComponentsData()
 	}
 }
 
-void PropertyWindow::DrawGameObjectProperties()
+void PropertyWindow::DrawGameObjectFields()
 {
 	if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen)) 
 	{
-		auto nameProperty = game_object->GetProperty("Name");
-		auto attributes = nameProperty.GetAttributes();
-		DrawStringProperty(nameProperty, attributes);
+		auto nameField = game_object->GetField("_name");
+		auto attributes = nameField.GetAttributes();
+		DrawStringField(nameField, attributes);
 	}
 }
 
-void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> component)
+void PropertyWindow::DrawComponentFields(std::shared_ptr<engine::Component> component)
 {	
 	bool visible = true;
 
 	if (ImGui::CollapsingHeader(component->Name().c_str(), &visible, ImGuiTreeNodeFlags_DefaultOpen)) 
 	{
-		auto properties = component->GetProperties();
+		auto fields = component->GetFields();
 		
-		for (auto property : properties) 
+		for (auto field : fields) 
 		{
-			auto attributes = property.GetAttributes();
+			auto attributes = field.GetAttributes();
 
-			if (!IsEditableProperty(property, attributes)) 
+			if (!IsEditableField(field, attributes)) 
 			{
 				continue;
 			}	
 
-			switch (property.GetTypeData().type)
+			bool isFieldChanged = false;
+
+			switch (field.GetTypeData().type)
 			{
 			case engine::Type::kFloat:
-				DrawFloatProperty(property, attributes);
+				isFieldChanged = DrawFloatField(field, attributes);
 				break;
 			case engine::Type::kDouble:
-				DrawDoubleProperty(property, attributes);
+				isFieldChanged = DrawDoubleField(field, attributes);
 				break;
 			case engine::Type::kBool:
-				DrawBoolProperty(property, attributes);
+				isFieldChanged = DrawBoolField(field, attributes);
 				break;
 			case engine::Type::kByte:
-				DrawByteProperty(property, attributes);
+				isFieldChanged = DrawByteField(field, attributes);
 				break;
 			case engine::Type::kShort:
-				DrawShortProperty(property, attributes);
+				isFieldChanged = DrawShortField(field, attributes);
 				break;
 			case engine::Type::kInt:
-				DrawIntProperty(property, attributes);
+				isFieldChanged = DrawIntField(field, attributes);
 				break;
 			case engine::Type::kLong:
-				DrawLongProperty(property, attributes);
+				isFieldChanged = DrawLongField(field, attributes);
 				break;
 			case engine::Type::kUByte:
-				DrawUByteProperty(property, attributes);
+				isFieldChanged = DrawUByteField(field, attributes);
 				break;
 			case engine::Type::kUShort:
-				DrawUShortProperty(property, attributes);
+				isFieldChanged = DrawUShortField(field, attributes);
 				break;
 			case engine::Type::kUInt:
-				DrawUIntProperty(property, attributes);
+				isFieldChanged = DrawUIntField(field, attributes);
 				break;
 			case engine::Type::kULong:
-				DrawULongProperty(property, attributes);
+				isFieldChanged = DrawULongField(field, attributes);
 				break;
 			case engine::Type::kVector2:
-				DrawVector2Property(property, attributes);
+				isFieldChanged = DrawVector2Field(field, attributes);
 				break;
 			case engine::Type::kVector3:
-				DrawVector3Property(property, attributes);
+				isFieldChanged = DrawVector3Field(field, attributes);
 				break;
 			case engine::Type::kVector4:
-				DrawVector4Property(property, attributes);
+				isFieldChanged = DrawVector4Field(field, attributes);
 				break;
 			case engine::Type::kString:
-				DrawStringProperty(property, attributes);
+				isFieldChanged = DrawStringField(field, attributes);
 				break;
 			case engine::Type::kGameObject:
-				DrawGameObjectProperty(property, attributes);
+				isFieldChanged = DrawGameObjectField(field, attributes);
 				break;
 			default:
 				break;
+			}
+
+			if (isFieldChanged) 
+			{
+				component->GetMethod("Invalidate").Invoke();
 			}
 		}
 	}
@@ -230,12 +237,12 @@ void PropertyWindow::DrawAddComponentPanel()
 	}
 }
 
-void PropertyWindow::DrawFloatProperty(
-	engine::Property property,
+bool PropertyWindow::DrawFloatField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	auto value = monoObject.Unbox<float>();
 
 	float min = 0;
@@ -243,174 +250,208 @@ void PropertyWindow::DrawFloatProperty(
 
 	if (TryGetSliderConstraints(attributes, min, max))
 	{
-		if (ImGui::SliderFloat(propertyName.c_str(), &value, min, max))
+		if (ImGui::SliderFloat(fieldName.c_str(), &value, min, max))
 		{
-			property.SetValue(&value);
+			field.SetValue(&value);
+			return true;
 		}
 	}
 	else 
 	{
-		if (ImGui::InputFloat(propertyName.c_str(), &value))
+		if (ImGui::InputFloat(fieldName.c_str(), &value))
 		{
-			property.SetValue(&value);
+			field.SetValue(&value);
+			return true;
 		}
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawDoubleProperty(
-	engine::Property property,
+bool PropertyWindow::DrawDoubleField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	auto value = monoObject.Unbox<double>();
 
-	if (ImGui::InputDouble(propertyName.c_str(), &value))
+	if (ImGui::InputDouble(fieldName.c_str(), &value))
 	{
-		property.SetValue(&value);
+		field.SetValue(&value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawBoolProperty(
-	engine::Property property,
+bool PropertyWindow::DrawBoolField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	bool* value = reinterpret_cast<bool*>(monoObject.Unbox());
 
-	if (ImGui::Checkbox(propertyName.c_str(), value))
+	if (ImGui::Checkbox(fieldName.c_str(), value))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawByteProperty(
-	engine::Property property,
+bool PropertyWindow::DrawByteField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImS8 step = 1;
 
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_S8, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S8, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawShortProperty(
-	engine::Property property,
+bool PropertyWindow::DrawShortField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
-	auto propertyName = GetPropertyName(property, attributes);	
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);	
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImS16 step = 1;
 
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_S16, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S16, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawIntProperty(
-	engine::Property property,
+bool PropertyWindow::DrawIntField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImS32 step = 1;
 
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_S32, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S32, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawLongProperty(
-	engine::Property property,
+bool PropertyWindow::DrawLongField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImS64 step = 1;
 	
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_S64, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S64, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawUByteProperty(
-	engine::Property property,
+bool PropertyWindow::DrawUByteField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImU8 step = 1;
 
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_U8, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U8, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawUShortProperty(
-	engine::Property property,
+bool PropertyWindow::DrawUShortField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {	
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImU16 step = 1;
 
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_U16, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U16, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawUIntProperty(
-	engine::Property property,
+bool PropertyWindow::DrawUIntField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImU32 step = 1;
 
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_U32, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U32, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawULongProperty(
-	engine::Property property,
+bool PropertyWindow::DrawULongField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	void* value = monoObject.Unbox();
 	ImU64 step = 1;
 
-	if (ImGui::InputScalar(propertyName.c_str(), ImGuiDataType_U64, value, &step))
+	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U64, value, &step))
 	{
-		property.SetValue(value);
+		field.SetValue(value);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawVector2Property(
-	engine::Property property,
+bool PropertyWindow::DrawVector2Field(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	auto value = monoObject.Unbox<DirectX::SimpleMath::Vector2>();
 	float vector[2] = { value.x, value.y };
 
@@ -419,26 +460,30 @@ void PropertyWindow::DrawVector2Property(
 
 	if (TryGetSliderConstraints(attributes, min, max))
 	{
-		if (ImGui::SliderFloat2(propertyName.c_str(), vector, min, max))
+		if (ImGui::SliderFloat2(fieldName.c_str(), vector, min, max))
 		{
-			property.SetValue(vector);
+			field.SetValue(vector);
+			return true;
 		}
 	}
 	else
 	{
-		if (ImGui::InputFloat2(propertyName.c_str(), vector))
+		if (ImGui::InputFloat2(fieldName.c_str(), vector))
 		{
-			property.SetValue(vector);
+			field.SetValue(vector);
+			return true;
 		}
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawVector3Property(
-	engine::Property property,
+bool PropertyWindow::DrawVector3Field(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	auto value = monoObject.Unbox<DirectX::SimpleMath::Vector3>();
 	float vector[3] = { value.x, value.y, value.z };
 
@@ -447,26 +492,30 @@ void PropertyWindow::DrawVector3Property(
 
 	if (TryGetSliderConstraints(attributes, min, max))
 	{
-		if (ImGui::SliderFloat3(propertyName.c_str(), vector, min, max))
+		if (ImGui::SliderFloat3(fieldName.c_str(), vector, min, max))
 		{
-			property.SetValue(vector);
+			field.SetValue(vector);
+			return true;
 		}
 	}
 	else
 	{
-		if (ImGui::InputFloat3(propertyName.c_str(), vector))
+		if (ImGui::InputFloat3(fieldName.c_str(), vector))
 		{
-			property.SetValue(vector);
+			field.SetValue(vector);
+			return true;
 		}
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawVector4Property(
-	engine::Property property,
+bool PropertyWindow::DrawVector4Field(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue().value();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue().value();
 	auto value = monoObject.Unbox<DirectX::SimpleMath::Vector4>();
 	float vector[4] = { value.x, value.y, value.z, value.w };
 
@@ -475,30 +524,34 @@ void PropertyWindow::DrawVector4Property(
 
 	if (TryGetSliderConstraints(attributes, min, max))
 	{
-		if (ImGui::SliderFloat4(propertyName.c_str(), vector, min, max))
+		if (ImGui::SliderFloat4(fieldName.c_str(), vector, min, max))
 		{
-			property.SetValue(vector);
+			field.SetValue(vector);
+			return true;
 		}
 	}
 	else
 	{
-		if (ImGui::InputFloat4(propertyName.c_str(), vector))
+		if (ImGui::InputFloat4(fieldName.c_str(), vector))
 		{
-			property.SetValue(vector);
+			field.SetValue(vector);
+			return true;
 		}
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawStringProperty(
-	engine::Property property,
+bool PropertyWindow::DrawStringField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
 	const size_t bufferSize = 256;
 	char buffer[bufferSize];
 	buffer[0] = '\0';
 
-	auto propertyName = GetPropertyName(property, attributes);
-	auto mono_object = property.GetValue();	
+	auto fieldName = GetFieldName(field, attributes);
+	auto mono_object = field.GetValue();	
 
 	if (mono_object.has_value()) 
 	{
@@ -508,21 +561,24 @@ void PropertyWindow::DrawStringProperty(
 		buffer[content.size()] = '\0';
 	}
 
-	if (ImGui::InputText(propertyName.c_str(), buffer, bufferSize))
+	if (ImGui::InputText(fieldName.c_str(), buffer, bufferSize))
 	{
 		auto& domain = mono::mono_domain::get_current_domain();
 		std::string newContent(buffer);
 		mono::mono_string newValue(domain, newContent);
-		property.SetValue(newValue);
+		field.SetValue(newValue);
+		return true;
 	}
+
+	return false;
 }
 
-void PropertyWindow::DrawGameObjectProperty(
-	engine::Property property,
+bool PropertyWindow::DrawGameObjectField(
+	engine::Field field,
 	const std::vector<engine::Object>& attributes)
 {
-	auto propertyName = GetPropertyName(property, attributes);
-	auto monoObject = property.GetValue();
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue();
 
 	if (scene->Count() > game_objects_copasity)
 	{
@@ -562,11 +618,14 @@ void PropertyWindow::DrawGameObjectProperty(
 
 	int selected = std::distance(game_objects_names, current);
 
-	if (ImGui::Combo(propertyName.c_str(), &selected, game_objects_names, scene->Count()))
+	if (ImGui::Combo(fieldName.c_str(), &selected, game_objects_names, scene->Count()))
 	{
 		auto gameObject = game_objects_pointers[selected];
-		property.SetValue(gameObject);
+		field.SetValue(gameObject);
+		return true;
 	}
+
+	return false;
 }
 
 void PropertyWindow::ParseFullName(
@@ -634,8 +693,8 @@ void PropertyWindow::FindAvaliableComponents()
 	}
 }
 
-std::string PropertyWindow::GetPropertyName(
-	const engine::Property& property,
+std::string PropertyWindow::GetFieldName(
+	const engine::Field& field,
 	const std::vector<engine::Object>& attributes)
 {
 	auto predicate = [](auto attr)
@@ -647,7 +706,7 @@ std::string PropertyWindow::GetPropertyName(
 
 	if (nameAttribute == attributes.end())
 	{
-		return property.GetName();
+		return field.GetName();
 	}
 
 	auto nameProperty = nameAttribute->GetProperty("Name");
@@ -656,34 +715,27 @@ std::string PropertyWindow::GetPropertyName(
 	return result.as_utf8();
 }
 
-bool PropertyWindow::IsEditableProperty(
-	const engine::Property& property, 
+bool PropertyWindow::IsEditableField(
+	const engine::Field& field, 
 	const std::vector<engine::Object>& attributes)
 {
-	if (property.CanRead() && property.CanWrite()) 
+	for (auto attr : attributes) 
 	{
-		if (property.GetGetMethod().IsPublic() && 
-			property.GetSetMethod().IsPublic()) 
+		if (attr.GetTypeData().type == engine::Type::kHideInInspectorAttribute) 
 		{
-			auto predicate = [](auto attr)
-			{
-				return attr.GetTypeData().type == engine::Type::kHideInInspectorAttribute;
-			};
-
-			return std::find_if(attributes.begin(), attributes.end(), predicate) == attributes.end();
-		}
-		else 
-		{
-			auto predicate = [](auto attr)
-			{
-				return attr.GetTypeData().type == engine::Type::kSerializeFieldAttribute;
-			};
-
-			return std::find_if(attributes.begin(), attributes.end(), predicate) != attributes.end();
+			return false;
 		}
 	}
 
-	return false;
+	for (auto attr : attributes) 
+	{
+		if (attr.GetTypeData().type == engine::Type::kSerializeFieldAttribute)
+		{
+			return true;
+		}
+	}
+
+	return field.IsPublic();
 }
 
 bool PropertyWindow::TryGetSliderConstraints(

@@ -27,6 +27,10 @@ Method::Method(const Object& object, mono::mono_method method)
 	, method_invoker_(method_)
 {}
 
+std::optional<Object> Method::Invoke() {
+	return Invoke(nullptr);
+}
+
 std::optional<Object> Method::Invoke(void** args) {
 	auto result = method_invoker_.invoke(object_.GetInternal(), args);
 	

@@ -5,10 +5,9 @@ namespace GameplayCore.Components
     public class MeshRenderComponent : Component
     {
         private static ulong _id = 0;
-        [SerializeField] private TransformComponent _transformComponent = null;
+        private TransformComponent _transformComponent = null;
 
-        public readonly ulong Id;
-        public string Path;
+        public ulong Id { get; private set; }
 
         public MeshRenderComponent()
         {

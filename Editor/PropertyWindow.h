@@ -3,7 +3,7 @@
 #include "IEditorWindow.h"
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
-#include "../GameplaySystem/Property.h"
+#include "../GameplaySystem/Field.h"
 
 #include <memory>
 #include <unordered_set>
@@ -41,74 +41,74 @@ private:
 
 	void CacheComponentsData();
 
-	void DrawGameObjectProperties();
+	void DrawGameObjectFields();
 
-	void DrawComponentProperties(std::shared_ptr<engine::Component> component);
+	void DrawComponentFields(std::shared_ptr<engine::Component> component);
 
 	void DrawAddComponentPanel();
 
-	void DrawFloatProperty(
-		engine::Property property, 
+	bool DrawFloatField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawDoubleProperty(
-		engine::Property property, 
+	bool DrawDoubleField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawBoolProperty(
-		engine::Property property, 
+	bool DrawBoolField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawByteProperty(
-		engine::Property property, 
+	bool DrawByteField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawShortProperty(
-		engine::Property property, 
+	bool DrawShortField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawIntProperty(
-		engine::Property property, 
+	bool DrawIntField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawLongProperty(
-		engine::Property property, 
+	bool DrawLongField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawUByteProperty(
-		engine::Property property, 
+	bool DrawUByteField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawUShortProperty(
-		engine::Property property, 
+	bool DrawUShortField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawUIntProperty(
-		engine::Property property, 
+	bool DrawUIntField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawULongProperty(
-		engine::Property property, 
+	bool DrawULongField(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawVector2Property(
-		engine::Property property, 
+	bool DrawVector2Field(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawVector3Property(
-		engine::Property property, 
+	bool DrawVector3Field(
+		engine::Field property, 
 		const std::vector<engine::Object>& attributes);
 
-	void DrawVector4Property(
-		engine::Property property,
+	bool DrawVector4Field(
+		engine::Field property,
 		const std::vector<engine::Object>& attributes);
 
-	void DrawStringProperty(
-		engine::Property property,
+	bool DrawStringField(
+		engine::Field property,
 		const std::vector<engine::Object>& attributes);
 
-	void DrawGameObjectProperty(
-		engine::Property property,
+	bool DrawGameObjectField(
+		engine::Field property,
 		const std::vector<engine::Object>& attributes);
 
 	void ParseFullName(
@@ -122,12 +122,12 @@ private:
 
 	void FindAvaliableComponents();
 
-	static std::string GetPropertyName(
-		const engine::Property& property,
+	static std::string GetFieldName(
+		const engine::Field& property,
 		const std::vector<engine::Object>& attributes);
 
-	static bool IsEditableProperty(
-		const engine::Property& property,
+	static bool IsEditableField(
+		const engine::Field& property,
 		const std::vector<engine::Object>& attributes);
 
 	static bool TryGetSliderConstraints(

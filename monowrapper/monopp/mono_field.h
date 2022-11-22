@@ -26,11 +26,11 @@ public:
 	auto is_static() const -> bool;
 	auto get_internal_ptr() const -> MonoClassField*;
 	auto get_internal_vtable_ptr() const -> MonoVTable*;
+	auto is_valuetype() const -> bool;
 
 protected:
 	void generate_meta();
-	auto is_valuetype() const -> bool;
-
+	
 	mono_type type_;
 	non_owning_ptr<MonoClassField> field_ = nullptr;
 	non_owning_ptr<MonoVTable> owning_type_vtable_ = nullptr;

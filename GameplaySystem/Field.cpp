@@ -61,7 +61,7 @@ std::optional<Object> Field::GetValue() {
 }
 
 void Field::SetValue(void* data) {
-	field_invoker_.set_value(data);
+	field_invoker_.set_value(object_.GetInternal(), data);
 }
 
 void Field::SetValue(const mono::mono_object& value) {

@@ -32,12 +32,12 @@ auto mono_field_invoker::get_value() const -> std::optional<mono_object>
 
 auto mono_field_invoker::get_value(const mono_object& obj) const -> std::optional<mono_object>
 {
-	MonoObject* val = nullptr;
-	mono_field_get_value(obj.get_internal_ptr(), field_.get_internal_ptr(), val);
+	auto& domain = mono::mono_domain::get_current_domain();
+	MonoObject* result = mono_field_get_value_object(domain.get_internal_ptr(), field_.get_internal_ptr(), obj.get_internal_ptr());
 
-	if (val != nullptr)
+	if (result != nullptr)
 	{
-		return mono_object(val);
+		return mono_object(result);
 	}
 
 	return {};

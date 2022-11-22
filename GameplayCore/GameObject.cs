@@ -3,6 +3,8 @@ using System.Linq;
 using System.Collections.Generic;
 using GameplayCore.Components;
 using System.Collections;
+using GameplayCore.Editor;
+using GameplayCore.Serialization;
 
 namespace GameplayCore
 {
@@ -16,6 +18,11 @@ namespace GameplayCore
         /// </summary>
         private Guid _guid;
 
+        /// <summary>
+        /// Name of <see cref="GameObject"/>.
+        /// </summary>
+        [InspectorName("Name")]
+        [SerializeField]
         private string _name;
 
         /// <summary>
