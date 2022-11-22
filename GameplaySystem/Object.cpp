@@ -8,6 +8,22 @@ const mono::mono_object& engine::Object::GetInternal() const {
     return object_;
 }
 
+const TypeData& engine::Object::GetTypeData() const {
+    return type_data_;
+}
+
+const std::string& Object::GetNameSpace() const {
+    return object_.get_type().get_namespace();
+}
+
+const std::string& Object::GetName() const {
+    return object_.get_type().get_name();
+}
+
+const std::string& Object::GetFullName() const {
+    return object_.get_type().get_fullname();
+}
+
 Property Object::GetProperty(const std::string& name) const {
     return Property(*this, name);
 }
@@ -41,13 +57,13 @@ std::vector<Method> Object::GetMethods() const {
 }
 
 Object::Object(MonoObject* mono_object)
-    : object_(mono_object)
-    , handle_(mono_gchandle_new(object_.get_internal_ptr(), true))
+    : Object(mono::mono_object(mono_object))
 {}
 
 Object::Object(mono::mono_object object)
     : object_(object)
     , handle_(mono_gchandle_new(object_.get_internal_ptr(), true))
+    , type_data_(Types::GetTypeData(GetFullName()))
 {}
 
 Object::~Object() {

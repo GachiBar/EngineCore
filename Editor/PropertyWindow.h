@@ -4,7 +4,6 @@
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
 #include "../GameplaySystem/Property.h"
-#include "../GameplaySystem/Attribute.h"
 
 #include <memory>
 #include <unordered_set>
@@ -50,67 +49,67 @@ private:
 
 	void DrawFloatProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawDoubleProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawBoolProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawByteProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawShortProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawIntProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawLongProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawUByteProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawUShortProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawUIntProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawULongProperty(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawVector2Property(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawVector3Property(
 		engine::Property property, 
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawVector4Property(
 		engine::Property property,
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawStringProperty(
 		engine::Property property,
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void DrawGameObjectProperty(
 		engine::Property property,
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	void ParseFullName(
 		const std::string& fullName, 
@@ -125,14 +124,14 @@ private:
 
 	static std::string GetPropertyName(
 		const engine::Property& property,
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	static bool IsEditableProperty(
 		const engine::Property& property,
-		const std::vector<engine::Attribute>& attributes);
+		const std::vector<engine::Object>& attributes);
 
 	static bool TryGetSliderConstraints(
-		const std::vector<engine::Attribute>& attributes,
+		const std::vector<engine::Object>& attributes,
 		float& min_out,
 		float& max_out);
 };

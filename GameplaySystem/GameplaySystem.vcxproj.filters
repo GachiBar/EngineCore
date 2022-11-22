@@ -51,9 +51,6 @@
     <ClInclude Include="Object.h">
       <Filter>Header Files\Wrappers</Filter>
     </ClInclude>
-    <ClInclude Include="Attribute.h">
-      <Filter>Header Files\Wrappers</Filter>
-    </ClInclude>
     <ClInclude Include="Method.h">
       <Filter>Header Files\Wrappers</Filter>
     </ClInclude>
@@ -84,9 +81,6 @@
       <Filter>Source Files\Wrappers</Filter>
     </ClCompile>
     <ClCompile Include="Object.cpp">
-      <Filter>Source Files\Wrappers</Filter>
-    </ClCompile>
-    <ClCompile Include="Attribute.cpp">
       <Filter>Source Files\Wrappers</Filter>
     </ClCompile>
     <ClCompile Include="Method.cpp">

@@ -149,57 +149,56 @@ void PropertyWindow::DrawComponentProperties(std::shared_ptr<engine::Component> 
 				continue;
 			}	
 
-			switch (property.GetType())
+			switch (property.GetTypeData().type)
 			{
-			case engine::PropertyType::kFloat:
+			case engine::Type::kFloat:
 				DrawFloatProperty(property, attributes);
 				break;
-			case engine::PropertyType::kDouble:
+			case engine::Type::kDouble:
 				DrawDoubleProperty(property, attributes);
 				break;
-			case engine::PropertyType::kBool:
+			case engine::Type::kBool:
 				DrawBoolProperty(property, attributes);
 				break;
-			case engine::PropertyType::kByte:
+			case engine::Type::kByte:
 				DrawByteProperty(property, attributes);
 				break;
-			case engine::PropertyType::kShort:
+			case engine::Type::kShort:
 				DrawShortProperty(property, attributes);
 				break;
-			case engine::PropertyType::kInt:
+			case engine::Type::kInt:
 				DrawIntProperty(property, attributes);
 				break;
-			case engine::PropertyType::kLong:
+			case engine::Type::kLong:
 				DrawLongProperty(property, attributes);
 				break;
-			case engine::PropertyType::kUByte:
+			case engine::Type::kUByte:
 				DrawUByteProperty(property, attributes);
 				break;
-			case engine::PropertyType::kUShort:
+			case engine::Type::kUShort:
 				DrawUShortProperty(property, attributes);
 				break;
-			case engine::PropertyType::kUInt:
+			case engine::Type::kUInt:
 				DrawUIntProperty(property, attributes);
 				break;
-			case engine::PropertyType::kULong:
+			case engine::Type::kULong:
 				DrawULongProperty(property, attributes);
 				break;
-			case engine::PropertyType::kVector2:
+			case engine::Type::kVector2:
 				DrawVector2Property(property, attributes);
 				break;
-			case engine::PropertyType::kVector3:
+			case engine::Type::kVector3:
 				DrawVector3Property(property, attributes);
 				break;
-			case engine::PropertyType::kVector4:
+			case engine::Type::kVector4:
 				DrawVector4Property(property, attributes);
 				break;
-			case engine::PropertyType::kString:
+			case engine::Type::kString:
 				DrawStringProperty(property, attributes);
 				break;
-			case engine::PropertyType::kGameObject:
+			case engine::Type::kGameObject:
 				DrawGameObjectProperty(property, attributes);
 				break;
-			case engine::PropertyType::kUndefined:
 			default:
 				break;
 			}
@@ -233,7 +232,7 @@ void PropertyWindow::DrawAddComponentPanel()
 
 void PropertyWindow::DrawFloatProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -260,7 +259,7 @@ void PropertyWindow::DrawFloatProperty(
 
 void PropertyWindow::DrawDoubleProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -274,7 +273,7 @@ void PropertyWindow::DrawDoubleProperty(
 
 void PropertyWindow::DrawBoolProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -288,7 +287,7 @@ void PropertyWindow::DrawBoolProperty(
 
 void PropertyWindow::DrawByteProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -303,7 +302,7 @@ void PropertyWindow::DrawByteProperty(
 
 void PropertyWindow::DrawShortProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto propertyName = GetPropertyName(property, attributes);	
 	auto monoObject = property.GetValue().value();
@@ -318,7 +317,7 @@ void PropertyWindow::DrawShortProperty(
 
 void PropertyWindow::DrawIntProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -333,7 +332,7 @@ void PropertyWindow::DrawIntProperty(
 
 void PropertyWindow::DrawLongProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -348,7 +347,7 @@ void PropertyWindow::DrawLongProperty(
 
 void PropertyWindow::DrawUByteProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -363,7 +362,7 @@ void PropertyWindow::DrawUByteProperty(
 
 void PropertyWindow::DrawUShortProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {	
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -378,7 +377,7 @@ void PropertyWindow::DrawUShortProperty(
 
 void PropertyWindow::DrawUIntProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -393,7 +392,7 @@ void PropertyWindow::DrawUIntProperty(
 
 void PropertyWindow::DrawULongProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -408,7 +407,7 @@ void PropertyWindow::DrawULongProperty(
 
 void PropertyWindow::DrawVector2Property(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -436,7 +435,7 @@ void PropertyWindow::DrawVector2Property(
 
 void PropertyWindow::DrawVector3Property(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -464,7 +463,7 @@ void PropertyWindow::DrawVector3Property(
 
 void PropertyWindow::DrawVector4Property(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue().value();
@@ -492,7 +491,7 @@ void PropertyWindow::DrawVector4Property(
 
 void PropertyWindow::DrawStringProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	const size_t bufferSize = 256;
 	char buffer[bufferSize];
@@ -520,7 +519,7 @@ void PropertyWindow::DrawStringProperty(
 
 void PropertyWindow::DrawGameObjectProperty(
 	engine::Property property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto propertyName = GetPropertyName(property, attributes);
 	auto monoObject = property.GetValue();
@@ -637,11 +636,11 @@ void PropertyWindow::FindAvaliableComponents()
 
 std::string PropertyWindow::GetPropertyName(
 	const engine::Property& property,
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	auto predicate = [](auto attr)
 	{
-		return attr.GetType() == engine::AttributeType::kInspectorNameAttribute;
+		return attr.GetTypeData().type == engine::Type::kInspectorNameAttribute;
 	};
 
 	auto nameAttribute = std::find_if(attributes.begin(), attributes.end(), predicate);
@@ -659,7 +658,7 @@ std::string PropertyWindow::GetPropertyName(
 
 bool PropertyWindow::IsEditableProperty(
 	const engine::Property& property, 
-	const std::vector<engine::Attribute>& attributes)
+	const std::vector<engine::Object>& attributes)
 {
 	if (property.CanRead() && property.CanWrite()) 
 	{
@@ -668,7 +667,7 @@ bool PropertyWindow::IsEditableProperty(
 		{
 			auto predicate = [](auto attr)
 			{
-				return attr.GetType() == engine::AttributeType::kHideInInspectorAttribute;
+				return attr.GetTypeData().type == engine::Type::kHideInInspectorAttribute;
 			};
 
 			return std::find_if(attributes.begin(), attributes.end(), predicate) == attributes.end();
@@ -677,7 +676,7 @@ bool PropertyWindow::IsEditableProperty(
 		{
 			auto predicate = [](auto attr)
 			{
-				return attr.GetType() == engine::AttributeType::kSerializeFieldAttribute;
+				return attr.GetTypeData().type == engine::Type::kSerializeFieldAttribute;
 			};
 
 			return std::find_if(attributes.begin(), attributes.end(), predicate) != attributes.end();
@@ -688,13 +687,13 @@ bool PropertyWindow::IsEditableProperty(
 }
 
 bool PropertyWindow::TryGetSliderConstraints(
-	const std::vector<engine::Attribute>& attributes,
+	const std::vector<engine::Object>& attributes,
 	float& min_out, 
 	float& max_out)
 {
 	auto predicate = [](auto attr)
 	{
-		return attr.GetType() == engine::AttributeType::kSliderAttribute;
+		return attr.GetTypeData().type == engine::Type::kSliderAttribute;
 	};
 
 	auto it = std::find_if(attributes.begin(), attributes.end(), predicate);

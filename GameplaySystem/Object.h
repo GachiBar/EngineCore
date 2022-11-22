@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Types.h"
 #include "Property.h"
 #include "Method.h"
 #include "../monowrapper/monopp/mono_object.h"
@@ -9,6 +10,11 @@ namespace engine {
 class Object {
  public:
 	 const mono::mono_object& GetInternal() const;
+	 const TypeData& GetTypeData() const;
+
+	 const std::string& GetNameSpace() const;
+	 const std::string& GetName() const;
+	 const std::string& GetFullName() const;
 
 	 Property GetProperty(const std::string& name) const;
 	 std::vector<Property> GetProperties() const;
@@ -35,6 +41,7 @@ class Object {
  private:
 	mono::mono_object object_;
 	uint32_t handle_;	
+	const TypeData& type_data_;
 };
 
 } // namespace engine
