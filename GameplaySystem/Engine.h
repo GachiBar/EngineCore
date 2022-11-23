@@ -8,6 +8,7 @@
 #include <SimpleMath.h>
 
 #include "Scene.h"
+#include "../Core/libs/loguru/loguru.hpp"
 
 namespace engine {
 
@@ -93,6 +94,15 @@ private:
 
 	static float Internal_GetKeyValue(MonoString* key_name);
 	static float Internal_GetAxisValue(MonoString* axis_name);
+
+
+	static void Internal_RemoveLogMessage(MonoString* guid);
+	static void Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+	static void Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+	static void Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+	static void Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+
+
 };
 
 } // namespace engine

@@ -168,8 +168,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Attribute.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="Field.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="GameObject.h" />
@@ -183,9 +183,9 @@
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Attribute.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Field.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameplaySystem.cpp" />
     <ClCompile Include="Method.cpp" />
@@ -215,6 +215,9 @@
     </ProjectReference>
     <ProjectReference Include="..\InputSystem\InputSystem.vcxproj">
       <Project>{4f8b6eb6-d028-4c38-9d69-227347502957}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Logger\Logger.vcxproj">
+      <Project>{4be9d43d-0651-4bae-b946-bc4395adc7cd}</Project>
     </ProjectReference>
     <ProjectReference Include="..\monowrapper\monowrapper.vcxproj">
       <Project>{7d22e2d2-85f7-4744-be7d-2afe0c33ded3}</Project>

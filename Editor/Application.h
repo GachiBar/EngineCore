@@ -11,7 +11,7 @@
 #include "../monowrapper/monopp/mono_object.h"
 
 #include "../Core/Interfaces/IWindowsApplication.h"
-
+#include "../Logger/LogManager.h"
 
 class Application : public IWindowsApplication
 {
@@ -28,10 +28,11 @@ public:
     virtual void OnStart();
 
     /// Cleanup after the main loop. Called by Application
-    virtual void OnStop() { }
+    virtual void OnStop();
+
 
     /// Initialize the engine and run the main loop, then return the application exit code
-    int Run();
+    int Run(int argc, char* argv[]);
 
     void Close();
 
@@ -59,7 +60,6 @@ public:
 
 protected:
     Layer* current_layer_on_update;
-    
 
 	LayerStack m_LayerStack;
     std::vector<std::shared_ptr<FGenericWindow>> wnds;

@@ -33,12 +33,12 @@ void StandaloneGameTestApplication::OnSetup() {
 	engine_->SetScene(scene);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	if (HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED); FAILED(result)) {
 		return result;
 	}
 
 	//StandaloneGameTestApplication app(kDllPath);
 	EditorApplication app;
-	return app.Run();
+	return app.Run(argc,argv);
 }

@@ -9,11 +9,18 @@
 #include "libs/imgui_sugar.hpp"
 #include "../GameplaySystem/Component.h"
 #include "libs/magic_enum.hpp"
+#include <ranges>
+#include <iostream>
+
+#include "imgui/imgui_internal.h"
 
 GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
                                                                              editor_layer(InEditorLayer)
 {
 	SelectedRenderTarget = *editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList().rbegin();
+
+	LogManager::getInstance().ViewportMessageAdded.AddRaw(this, &GameViewWindow::OnLogMessageAdded);
+	LogManager::getInstance().ViewportMessageRemoved.AddRaw(this, &GameViewWindow::OnLogMessageRemoved);
 }
 
 void GameViewWindow::update()
@@ -35,7 +42,7 @@ void GameViewWindow::update()
 void GameViewWindow::Draw()
 {
 	with_Window("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
-	            | ImGuiWindowFlags_MenuBar)
+		| ImGuiWindowFlags_MenuBar)
 	{
 		with_MenuBar
 		{
@@ -52,6 +59,20 @@ void GameViewWindow::Draw()
 		with_Child("GameRender")
 		{
 			ImGui::Image(Texture, ImGui::GetWindowSize(), ImVec2(0, 0), ImVec2(1, 1));
+
+			ImVec2 p0 = ImGui::GetItemRectMin();
+			const ImVec2 p1 = ImGui::GetItemRectMax();
+
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			ImGui::PushClipRect(p0, p1, true);
+
+			for (int i = 0; i < guid_verbosity_messages.size(); ++i)
+			{
+				auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(guid_verbosity_messages[i]));
+				draw_list->AddText(p0, IM_COL32(Color.x*255, Color.y * 255, Color.z * 255, Color.w * 255), std::get<2>(guid_verbosity_messages[i]).c_str());
+				p0.y += draw_list->_Data->FontSize;
+			}
+			ImGui::PopClipRect();
 
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 			{
@@ -78,6 +99,15 @@ void GameViewWindow::Draw()
 			bInFocus = ImGui::IsWindowFocused();
 		}
 
+
+		/*
+		for (auto& Message : guid_verbosity_messages)
+		{
+			auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(Message));
+
+			ImGui::TextColored({ Color.x,Color.y, Color.z, Color.w }, std::get<2>(Message).c_str());
+		}
+		*/
 		if(!bIsPlaying)
 		{
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
@@ -172,6 +202,21 @@ void GameViewWindow::StopPlay()
 	}
 }
 
+void GameViewWindow::OnLogMessageAdded(std::string const& message,loguru::Verbosity verbosity, std::string const& guid)
+{
+	guid_verbosity_messages.push_back({ guid,verbosity,message });
+}
+
+void GameViewWindow::OnLogMessageRemoved(std::string const& guid)
+{
+	static std::mutex remove_mutex;
+	const std::lock_guard<std::mutex> lock(remove_mutex);
+	std::erase_if(guid_verbosity_messages, [&guid](std::tuple<std::string, loguru::Verbosity, std::string> const& Value)
+		{
+			return std::get<0>(Value) == guid;
+		});
+}
+
 std::optional<std::string> GameViewWindow::CurrentOperationToString() const
 {
 	if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
@@ -195,40 +240,52 @@ void GameViewWindow::draw_gizmos() const
 
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
-
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
 	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent");
+	auto scale_property = transform_component->GetProperty("LocalScale");
+	auto rotation_property = transform_component->GetProperty("Rotation");
+	auto position_property = transform_component->GetProperty("Position");
 
-	auto value = static_cast<float*>(transform_component->GetProperty("ModelMatrix").GetValue().value().Unbox());
-	auto w = DirectX::XMFLOAT4X4(value);
+	const auto scale = scale_property.GetValue().value().Unbox<DirectX::SimpleMath::Vector3>();
+	const auto rotation = rotation_property.GetValue().value().Unbox<DirectX::SimpleMath::Quaternion>();
+	const auto position = position_property.GetValue().value().Unbox<DirectX::SimpleMath::Vector3>();
 
-	Manipulate(&Editor->Camera->View.m[0][0], &Editor->Camera->Proj.m[0][0], CurrentGizmoOperation,
-	           CurrentOperationMode, &w.m[0][0]);
+	auto model = Matrix::Identity;
+	model *= Matrix::CreateScale(scale);
+	model *= Matrix::CreateFromQuaternion(rotation);
+	model *= Matrix::CreateTranslation(position);
 
-	if (ImGuizmo::IsUsing())
+	auto isManipulated = Manipulate(
+		*Editor->Camera->View.m, 
+		*Editor->Camera->Proj.m, 
+		CurrentGizmoOperation,	           
+		CurrentOperationMode, 
+		*model.m);
+
+	if (isManipulated && ImGuizmo::IsUsing())
 	{
-		float trans[3];
-		float rot[3];
-		float scale[3];
+		DirectX::SimpleMath::Vector3 new_scale;
+		DirectX::SimpleMath::Quaternion new_rotation;
+		DirectX::SimpleMath::Vector3 new_position;
 
-		ImGuizmo::DecomposeMatrixToComponents(&w.m[0][0], trans, rot, scale);
+		model.Decompose(new_scale, new_rotation, new_position);
 
-		const auto rot_quat = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(w);
-		float rot_quat_representaion[4] = {rot_quat.x, rot_quat.y, rot_quat.z, rot_quat.w,};
-
-		const std::string property_name = CurrentOperationToString().value_or("Position");
-
-		void* res_data;
 		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
-			res_data = trans;
+		{
+			position_property.SetValue(&new_position);
+		}			
 		else if (CurrentGizmoOperation & ImGuizmo::ROTATE)
-			res_data = rot_quat_representaion;
+		{
+			rotation_property.SetValue(&new_rotation);
+		}			
 		else if (CurrentGizmoOperation & ImGuizmo::SCALE)
-			res_data = scale;
+		{			
+			scale_property.SetValue(&new_scale);
+		}			
 		else
+		{
 			return;
-
-		transform_component->GetProperty(property_name).SetValue(res_data);
+		}			
 	}
 }

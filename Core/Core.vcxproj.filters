@@ -28,6 +28,9 @@
     <Filter Include="Enums">
       <UniqueIdentifier>{06aa79a6-47ab-4fdc-b6d8-5910f9dab279}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libs\luguru">
+      <UniqueIdentifier>{5316b901-3559-46b5-b734-cec1a9168832}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\imgui_sugar.hpp">
@@ -78,6 +81,9 @@
     <ClInclude Include="Enums\EditorInputMode.h">
       <Filter>Enums</Filter>
     </ClInclude>
+    <ClInclude Include="libs\loguru\loguru.hpp">
+      <Filter>libs\luguru</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Windows\GenericWindow.cpp">
@@ -88,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="libs\Delegates.cpp">
       <Filter>libs</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\loguru\loguru.cpp">
+      <Filter>libs\luguru</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

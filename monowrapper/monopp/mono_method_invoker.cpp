@@ -6,47 +6,27 @@ mono_method_invoker::mono_method_invoker(mono_method method)
 	: method_(std::move(method))
 {}
 
-MonoObject* mono::mono_method_invoker::invoke()
+auto mono::mono_method_invoker::invoke() -> std::optional<mono_object>
 {
 	return invoke(nullptr, nullptr);
 }
 
-MonoObject* mono::mono_method_invoker::invoke(void** args)
+auto mono::mono_method_invoker::invoke(void** args) -> std::optional<mono_object>
 {
 	return invoke(nullptr, args);
 }
 
-MonoObject* mono::mono_method_invoker::invoke(const mono_object& object)
+auto mono::mono_method_invoker::invoke(const mono_object& object) -> std::optional<mono_object>
 {
 	return invoke(object.get_internal_ptr(), nullptr);
 }
 
-MonoObject* mono::mono_method_invoker::invoke(const mono_object& object, void** args)
+auto mono::mono_method_invoker::invoke(const mono_object& object, void** args) -> std::optional<mono_object>
 {
 	return invoke(object.get_internal_ptr(), args);
 }
 
-MonoObject* mono_method_invoker::operator()()
-{
-	return invoke();
-}
-
-MonoObject* mono_method_invoker::operator()(void** args)
-{
-	return invoke(args);
-}
-
-MonoObject* mono_method_invoker::operator()(const mono_object& object)
-{
-	return invoke(object);
-}
-
-MonoObject* mono_method_invoker::operator()(const mono_object& object, void** args)
-{
-	return invoke(object, args);
-}
-
-MonoObject* mono_method_invoker::invoke(MonoObject* object, void** args)
+auto mono_method_invoker::invoke(MonoObject* object, void** args) -> std::optional<mono_object>
 {
 	MonoObject* exception = nullptr;
 	MonoObject* result = mono_runtime_invoke(method_.get_internal_ptr(), object, args, &exception);
@@ -57,7 +37,12 @@ MonoObject* mono_method_invoker::invoke(MonoObject* object, void** args)
 		throw mono_thunk_exception(exception);
 	}
 
-	return result;
+	if (result != nullptr)
+	{
+		return mono_object(result);
+	}
+	
+	return {};
 }
 
 } // namespace mono
