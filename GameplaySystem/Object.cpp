@@ -52,6 +52,18 @@ std::vector<Property> Object::GetProperties() const {
     return properties;
 }
 
+bool Object::HasMethod(const std::string& name) const {
+    auto& type = object_.get_type();
+    auto raw_method = mono_class_get_method_from_name(type.get_internal_ptr(), name.c_str(), 0);
+    return raw_method != nullptr;
+}
+
+bool Object::HasMethod(const std::string& name, int argc) const {
+    auto& type = object_.get_type();
+    auto raw_method = mono_class_get_method_from_name(type.get_internal_ptr(), name.c_str(), argc);
+    return raw_method != nullptr;
+}
+
 Method Object::GetMethod(const std::string& name) const {
     return { *this, object_.get_type().get_method(name) };
 }

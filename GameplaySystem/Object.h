@@ -23,6 +23,9 @@ class Object {
 	 Field GetField(const std::string& name) const;
 	 std::vector<Field> GetFields() const;
 
+	 bool HasMethod(const std::string& name) const;
+	 bool HasMethod(const std::string& name, int argc) const;
+
 	 Method GetMethod(const std::string& name) const;
 	 Method GetMethod(const std::string& name, int argc) const;
 	 std::vector<Method> GetMethods() const;

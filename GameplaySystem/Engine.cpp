@@ -22,6 +22,8 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
+#include "../Logger/LogManager.h"
+
 namespace engine {
 
 const float Engine::kDt = 16.0f / 1000;
@@ -162,6 +164,11 @@ void Engine::SetupInputInternalCalls() {
 
 	mono_add_internal_call("GameplayCore.Input::Internal_GetKeyValue", Internal_GetKeyValue);
 	mono_add_internal_call("GameplayCore.Input::Internal_GetAxisValue", Internal_GetAxisValue);
+
+	mono_add_internal_call("GameplayCore.Log::Internal_Log", Internal_Log);
+	mono_add_internal_call("GameplayCore.Log::Internal_LogWarning", Internal_LogWarning);
+	mono_add_internal_call("GameplayCore.Log::Internal_LogError", Internal_LogError);
+	mono_add_internal_call("GameplayCore.Log::Internal_RemoveLogMessage", Internal_RemoveLogMessage);
 }
 
 mono::mono_property Engine::GetProperty(std::string name_space, std::string klass, std::string property) {
@@ -340,5 +347,49 @@ float Engine::Internal_GetAxisValue(MonoString* axis_name) {
 }
 
 #pragma endregion Inputs
+
+void Engine::Internal_RemoveLogMessage(MonoString* guid)
+{
+	const auto guid_raw_string = mono_string_to_utf8(guid);
+	const std::string guid_string(guid_raw_string);
+	LogManager::getInstance().OnRemoveViewportPrint(guid_string);
+}
+
+void Engine::Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
+{
+	Internal_Log_Implementation(loguru::Verbosity_INFO, message, bPrintToScreen, bPrintToLog, guid);
+}
+
+void Engine::Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
+{
+	Internal_Log_Implementation(loguru::Verbosity_WARNING, message, bPrintToScreen, bPrintToLog, guid);
+}
+
+void Engine::Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
+{
+	Internal_Log_Implementation(loguru::Verbosity_ERROR, message, bPrintToScreen, bPrintToLog, guid);
+}
+
+void Engine::Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen,
+	bool bPrintToLog, MonoString* guid)
+{
+	if (!bPrintToLog)
+		LogManager::getInstance().SetNextMessageNotBroadcastLog();
+
+	if (!bPrintToScreen)
+		LogManager::getInstance().SetNextMessageNotBroadcastLogViewport();
+
+	const auto raw_string = mono_string_to_utf8(message);
+	const std::string message_string(raw_string);
+
+	//call log callback
+	LogManager::getInstance().Log(verbosity, raw_string);
+
+	const auto guid_raw_string = mono_string_to_utf8(guid);
+	const std::string guid_string(guid_raw_string);
+
+	if (bPrintToScreen && !guid_string.empty())
+		LogManager::getInstance().OnViewportPrint(message_string, verbosity, guid_string);
+}
 
 } // namespace engine

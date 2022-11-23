@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "BPLayerInterfaceImplementation.h"
 #include "../monowrapper/monopp/mono_assembly.h"
+#include "../Core/libs/loguru/loguru.hpp"
 
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/PhysicsSystem.h>
@@ -135,6 +136,12 @@ private:
 	static float Internal_GetAxisValue(MonoString* axis_name);
 
 #pragma endregion Inputs
+
+	static void Internal_RemoveLogMessage(MonoString* guid);
+	static void Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+	static void Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+	static void Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+	static void Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
 };
 
 } // namespace engine

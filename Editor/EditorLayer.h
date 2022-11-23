@@ -1,6 +1,7 @@
 #pragma once
 #include "GameViewWindow.h"
 #include "Layer.h"
+#include "LogWindow.h"
 #include "MenuBar.h"
 #include "GameObjectInspectorWindow.h"
 #include "SceneHierarchyWindow.h"
@@ -29,6 +30,7 @@ public:
 	std::shared_ptr<MenuBar> menu_bar;
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
 	std::shared_ptr<ExplorerWindow> explorer;
+	std::shared_ptr<LogWindow> log;
 
 	engine::GameObject* GetSelectedGo();
 

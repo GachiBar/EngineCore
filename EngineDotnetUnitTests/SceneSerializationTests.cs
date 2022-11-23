@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace EngineDotnetUnitTests
 {
 
-    public class Tests
+    public class SceneTests
     {
         Scene scene;
         private List<GameObject> objects;

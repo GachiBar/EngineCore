@@ -119,9 +119,16 @@ void Application::OnStart()
 	//PushOverlay(m_ImGuiLayer);
 }
 
-int Application::Run()
+void Application::OnStop()
+{
+	LogManager::getInstance().Shutdown();
+}
+
+int Application::Run(int argc, char* argv[])
 {
 	OnSetup();
+	LogManager::getInstance().Initialize(argc, argv);
+
 	if (exit_code_)
 		return exit_code_;
 

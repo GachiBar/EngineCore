@@ -9,13 +9,18 @@
 #include "libs/imgui_sugar.hpp"
 #include "../GameplaySystem/Component.h"
 #include "libs/magic_enum.hpp"
-
+#include <ranges>
 #include <iostream>
+
+#include "imgui/imgui_internal.h"
 
 GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
                                                                              editor_layer(InEditorLayer)
 {
 	SelectedRenderTarget = *editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList().rbegin();
+
+	LogManager::getInstance().ViewportMessageAdded.AddRaw(this, &GameViewWindow::OnLogMessageAdded);
+	LogManager::getInstance().ViewportMessageRemoved.AddRaw(this, &GameViewWindow::OnLogMessageRemoved);
 }
 
 void GameViewWindow::update()
@@ -37,7 +42,7 @@ void GameViewWindow::update()
 void GameViewWindow::Draw()
 {
 	with_Window("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
-	            | ImGuiWindowFlags_MenuBar)
+		| ImGuiWindowFlags_MenuBar)
 	{
 		with_MenuBar
 		{
@@ -54,6 +59,20 @@ void GameViewWindow::Draw()
 		with_Child("GameRender")
 		{
 			ImGui::Image(Texture, ImGui::GetWindowSize(), ImVec2(0, 0), ImVec2(1, 1));
+
+			ImVec2 p0 = ImGui::GetItemRectMin();
+			const ImVec2 p1 = ImGui::GetItemRectMax();
+
+			ImDrawList* draw_list = ImGui::GetWindowDrawList();
+			ImGui::PushClipRect(p0, p1, true);
+
+			for (int i = 0; i < guid_verbosity_messages.size(); ++i)
+			{
+				auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(guid_verbosity_messages[i]));
+				draw_list->AddText(p0, IM_COL32(Color.x*255, Color.y * 255, Color.z * 255, Color.w * 255), std::get<2>(guid_verbosity_messages[i]).c_str());
+				p0.y += draw_list->_Data->FontSize;
+			}
+			ImGui::PopClipRect();
 
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 			{
@@ -80,6 +99,15 @@ void GameViewWindow::Draw()
 			bInFocus = ImGui::IsWindowFocused();
 		}
 
+
+		/*
+		for (auto& Message : guid_verbosity_messages)
+		{
+			auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(Message));
+
+			ImGui::TextColored({ Color.x,Color.y, Color.z, Color.w }, std::get<2>(Message).c_str());
+		}
+		*/
 		if(!bIsPlaying)
 		{
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
@@ -172,6 +200,21 @@ void GameViewWindow::StopPlay()
 		auto& io = ImGui::GetIO();
 		io.WantCaptureKeyboard = io.WantCaptureMouse = true;
 	}
+}
+
+void GameViewWindow::OnLogMessageAdded(std::string const& message,loguru::Verbosity verbosity, std::string const& guid)
+{
+	guid_verbosity_messages.push_back({ guid,verbosity,message });
+}
+
+void GameViewWindow::OnLogMessageRemoved(std::string const& guid)
+{
+	static std::mutex remove_mutex;
+	const std::lock_guard<std::mutex> lock(remove_mutex);
+	std::erase_if(guid_verbosity_messages, [&guid](std::tuple<std::string, loguru::Verbosity, std::string> const& Value)
+		{
+			return std::get<0>(Value) == guid;
+		});
 }
 
 std::optional<std::string> GameViewWindow::CurrentOperationToString() const
