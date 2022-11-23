@@ -31,11 +31,35 @@ namespace GameplayCore
 
 		public static void PrintWarning(string Message, bool bPrintToScreen = true, bool bPrintToLog = true, float Duration = 2.0f)
 		{
+			if (bPrintToScreen && Duration > 0.0f)
+			{
+				Guid guid = Guid.NewGuid();
+				Task.Run(async delegate
+				{
+					await Task.Delay(System.TimeSpan.FromSeconds(Duration));
+					Internal_RemoveLogMessage(guid.ToString());
+					return;
+				});
+				Internal_LogWarning(Message, bPrintToScreen, bPrintToLog, guid.ToString());
+				return;
+			}
 			Internal_LogWarning(Message, bPrintToScreen, bPrintToLog);
 		}
 
 		public static void PrintError(string Message, bool bPrintToScreen = true, bool bPrintToLog = true, float Duration = 2.0f)
 		{
+			if (bPrintToScreen && Duration > 0.0f)
+			{
+				Guid guid = Guid.NewGuid();
+				Task.Run(async delegate
+				{
+					await Task.Delay(System.TimeSpan.FromSeconds(Duration));
+					Internal_RemoveLogMessage(guid.ToString());
+					return;
+				});
+				Internal_LogError(Message, bPrintToScreen, bPrintToLog, guid.ToString());
+				return;
+			}
 			Internal_LogError(Message, bPrintToScreen, bPrintToLog);
 		}
 
@@ -44,8 +68,8 @@ namespace GameplayCore
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern private static void Internal_Log(string Message, bool bPrintToScreen, bool bPrintToLog,string string_guid = "");
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern private static void Internal_LogWarning(string Message, bool bPrintToScreen, bool bPrintToLog);
+		extern private static void Internal_LogWarning(string Message, bool bPrintToScreen, bool bPrintToLog, string string_guid = "");
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern private static void Internal_LogError(string Message, bool bPrintToScreen, bool bPrintToLog);
+		extern private static void Internal_LogError(string Message, bool bPrintToScreen, bool bPrintToLog, string string_guid = "");
 	}
 }

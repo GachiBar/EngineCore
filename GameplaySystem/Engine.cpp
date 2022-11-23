@@ -263,32 +263,21 @@ void Engine::Internal_RemoveLogMessage(MonoString* guid)
 
 void Engine::Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
 {
-	Internal_Log_Implementation(loguru::Verbosity_INFO, message, bPrintToScreen, bPrintToLog);
-
-	const auto guid_raw_string = mono_string_to_utf8(guid);
-	const std::string guid_string(guid_raw_string);
-
-	if(bPrintToScreen && !guid_string.empty())
-	{
-		const auto raw_string = mono_string_to_utf8(message);
-		const std::string message_string(raw_string);
-
-		LogManager::getInstance().OnViewportPrint(message_string, loguru::Verbosity_INFO,guid_string);
-	}
+	Internal_Log_Implementation(loguru::Verbosity_INFO, message, bPrintToScreen, bPrintToLog, guid);
 }
 
-void Engine::Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog)
+void Engine::Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
 {
-	Internal_Log_Implementation(loguru::Verbosity_WARNING, message, bPrintToScreen, bPrintToLog);
+	Internal_Log_Implementation(loguru::Verbosity_WARNING, message, bPrintToScreen, bPrintToLog, guid);
 }
 
-void Engine::Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog)
+void Engine::Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
 {
-	Internal_Log_Implementation(loguru::Verbosity_ERROR, message, bPrintToScreen, bPrintToLog);
+	Internal_Log_Implementation(loguru::Verbosity_ERROR, message, bPrintToScreen, bPrintToLog, guid);
 }
 
 void Engine::Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen,
-	bool bPrintToLog)
+	bool bPrintToLog, MonoString* guid)
 {
 	if (!bPrintToLog)
 		LogManager::getInstance().SetNextMessageNotBroadcastLog();
@@ -298,6 +287,14 @@ void Engine::Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString
 
 	const auto raw_string = mono_string_to_utf8(message);
 	const std::string message_string(raw_string);
+
+	//call log callback
 	VLOG_F(verbosity, message_string.c_str());
+
+	const auto guid_raw_string = mono_string_to_utf8(guid);
+	const std::string guid_string(guid_raw_string);
+
+	if (bPrintToScreen && !guid_string.empty())
+		LogManager::getInstance().OnViewportPrint(message_string, verbosity, guid_string);
 }
 } // namespace engine
