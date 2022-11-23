@@ -3,7 +3,7 @@
 #include "Layer.h"
 #include "LogWindow.h"
 #include "MenuBar.h"
-#include "PropertyWindow.h"
+#include "GameObjectInspectorWindow.h"
 #include "SceneHierarchyWindow.h"
 #include "ProjectSettingsWindow.h"
 
@@ -26,7 +26,7 @@ public:
 
 	std::shared_ptr<GameViewWindow> gvm;
 	std::shared_ptr<SceneHierarchyWindow> hierarchy;
-	std::shared_ptr<PropertyWindow> properties;
+	std::shared_ptr<GameObjectInspectorWindow> properties;
 	std::shared_ptr<MenuBar> menu_bar;
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
 	std::shared_ptr<ExplorerWindow> explorer;

@@ -75,7 +75,7 @@
     <ClCompile Include="MenuBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PropertyWindow.cpp">
+    <ClCompile Include="GameObjectInspectorWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProjectSettingsWindow.cpp">
@@ -149,7 +149,7 @@
     <ClInclude Include="MenuBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PropertyWindow.h">
+    <ClInclude Include="GameObjectInspectorWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProjectSettingsWindow.h">

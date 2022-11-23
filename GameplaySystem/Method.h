@@ -15,8 +15,11 @@ public:
 
 	bool IsPublic() const;
 
+	Method(const Object& object, const std::string& method_name_with_args);
+	Method(const Object& object, const std::string& method_name, int argc);
 	Method(const Object& object, mono::mono_method method);
 
+	std::optional<Object> Invoke();
 	std::optional<Object> Invoke(void** args);
 
 private:

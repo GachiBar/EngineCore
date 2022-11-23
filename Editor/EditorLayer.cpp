@@ -28,7 +28,7 @@ void EditorLayer::OnAttach()
     gvm->editor_layer = this;
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>(GetApp()->GetAssembly());
-    properties = std::make_shared<PropertyWindow>(GetApp()->GetAssembly());
+    properties = std::make_shared<GameObjectInspectorWindow>(GetApp()->GetAssembly());
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
     explorer = std::make_shared<ExplorerWindow>(GetApp());
     log = std::make_shared<LogWindow>();
