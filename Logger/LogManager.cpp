@@ -7,7 +7,7 @@
 #include <vector>
 #include "libs/loguru/loguru.hpp"
 #include <source_location>
-#include <stacktrace>
+//#include <stacktrace>
 
 #define FORMAT_LOG_MESSAGE_IMPLEMENTATION	std::va_list args;\
 											va_start(args, format);\

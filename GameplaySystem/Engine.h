@@ -30,7 +30,7 @@ public:
 		const mono::mono_domain& domain,
 		const mono::mono_assembly& assembly);
 
-	void Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height);
+	void Initialize(HWND handle_old,UINT width, UINT height);
 	void Terminate();
 
 	void RunFrame();
@@ -65,7 +65,7 @@ private:
 
 	std::shared_ptr<Scene> scene_;
 
-	void InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height);	
+	void InitRenderer(HWND handle_old, size_t width, size_t height);	
 
 	void SetupRendererInternalCalls();
 	void SetupInputInternalCalls();

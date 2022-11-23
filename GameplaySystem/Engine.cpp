@@ -46,8 +46,8 @@ Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assem
 	, scene_(nullptr)
 {}
 
-void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {
-	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
+void Engine::Initialize(HWND handle_old, UINT width, UINT height) {
+	InitRenderer(handle_old, static_cast<size_t>(width), static_cast<size_t>(height));
 	SetupRendererInternalCalls();
 	SetupInputInternalCalls();
 }
@@ -104,11 +104,10 @@ DirectX::SimpleMath::Matrix& Engine::GetProjectionMatrix() {
 	return m_projection;
 }
 
-void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
+void Engine::InitRenderer(HWND handle_old, size_t width, size_t height) {
 	renderer_.CreateDevice(
 	{
 		handle_old,
-		handle_new,
 		{
 			width,
 			height,
