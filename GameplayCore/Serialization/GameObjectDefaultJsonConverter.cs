@@ -128,8 +128,22 @@ namespace GameplayCore.Serialization
                         field.FieldType == typeof(UInt64))
                     {
                         reader.Read();
-                        UInt64.TryParse(reader.Value.ToString(), out var value);
-                        field.SetValue(current, value);
+
+                        if (field.FieldType == typeof(UInt16))
+                        {
+                            UInt16.TryParse(reader.Value.ToString(), out var value);
+                            field.SetValue(current, value);
+                        }
+                        else if (field.FieldType == typeof(UInt32))
+                        {
+                            UInt32.TryParse(reader.Value.ToString(), out var value);
+                            field.SetValue(current, value);
+                        }
+                        else
+                        {
+                            UInt64.TryParse(reader.Value.ToString(), out var value);
+                            field.SetValue(current, value);
+                        }
                     }
                     else
                     {
