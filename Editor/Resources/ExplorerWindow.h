@@ -19,7 +19,7 @@ public:
     ExplorerWindow(const Application* app);
     void Draw() override;
 
-    DECLARE_EVENT(FileSelectedEvent, ExplorerWindow, const std::filesystem::path& path)
+    DECLARE_EVENT(FileSelectedEvent, ExplorerWindow, const std::filesystem::path&)
     FileSelectedEvent FileSelected;
     
 private:
