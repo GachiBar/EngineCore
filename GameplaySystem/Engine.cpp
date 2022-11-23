@@ -9,6 +9,13 @@
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
 
+#include <Jolt/Jolt.h>
+#include <Jolt/RegisterTypes.h>
+#include <Jolt/Core/Factory.h>
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Body/BodyCreationSettings.h>
+
 #include <fstream>
 #include <iostream>
 #include <mono/jit/jit.h>
@@ -32,12 +39,17 @@ RenderDevice& Engine::GetRenderer() {
 	return renderer_;
 }
 
+JPH::PhysicsSystem& Engine::GetPhysicsSystem() {
+	return physics_system_;
+}
+
 Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
 	: temp_allocator_(10 * 1024 * 1024)
+	, job_system_(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1)
 	, scene_(nullptr)
 	, domain_(domain)
 	, assembly_(assembly)
-	, renderer_property_(GetProperty("GameplayCore.EngineApi", "Render", "Renderer"))
+	, renderer_property_(GetProperty("GameplayCore.EngineApi", "RenderApi", "Renderer"))
 	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
 	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
 	, screen_width_property_(GetProperty("GameplayCore", "Screen", "Width"))
@@ -132,9 +144,9 @@ void Engine::InitPhysicsSystem()
 }
 
 void Engine::SetupRendererInternalCalls() {
-	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_RegisterModel", Internal_RegisterModel);
-	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_DrawModel", Internal_DrawModel);
-	mono_add_internal_call("GameplayCore.EngineApi.Render::Internal_SetViewProjection", Internal_SetViewProjection);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_RegisterModel", Internal_RegisterModel);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawModel", Internal_DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
 	renderer_property_.set_value(&renderer_);
 }
@@ -179,6 +191,8 @@ void Engine::SendInputData() {
 	mouse_position_property_.set_value(&point);
 }
 
+#pragma region Renderer
+
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	std::vector<ModelVertex> verticies;
 	std::vector<uint32_t> indexes;
@@ -213,6 +227,73 @@ void Engine::Internal_SetViewProjection(
 {
 	renderer->SetRenderData({ ellapsed, view, projection });
 }
+
+#pragma endregion Renderer
+
+#pragma region Physics
+
+JPH::uint32 Engine::Internal_CreateSphereBody(
+	JPH::PhysicsSystem* physics_system,
+	float radius,
+	JPH::Vec3 position,
+	JPH::Quat rotation,
+	JPH::EMotionType motion_type,
+	JPH::uint8 layer) 
+{
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	JPH::SphereShape* sphere_shape = new JPH::SphereShape(radius);
+	JPH::BodyCreationSettings body_settings(sphere_shape, position, rotation, motion_type, layer);
+	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
+	return body_id.GetIndexAndSequenceNumber();
+}
+
+JPH::uint32 Engine::Internal_CreateBoxBody(
+	JPH::PhysicsSystem* physics_system,
+	JPH::Vec3 half_extend,
+	JPH::Vec3 position,
+	JPH::Quat rotation,
+	JPH::EMotionType motion_type,
+	JPH::uint8 layer)
+{
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extend);
+	JPH::BodyCreationSettings body_settings(box_shape, position, rotation, motion_type, layer);
+	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
+	return body_id.GetIndexAndSequenceNumber();
+}
+
+void Engine::Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	body_interface.RemoveBody(body_id);
+	body_interface.DestroyBody(body_id);
+}
+
+void Engine::Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+
+	if (is_active) {
+		body_interface.ActivateBody(body_id);
+	} else {
+		body_interface.DeactivateBody(body_id);
+	}	
+}
+
+void Engine::Internal_GetBodyPositionAndRotation(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id,
+	JPH::Vec3& position,
+	JPH::Quat& rotation) 
+{
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	body_interface.GetPositionAndRotation(body_id, position, rotation);
+}
+
+#pragma endregion Physics
+
+#pragma region Inputs
 
 bool Engine::Internal_IsPressed(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
@@ -257,5 +338,7 @@ float Engine::Internal_GetAxisValue(MonoString* axis_name) {
 	auto raw_string = mono_string_to_utf8(axis_name);
 	return InputManager::getInstance().GetPlayerInput()->GetAxisValue(raw_string);
 }
+
+#pragma endregion Inputs
 
 } // namespace engine

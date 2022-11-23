@@ -6,9 +6,8 @@
 #include "../monowrapper/monopp/mono_assembly.h"
 
 #include <Jolt/Jolt.h>
-#include <Jolt/RegisterTypes.h>
-#include <Jolt/Core/Factory.h>
 #include <Jolt/Physics/PhysicsSystem.h>
+#include <Jolt/Core/JobSystemThreadPool.h>
 
 #include <chrono>
 #include <Windows.h>
@@ -28,6 +27,7 @@ public:
 	std::shared_ptr<Scene> GetScene();
 	void SetScene(std::shared_ptr<Scene> scene);
 	RenderDevice& GetRenderer();
+	JPH::PhysicsSystem& GetPhysicsSystem();
 
 	Engine(
 		const mono::mono_domain& domain,
@@ -50,6 +50,7 @@ private:
 	RenderDevice renderer_;
 
 	JPH::TempAllocatorImpl temp_allocator_;
+	JPH::JobSystemThreadPool job_system_;
 	BPLayerInterfaceImplementation layer_interface_;
 	JPH::PhysicsSystem physics_system_;
 
@@ -82,13 +83,45 @@ private:
 	void SendScreenData();
 	void SendInputData();
 
+#pragma region Renderer
+
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
 	static void Internal_SetViewProjection(
-		RenderDevice* renderer,
-		float ellapsed,
-		DirectX::SimpleMath::Matrix view,
+		RenderDevice* renderer, 
+		float ellapsed, 
+		DirectX::SimpleMath::Matrix view, 
 		DirectX::SimpleMath::Matrix projection);
+
+#pragma endregion Renderer
+
+#pragma region Physics
+
+	static JPH::uint32 Internal_CreateSphereBody(
+		JPH::PhysicsSystem* physics_system,
+		float radius, 
+		JPH::Vec3 position, 
+		JPH::Quat rotation, 
+		JPH::EMotionType motion_type, 
+		JPH::uint8 layer);
+	static JPH::uint32 Internal_CreateBoxBody(
+		JPH::PhysicsSystem* physics_system,
+		JPH::Vec3 half_extend, 
+		JPH::Vec3 position, 
+		JPH::Quat rotation, 
+		JPH::EMotionType motion_type, 
+		JPH::uint8 layer);
+	static void Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);
+	static void Internal_GetBodyPositionAndRotation(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
+		JPH::Vec3& position, 
+		JPH::Quat& rotation);
+
+#pragma endregion Physics
+
+#pragma region Inputs
 
 	static bool Internal_IsPressed(MonoString* key_name);
 	static bool Internal_WasJustPressed(MonoString* key_name);
@@ -100,6 +133,8 @@ private:
 
 	static float Internal_GetKeyValue(MonoString* key_name);
 	static float Internal_GetAxisValue(MonoString* axis_name);
+
+#pragma endregion Inputs
 };
 
 } // namespace engine

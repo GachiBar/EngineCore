@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace GameplayCore.EngineApi
 {
-    public static class Render
+    internal static class RenderApi
     {
         private static unsafe void* Renderer { get; set; }
 
