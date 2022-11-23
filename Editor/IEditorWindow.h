@@ -2,6 +2,6 @@
 
 class IEditorWindow {
 public:
-	virtual ~IEditorWindow() {}
+	virtual ~IEditorWindow() = default;
 	virtual void Draw() = 0;
 };

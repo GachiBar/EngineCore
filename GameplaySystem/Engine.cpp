@@ -289,7 +289,7 @@ void Engine::Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString
 	const std::string message_string(raw_string);
 
 	//call log callback
-	VLOG_F(verbosity, message_string.c_str());
+	LogManager::getInstance().Log(verbosity, raw_string);
 
 	const auto guid_raw_string = mono_string_to_utf8(guid);
 	const std::string guid_string(guid_raw_string);

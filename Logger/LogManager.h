@@ -30,9 +30,7 @@ public:
 	DECLARE_EVENT(RemoveViewportMessageEvent, LogManager, std::string const&)
 		RemoveViewportMessageEvent ViewportMessageRemoved;
 
-	void Log(const char* format, ...) const;
-	void LogWarning(const char* format, ...) const;
-	void LogError(const char* format, ...) const;
+	void Log(loguru::Verbosity verbosity, const char* format, ...) const;
 
 	DirectX::SimpleMath::Vector4 GetLevelLogColor(loguru::Verbosity InVerbosity) const;
 

@@ -207,8 +207,6 @@ void GameViewWindow::OnLogMessageAdded(std::string const& message,loguru::Verbos
 	guid_verbosity_messages.push_back({ guid,verbosity,message });
 }
 
-
-
 void GameViewWindow::OnLogMessageRemoved(std::string const& guid)
 {
 	static std::mutex remove_mutex;
