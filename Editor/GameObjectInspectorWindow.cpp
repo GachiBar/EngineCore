@@ -205,7 +205,7 @@ void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Comp
 				break;
 			}
 
-			if (isFieldChanged) 
+			if (isFieldChanged && component->HasMethod("Invalidate"))
 			{
 				component->GetMethod("Invalidate").Invoke();
 			}

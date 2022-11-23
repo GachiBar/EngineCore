@@ -154,7 +154,6 @@
     <ClInclude Include="EditorApplication.h" />
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorLayer.h" />
-    <ClInclude Include="ExplorerWindow.h" />
     <ClInclude Include="GameLayer.h" />
     <ClInclude Include="GameViewWindow.h" />
     <ClInclude Include="IEditorWindow.h" />
@@ -171,6 +170,11 @@
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="MenuBar.h" />
     <ClInclude Include="ProjectSettingsWindow.h" />
+    <ClInclude Include="Resources\ExplorerWindow.h" />
+    <ClInclude Include="Resources\FileType.h" />
+    <ClInclude Include="Resources\ResourceData.h" />
+    <ClInclude Include="Resources\MetadataReader.h" />
+    <ClInclude Include="Resources\ResourceDrawer.h" />
     <ClInclude Include="GameObjectInspectorWindow.h" />
     <ClInclude Include="SceneHierarchyWindow.h" />
     <ClInclude Include="SliderWidget.h" />
@@ -183,7 +187,6 @@
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorLayer.cpp" />
     <ClCompile Include="GameLayer.cpp" />
-    <ClCompile Include="ExplorerWindow.cpp" />
     <ClCompile Include="GameViewWindow.cpp" />
     <ClCompile Include="ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="ImGuizmo\ImCurveEdit.cpp" />
@@ -196,6 +199,10 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="MenuBar.cpp" />
     <ClCompile Include="ProjectSettingsWindow.cpp" />
+    <ClCompile Include="Resources\ExplorerWindow.cpp" />
+    <ClCompile Include="Resources\ResourceData.cpp" />
+    <ClCompile Include="Resources\MetadataReader.cpp" />
+    <ClCompile Include="Resources\ResourceDrawer.cpp" />
     <ClCompile Include="GameObjectInspectorWindow.cpp" />
     <ClCompile Include="SceneHierarchyWindow.cpp" />
     <ClCompile Include="SliderWidget.cpp" />

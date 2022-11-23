@@ -17,32 +17,11 @@ namespace GameplayCore.Serialization
             _scene = scene;
         }
 
-        private IEnumerable<FieldInfo> FilterFields(FieldInfo[] fields, Func<FieldInfo, bool> filter)
-        {
-            foreach (var field in fields)
-            {
-                if (filter(field))
-                    yield return field;
-            }
-        }
-
-        private bool HasAttribute(FieldInfo fieldInfo, Type type)
-        {
-            foreach (var attribute in fieldInfo.CustomAttributes)
-            {
-                if (attribute.AttributeType == type)
-                    return true;
-            }
-
-            return false;
-        }
-
         public override void WriteJson(JsonWriter writer, GameObject gameObject, JsonSerializer serializer)
         {
             writer.WriteStartObject();
-
-            writer.WritePropertyName("Guid");
-            writer.WriteValue(gameObject.Guid.ToString());
+            
+            JsonExtensions.WriteStringProperty(writer, "Guid", gameObject.Guid.ToString());
 
             writer.WritePropertyName("Components");
             writer.WriteStartArray();
@@ -50,31 +29,28 @@ namespace GameplayCore.Serialization
             foreach (var component in gameObject)
             {
                 writer.WriteStartObject();
-                writer.WritePropertyName("Type");
+                JsonExtensions.WriteStringProperty(writer, "Type", component.GetType().ToString());
 
-                writer.WriteValue(component.GetType().ToString());
-
-                foreach (var field in FieldsIterator(component))
+                foreach (var field in ReflectionExtensions.SerializableFieldsIterator(component))
                 {
                     // Passing reference guid instead of serializing it 
                     if (typeof(GameObject).IsAssignableFrom(field.FieldType))
                     {
-                        writer.WritePropertyName(field.Name);
-                        serializer.Serialize(writer, (field.GetValue(component) as GameObject)?.Guid);
+                        System.Guid? guid = (field.GetValue(component) as GameObject)?.Guid;
+                        JsonExtensions.WriteSerializedProperty(writer, serializer, field.Name, guid);
                         continue;
                     }
 
                     // Passing reference guid instead of serializing it 
                     if (typeof(Component).IsAssignableFrom(field.FieldType))
                     {
-                        writer.WritePropertyName(field.Name);
-                        serializer.Serialize(writer, (field.GetValue(component) as Component)?.GameObject.Guid);
+                        System.Guid? guid = (field.GetValue(component) as Component)?.GameObject.Guid;
+                        JsonExtensions.WriteSerializedProperty(writer, serializer, field.Name, guid);
                         continue;
                     }
 
                     // Actual serialization
-                    writer.WritePropertyName(field.Name);
-                    serializer.Serialize(writer, field.GetValue(component));
+                    JsonExtensions.WriteSerializedProperty(writer, serializer, field.Name, field.GetValue(component));
                 }
 
                 writer.WriteEndObject();
@@ -82,29 +58,6 @@ namespace GameplayCore.Serialization
 
             writer.WriteEndArray();
             writer.WriteEndObject();
-        }
-
-        private IEnumerable<FieldInfo> FieldsIterator(Component component)
-        {
-            FieldInfo[] fields = component
-                .GetType()
-                .GetFields(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (var field in FilterFields(fields, info
-                         => !HasAttribute(info, typeof(HideInInspectorAttribute))))
-            {
-                yield return field;
-            }
-
-            fields = component
-                .GetType()
-                .GetFields(BindingFlags.NonPublic | BindingFlags.Instance);
-
-            foreach (var field in FilterFields(fields, info
-                         => HasAttribute(info, typeof(SerializeFieldAttribute))))
-            {
-                yield return field;
-            }
         }
 
         private string GetComponentGuid(Component component)
@@ -118,37 +71,34 @@ namespace GameplayCore.Serialization
             JsonSerializer serializer)
         {
             if (reader.TokenType != JsonToken.StartObject)
-                throw new JsonException("Can't get start of object!");
+                return null;
 
             // First stage without reference set
-            ReadCheckPropertyName("Guid", reader);
-            string guid = ReadString(reader);
-
-            ReadCheckPropertyName("Components", reader);
-
-            reader.Read();
-            if (reader.TokenType != JsonToken.StartArray)
-                throw new JsonException("Can't read start of components array");
+            string guid = JsonExtensions.ReadString(reader, "Guid");
+            
+            JsonExtensions.ReadCheckPropertyName(reader, "Components");
+            if (!JsonExtensions.CheckToken(reader, JsonToken.StartArray))
+                return null;
 
             List<Component> components = new List<Component>();
 
             while (reader.Read())
             {
                 if (reader.TokenType == JsonToken.EndArray)
-                {
                     break;
-                }
 
                 if (reader.TokenType != JsonToken.StartObject)
-                    throw new JsonException("Can't read start of component data");
-
-                ReadCheckPropertyName("Type", reader);
-                string typeName = ReadString(reader);
+                    return null;
+                
+                string typeName = JsonExtensions.ReadString(reader, "Type");
                 Type componentType = Type.GetType(typeName);
                 Component current = Activator.CreateInstance(componentType) as Component;
 
                 if (current == null)
-                    throw new JsonException("Can't create component from read type");
+                {
+                    Console.WriteLine("Can't create component from read type");
+                    return null;
+                }
 
                 while (reader.Read())
                 {
@@ -157,12 +107,11 @@ namespace GameplayCore.Serialization
 
                     string fieldName = reader.Value as string;
 
-                    FieldInfo field = componentType.GetField(fieldName);
+                    FieldInfo field = componentType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
                     if (field == null)
                     {
                         // Just skip it
-                        // or throw new JsonException();
                         reader.Read();
                         continue;
                     }
@@ -185,18 +134,18 @@ namespace GameplayCore.Serialization
                     else
                     {
                         reader.Read();
-                        object fieldValue = serializer.Deserialize(reader);
+                        object fieldValue = serializer.Deserialize(reader, field.FieldType);
                         field.SetValue(current, fieldValue);
                     }
                 }
+                if (reader.TokenType != JsonToken.EndObject)
+                    return null;
 
                 components.Add(current);
             }
 
-            reader.Read();
-            if (reader.TokenType != JsonToken.EndObject)
-                throw new JsonException(
-                    $"Can't read end of object. Got type \"{reader.TokenType}\" and value \"{reader.Value}\" ");
+            if (!JsonExtensions.CheckEndObject(reader))
+                return null;
 
             // Create gameObject and return it
             GameObject gameObject = new GameObject(_scene, System.Guid.Parse(guid));
@@ -218,9 +167,11 @@ namespace GameplayCore.Serialization
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
             JsonSerializer serializer = JsonSerializer.CreateDefault();
 
-            reader.Read();
-            if (reader.TokenType != JsonToken.StartArray)
-                throw new JsonException("Can't find start of GameObjects array");
+            if (!JsonExtensions.CheckToken(reader, JsonToken.StartArray))
+            {
+                Console.WriteLine("Can't find start of GameObjects array");
+                return;
+            }
 
             while (reader.Read())
             {
@@ -237,31 +188,31 @@ namespace GameplayCore.Serialization
                 throw new JsonException("Can't get start of object!");
 
             // First stage without reference set
-            ReadCheckPropertyName("Guid", reader);
-            string guid = ReadString(reader);
+            JsonExtensions.ReadCheckPropertyName(reader, "Guid");
+            string guid = JsonExtensions.ReadString(reader);
             GameObject actual = _scene.First(x => x.Guid.Equals(Guid.Parse(guid)));
 
             if (actual == null)
                 throw new JsonException("Can't find serialized GameObject");
 
-            ReadCheckPropertyName("Components", reader);
+            JsonExtensions.ReadCheckPropertyName(reader, "Components");
 
-            reader.Read();
-            if (reader.TokenType != JsonToken.StartArray)
-                throw new JsonException("Can't read start of components array");
+            if (!JsonExtensions.CheckToken(reader, JsonToken.StartArray))
+            {
+                Console.WriteLine("Can't find start of GameObjects array");
+                return;
+            }
 
             while (reader.Read())
             {
                 if (reader.TokenType == JsonToken.EndArray)
-                {
                     break;
-                }
-
+                
                 if (reader.TokenType != JsonToken.StartObject)
                     throw new JsonException("Can't read start of component data");
 
-                ReadCheckPropertyName("Type", reader);
-                string typeName = ReadString(reader);
+                JsonExtensions.ReadCheckPropertyName(reader, "Type");
+                string typeName = JsonExtensions.ReadString(reader);
                 Type componentType = Type.GetType(typeName);
                 Component current = actual.GetComponent(componentType);
                 
@@ -292,6 +243,9 @@ namespace GameplayCore.Serialization
                         // Just skip it as it has guid reference
                         reader.Read();
                         string guid_ref = reader.Value as string;
+                        if(guid_ref == null)
+                            continue;
+                        
                         GameObject referencesGameObject = _scene.First(x => x.Guid.Equals(Guid.Parse(guid_ref)));
 
                         if (typeof(GameObject).IsAssignableFrom(field.FieldType))
@@ -313,27 +267,11 @@ namespace GameplayCore.Serialization
                 }
             }
 
-            reader.Read();
-            if (reader.TokenType != JsonToken.EndObject)
+            if (!JsonExtensions.CheckToken(reader, JsonToken.EndObject))
+            {
                 throw new JsonException(
                     $"Can't read end of object. Got type \"{reader.TokenType}\" and value \"{reader.Value}\" ");
-        }
-
-        private string ReadString(JsonReader reader)
-        {
-            reader.Read();
-            return reader.Value as string;
-        }
-
-        private void ReadCheckPropertyName(string propertyName, JsonReader reader)
-        {
-            reader.Read();
-            if (reader.TokenType != JsonToken.PropertyName)
-                throw new JsonException($"Can't read property name: {propertyName}");
-
-            string name = reader.Value as string;
-            if (propertyName != name)
-                throw new JsonException($"Unexpected property name has been read: {name}");
+            }
         }
     }
 }
