@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include</IncludePath>
+    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include\spdlog</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include</IncludePath>
@@ -80,7 +80,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -94,7 +94,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -108,9 +108,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +124,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);CRT_SECURE_NO_WARNINGS,_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -143,6 +144,7 @@
     <ClInclude Include="libs\Delegates.h" />
     <ClInclude Include="libs\imgui_sugar.hpp" />
     <ClInclude Include="libs\ini\ini.h" />
+    <ClInclude Include="libs\loguru\loguru.hpp" />
     <ClInclude Include="libs\magic_enum.hpp" />
     <ClInclude Include="libs\MathUtility.h" />
     <ClInclude Include="libs\MemoryUtility.h" />
@@ -153,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="libs\Delegates.cpp" />
+    <ClCompile Include="libs\loguru\loguru.cpp" />
     <ClCompile Include="Windows\GenericWindow.cpp" />
     <ClCompile Include="Windows\WindowsWindow.cpp" />
   </ItemGroup>

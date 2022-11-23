@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <string>
+#include <tuple>
 
 #include "imgui/imgui.h"
 #include <Windows.h>
@@ -10,12 +11,14 @@
 #include "Definitions.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/Delegates.h"
+#include "libs/loguru/loguru.hpp"
 
 class EditorLayer;
 
 class GameViewWindow : public IEditorWindow
 {
 public:
+	
     GameViewWindow(void* InTexture, EditorLayer* InEditorLayer);
 
     void update();
@@ -40,7 +43,13 @@ public:
 
     void StartPlay();
     void StopPlay();
+
 private:
+    void OnLogMessageAdded(std::string const& message, loguru::Verbosity verbosity, std::string const& guid);
+    void OnLogMessageRemoved(std::string const& guid);
+private:
+    std::vector<std::tuple<std::string, loguru::Verbosity, std::string>> guid_verbosity_messages;
+
     void* Texture;
     bool bIsPlaying = false;
     ImVec2 wsize;
