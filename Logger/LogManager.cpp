@@ -135,6 +135,27 @@ LogManager::~LogManager()
 	Shutdown();
 }
 
+void LogManager::OnRemoveViewportPrint(std::string const& guid)
+{
+	ViewportMessageRemoved.Broadcast(guid);
+}
+
+void LogManager::OnViewportPrint(std::string const& message, loguru::Verbosity verbosity, std::string const& guid)
+{
+	if (!GetNextMessageNotBroadcastLogViewport())
+		ViewportMessageAdded.Broadcast(message,verbosity, guid);
+	else
+		bNotBroadcastNextMessageToViewport = false;
+}
+
+void LogManager::OnLogPrint(loguru::Message const& message)
+{
+	if (!GetNextMessageNotBroadcastLog())
+		LogMessageAdded.Broadcast(message);
+	else
+		bNotBroadcastNextMessageToLog = false;
+}
+
 std::string LogManager::format_string(const char* format, va_list args) const
 {
 	auto temp = std::vector<char>{};
@@ -155,15 +176,10 @@ void LogManager::OnLogCallback(void* user_data, loguru::Message const& message)
 {
 	const auto log_manager_inst = static_cast<LogManager*>(user_data);
 
-	if(log_manager_inst && !log_manager_inst->GetNextMessageNotBroadcastLog())
-		log_manager_inst->LogMessageAdded.Broadcast(message);
-	if (log_manager_inst && log_manager_inst->GetNextMessageNotBroadcastLog())
-		log_manager_inst->bNotBroadcastNextMessageToLog = false;
-
-	if (log_manager_inst && !log_manager_inst->GetNextMessageNotBroadcastLogViewport())
-		log_manager_inst->ViewportMessageAdded.Broadcast(message);
-	if (log_manager_inst && log_manager_inst->GetNextMessageNotBroadcastLogViewport())
-		log_manager_inst->bNotBroadcastNextMessageToViewport = false;
+	if (log_manager_inst)
+	{
+		log_manager_inst->OnLogPrint(message);
+	}
 }
 
 #undef FORMAT_LOG_MESSAGE_IMPLEMENTATION

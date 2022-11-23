@@ -22,9 +22,13 @@ public:
 	void Initialize(int argc, char* argv[]);
 
 	DECLARE_EVENT(LogMessageEvent, LogManager, loguru::Message const&)
+		LogMessageEvent LogMessageAdded;
 
-	LogMessageEvent LogMessageAdded;
-	LogMessageEvent ViewportMessageAdded;
+	DECLARE_EVENT(ViewportMessageEvent, LogManager, std::string const&,loguru::Verbosity, std::string const&)
+		ViewportMessageEvent ViewportMessageAdded;
+
+	DECLARE_EVENT(RemoveViewportMessageEvent, LogManager, std::string const&)
+		RemoveViewportMessageEvent ViewportMessageRemoved;
 
 	void Log(const char* format, ...) const;
 	void LogWarning(const char* format, ...) const;
@@ -41,6 +45,11 @@ public:
 	bool GetNextMessageNotBroadcastLog();
 
 	~LogManager();
+
+	void OnRemoveViewportPrint(std::string const& guid);
+	void OnViewportPrint(std::string const& message,loguru::Verbosity verbosity, std::string const& guid);
+	void OnLogPrint(loguru::Message const& message);
+
 private:
 	std::atomic_bool bNotBroadcastNextMessageToLog = false;
 	std::atomic_bool bNotBroadcastNextMessageToViewport = false;

@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
+using System.Threading.Tasks;
 
 namespace GameplayCore
 {
@@ -12,6 +14,18 @@ namespace GameplayCore
 	{
 		public static void PrintMessage(string Message, bool bPrintToScreen = true, bool bPrintToLog = true, float Duration = 2.0f)
 		{
+			if (bPrintToScreen && Duration>0.0f)
+			{
+				Guid guid = Guid.NewGuid();
+				Task.Run(async delegate
+				{
+					await Task.Delay(System.TimeSpan.FromSeconds(Duration));
+					Internal_RemoveLogMessage(guid.ToString());
+					return;
+				});
+				Internal_Log(Message, bPrintToScreen, bPrintToLog, guid.ToString());
+				return;
+			}
 			Internal_Log(Message, bPrintToScreen, bPrintToLog);
 		}
 
@@ -26,7 +40,9 @@ namespace GameplayCore
 		}
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		extern private static void Internal_Log(string Message, bool bPrintToScreen, bool bPrintToLog);
+		extern private static void Internal_RemoveLogMessage(string string_guid);
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern private static void Internal_Log(string Message, bool bPrintToScreen, bool bPrintToLog,string string_guid = "");
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern private static void Internal_LogWarning(string Message, bool bPrintToScreen, bool bPrintToLog);
 		[MethodImpl(MethodImplOptions.InternalCall)]
