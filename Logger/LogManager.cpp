@@ -2,17 +2,9 @@
 
 #include <cstdarg>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <vector>
 #include "libs/loguru/loguru.hpp"
-#include <source_location>
-#include <stacktrace>
-
-#define FORMAT_LOG_MESSAGE_IMPLEMENTATION	std::va_list args;\
-											va_start(args, format);\
-											auto res = format_string(format, args);\
-											va_end(args);
 
 LogManager& LogManager::getInstance()
 {
