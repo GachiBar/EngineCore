@@ -1,9 +1,10 @@
 ﻿#include "ExplorerWindow.h"
-#include "Application.h"
 #include <d3d11.h>
 #include <iostream>
 
 #include "imgui/imgui.h"
+#include "FileType.h"
+#include "../Application.h"
 #include "../GameplaySystem/Engine.h"
 
 namespace fs = std::filesystem;
@@ -20,12 +21,7 @@ void ExplorerWindow::Draw()
     ImGui::Begin("Explorer");
     std::string path = "Current path : ";
     path += current_path.relative_path().generic_string();
-    // path += current_path.generic_string();
     ImGui::Text(path.c_str());
-
-    //ImGui::End();
-    //return;
-
     
     if (current_path.has_parent_path())
     {
@@ -33,6 +29,8 @@ void ExplorerWindow::Draw()
         if (draw_button_with_icon("..", Directory))
         {
             current_path = parent;
+            ImGui::End();
+            return;
         }
     }
 
@@ -40,17 +38,19 @@ void ExplorerWindow::Draw()
     {
         const std::filesystem::path& file_path = entry.path();
         const std::string entryName = std::filesystem::relative(file_path, current_path).string();
-        if (entry.is_directory())
+
+        const FileType type = get_file_type(entry);
+        if(type == Meta || type == Other)
+            continue;
+
+        if(draw_button_with_icon(entryName, type))
         {
-            if (draw_button_with_icon(entryName, Directory))
+            if(type == Directory)
             {
                 current_path = file_path;
                 break;
             }
-        }
-        else if (entry.is_regular_file())
-        {
-            if (draw_button_with_icon(entryName.c_str(), PlainText))
+            else
             {
                 on_file_picked(file_path);
                 break;
@@ -81,16 +81,11 @@ const std::vector<FileData>& ExplorerWindow::get_files_data() const
 
     for (const auto& item : fs::directory_iterator(current_path))
     {
-        FileType type;
+        const FileType type = get_file_type(item);
 
-        if (item.is_directory())
-            type = FileType::Directory;
-        else if (item.is_regular_file())
-            type = FileType::PlainText;
-        else
+        if(type == Meta || type == Other)
             continue;
-
-
+        
         FileData file_data(
             item.path().filename().generic_string(),
             type
@@ -121,12 +116,17 @@ FileType ExplorerWindow::get_file_type(const fs::directory_entry& entry) const
             return FileType::Material;
         else if (extension == ".texture")
             return FileType::Texture;
+        else if (extension == ".meta")
+            return FileType::Meta;
         else if (extension == ".txt")
             return FileType::PlainText;
     }
 
-    throw std::invalid_argument("Can't handle non-directory and non-file!");
+    // std::cout << "Can't handle non-directory and non-file!\n";
+    return FileType::Other;
 }
+
+
 
 ID3D11ShaderResourceView* ExplorerWindow::get_texture(const char* filename) const
 {
@@ -148,5 +148,9 @@ void ExplorerWindow::load_files_textures()
 
 void ExplorerWindow::on_file_picked(const std::filesystem::path& path)
 {
-    std::cout << "Picked file: " << path.generic_string() << std::endl; 
+    std::cout << "Picked file: " << path.generic_string() << std::endl;
+    // path.
+    // Get meta data
+    // If there is no meta data -> generate
+    // Pass resource to drawer
 }

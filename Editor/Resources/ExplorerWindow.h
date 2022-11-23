@@ -1,12 +1,12 @@
 ﻿#pragma once
-
-#include "IEditorWindow.h"
-
 #include <d3d11.h>
 #include <filesystem>
 #include <string>
 #include <vector>
 #include <map>
+
+#include "libs/Delegates.h"
+#include "../IEditorWindow.h"
 
 class Application;
 struct FileData;
@@ -19,6 +19,9 @@ public:
     ExplorerWindow(const Application* app);
     void Draw() override;
 
+    DECLARE_EVENT(FileSelectedEvent, ExplorerWindow, const std::filesystem::path& path)
+    FileSelectedEvent FileSelected;
+    
 private:
     const std::vector<FileData>& get_files_data() const;
     FileType get_file_type(const std::filesystem::directory_entry& entry) const;
@@ -43,25 +46,4 @@ struct FileData
     
     std::string file_name;
     FileType file_type;
-    // Name - just filename without extension
-    // Icon - for now use basic
-    // Types:
-    // - Plain text (first stage)
-    // - Mesh
-    // - Sprite
-    // - Scene
-    // - Prefab (maybe)
-    // - Directory
-    // Some serializable custom data
-};
-
-enum FileType
-{
-    PlainText,
-    Directory,
-    Scene,
-    Prefab,
-    Mesh,
-    Texture,
-    Material
 };
