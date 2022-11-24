@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using GameplayCore.Components;
 using GameplayCore.Serialization;
 using Newtonsoft.Json;
 
@@ -120,6 +122,15 @@ namespace GameplayCore
             
             // And then set it
             converter.PassGuidReferences(data);
+            Invalidate();
+            Initialize();
+
+            foreach (var item in _gameObjects)
+            {
+                TransformComponent component = item.GetComponent<TransformComponent>();
+                if(component == null) continue;
+                component.FindChildren();
+            }
         }
 
         public GameObject CreateGameObject()
