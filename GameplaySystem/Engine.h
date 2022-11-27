@@ -66,6 +66,7 @@ private:
 	const::mono::mono_assembly& assembly_;
 
 	mono::mono_property_invoker renderer_property_;
+	mono::mono_property_invoker physics_system_property_;
 	mono::mono_property_invoker delta_time_property_;
 	mono::mono_property_invoker ellapsed_time_property_;
 	mono::mono_property_invoker screen_width_property_;
@@ -76,6 +77,7 @@ private:
 	void InitPhysicsSystem();
 
 	void SetupRendererInternalCalls();
+	void SetupPhysicsInternalCalls();
 	void SetupInputInternalCalls();
 
 	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
@@ -107,7 +109,7 @@ private:
 		JPH::uint8 layer);
 	static JPH::uint32 Internal_CreateBoxBody(
 		JPH::PhysicsSystem* physics_system,
-		JPH::Vec3 half_extend, 
+		JPH::Vec3 half_extent, 
 		JPH::Vec3 position, 
 		JPH::Quat rotation, 
 		JPH::EMotionType motion_type, 

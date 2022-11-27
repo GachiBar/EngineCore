@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "TextureLoader.h"
 #include "../InputSystem/InputManager.h"
+#include "../Logger/LogManager.h"
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
@@ -22,7 +23,7 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
-#include "../Logger/LogManager.h"
+JPH_SUPPRESS_WARNINGS
 
 namespace engine {
 
@@ -52,6 +53,7 @@ Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assem
 	, domain_(domain)
 	, assembly_(assembly)
 	, renderer_property_(GetProperty("GameplayCore.EngineApi", "RenderApi", "Renderer"))
+	, physics_system_property_(GetProperty("GameplayCore.EngineApi", "PhysicsApi", "PhysicsSystem"))
 	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
 	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
 	, screen_width_property_(GetProperty("GameplayCore", "Screen", "Width"))
@@ -63,6 +65,7 @@ void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT heigh
 	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
 	InitPhysicsSystem();
 	SetupRendererInternalCalls();
+	SetupPhysicsInternalCalls();
 	SetupInputInternalCalls();
 }
 
@@ -151,6 +154,17 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
 	renderer_property_.set_value(&renderer_);
+}
+
+void Engine::SetupPhysicsInternalCalls() 
+{
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateSphereBody", Internal_CreateSphereBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBoxBody", Internal_CreateBoxBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_DestroyBody", Internal_DestroyBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetActive", Internal_SetActive);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPositionAndRotation", Internal_GetBodyPositionAndRotation);
+
+	physics_system_property_.set_value(&physics_system_);
 }
 
 void Engine::SetupInputInternalCalls() {
@@ -256,14 +270,14 @@ JPH::uint32 Engine::Internal_CreateSphereBody(
 
 JPH::uint32 Engine::Internal_CreateBoxBody(
 	JPH::PhysicsSystem* physics_system,
-	JPH::Vec3 half_extend,
+	JPH::Vec3 half_extent,
 	JPH::Vec3 position,
 	JPH::Quat rotation,
 	JPH::EMotionType motion_type,
 	JPH::uint8 layer)
 {
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extend);
+	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
 	JPH::BodyCreationSettings body_settings(box_shape, position, rotation, motion_type, layer);
 	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
 	return body_id.GetIndexAndSequenceNumber();
