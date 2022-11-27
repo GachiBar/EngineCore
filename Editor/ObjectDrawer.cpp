@@ -520,10 +520,11 @@ bool ObjectDrawer::DrawGameObjectField(engine::Field field)
 
 	auto fieldName = GetFieldName(field, attributes);
 	auto monoObject = field.GetValue();
+	auto c = scene->Count();
 
-	if (scene->Count() > game_objects_copasity)
+	if (scene->Count() + 1 > game_objects_copasity)
 	{
-		auto degree = std::ceil(std::log2(scene->Count()));
+		auto degree = std::ceil(std::log2(scene->Count() + 1));
 		ChangeGameObjectResourcesCopasity(std::pow(2, degree));
 	}
 
@@ -555,7 +556,7 @@ bool ObjectDrawer::DrawGameObjectField(engine::Field field)
 
 	int selected = std::distance(game_objects_names, current);
 
-	if (ImGui::Combo(fieldName.c_str(), &selected, game_objects_names, scene->Count()))
+	if (ImGui::Combo(fieldName.c_str(), &selected, game_objects_names, scene->Count() + 1))
 	{
 		auto gameObject = game_objects_pointers[selected];
 		field.SetValue(gameObject);
