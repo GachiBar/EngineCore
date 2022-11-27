@@ -125,7 +125,14 @@ void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Comp
 
 	if (ImGui::CollapsingHeader(component->Name().c_str(), &visible, ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		object_drawer.DrawObject(*component);
+		if (object_drawer.DrawObject(*component)) 
+		{
+			if (component->HasMethod("Invalidate")) 
+			{
+				component->GetMethod("Invalidate").Invoke();
+			}
+		}
+
 		ImGui::NewLine();
 	}
 	

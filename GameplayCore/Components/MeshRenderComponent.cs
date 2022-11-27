@@ -1,6 +1,4 @@
-﻿using GameplayCore.Serialization;
-
-namespace GameplayCore.Components
+﻿namespace GameplayCore.Components
 {
     public class MeshRenderComponent : Component
     {
@@ -25,7 +23,7 @@ namespace GameplayCore.Components
             if (_transformComponent != null)
             {
                 EngineApi.Render.DrawModel(Id, _transformComponent.ModelMatrix);
-            }            
+            }        
         }
 
         protected override void OnAttach(GameObject gameObject)
