@@ -6,6 +6,7 @@
 #include "GameObjectInspectorWindow.h"
 #include "SceneHierarchyWindow.h"
 #include "ProjectSettingsWindow.h"
+#include "Resources/ResourceDrawer.h"
 
 class ExplorerWindow;
 
@@ -31,6 +32,7 @@ public:
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
 	std::shared_ptr<ExplorerWindow> explorer;
 	std::shared_ptr<LogWindow> log;
+	std::shared_ptr<ResourceDrawer> resourceDrawer;
 
 	engine::GameObject* GetSelectedGo();
 
