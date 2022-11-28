@@ -17,7 +17,8 @@ namespace GameplayCore.EngineApi
         {
             unsafe
             {
-                return Internal_CreateSphereBody(PhysicsSystem, radius, new Vector4(position, position.Z), rotation, motionType, collisionLayer);
+                var inPosition = new Vector4(position, position.Z);
+                return Internal_CreateSphereBody(PhysicsSystem, radius, inPosition, rotation, motionType, collisionLayer);
             }            
         }
 
@@ -30,7 +31,9 @@ namespace GameplayCore.EngineApi
         {
             unsafe
             {
-                return Internal_CreateBoxBody(PhysicsSystem, new Vector4(halfExtent, halfExtent.Z), new Vector4(position, position.Z), rotation, motionType, collisionLayer);
+                var inHalfExtent = new Vector4(halfExtent, halfExtent.Z);
+                var inPosition = new Vector4(position, position.Z);
+                return Internal_CreateBoxBody(PhysicsSystem, inHalfExtent, inPosition, rotation, motionType, collisionLayer);
             }
         }
 
@@ -39,6 +42,14 @@ namespace GameplayCore.EngineApi
             unsafe
             {
                 Internal_DestroyBody(PhysicsSystem, bodyId);
+            }
+        }
+
+        public static void SetMotionType(uint bodyId, MotionType motionType)
+        {
+            unsafe
+            {
+                Internal_SetMotionType(PhysicsSystem, bodyId, motionType);
             }
         }
 
@@ -60,6 +71,27 @@ namespace GameplayCore.EngineApi
                 var outPosition = new Vector4(position, position.Z);
                 Internal_GetBodyPositionAndRotation(PhysicsSystem, bodyId, ref outPosition, ref rotation);
                 position = new Vector3(outPosition.X, outPosition.Y, outPosition.Z);
+            }
+        }
+
+        public static void SetBodyPositionAndRotation(
+            uint bodyId,
+            Vector3 position,
+            Quaternion rotation)
+        {
+            unsafe
+            {
+                var inPosition = new Vector4(position, position.Z);
+                Internal_SetBodyPositionAndRotation(PhysicsSystem, bodyId, inPosition, rotation);
+            }
+        }
+
+        public static void AddForce(uint bodyId, Vector3 force)
+        {
+            unsafe
+            {
+                var inForce = new Vector4(force, force.Z);
+                Internal_AddForce(PhysicsSystem, bodyId, inForce);
             }
         }
 
@@ -85,6 +117,9 @@ namespace GameplayCore.EngineApi
         extern private static unsafe void Internal_DestroyBody(void* physicsSystem, uint bodyId);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetMotionType(void* physicsSystem, uint bodyId, MotionType motionType);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetActive(void* physicsSystem, uint bodyId, bool isActive);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -93,5 +128,15 @@ namespace GameplayCore.EngineApi
             uint bodyId, 
             ref Vector4 position,
             ref Quaternion rotation);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetBodyPositionAndRotation(
+            void* physicsSystem,
+            uint bodyId,
+            Vector4 position,
+            Quaternion rotation);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_AddForce(void* physicsSystem, uint bodyId, Vector4 force);
     }
 }

@@ -48,6 +48,9 @@ private:
 	static const JPH::uint kMaxBodyPairs = 65536;
 	static const JPH::uint kMaxContactConstraints = 10240;
 
+	static const int kCollisionSteps = 1;
+	static const int kIntegrationSubSteps = 1;
+
 	RenderDevice renderer_;
 
 	JPH::TempAllocatorImpl temp_allocator_;
@@ -115,12 +118,19 @@ private:
 		JPH::EMotionType motion_type, 
 		JPH::uint8 layer);
 	static void Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static void Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type);
 	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);
 	static void Internal_GetBodyPositionAndRotation(
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
 		JPH::Vec3& position, 
 		JPH::Quat& rotation);
+	static void Internal_SetBodyPositionAndRotation(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::Vec3 position,
+		JPH::Quat rotation);
+	static void Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force);
 
 #pragma endregion Physics
 

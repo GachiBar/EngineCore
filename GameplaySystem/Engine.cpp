@@ -92,6 +92,7 @@ void Engine::RunFrame() {
 	while (lag_ >= kTimestep) 	{
 		lag_ -= kTimestep;
 		scene_->FixedUpdate();
+		physics_system_.Update(kDt, kCollisionSteps, kIntegrationSubSteps, &temp_allocator_, &job_system_);
 	}
 
 	scene_->Update();
@@ -161,8 +162,11 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateSphereBody", Internal_CreateSphereBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBoxBody", Internal_CreateBoxBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_DestroyBody", Internal_DestroyBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMotionType", Internal_SetMotionType);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetActive", Internal_SetActive);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPositionAndRotation", Internal_GetBodyPositionAndRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPositionAndRotation", Internal_SetBodyPositionAndRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 
 	physics_system_property_.set_value(&physics_system_);
 }
@@ -290,6 +294,13 @@ void Engine::Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint3
 	body_interface.DestroyBody(body_id);
 }
 
+void Engine::Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetMotionType(body_id, motion_type, activation_mode);
+}
+
 void Engine::Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active) {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
@@ -310,6 +321,27 @@ void Engine::Internal_GetBodyPositionAndRotation(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.GetPositionAndRotation(body_id, position, rotation);
+}
+
+void Engine::Internal_SetBodyPositionAndRotation(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id,
+	JPH::Vec3 position,
+	JPH::Quat rotation)
+{
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetPositionAndRotation(body_id, position, rotation, activation_mode);
+}
+
+void Engine::Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+
+	if (body_interface.IsActive(body_id)) {
+		body_interface.AddForce(body_id, force);
+	}
 }
 
 #pragma endregion Physics

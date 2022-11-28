@@ -1,6 +1,9 @@
-﻿using GameplayCore.EngineApi;
+﻿using GameplayCore.Editor;
+using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
 using GameplayCore.Physics;
+using GameplayCore.Serialization;
+using System;
 
 namespace GameplayCore.Components
 {
@@ -10,7 +13,32 @@ namespace GameplayCore.Components
         private bool _isInitialized;
         private uint _bodyId;
 
-        public bool IsStatic;
+        [SerializeField]
+        [InspectorName("IsStatic")]
+        private bool _isStatic;
+        [SerializeField]
+        [InspectorName("IsActive")]
+        private bool _isActive;
+
+        public bool IsStatic
+        {
+            get => _isStatic;
+            set
+            {
+                _isStatic = value;
+                PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
+            }
+        }
+
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                _isActive = value;
+                PhysicsApi.SetActive(_bodyId, _isActive);
+            }
+        }
 
         public override void Initialize()
         {
@@ -31,6 +59,8 @@ namespace GameplayCore.Components
             {
                 Vector3 position = Vector3.Zero;
                 Quaternion rotation = Quaternion.Identity;
+                PhysicsApi.AddForce(_bodyId, -Vector3.UnitY);
+                //PhysicsApi.SetBodyPositionAndRotation(_bodyId, position, rotation);
                 PhysicsApi.GetBodyPositionAndRotation(_bodyId, ref position, ref rotation);
                 _transformComponent.Position = position;
                 _transformComponent.Rotation = rotation;
@@ -73,6 +103,12 @@ namespace GameplayCore.Components
             {
                 _transformComponent = null;
             }
+        }
+
+        internal override void Invalidate()
+        {
+            PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
+            PhysicsApi.SetActive(_bodyId, _isActive);
         }
     }
 }
