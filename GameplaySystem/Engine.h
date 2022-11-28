@@ -34,7 +34,7 @@ public:
 		const mono::mono_domain& domain,
 		const mono::mono_assembly& assembly);
 
-	void Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height);
+	void Initialize(HWND handle,UINT width, UINT height);
 	void Terminate();
 
 	void RunFrame();
@@ -76,7 +76,7 @@ private:
 	mono::mono_property_invoker screen_height_property_;
 	mono::mono_property_invoker mouse_position_property_;	
 
-	void InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height);	
+	void InitRenderer(HWND handle, size_t width, size_t height);	
 	void InitPhysicsSystem();
 
 	void SetupRendererInternalCalls();

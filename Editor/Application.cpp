@@ -86,19 +86,11 @@ void Application::OnSetup()
 	auto t = std::make_shared<FGenericWindowDefinition>(wnd_def);
 	wnd->Initialize(this, t, GetModuleHandle(NULL), nullptr, true);
 
-	auto wnd2 = FWindowsWindow::Make();
-	wnd_def.AcceptsInput = false;
-	wnd2->Initialize(this, t, GetModuleHandle(NULL), wnd, true);
 
 	wnds.push_back(wnd);
-	wnds.push_back(wnd2);
 
 	wnd->Show();
 	//wnd->SetWindowFocus();
-
-	//wnd2->Show();
-	wnd2->Enable(false);
-	wnd2->Hide();
 	SetFocus(wnd->GetHWnd());
 
 	InputManager::getInstance().RegisterInputDevice(this);
@@ -132,7 +124,7 @@ int Application::Run(int argc, char* argv[])
 	if (exit_code_)
 		return exit_code_;
 
-	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(), static_cast<FWindowsWindow*>(wnds[1].get())->GetHWnd(), wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
+	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(),  wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
 
 	OnStart();
 	if (exit_code_)

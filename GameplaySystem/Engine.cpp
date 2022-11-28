@@ -61,8 +61,8 @@ Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assem
 	, mouse_position_property_(GetProperty("GameplayCore", "Input", "MousePosition"))
 {}
 
-void Engine::Initialize(HWND handle_old, HWND handle_new, UINT width, UINT height) {
-	InitRenderer(handle_old, handle_new, static_cast<size_t>(width), static_cast<size_t>(height));
+void Engine::Initialize(HWND handle, UINT width, UINT height) {
+	InitRenderer(handle, static_cast<size_t>(width), static_cast<size_t>(height));
 	InitPhysicsSystem();
 	SetupRendererInternalCalls();
 	SetupPhysicsInternalCalls();
@@ -117,23 +117,7 @@ bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) 
 	return renderer_.ProcessMessages(hwnd, msg, wparam, lparam);
 }
 
-void Engine::InitRenderer(HWND handle_old, HWND handle_new, size_t width, size_t height) {
-	WindowSettings window_settings{};
-	window_settings.windowWidth = width;
-	window_settings.windowHeight = height;
-	window_settings.viewportWidth = width;
-	window_settings.viewportHeight = height;
-	
-	RenderEngineCoreSettings render_engine_core_settings{};
-	render_engine_core_settings.hWnd1 = handle_old;
-	render_engine_core_settings.hWnd2 = handle_new;
-	render_engine_core_settings.windowSettings = window_settings;
-
-	renderer_.CreateDevice(render_engine_core_settings);
-	renderer_.InitDevice({ "..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\" });
-}
-
-void Engine::InitPhysicsSystem() 
+void Engine::InitPhysicsSystem()
 {
 	JPH::Factory::sInstance = new JPH::Factory();
 
@@ -147,6 +131,20 @@ void Engine::InitPhysicsSystem()
 		layer_interface_,
 		BroadPhaseLayers::IsCanCollide,
 		CollisionLayers::IsCanCollide);
+}
+
+void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
+	renderer_.CreateDevice(
+	{
+		handle,
+		{
+			width,
+			height,
+			width,
+			height
+		}
+	});
+	renderer_.InitDevice({ "..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\" });
 }
 
 void Engine::SetupRendererInternalCalls() {
