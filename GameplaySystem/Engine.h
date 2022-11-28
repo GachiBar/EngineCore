@@ -1,14 +1,20 @@
 #pragma once
 
 #include "RenderEngine.h"
+#include "Scene.h"
+#include "BPLayerInterfaceImplementation.h"
 #include "../monowrapper/monopp/mono_assembly.h"
+#include "../Core/libs/loguru/loguru.hpp"
+
+#include <Jolt/Jolt.h>
+#include <Jolt/Physics/PhysicsSystem.h>
+#include <Jolt/Core/JobSystemThreadPool.h>
 
 #include <chrono>
 #include <Windows.h>
 #include <SimpleMath.h>
 
-#include "Scene.h"
-#include "../Core/libs/loguru/loguru.hpp"
+JPH_SUPPRESS_WARNINGS
 
 namespace engine {
 
@@ -16,21 +22,19 @@ using namespace std::chrono;
 
 class Engine {
 public:
-	const std::chrono::nanoseconds kTimestep =
-		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
-
-	const float	kDt = 16.0f / 1000;
-
+	static const float kDt;
+	static const std::chrono::nanoseconds kTimestep;
 
 	std::shared_ptr<Scene> GetScene();
 	void SetScene(std::shared_ptr<Scene> scene);
 	RenderDevice& GetRenderer();
+	JPH::PhysicsSystem& GetPhysicsSystem();
 
 	Engine(
 		const mono::mono_domain& domain,
 		const mono::mono_assembly& assembly);
 
-	void Initialize(HWND handle_old,UINT width, UINT height);
+	void Initialize(HWND handle,UINT width, UINT height);
 	void Terminate();
 
 	void RunFrame();
@@ -38,13 +42,23 @@ public:
 	void EndRender();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-	static DirectX::SimpleMath::Matrix& GetViewMatrix();
-	static DirectX::SimpleMath::Matrix& GetProjectionMatrix();
 private:
-	static DirectX::SimpleMath::Matrix m_projection;
-	static DirectX::SimpleMath::Matrix m_view;
+	static const JPH::uint kMaxBodies = 65536;
+	static const JPH::uint kNumBodyMutex = 0;
+	static const JPH::uint kMaxBodyPairs = 65536;
+	static const JPH::uint kMaxContactConstraints = 10240;
+
+	static const int kCollisionSteps = 1;
+	static const int kIntegrationSubSteps = 1;
 
 	RenderDevice renderer_;
+
+	JPH::TempAllocatorImpl temp_allocator_;
+	JPH::JobSystemThreadPool job_system_;
+	BPLayerInterfaceImplementation layer_interface_;
+	JPH::PhysicsSystem physics_system_;
+
+	std::shared_ptr<Scene> scene_;
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
 	nanoseconds dt_ = 0ns;
@@ -55,19 +69,18 @@ private:
 	const::mono::mono_assembly& assembly_;
 
 	mono::mono_property_invoker renderer_property_;
+	mono::mono_property_invoker physics_system_property_;
 	mono::mono_property_invoker delta_time_property_;
 	mono::mono_property_invoker ellapsed_time_property_;
-
 	mono::mono_property_invoker screen_width_property_;
 	mono::mono_property_invoker screen_height_property_;
+	mono::mono_property_invoker mouse_position_property_;	
 
-	mono::mono_property_invoker mouse_position_property_;
-
-	std::shared_ptr<Scene> scene_;
-
-	void InitRenderer(HWND handle_old, size_t width, size_t height);	
+	void InitRenderer(HWND handle, size_t width, size_t height);	
+	void InitPhysicsSystem();
 
 	void SetupRendererInternalCalls();
+	void SetupPhysicsInternalCalls();
 	void SetupInputInternalCalls();
 
 	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
@@ -76,13 +89,52 @@ private:
 	void SendScreenData();
 	void SendInputData();
 
+#pragma region Renderer
+
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
 	static void Internal_SetViewProjection(
-		RenderDevice* renderer,
-		float ellapsed,
-		DirectX::SimpleMath::Matrix view,
+		RenderDevice* renderer, 
+		float ellapsed, 
+		DirectX::SimpleMath::Matrix view, 
 		DirectX::SimpleMath::Matrix projection);
+
+#pragma endregion Renderer
+
+#pragma region Physics
+
+	static JPH::uint32 Internal_CreateSphereBody(
+		JPH::PhysicsSystem* physics_system,
+		float radius, 
+		JPH::Vec3 position, 
+		JPH::Quat rotation, 
+		JPH::EMotionType motion_type, 
+		JPH::uint8 layer);
+	static JPH::uint32 Internal_CreateBoxBody(
+		JPH::PhysicsSystem* physics_system,
+		JPH::Vec3 half_extent, 
+		JPH::Vec3 position, 
+		JPH::Quat rotation, 
+		JPH::EMotionType motion_type, 
+		JPH::uint8 layer);
+	static void Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static void Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type);
+	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);
+	static void Internal_GetBodyPositionAndRotation(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
+		JPH::Vec3& position, 
+		JPH::Quat& rotation);
+	static void Internal_SetBodyPositionAndRotation(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::Vec3 position,
+		JPH::Quat rotation);
+	static void Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force);
+
+#pragma endregion Physics
+
+#pragma region Inputs
 
 	static bool Internal_IsPressed(MonoString* key_name);
 	static bool Internal_WasJustPressed(MonoString* key_name);
@@ -95,14 +147,13 @@ private:
 	static float Internal_GetKeyValue(MonoString* key_name);
 	static float Internal_GetAxisValue(MonoString* axis_name);
 
+#pragma endregion Inputs
 
 	static void Internal_RemoveLogMessage(MonoString* guid);
 	static void Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
 	static void Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
 	static void Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
 	static void Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
-
-
 };
 
 } // namespace engine

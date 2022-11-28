@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Wrappers">
       <UniqueIdentifier>{0bf65ce5-85f7-43c8-a5fe-9bc461e01134}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Physics">
+      <UniqueIdentifier>{f526ac7e-ef87-4762-a83c-7f6d8ea30589}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Physics">
+      <UniqueIdentifier>{752cafb3-a6d9-4595-9fc0-b2d6ec8e202c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,6 +66,15 @@
     <ClInclude Include="Field.h">
       <Filter>Header Files\Wrappers</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionLayers.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadPhaseLayers.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="BPLayerInterfaceImplementation.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameplaySystem.cpp">
@@ -94,6 +109,15 @@
     </ClCompile>
     <ClCompile Include="Field.cpp">
       <Filter>Source Files\Wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionLayers.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="BroadPhaseLayers.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="BPLayerInterfaceImplementation.cpp">
+      <Filter>Source Files\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

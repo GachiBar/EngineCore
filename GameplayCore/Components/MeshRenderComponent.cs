@@ -17,14 +17,14 @@ namespace GameplayCore.Components
 
         public override void Initialize() 
         {
-            EngineApi.Render.RegisterModel(Id);
+            EngineApi.RenderApi.RegisterModel(Id);
         }
 
         public override void Render()
         {
             if (_transformComponent != null)
             {
-                EngineApi.Render.DrawModel(Id, _transformComponent.ModelMatrix);
+                EngineApi.RenderApi.DrawModel(Id, _transformComponent.ModelMatrix);
             }            
         }
 
