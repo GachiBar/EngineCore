@@ -205,9 +205,15 @@ void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Comp
 				break;
 			}
 
-			if (isFieldChanged && component->HasMethod("Invalidate"))
+			if (isFieldChanged && component->HasMethod("Invalidate", 1))
 			{
-				component->GetMethod("Invalidate").Invoke();
+				auto& domain = mono::mono_domain::get_current_domain();
+				mono::mono_string fieldName(domain, field.GetName());
+
+				void* params[1];
+				params[0] = fieldName.get_internal_ptr();
+
+				component->GetMethod("Invalidate", 1).Invoke(params);
 			}
 		}
 	}

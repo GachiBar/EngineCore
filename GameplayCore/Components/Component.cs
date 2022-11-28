@@ -41,7 +41,8 @@ namespace GameplayCore.Components
         /// <summary>
         /// This method called by editor when some field was changed.
         /// </summary>
-        internal virtual void Invalidate() { }
+        /// <param name="fieldName">Field name.</param>        
+        internal virtual void Invalidate(string fieldName) { }
 
         internal string Serialize()
         {

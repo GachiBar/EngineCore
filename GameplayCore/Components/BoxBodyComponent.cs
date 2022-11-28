@@ -3,7 +3,6 @@ using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
 using GameplayCore.Physics;
 using GameplayCore.Serialization;
-using System;
 
 namespace GameplayCore.Components
 {
@@ -121,11 +120,20 @@ namespace GameplayCore.Components
             }
         }
 
-        internal override void Invalidate()
+        internal override void Invalidate(string fieldName)
         {
-            PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
-            PhysicsApi.SetActive(_bodyId, _isActive);
-            PhysicsApi.SetBoxShape(_bodyId, _size / 2);
+            switch (fieldName)
+            {
+                case nameof(_isStatic):
+                    PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
+                    break;
+                case nameof(_isActive):
+                    PhysicsApi.SetActive(_bodyId, _isActive);
+                    break;
+                case nameof(_size):
+                    PhysicsApi.SetBoxShape(_bodyId, _size / 2);
+                    break;
+            }
         }
     }
 }
