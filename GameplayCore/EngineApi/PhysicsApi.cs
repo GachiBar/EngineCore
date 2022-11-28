@@ -45,6 +45,15 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static void SetBoxShape(uint bodyId, Vector3 halfExtent)
+        {
+            unsafe
+            {
+                var inHalfExtent = new Vector4(halfExtent, halfExtent.Z);
+                Internal_SetBoxShape(PhysicsSystem, bodyId, inHalfExtent);
+            }
+        }
+
         public static void SetMotionType(uint bodyId, MotionType motionType)
         {
             unsafe
@@ -115,6 +124,9 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DestroyBody(void* physicsSystem, uint bodyId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetBoxShape(void* physicsSystem, uint bodyId, Vector4 halfExtent);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetMotionType(void* physicsSystem, uint bodyId, MotionType motionType);

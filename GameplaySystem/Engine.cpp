@@ -160,6 +160,7 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateSphereBody", Internal_CreateSphereBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBoxBody", Internal_CreateBoxBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_DestroyBody", Internal_DestroyBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetBoxShape);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMotionType", Internal_SetMotionType);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetActive", Internal_SetActive);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPositionAndRotation", Internal_GetBodyPositionAndRotation);
@@ -281,7 +282,7 @@ JPH::uint32 Engine::Internal_CreateBoxBody(
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
 	JPH::BodyCreationSettings body_settings(box_shape, position, rotation, motion_type, layer);
-	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
+	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);	
 	return body_id.GetIndexAndSequenceNumber();
 }
 
@@ -290,6 +291,14 @@ void Engine::Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint3
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.RemoveBody(body_id);
 	body_interface.DestroyBody(body_id);
+}
+
+void Engine::Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 half_extent) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetShape(body_id, box_shape, true, activation_mode);
 }
 
 void Engine::Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type) {

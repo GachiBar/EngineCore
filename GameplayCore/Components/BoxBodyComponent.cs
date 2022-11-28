@@ -22,6 +22,9 @@ namespace GameplayCore.Components
         [SerializeField]
         [InspectorName("IsActive")]
         private bool _isActive;
+        [SerializeField]
+        [InspectorName("IsActive")]
+        private Vector3 _size = Vector3.One;
 
         public bool IsStatic
         {
@@ -47,7 +50,7 @@ namespace GameplayCore.Components
         {
             if (_transformComponent != null)
             {
-                Vector3 halfExtent = _transformComponent.Scale / 2;
+                Vector3 halfExtent = _size / 2;
                 _position = _transformComponent.Position;
                 _rotation = _transformComponent.Rotation;
                 MotionType motionType = IsStatic ? MotionType.Static : MotionType.Dynamic;
@@ -122,6 +125,7 @@ namespace GameplayCore.Components
         {
             PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
             PhysicsApi.SetActive(_bodyId, _isActive);
+            PhysicsApi.SetBoxShape(_bodyId, _size / 2);
         }
     }
 }
