@@ -13,6 +13,9 @@ namespace GameplayCore.Components
         private bool _isInitialized;
         private uint _bodyId;
 
+        Vector3 _position;
+        Quaternion _rotation;
+
         [SerializeField]
         [InspectorName("IsStatic")]
         private bool _isStatic;
@@ -45,10 +48,10 @@ namespace GameplayCore.Components
             if (_transformComponent != null)
             {
                 Vector3 halfExtent = _transformComponent.Scale / 2;
-                Vector3 position = _transformComponent.Position;
-                Quaternion rotation = _transformComponent.Rotation;
+                _position = _transformComponent.Position;
+                _rotation = _transformComponent.Rotation;
                 MotionType motionType = IsStatic ? MotionType.Static : MotionType.Dynamic;
-                _bodyId = PhysicsApi.CreateBoxBody(halfExtent, position, rotation, motionType, CollisionLayer.Moving);
+                _bodyId = PhysicsApi.CreateBoxBody(halfExtent, _position, _rotation, motionType, CollisionLayer.Moving);
                 _isInitialized = true;
             }
         }
@@ -56,14 +59,16 @@ namespace GameplayCore.Components
         public override void FixedUpdate()
         {
             if (_isInitialized && _transformComponent != null)
-            {
-                Vector3 position = Vector3.Zero;
-                Quaternion rotation = Quaternion.Identity;
-                PhysicsApi.AddForce(_bodyId, -Vector3.UnitY);
-                //PhysicsApi.SetBodyPositionAndRotation(_bodyId, position, rotation);
-                PhysicsApi.GetBodyPositionAndRotation(_bodyId, ref position, ref rotation);
-                _transformComponent.Position = position;
-                _transformComponent.Rotation = rotation;
+            {               
+                if (_position != _transformComponent.Position || 
+                    _rotation != _transformComponent.Rotation)
+                {
+                    PhysicsApi.SetBodyPositionAndRotation(_bodyId, _transformComponent.Position, _transformComponent.Rotation);
+                }
+
+                PhysicsApi.GetBodyPositionAndRotation(_bodyId, ref _position, ref _rotation);
+                _transformComponent.Position = _position;
+                _transformComponent.Rotation = _rotation;
             }
         }
 
@@ -72,6 +77,14 @@ namespace GameplayCore.Components
             if (_isInitialized)
             {
                 PhysicsApi.DestroyBody(_bodyId);
+            }
+        }
+
+        public void AddForce(Vector3 force)
+        {
+            if (_isInitialized && _transformComponent != null)
+            {
+                PhysicsApi.AddForce(_bodyId, force);
             }
         }
 
