@@ -241,7 +241,14 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
-	renderer->DrawModel({ id, id, model_matrix });
+	renderer->DrawOpaqueModel({ 
+		id, model_matrix, model_matrix, 1, 1, 
+		{{{255, 0, 0}}, {{1, 0, 0}}, {{01}}, {{0.0}}},
+	});
+	renderer->DrawLight({ {},
+		DirectionalLight{float3(0.5,-1,0),
+			100,
+			color(200,200,200) } });
 }
 
 void Engine::Internal_DrawCurve(
