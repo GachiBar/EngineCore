@@ -4,7 +4,7 @@
     {
         private static ulong _id = 0;
         private TransformComponent _transformComponent = null;
-
+        //Material{Texture, Metalic, Raffness, Normal}
         public ulong Id { get; private set; }
 
         public MeshRenderComponent()

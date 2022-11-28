@@ -218,23 +218,20 @@ void Engine::SendInputData() {
 
 #pragma region Renderer
 
-void Engine::Internal_RegisterModel(
-	RenderDevice* renderer, 
-	size_t id) 
-{
-	std::vector<ModelVertex> verticies;
+void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
+	std::vector<OpaqueModelVertex> verticies;
 	std::vector<uint32_t> indexes;
 	size_t primitiveCount = 0;
 
-	ModelMesh model(EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes);
+	OpaqueMesh model{ EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes };
 
-	std::string path = "Content\\Cube.obj";
+	std::string path = "Content\\Stool.obj";
 	ModelLoader::LoadObj(path, model);
 
 	renderer->RegisterModel(id, model);
 
 	DirectX::ScratchImage image;
-	TextureLoader::LoadWic(L"Content\\Breaks.jpg", image);
+	TextureLoader::LoadWic(L"Content\\Stool.jpg", image);
 
 	int texture_width = image.GetImage(0, 0, 0)->width;
 	int texture_height = image.GetImage(0, 0, 0)->height;
@@ -243,11 +240,7 @@ void Engine::Internal_RegisterModel(
 	renderer->RegisterTexture(id, texture_width, texture_height, data);
 }
 
-void Engine::Internal_DrawModel(
-	RenderDevice* renderer,
-	size_t id, 
-	DirectX::SimpleMath::Matrix model_matrix) 
-{
+void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
 	renderer->DrawModel({ id, id, model_matrix });
 }
 
