@@ -19,9 +19,6 @@ namespace GameplayCore.Components
         [InspectorName("IsStatic")]
         private bool _isStatic = false;
         [SerializeField]
-        [InspectorName("IsActive")]
-        private bool _isActive = false;
-        [SerializeField]
         [InspectorName("Size")]
         private Vector3 _size = Vector3.One;
 
@@ -31,18 +28,16 @@ namespace GameplayCore.Components
             set 
             {
                 _isStatic = value;
-                MotionType motionType = IsStatic ? MotionType.Static : MotionType.Dynamic;
-                PhysicsApi.SetMotionType(_bodyId, motionType);
-            }
-        }
 
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                _isActive = value;
-                PhysicsApi.SetActive(_bodyId, _isActive);
+                if (_isStatic)
+                {
+                    PhysicsApi.SetMotionType(_bodyId, MotionType.Static);
+                }
+                else
+                {
+                    PhysicsApi.SetMotionType(_bodyId, MotionType.Dynamic);
+                    PhysicsApi.SetActive(_bodyId, true);
+                }
             }
         }
 
@@ -53,8 +48,17 @@ namespace GameplayCore.Components
                 Vector3 halfExtent = _size / 2;
                 _position = _transformComponent.Position;
                 _rotation = _transformComponent.Rotation;
-                MotionType motionType = IsStatic ? MotionType.Static : MotionType.Dynamic;
-                _bodyId = PhysicsApi.CreateBoxBody(halfExtent, _position, _rotation, motionType, CollisionLayer.Moving);
+
+                if (IsStatic)
+                {
+                    _bodyId = PhysicsApi.CreateBoxBody(halfExtent, _position, _rotation, MotionType.Static, CollisionLayer.Moving);
+                }
+                else
+                {
+                    _bodyId = PhysicsApi.CreateBoxBody(halfExtent, _position, _rotation, MotionType.Dynamic, CollisionLayer.Moving);
+                    PhysicsApi.SetActive(_bodyId, true);
+                }
+
                 _isInitialized = true;
             }
         }
@@ -67,7 +71,7 @@ namespace GameplayCore.Components
                     _rotation != _transformComponent.Rotation)
                 {
                     PhysicsApi.SetBodyPositionAndRotation(_bodyId, _transformComponent.Position, _transformComponent.Rotation);
-                    PhysicsApi.SetActive(_bodyId, _isActive);
+                    PhysicsApi.SetActive(_bodyId, true);
                 }
 
                 PhysicsApi.GetBodyPositionAndRotation(_bodyId, ref _position, ref _rotation);
@@ -140,11 +144,15 @@ namespace GameplayCore.Components
             switch (fieldName)
             {
                 case nameof(_isStatic):
-                    PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
-                    _isActive = PhysicsApi.IsActive(_bodyId);
-                    break;
-                case nameof(_isActive):
-                    PhysicsApi.SetActive(_bodyId, _isActive);
+                    if (_isStatic)
+                    {
+                        PhysicsApi.SetMotionType(_bodyId, MotionType.Static);
+                    }
+                    else
+                    {
+                        PhysicsApi.SetMotionType(_bodyId, MotionType.Dynamic);
+                        PhysicsApi.SetActive(_bodyId, true);
+                    }
                     break;
                 case nameof(_size):
                     PhysicsApi.SetBoxShape(_bodyId, _size / 2);
