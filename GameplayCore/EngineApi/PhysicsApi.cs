@@ -70,6 +70,14 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static bool IsActive(uint bodyId)
+        {
+            unsafe
+            {
+                return Internal_IsActive(PhysicsSystem, bodyId);
+            }
+        }
+
         public static void GetBodyPositionAndRotation(
             uint bodyId,
             ref Vector3 position,
@@ -133,6 +141,9 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetActive(void* physicsSystem, uint bodyId, bool isActive);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_IsActive(void* physicsSystem, uint bodyId);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_GetBodyPositionAndRotation(

@@ -165,6 +165,7 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetBoxShape);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMotionType", Internal_SetMotionType);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetActive", Internal_SetActive);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_IsActive", Internal_IsActive);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPositionAndRotation", Internal_GetBodyPositionAndRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPositionAndRotation", Internal_SetBodyPositionAndRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
@@ -346,6 +347,12 @@ void Engine::Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 
 	}	
 }
 
+bool Engine::Internal_IsActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	return body_interface.IsActive(body_id);
+}
+
 void Engine::Internal_GetBodyPositionAndRotation(
 	JPH::PhysicsSystem* physics_system,
 	JPH::uint32 id,
@@ -365,18 +372,15 @@ void Engine::Internal_SetBodyPositionAndRotation(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	auto test = body_interface.IsActive(body_id);
 	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
-	//std::cout << "We are here!" << std::endl;
 	body_interface.SetPositionAndRotation(body_id, position, rotation, activation_mode);
 }
 
 void Engine::Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force) {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-
-	if (body_interface.IsActive(body_id)) {
-		body_interface.AddForce(body_id, force);
-	}
+	body_interface.AddForce(body_id, force);
 }
 
 #pragma endregion Physics

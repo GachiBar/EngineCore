@@ -3,7 +3,6 @@ using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
 using GameplayCore.Physics;
 using GameplayCore.Serialization;
-using System;
 
 namespace GameplayCore.Components
 {
@@ -18,21 +17,22 @@ namespace GameplayCore.Components
 
         [SerializeField]
         [InspectorName("IsStatic")]
-        private bool _isStatic;
+        private bool _isStatic = false;
         [SerializeField]
         [InspectorName("IsActive")]
-        private bool _isActive;
+        private bool _isActive = false;
         [SerializeField]
-        [InspectorName("IsActive")]
+        [InspectorName("Size")]
         private Vector3 _size = Vector3.One;
 
         public bool IsStatic
         {
             get => _isStatic;
-            set
+            set 
             {
                 _isStatic = value;
-                PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
+                MotionType motionType = IsStatic ? MotionType.Static : MotionType.Dynamic;
+                PhysicsApi.SetMotionType(_bodyId, motionType);
             }
         }
 
@@ -66,8 +66,8 @@ namespace GameplayCore.Components
                 if (_position != _transformComponent.Position || 
                     _rotation != _transformComponent.Rotation)
                 {
-                    //Console.WriteLine("Hmmmmm......");
                     PhysicsApi.SetBodyPositionAndRotation(_bodyId, _transformComponent.Position, _transformComponent.Rotation);
+                    PhysicsApi.SetActive(_bodyId, _isActive);
                 }
 
                 PhysicsApi.GetBodyPositionAndRotation(_bodyId, ref _position, ref _rotation);
@@ -85,7 +85,7 @@ namespace GameplayCore.Components
                     _transformComponent.Rotation, 
                     Vector3.One,
                     _size, 
-                    new Vector3(0.0f, 0.0f, 255.0f));
+                    new Vector3(0.0f, 255.0f, 0.0f));
             }
         }
 
@@ -141,6 +141,7 @@ namespace GameplayCore.Components
             {
                 case nameof(_isStatic):
                     PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
+                    _isActive = PhysicsApi.IsActive(_bodyId);
                     break;
                 case nameof(_isActive):
                     PhysicsApi.SetActive(_bodyId, _isActive);

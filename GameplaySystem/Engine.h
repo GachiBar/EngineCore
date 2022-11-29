@@ -126,6 +126,7 @@ private:
 	static void Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 half_extent);
 	static void Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type);
 	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);
+	static bool Internal_IsActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
 	static void Internal_GetBodyPositionAndRotation(
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
