@@ -93,6 +93,11 @@ private:
 
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
+	static void Internal_DrawCurve(
+		RenderDevice* renderer, 
+		MonoArray* points, 
+		DirectX::SimpleMath::Vector3 color,
+		DirectX::SimpleMath::Matrix model_matrix);
 	static void Internal_SetViewProjection(
 		RenderDevice* renderer, 
 		float ellapsed, 

@@ -3,6 +3,7 @@ using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
 using GameplayCore.Physics;
 using GameplayCore.Serialization;
+using System;
 
 namespace GameplayCore.Components
 {
@@ -65,12 +66,26 @@ namespace GameplayCore.Components
                 if (_position != _transformComponent.Position || 
                     _rotation != _transformComponent.Rotation)
                 {
+                    //Console.WriteLine("Hmmmmm......");
                     PhysicsApi.SetBodyPositionAndRotation(_bodyId, _transformComponent.Position, _transformComponent.Rotation);
                 }
 
                 PhysicsApi.GetBodyPositionAndRotation(_bodyId, ref _position, ref _rotation);
                 _transformComponent.Position = _position;
                 _transformComponent.Rotation = _rotation;
+            }
+        }
+
+        public override void Render()
+        {
+            if (_transformComponent != null)
+            {
+                Gizmos.DrawCube(
+                    _transformComponent.Position, 
+                    _transformComponent.Rotation, 
+                    Vector3.One,
+                    _size, 
+                    new Vector3(0.0f, 0.0f, 255.0f));
             }
         }
 

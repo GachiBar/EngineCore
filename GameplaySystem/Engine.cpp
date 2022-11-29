@@ -9,6 +9,7 @@
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
+#include "../monowrapper/monopp/mono_array.h"
 
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
@@ -150,6 +151,7 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_RegisterModel", Internal_RegisterModel);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawModel", Internal_DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
 	renderer_property_.set_value(&renderer_);
@@ -241,6 +243,31 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
 	renderer->DrawModel({ id, id, model_matrix });
+}
+
+void Engine::Internal_DrawCurve(
+	RenderDevice* renderer, 
+	MonoArray* points, 
+	DirectX::SimpleMath::Vector3 color,
+	DirectX::SimpleMath::Matrix model_matrix) 
+{
+	mono::mono_array raw_vertices(points);
+	MeshData<DebugVertex3D> mesh;
+	mesh.pt = PRIMITIVETYPE_LINESTRIP;
+	mesh.primitiveCount = raw_vertices.get_length() - 1;
+
+	for (size_t i = 0; i < raw_vertices.get_length(); ++i) {
+		auto vertex = raw_vertices.get<DebugVertex3D>(i);
+		mesh.vertices.push_back(vertex);
+		mesh.indexes.push_back(i);
+	}
+
+	DebugDraw3DData debug_draw_data;
+	debug_draw_data.mesh = mesh;
+	debug_draw_data.color = color;
+	debug_draw_data.world = model_matrix;
+
+	renderer->DrawDebug(debug_draw_data);
 }
 
 void Engine::Internal_SetViewProjection(
@@ -339,6 +366,7 @@ void Engine::Internal_SetBodyPositionAndRotation(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	//std::cout << "We are here!" << std::endl;
 	body_interface.SetPositionAndRotation(body_id, position, rotation, activation_mode);
 }
 
