@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir)vendor\DirectXTex\lib;$(SolutionDir)vendor\assimp\lib;$(SolutionDir)vendor\mono\lib;$(SolutionDir)vendor\JoltPhysics\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)vendor\DirectXTex\lib;$(SolutionDir)vendor\assimp\lib;$(SolutionDir)vendor\mono\lib;$(SolutionDir)vendor\JoltPhysics\lib\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
