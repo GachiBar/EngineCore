@@ -7,6 +7,7 @@
 #include "ResourceData.h"
 #include "../GameplaySystem/Object.h"
 #include "../IEditorWindow.h"
+#include "../ObjectDrawer.h"
 
 template<class T, class U>
 concept Derived = std::is_base_of_v<U, T>;
@@ -25,5 +26,6 @@ private:
     ResourceData _selected;
     std::shared_ptr<engine::Object> _selectedInstance;
 
+    ObjectDrawer object_drawer;
     static mono::mono_method_invoker* read_;
 };

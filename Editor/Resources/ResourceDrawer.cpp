@@ -15,8 +15,7 @@ void ResourceDrawer::Draw()
     
     ImGui::Text(std::format("{}{}", "Path: ", _selected.path.generic_string()).c_str());
     ImGui::Text(std::format("{}{}", "Guid: ", _selected.Guid).c_str());
-    // Save changed in file every change event for test
-    // TODO: Draw engine::Object instance
+    object_drawer.DrawObject(*_selectedInstance);
     ImGui::End();
 }
 

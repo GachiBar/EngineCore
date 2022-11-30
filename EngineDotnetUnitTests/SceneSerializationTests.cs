@@ -36,7 +36,72 @@ namespace EngineDotnetUnitTests
                 scene.GetType().GetMethod("Invalidate", BindingFlags.NonPublic | BindingFlags.Instance);
             invalidate.Invoke(scene, new object[0]);
 
-            special_data = @"
+            PassRealData();
+        }
+
+       
+        [Test]
+        public void SerializeTest()
+        {
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {new GameObjectDefaultJsonConverter()}
+            };
+
+            string data = JsonConvert.SerializeObject(objects, options);
+            string scene_data = scene.Serialize();
+            Console.Write(data);
+            
+            Assert.That(scene_data, Is.EqualTo(data));
+            Assert.IsTrue(scene_data != "[]" && scene_data.Length > 0);
+        }
+        
+        [Test]
+        public void DeserializeTest()
+        {
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {new GameObjectDefaultJsonConverter()}
+            };
+
+            string data = JsonConvert.SerializeObject(objects, options);
+            string scene_data = scene.Serialize();
+            Console.WriteLine("Original serialize json: ");
+            Console.Write(data);
+
+            Scene new_scene = new Scene();
+            
+            new_scene.Deserialize(scene_data);
+            string new_data = new_scene.Serialize();
+            
+            Console.WriteLine("New json: ");
+            Console.Write(new_data);
+
+            Assert.That(new_data, Is.EqualTo(scene_data));
+        }
+        
+        [Test]
+        public void DeserializeTest2()
+        {
+          JsonSerializerSettings options = new JsonSerializerSettings()
+          {
+            Formatting = Formatting.Indented,
+            Converters = {new GameObjectDefaultJsonConverter()}
+          };
+
+          List<GameObject> special_object = new List<GameObject>();
+          Scene scene = new Scene();
+          scene.Deserialize(special_data);
+          special_object = JsonConvert.DeserializeObject<List<GameObject>>(special_data, options);
+
+          Assert.Pass();
+        }
+        
+         private void PassRealData()
+        {
+          special_data = @"
 [
   {
     ""Guid"": ""93de9056-9ebb-4a6f-85ff-cd9b08f913e1"",
@@ -192,65 +257,6 @@ namespace EngineDotnetUnitTests
   }
 ]
 ";
-        }
-
-        [Test]
-        public void SerializeTest()
-        {
-            JsonSerializerSettings options = new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented,
-                Converters = {new GameObjectDefaultJsonConverter()}
-            };
-
-            string data = JsonConvert.SerializeObject(objects, options);
-            string scene_data = scene.Serialize();
-            Console.Write(data);
-            
-            Assert.That(scene_data, Is.EqualTo(data));
-            Assert.IsTrue(scene_data != "[]" && scene_data.Length > 0);
-        }
-        
-        [Test]
-        public void DeserializeTest()
-        {
-            JsonSerializerSettings options = new JsonSerializerSettings()
-            {
-                Formatting = Formatting.Indented,
-                Converters = {new GameObjectDefaultJsonConverter()}
-            };
-
-            string data = JsonConvert.SerializeObject(objects, options);
-            string scene_data = scene.Serialize();
-            Console.WriteLine("Original serialize json: ");
-            Console.Write(data);
-
-            Scene new_scene = new Scene();
-            
-            new_scene.Deserialize(scene_data);
-            string new_data = new_scene.Serialize();
-            
-            Console.WriteLine("New json: ");
-            Console.Write(new_data);
-
-            Assert.That(new_data, Is.EqualTo(scene_data));
-        }
-        
-        [Test]
-        public void DeserializeTest2()
-        {
-          JsonSerializerSettings options = new JsonSerializerSettings()
-          {
-            Formatting = Formatting.Indented,
-            Converters = {new GameObjectDefaultJsonConverter()}
-          };
-
-          List<GameObject> special_object = new List<GameObject>();
-          Scene scene = new Scene();
-          scene.Deserialize(special_data);
-          special_object = JsonConvert.DeserializeObject<List<GameObject>>(special_data, options);
-
-          Assert.Pass();
         }
     }
 }

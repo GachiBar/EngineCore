@@ -43,10 +43,7 @@ namespace GameplayCore.Serialization
             Resource current = Activator.CreateInstance(resourceType, new object[] {null, null}) as Resource;
 
             if (current == null) return null;
-            
-            // string guid = JsonExtensions.ReadString(reader, "Guid");
-            // ReflectionExtensions.FindSetFieldValue( current, "Guid", Guid.Parse(guid));
-            
+
             while (reader.Read())
             {
                 if (reader.TokenType != JsonToken.PropertyName)

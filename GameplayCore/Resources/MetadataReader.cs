@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using GameplayCore.Serialization;
@@ -8,10 +10,12 @@ namespace GameplayCore.Resources
 {
     public class MetadataReader
     {
+        private static string BasePath = "Assets";
+        
         public static Resource Create(string path)
         {
             string filepath = GetResourcePath(path);
-            Console.WriteLine($"Creating metadata of {filepath}!");
+            Debug($"Creating metadata of {filepath}!");
 
             FileType assetType = GetType(filepath);
             Type classType = GetClassType(assetType);
@@ -34,7 +38,7 @@ namespace GameplayCore.Resources
 
         public static Resource Read(string path)
         {
-            Console.WriteLine($"Reading metadata of {path}!");
+            Debug($"Reading metadata of {path}!");
             if (!File.Exists(GetMetaPath(path)))
                 return Create(path);
 
@@ -43,7 +47,7 @@ namespace GameplayCore.Resources
             Resource resource = Deserialize(reader.ReadToEnd(), path);
             file.Close();
 
-            Console.WriteLine($"Resource is {resource}");
+            Debug($"Resource is {resource}");
             return resource;
         }
 
@@ -57,10 +61,34 @@ namespace GameplayCore.Resources
             file.Close();
         }
 
-        public static Resource GetByGuid()
+        public static Resource GetByGuid(System.Guid guid)
         {
-            // Find by _guid in files
-            throw new NotImplementedException();
+            if (guid.Equals(System.Guid.Empty)) 
+                return null;
+
+            foreach (var resource in IterateAllResources())
+            {
+                if (resource != null && resource.Guid.Equals(guid))
+                    return resource;
+            }
+
+            return null;
+        }
+
+        private static IEnumerable<Resource> IterateAllResources()
+        {
+            // TODO: Add ResourceHolder : Dictionary<System.Guid, Resource>
+            string path = Path.Combine(Path.GetFullPath("."), BasePath);
+            Debug($"Full assets path is {path}");
+            if (Directory.Exists(path))
+            {
+                foreach (string file in Directory.EnumerateFiles(path , "*.*", SearchOption.AllDirectories))
+                {
+                    if(Path.GetExtension(file).Equals(".meta")) continue;
+
+                    yield return Read(file);
+                }    
+            }
         }
 
         private static string Serialize(Resource resource)
@@ -152,6 +180,8 @@ namespace GameplayCore.Resources
                 case ".material":
                     return FileType.Material;
                 case ".texture":
+                case ".jpg":
+                case ".png":
                     return FileType.Texture;
                 case ".meta":
                     return FileType.Meta;
@@ -160,6 +190,12 @@ namespace GameplayCore.Resources
             }
 
             return FileType.Other;
+        }
+
+        [Conditional("METADATA_DEBUG")]
+        private static void Debug(string data)
+        {
+            Console.WriteLine(data);
         }
     }
 }

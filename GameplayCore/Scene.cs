@@ -99,7 +99,11 @@ namespace GameplayCore
             JsonSerializerSettings options = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
-                Converters = {new GameObjectDefaultJsonConverter()}
+                Converters = 
+                {
+                    new GameObjectDefaultJsonConverter(),
+                    new ResourceGuidJsonConverter()
+                }
             };
 
             string data = JsonConvert.SerializeObject(_gameObjects, options);
@@ -109,19 +113,23 @@ namespace GameplayCore
 
         public void Deserialize(string data)
         {
-            GameObjectDefaultJsonConverter converter = new GameObjectDefaultJsonConverter(this); 
-
+            GameObjectDefaultJsonConverter gameObjectConverter = new GameObjectDefaultJsonConverter(this);
+            
             JsonSerializerSettings options = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
-                Converters = {converter}
+                Converters =
+                {
+                    gameObjectConverter,
+                    new ResourceGuidJsonConverter()
+                }
             };
 
             // Get objects without references
             _gameObjects = JsonConvert.DeserializeObject<List<GameObject>>(data, options);
             
             // And then set it
-            converter.PassGuidReferences(data);
+            gameObjectConverter.PassGuidReferences(data);
             Invalidate();
             Initialize();
 
