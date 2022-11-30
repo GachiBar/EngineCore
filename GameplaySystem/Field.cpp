@@ -18,9 +18,9 @@ const TypeData& Field::GetTypeData() const {
 
 std::vector<Object> Field::GetAttributes() const {
 	std::vector<Object> attributes;
-	auto component_class = object_.GetInternal().get_type().get_internal_ptr();
+	auto object_class = object_.GetType().get_internal_ptr();
 	auto field = field_.get_internal_ptr();
-	auto ainfo = mono_custom_attrs_from_field(component_class, field);
+	auto ainfo = mono_custom_attrs_from_field(object_class, field);
 
 	if (ainfo != nullptr) {
 		for (size_t i = 0; i < ainfo->num_attrs; ++i) {
@@ -39,7 +39,7 @@ bool Field::IsPublic() const {
 }
 
 Field::Field(const Object& object, const std::string& field_name)
-	: Field(object, object.GetInternal().get_type().get_field(field_name))
+	: Field(object, object.GetType().get_field(field_name))
 {}
 
 Field::Field(const Object& object, mono::mono_field field)

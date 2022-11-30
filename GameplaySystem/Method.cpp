@@ -14,11 +14,11 @@ bool Method::IsPublic() const {
 }
 
 Method::Method(const Object& object, const std::string& method_name_with_args)
-	: Method(object, object.GetInternal().get_type().get_method(method_name_with_args))
+	: Method(object, object.GetType().get_method(method_name_with_args))
 {}
 
 Method::Method(const Object& object, const std::string& method_name, int argc)
-	: Method(object, object.GetInternal().get_type().get_method(method_name, argc))
+	: Method(object, object.GetType().get_method(method_name, argc))
 {}
 
 Method::Method(const Object& object, mono::mono_method method)

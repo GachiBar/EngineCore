@@ -123,6 +123,7 @@ private:
 		JPH::EMotionType motion_type, 
 		JPH::uint8 layer);
 	static void Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static void Internal_SetSphereShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, float radius);
 	static void Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 half_extent);
 	static void Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type);
 	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);

@@ -162,7 +162,8 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateSphereBody", Internal_CreateSphereBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBoxBody", Internal_CreateBoxBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_DestroyBody", Internal_DestroyBody);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetBoxShape);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetSphereShape);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetBoxShape);	
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMotionType", Internal_SetMotionType);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetActive", Internal_SetActive);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_IsActive", Internal_IsActive);
@@ -319,6 +320,14 @@ void Engine::Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint3
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.RemoveBody(body_id);
 	body_interface.DestroyBody(body_id);
+}
+
+void Engine::Internal_SetSphereShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, float radius) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	JPH::SphereShape* sphere_shape = new JPH::SphereShape(radius);
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetShape(body_id, sphere_shape, true, activation_mode);
 }
 
 void Engine::Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 half_extent) {

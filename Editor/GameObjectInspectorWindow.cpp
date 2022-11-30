@@ -135,86 +135,92 @@ void GameObjectInspectorWindow::DrawGameObjectFields()
 void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Component> component)
 {	
 	bool visible = true;
-
+	auto temp_type = component->GetType();
+	
 	if (ImGui::CollapsingHeader(component->Name().c_str(), &visible, ImGuiTreeNodeFlags_DefaultOpen)) 
 	{
-		auto fields = component->GetFields();
-		
-		for (auto field : fields) 
-		{
-			auto attributes = field.GetAttributes();
+		while (engine::Types::GetTypeData(temp_type.get_fullname()).type != engine::Type::kComponent)
+		{				
+			engine::Object object(component->GetInternal(), temp_type);
 
-			if (!IsEditableField(field, attributes)) 
+			for (auto field : object.GetFields())
 			{
-				continue;
-			}	
+				auto attributes = field.GetAttributes();
 
-			bool isFieldChanged = false;
+				if (!IsEditableField(field, attributes))
+				{
+					continue;
+				}
 
-			switch (field.GetTypeData().type)
-			{
-			case engine::Type::kFloat:
-				isFieldChanged = DrawFloatField(field, attributes);
-				break;
-			case engine::Type::kDouble:
-				isFieldChanged = DrawDoubleField(field, attributes);
-				break;
-			case engine::Type::kBool:
-				isFieldChanged = DrawBoolField(field, attributes);
-				break;
-			case engine::Type::kByte:
-				isFieldChanged = DrawByteField(field, attributes);
-				break;
-			case engine::Type::kShort:
-				isFieldChanged = DrawShortField(field, attributes);
-				break;
-			case engine::Type::kInt:
-				isFieldChanged = DrawIntField(field, attributes);
-				break;
-			case engine::Type::kLong:
-				isFieldChanged = DrawLongField(field, attributes);
-				break;
-			case engine::Type::kUByte:
-				isFieldChanged = DrawUByteField(field, attributes);
-				break;
-			case engine::Type::kUShort:
-				isFieldChanged = DrawUShortField(field, attributes);
-				break;
-			case engine::Type::kUInt:
-				isFieldChanged = DrawUIntField(field, attributes);
-				break;
-			case engine::Type::kULong:
-				isFieldChanged = DrawULongField(field, attributes);
-				break;
-			case engine::Type::kVector2:
-				isFieldChanged = DrawVector2Field(field, attributes);
-				break;
-			case engine::Type::kVector3:
-				isFieldChanged = DrawVector3Field(field, attributes);
-				break;
-			case engine::Type::kVector4:
-				isFieldChanged = DrawVector4Field(field, attributes);
-				break;
-			case engine::Type::kString:
-				isFieldChanged = DrawStringField(field, attributes);
-				break;
-			case engine::Type::kGameObject:
-				isFieldChanged = DrawGameObjectField(field, attributes);
-				break;
-			default:
-				break;
+				bool isFieldChanged = false;
+
+				switch (field.GetTypeData().type)
+				{
+				case engine::Type::kFloat:
+					isFieldChanged = DrawFloatField(field, attributes);
+					break;
+				case engine::Type::kDouble:
+					isFieldChanged = DrawDoubleField(field, attributes);
+					break;
+				case engine::Type::kBool:
+					isFieldChanged = DrawBoolField(field, attributes);
+					break;
+				case engine::Type::kByte:
+					isFieldChanged = DrawByteField(field, attributes);
+					break;
+				case engine::Type::kShort:
+					isFieldChanged = DrawShortField(field, attributes);
+					break;
+				case engine::Type::kInt:
+					isFieldChanged = DrawIntField(field, attributes);
+					break;
+				case engine::Type::kLong:
+					isFieldChanged = DrawLongField(field, attributes);
+					break;
+				case engine::Type::kUByte:
+					isFieldChanged = DrawUByteField(field, attributes);
+					break;
+				case engine::Type::kUShort:
+					isFieldChanged = DrawUShortField(field, attributes);
+					break;
+				case engine::Type::kUInt:
+					isFieldChanged = DrawUIntField(field, attributes);
+					break;
+				case engine::Type::kULong:
+					isFieldChanged = DrawULongField(field, attributes);
+					break;
+				case engine::Type::kVector2:
+					isFieldChanged = DrawVector2Field(field, attributes);
+					break;
+				case engine::Type::kVector3:
+					isFieldChanged = DrawVector3Field(field, attributes);
+					break;
+				case engine::Type::kVector4:
+					isFieldChanged = DrawVector4Field(field, attributes);
+					break;
+				case engine::Type::kString:
+					isFieldChanged = DrawStringField(field, attributes);
+					break;
+				case engine::Type::kGameObject:
+					isFieldChanged = DrawGameObjectField(field, attributes);
+					break;
+				default:
+					break;
+				}
+
+				if (isFieldChanged && component->HasMethod("Invalidate", 1))
+				{
+					auto& domain = mono::mono_domain::get_current_domain();
+					mono::mono_string fieldName(domain, field.GetName());
+
+					void* params[1];
+					params[0] = fieldName.get_internal_ptr();
+
+					component->GetMethod("Invalidate", 1).Invoke(params);
+				}
 			}
 
-			if (isFieldChanged && component->HasMethod("Invalidate", 1))
-			{
-				auto& domain = mono::mono_domain::get_current_domain();
-				mono::mono_string fieldName(domain, field.GetName());
-
-				void* params[1];
-				params[0] = fieldName.get_internal_ptr();
-
-				component->GetMethod("Invalidate", 1).Invoke(params);
-			}
+			temp_type = temp_type.get_base_type();
 		}
 	}
 

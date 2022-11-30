@@ -1,5 +1,6 @@
 ﻿using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
+using System;
 
 namespace GameplayCore
 {
@@ -42,6 +43,50 @@ namespace GameplayCore
         public static void DrawCurve(Matrix model, Vector3[] points, Vector3 color)
         {
             RenderApi.DrawCurve(points, color, model);
+        }
+
+        public static void DrawSphere(Vector3 position, float radius, Vector3 color)
+        {
+            int circle = 360;
+            int step = 30;
+            int stepCount = circle / step + 2;
+
+            var circle1 = new Vector3[stepCount];            
+
+            for (int i = 0; i < stepCount; i++)
+            {
+                float angle = step * i;
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180);
+                float y = (float)Math.Sin(angle * MathUtil.Pi / 180);
+                Vector3 point = new Vector3(x, y, 0);
+                circle1[i] = point;
+            }
+
+            DrawCurve(position, Quaternion.Identity, Vector3.One, circle1, color);
+            var circle2 = new Vector3[stepCount];            
+
+            for (int i = 0; i < stepCount; i++)
+            {
+                float angle = step * i;
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180);
+                float z = (float)Math.Sin(angle * MathUtil.Pi / 180);
+                Vector3 point = new Vector3(x, 0, z);
+                circle2[i] = point;
+            }
+
+            DrawCurve(position, Quaternion.Identity, Vector3.One, circle2, color);
+            var circle3 = new Vector3[stepCount];            
+
+            for (int i = 0; i < stepCount; i++)
+            {
+                float angle = step * i;
+                float y = (float)Math.Cos(angle * MathUtil.Pi / 180);
+                float z = (float)Math.Sin(angle * MathUtil.Pi / 180);
+                Vector3 point = new Vector3(0, y, z);
+                circle3[i] = point;
+            }
+
+            DrawCurve(position, Quaternion.Identity, Vector3.One, circle3, color);
         }
 
         public static void DrawCube(Vector3 position, Vector3 size, Vector3 color)

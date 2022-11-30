@@ -45,6 +45,14 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static void SetSphereShape(uint bodyId, float radius)
+        {
+            unsafe
+            {
+                Internal_SetSphereShape(PhysicsSystem, bodyId, radius);
+            }
+        }
+
         public static void SetBoxShape(uint bodyId, Vector3 halfExtent)
         {
             unsafe
@@ -132,6 +140,9 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DestroyBody(void* physicsSystem, uint bodyId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetSphereShape(void* physicsSystem, uint bodyId, float radius);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetBoxShape(void* physicsSystem, uint bodyId, Vector4 halfExtent);
