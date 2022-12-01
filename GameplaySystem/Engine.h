@@ -128,16 +128,10 @@ private:
 	static void Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type);
 	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);
 	static bool Internal_IsActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
-	static void Internal_GetBodyPositionAndRotation(
-		JPH::PhysicsSystem* physics_system, 
-		JPH::uint32 id, 
-		JPH::Vec3& position, 
-		JPH::Quat& rotation);
-	static void Internal_SetBodyPositionAndRotation(
-		JPH::PhysicsSystem* physics_system,
-		JPH::uint32 id,
-		JPH::Vec3 position,
-		JPH::Quat rotation);
+	static JPH::Vec3 Internal_GetBodyPosition(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static void Internal_SetBodyPosition(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 position);
+	static JPH::Quat Internal_GetBodyRotation(JPH::PhysicsSystem* physics_system, JPH::uint32 id);	
+	static void Internal_SetBodyRotation(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Quat rotation);
 	static void Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force);
 
 #pragma endregion Physics

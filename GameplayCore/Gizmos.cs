@@ -47,46 +47,60 @@ namespace GameplayCore
 
         public static void DrawSphere(Vector3 position, float radius, Vector3 color)
         {
+            DrawSphere(position, Quaternion.Identity, Vector3.One, radius, color);
+        }
+
+        public static void DrawSphere(Vector3 position, Quaternion rotation, Vector3 scale, float radius, Vector3 color)
+        {
+            var model = Matrix.Identity;
+            model *= Matrix.Scaling(scale);
+            model *= Matrix.RotationQuaternion(rotation);
+            model *= Matrix.Translation(position);
+            DrawSphere(model, radius, color);
+        }
+
+        public static void DrawSphere(Matrix model, float radius, Vector3 color)
+        {
             int circle = 360;
-            int step = 30;
+            int step = 10;
             int stepCount = circle / step + 2;
 
-            var circle1 = new Vector3[stepCount];            
+            var circle1 = new Vector3[stepCount];
 
             for (int i = 0; i < stepCount; i++)
             {
                 float angle = step * i;
-                float x = (float)Math.Cos(angle * MathUtil.Pi / 180);
-                float y = (float)Math.Sin(angle * MathUtil.Pi / 180);
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float y = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
                 Vector3 point = new Vector3(x, y, 0);
                 circle1[i] = point;
             }
 
-            DrawCurve(position, Quaternion.Identity, Vector3.One, circle1, color);
-            var circle2 = new Vector3[stepCount];            
+            DrawCurve(model, circle1, color);
+            var circle2 = new Vector3[stepCount];
 
             for (int i = 0; i < stepCount; i++)
             {
                 float angle = step * i;
-                float x = (float)Math.Cos(angle * MathUtil.Pi / 180);
-                float z = (float)Math.Sin(angle * MathUtil.Pi / 180);
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float z = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
                 Vector3 point = new Vector3(x, 0, z);
                 circle2[i] = point;
             }
 
-            DrawCurve(position, Quaternion.Identity, Vector3.One, circle2, color);
-            var circle3 = new Vector3[stepCount];            
+            DrawCurve(model, circle2, color);
+            var circle3 = new Vector3[stepCount];
 
             for (int i = 0; i < stepCount; i++)
             {
                 float angle = step * i;
-                float y = (float)Math.Cos(angle * MathUtil.Pi / 180);
-                float z = (float)Math.Sin(angle * MathUtil.Pi / 180);
+                float y = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float z = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
                 Vector3 point = new Vector3(0, y, z);
                 circle3[i] = point;
             }
 
-            DrawCurve(position, Quaternion.Identity, Vector3.One, circle3, color);
+            DrawCurve(model, circle3, color);
         }
 
         public static void DrawCube(Vector3 position, Vector3 size, Vector3 color)

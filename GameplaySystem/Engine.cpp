@@ -162,13 +162,15 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateSphereBody", Internal_CreateSphereBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBoxBody", Internal_CreateBoxBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_DestroyBody", Internal_DestroyBody);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetSphereShape);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetSphereShape", Internal_SetSphereShape);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetBoxShape);	
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMotionType", Internal_SetMotionType);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetActive", Internal_SetActive);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_IsActive", Internal_IsActive);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPositionAndRotation", Internal_GetBodyPositionAndRotation);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPositionAndRotation", Internal_SetBodyPositionAndRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPosition", Internal_GetBodyPosition);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPosition", Internal_SetBodyPosition);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyRotation", Internal_GetBodyRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 
 	physics_system_property_.set_value(&physics_system_);
@@ -311,7 +313,7 @@ JPH::uint32 Engine::Internal_CreateBoxBody(
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
 	JPH::BodyCreationSettings body_settings(box_shape, position, rotation, motion_type, layer);
-	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);	
+	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);		
 	return body_id.GetIndexAndSequenceNumber();
 }
 
@@ -362,28 +364,38 @@ bool Engine::Internal_IsActive(JPH::PhysicsSystem* physics_system, JPH::uint32 i
 	return body_interface.IsActive(body_id);
 }
 
-void Engine::Internal_GetBodyPositionAndRotation(
+JPH::Vec3 Engine::Internal_GetBodyPosition(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	return body_interface.GetPosition(body_id);
+}
+
+void Engine::Internal_SetBodyPosition(
 	JPH::PhysicsSystem* physics_system,
 	JPH::uint32 id,
-	JPH::Vec3& position,
-	JPH::Quat& rotation) 
+	JPH::Vec3 position)
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.GetPositionAndRotation(body_id, position, rotation);
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetPosition(body_id, position, activation_mode);
 }
 
-void Engine::Internal_SetBodyPositionAndRotation(
+JPH::Quat Engine::Internal_GetBodyRotation(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	return body_interface.GetRotation(body_id);
+}
+
+void Engine::Internal_SetBodyRotation(
 	JPH::PhysicsSystem* physics_system,
 	JPH::uint32 id,
-	JPH::Vec3 position,
 	JPH::Quat rotation)
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	auto test = body_interface.IsActive(body_id);
 	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
-	body_interface.SetPositionAndRotation(body_id, position, rotation, activation_mode);
+	body_interface.SetRotation(body_id, rotation, activation_mode);
 }
 
 void Engine::Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force) {

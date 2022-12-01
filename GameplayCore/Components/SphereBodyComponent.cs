@@ -31,13 +31,7 @@ namespace GameplayCore.Components
 
         protected override void RenderCollider()
         {
-            Gizmos.DrawSphere(Position, _radius, new Vector3(0.0f, 255.0f, 0.0f));
-            //Gizmos.DrawCube(
-            //    Position,
-            //    Rotation,
-            //    Vector3.One,
-            //    new Vector3(_radius, _radius, _radius),
-            //    new Vector3(0.0f, 255.0f, 0.0f));
+            Gizmos.DrawSphere(Position, Rotation, Vector3.One, _radius, new Vector3(0.0f, 255.0f, 0.0f));
         }
     }
 }
