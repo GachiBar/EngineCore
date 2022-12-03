@@ -217,23 +217,6 @@ void GameViewWindow::OnLogMessageRemoved(std::string const& guid)
 		});
 }
 
-std::optional<std::string> GameViewWindow::CurrentOperationToString() const
-{
-	if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
-	{
-		return "Position";
-	}
-	if (CurrentGizmoOperation & ImGuizmo::ROTATE)
-	{
-		return "Rotation";
-	}
-	if (CurrentGizmoOperation & ImGuizmo::SCALE)
-	{
-		return "Scale";
-	}
-	return std::nullopt;
-}
-
 void GameViewWindow::draw_gizmos() const
 {
 	const auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());

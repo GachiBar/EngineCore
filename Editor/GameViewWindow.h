@@ -54,7 +54,6 @@ private:
     bool bIsPlaying = false;
     ImVec2 wsize;
 
-    std::optional<std::string> CurrentOperationToString() const;
     bool bInFocus = false;
 
     ImGuizmo::MODE CurrentOperationMode = ImGuizmo::LOCAL;
