@@ -20,7 +20,7 @@ const TypeData& Property::GetTypeData() const {
 
 std::vector<Object> Property::GetAttributes() const {
 	std::vector<Object> attributes;
-	auto component_class = object_.GetInternal().get_type().get_internal_ptr();
+	auto component_class = object_.GetType().get_internal_ptr();
 	auto property = property_.get_internal_ptr();
 	auto ainfo = mono_custom_attrs_from_property(component_class, property);
 
@@ -78,7 +78,7 @@ void Property::SetValue(const Object& value) {
 }
 
 Property::Property(const Object& object, const std::string& property_name)
-	: Property(object, object.GetInternal().get_type().get_property(property_name))
+	: Property(object, object.GetType().get_property(property_name))
 {}
 
 Property::Property(const Object& object, mono::mono_property property)

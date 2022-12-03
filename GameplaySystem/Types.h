@@ -8,6 +8,7 @@ namespace engine {
 enum class Type {
 	kUndefined,
 
+	kObject,
 	kFloat,
 	kDouble,
 	kBool,
@@ -27,6 +28,7 @@ enum class Type {
 	kGameObject,
 
 	kTransformComponent,
+	kComponent,
 
 	kHideInInspectorAttribute,
 	kSerializeFieldAttribute,
@@ -53,6 +55,7 @@ public:
 	static const TypeData kUndefined;
 
 	// System
+	static const TypeData kObject;
 	static const TypeData kSingle;
 	static const TypeData kDouble;
 	static const TypeData kBoolean;
@@ -73,6 +76,7 @@ public:
 	static const TypeData kGameObject;
 
 	// GameplayCore.Components
+	static const TypeData kComponent;
 	static const TypeData kTransformComponent;
 
 	// Attributes

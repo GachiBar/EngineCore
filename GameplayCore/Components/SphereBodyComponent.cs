@@ -6,11 +6,11 @@ using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
 {
-    public class BoxBodyComponent : BodyComponent
+    public class SphereBodyComponent : BodyComponent
     {
         [SerializeField]
-        [InspectorName("Size")]
-        private Vector3 _size = Vector3.One;
+        [InspectorName("Radius")]
+        private float _radius = 1.0f;
 
         internal override void Invalidate(string fieldName)
         {
@@ -18,26 +18,20 @@ namespace GameplayCore.Components
 
             switch (fieldName)
             {
-                case nameof(_size):
-                    PhysicsApi.SetBoxShape(BodyId, _size / 2);
+                case nameof(_radius):
+                    PhysicsApi.SetSphereShape(BodyId, _radius);
                     break;
             }
         }
 
         protected override uint CreateBody(Vector3 position, Quaternion rotation, MotionType motionType, CollisionLayer collisionLayer)
         {
-            Vector3 halfExtent = _size / 2;
-            return PhysicsApi.CreateBoxBody(halfExtent, position, rotation, motionType, collisionLayer);
+            return PhysicsApi.CreateSphereBody(_radius, position, rotation, motionType, collisionLayer);
         }
 
         protected override void RenderCollider()
         {
-            Gizmos.DrawCube(
-                Position,
-                Rotation,
-                Vector3.One,
-                _size,
-                new Vector3(0.0f, 255.0f, 0.0f));            
+            Gizmos.DrawSphere(Position, Rotation, Vector3.One, _radius, new Vector3(0.0f, 255.0f, 0.0f));
         }
     }
 }

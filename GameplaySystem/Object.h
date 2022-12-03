@@ -11,6 +11,8 @@ namespace engine {
 class Object {
  public:
 	 const mono::mono_object& GetInternal() const;
+	 const mono::mono_type& GetType() const;
+	 const mono::mono_type& GetBaseType() const;
 	 const TypeData& GetTypeData() const;
 
 	 const std::string& GetNameSpace() const;
@@ -32,8 +34,11 @@ class Object {
 
 	 Object(MonoObject* mono_object);
 	 Object(mono::mono_object object);
+	 Object(MonoObject* mono_object, MonoClass* mono_class);
+	 Object(mono::mono_object object, mono::mono_type type);
 	 virtual ~Object();
 
+	 Object ToBase() const;
 	 void* Unbox() const;
 
 	 template<typename T>
@@ -47,6 +52,7 @@ class Object {
 
  private:
 	mono::mono_object object_;
+	mono::mono_type type_;
 	uint32_t handle_;	
 	const TypeData& type_data_;
 };

@@ -274,10 +274,13 @@ namespace GameplayCore.Components
             get => _children[index];
         }
 
-        internal override void Invalidate()
+        internal override void Invalidate(string fieldName)
         {
-            var euler = _editorEuler * MathUtil.Pi / 180.0f;
-            _localRotation = Quaternion.RotationYawPitchRoll(euler.Y, euler.X, euler.Z);
+            if (fieldName == nameof(_editorEuler))
+            {
+                var euler = _editorEuler * MathUtil.Pi / 180.0f;
+                _localRotation = Quaternion.RotationYawPitchRoll(euler.Y, euler.X, euler.Z);
+            }
         }
 
         private Vector3 Rotate(Vector3 vector, Quaternion rotation)

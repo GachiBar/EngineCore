@@ -93,6 +93,11 @@ private:
 
 	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
 	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
+	static void Internal_DrawCurve(
+		RenderDevice* renderer, 
+		MonoArray* points, 
+		DirectX::SimpleMath::Vector3 color,
+		DirectX::SimpleMath::Matrix model_matrix);
 	static void Internal_SetViewProjection(
 		RenderDevice* renderer, 
 		float ellapsed, 
@@ -118,18 +123,15 @@ private:
 		JPH::EMotionType motion_type, 
 		JPH::uint8 layer);
 	static void Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static void Internal_SetSphereShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, float radius);
+	static void Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 half_extent);
 	static void Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type);
 	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);
-	static void Internal_GetBodyPositionAndRotation(
-		JPH::PhysicsSystem* physics_system, 
-		JPH::uint32 id, 
-		JPH::Vec3& position, 
-		JPH::Quat& rotation);
-	static void Internal_SetBodyPositionAndRotation(
-		JPH::PhysicsSystem* physics_system,
-		JPH::uint32 id,
-		JPH::Vec3 position,
-		JPH::Quat rotation);
+	static bool Internal_IsActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static JPH::Vec3 Internal_GetBodyPosition(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
+	static void Internal_SetBodyPosition(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 position);
+	static JPH::Quat Internal_GetBodyRotation(JPH::PhysicsSystem* physics_system, JPH::uint32 id);	
+	static void Internal_SetBodyRotation(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Quat rotation);
 	static void Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force);
 
 #pragma endregion Physics

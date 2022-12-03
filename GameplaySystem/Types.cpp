@@ -6,6 +6,7 @@ namespace engine {
 const TypeData Types::kUndefined("Undefined", "Undefined", Type::kUndefined);
 
 // System
+const TypeData Types::kObject("System", "Object", Type::kObject);
 const TypeData Types::kSingle("System", "Single", Type::kFloat);
 const TypeData Types::kDouble("System", "Double", Type::kDouble);
 const TypeData Types::kBoolean("System", "Boolean", Type::kBool);
@@ -26,6 +27,7 @@ const TypeData Types::kString("System", "String", Type::kString);
 const TypeData Types::kGameObject("GameplayCore", "GameObject", Type::kGameObject);
 
 // GameplayCore.Components
+const TypeData Types::kComponent("GameplayCore.Components", "Component", Type::kComponent);
 const TypeData Types::kTransformComponent("GameplayCore.Components", "TransformComponent", Type::kTransformComponent);
 
 // Attributes
@@ -35,6 +37,7 @@ const TypeData Types::kInspectorNameAttribute("GameplayCore.Editor", "InspectorN
 const TypeData Types::kSliderAttribute("GameplayCore.Editor", "SliderAttribute", Type::kSliderAttribute);
 
 const std::vector<const TypeData*> Types::types_data_ = {
+	&kObject,
 	&kSingle,
 	&kDouble,
 	&kBoolean,
@@ -52,8 +55,9 @@ const std::vector<const TypeData*> Types::types_data_ = {
 	&kString,
 	&kGameObject,
 
+	& kComponent,
 	&kTransformComponent,
-
+	
 	&kHideInInspectorAttribute,
 	&kSerializeFieldAttribute,
 	&kInspectorNameAttribute,

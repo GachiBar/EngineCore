@@ -9,6 +9,7 @@
 #include "../monowrapper/monopp/mono_method.h"
 #include "../monowrapper/monopp/mono_method_invoker.h"
 #include "../monowrapper/monopp/mono_property_invoker.h"
+#include "../monowrapper/monopp/mono_array.h"
 
 #include <Jolt/Jolt.h>
 #include <Jolt/RegisterTypes.h>
@@ -150,6 +151,7 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_RegisterModel", Internal_RegisterModel);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawModel", Internal_DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
 	renderer_property_.set_value(&renderer_);
@@ -160,10 +162,15 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateSphereBody", Internal_CreateSphereBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBoxBody", Internal_CreateBoxBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_DestroyBody", Internal_DestroyBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetSphereShape", Internal_SetSphereShape);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetBoxShape);	
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMotionType", Internal_SetMotionType);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetActive", Internal_SetActive);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPositionAndRotation", Internal_GetBodyPositionAndRotation);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPositionAndRotation", Internal_SetBodyPositionAndRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_IsActive", Internal_IsActive);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyPosition", Internal_GetBodyPosition);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPosition", Internal_SetBodyPosition);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyRotation", Internal_GetBodyRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 
 	physics_system_property_.set_value(&physics_system_);
@@ -242,6 +249,31 @@ void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::Simp
 	renderer->DrawModel({ id, id, model_matrix });
 }
 
+void Engine::Internal_DrawCurve(
+	RenderDevice* renderer, 
+	MonoArray* points, 
+	DirectX::SimpleMath::Vector3 color,
+	DirectX::SimpleMath::Matrix model_matrix) 
+{
+	mono::mono_array raw_vertices(points);
+	MeshData<DebugVertex3D> mesh;
+	mesh.pt = PRIMITIVETYPE_LINESTRIP;
+	mesh.primitiveCount = raw_vertices.get_length() - 1;
+
+	for (size_t i = 0; i < raw_vertices.get_length(); ++i) {
+		auto vertex = raw_vertices.get<DebugVertex3D>(i);
+		mesh.vertices.push_back(vertex);
+		mesh.indexes.push_back(i);
+	}
+
+	DebugDraw3DData debug_draw_data;
+	debug_draw_data.mesh = mesh;
+	debug_draw_data.color = color;
+	debug_draw_data.world = model_matrix;
+
+	renderer->DrawDebug(debug_draw_data);
+}
+
 void Engine::Internal_SetViewProjection(
 	RenderDevice* renderer,
 	float ellapsed,
@@ -281,7 +313,7 @@ JPH::uint32 Engine::Internal_CreateBoxBody(
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
 	JPH::BodyCreationSettings body_settings(box_shape, position, rotation, motion_type, layer);
-	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
+	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);		
 	return body_id.GetIndexAndSequenceNumber();
 }
 
@@ -290,6 +322,22 @@ void Engine::Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint3
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.RemoveBody(body_id);
 	body_interface.DestroyBody(body_id);
+}
+
+void Engine::Internal_SetSphereShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, float radius) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	JPH::SphereShape* sphere_shape = new JPH::SphereShape(radius);
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetShape(body_id, sphere_shape, true, activation_mode);
+}
+
+void Engine::Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 half_extent) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetShape(body_id, box_shape, true, activation_mode);
 }
 
 void Engine::Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type) {
@@ -310,36 +358,50 @@ void Engine::Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 
 	}	
 }
 
-void Engine::Internal_GetBodyPositionAndRotation(
+bool Engine::Internal_IsActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	return body_interface.IsActive(body_id);
+}
+
+JPH::Vec3 Engine::Internal_GetBodyPosition(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	return body_interface.GetPosition(body_id);
+}
+
+void Engine::Internal_SetBodyPosition(
 	JPH::PhysicsSystem* physics_system,
 	JPH::uint32 id,
-	JPH::Vec3& position,
-	JPH::Quat& rotation) 
+	JPH::Vec3 position)
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.GetPositionAndRotation(body_id, position, rotation);
+	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
+	body_interface.SetPosition(body_id, position, activation_mode);
 }
 
-void Engine::Internal_SetBodyPositionAndRotation(
+JPH::Quat Engine::Internal_GetBodyRotation(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	return body_interface.GetRotation(body_id);
+}
+
+void Engine::Internal_SetBodyRotation(
 	JPH::PhysicsSystem* physics_system,
 	JPH::uint32 id,
-	JPH::Vec3 position,
 	JPH::Quat rotation)
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
-	body_interface.SetPositionAndRotation(body_id, position, rotation, activation_mode);
+	body_interface.SetRotation(body_id, rotation, activation_mode);
 }
 
 void Engine::Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force) {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-
-	if (body_interface.IsActive(body_id)) {
-		body_interface.AddForce(body_id, force);
-	}
+	body_interface.AddForce(body_id, force);
 }
 
 #pragma endregion Physics
