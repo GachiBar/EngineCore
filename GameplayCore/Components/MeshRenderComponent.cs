@@ -1,6 +1,4 @@
-﻿using GameplayCore.Serialization;
-
-namespace GameplayCore.Components
+﻿namespace GameplayCore.Components
 {
     public class MeshRenderComponent : Component
     {

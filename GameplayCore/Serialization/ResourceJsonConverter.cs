@@ -40,20 +40,20 @@ namespace GameplayCore.Serialization
             
             string typeName = JsonExtensions.ReadString(reader, "Type");
             Type resourceType = Type.GetType(typeName);
-            Resource current = Activator.CreateInstance(resourceType) as Resource;
+            Resource current = Activator.CreateInstance(resourceType, new object[] {null, null}) as Resource;
 
             if (current == null) return null;
-            
-            // string guid = JsonExtensions.ReadString(reader, "Guid");
-            // ReflectionExtensions.FindSetFieldValue( current, "Guid", Guid.Parse(guid));
-            
+
             while (reader.Read())
             {
-                if (!JsonExtensions.CheckToken(reader, JsonToken.PropertyName))
-                    continue;
-                
-                string fieldName = JsonExtensions.ReadString(reader);
-                FieldInfo field = resourceType.GetField(fieldName);
+                if (reader.TokenType != JsonToken.PropertyName)
+                    break;
+
+                string fieldName = reader.Value as string;
+
+                reader.Read();
+                FieldInfo field = resourceType.GetFieldRecursive(fieldName, 
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
                 object fieldValue = serializer.Deserialize(reader, field.FieldType);
                 field.SetValue(current, fieldValue);
             }

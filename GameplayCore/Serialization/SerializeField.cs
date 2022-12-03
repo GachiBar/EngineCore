@@ -2,7 +2,7 @@
 
 namespace GameplayCore.Serialization
 {
-    class SerializeFieldAttribute : Attribute
+    public class SerializeFieldAttribute : Attribute
     {
 
     }

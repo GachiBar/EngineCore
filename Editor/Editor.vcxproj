@@ -155,6 +155,7 @@
     <ClInclude Include="EditorCamera.h" />
     <ClInclude Include="EditorLayer.h" />
     <ClInclude Include="GameLayer.h" />
+    <ClInclude Include="ObjectDrawer.h" />
     <ClInclude Include="GameViewWindow.h" />
     <ClInclude Include="IEditorWindow.h" />
     <ClInclude Include="ImGuiLayer.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="EditorCamera.cpp" />
     <ClCompile Include="EditorLayer.cpp" />
     <ClCompile Include="GameLayer.cpp" />
+    <ClCompile Include="ObjectDrawer.cpp" />
     <ClCompile Include="GameViewWindow.cpp" />
     <ClCompile Include="ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="ImGuizmo\ImCurveEdit.cpp" />

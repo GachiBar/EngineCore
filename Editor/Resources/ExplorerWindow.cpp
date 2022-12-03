@@ -149,6 +149,7 @@ void ExplorerWindow::load_files_textures()
 void ExplorerWindow::on_file_picked(const std::filesystem::path& path)
 {
     std::cout << "Picked file: " << path.generic_string() << std::endl;
+    FileSelected.Broadcast(path);
     // path.
     // Get meta data
     // If there is no meta data -> generate

@@ -56,6 +56,25 @@ namespace GameplayCore.Serialization
             FieldInfo field = item.GetType().GetField(fieldName);
             field.SetValue(item, value);
         }
+
+        public static FieldInfo GetFieldRecursive(this Type type, string fieldName, BindingFlags bindingFlags)
+        {
+            Type current = type;
+
+            while (current != null)
+            {
+                FieldInfo field = current.GetField(fieldName, bindingFlags);
+                if (field != null)
+                    return field;
+
+                if (current.BaseType == typeof(object))
+                    break;
+
+                current = current.BaseType;
+            }
+
+            return null;
+        }
         
         public static FieldInfo[] GetFieldsRecursive(this Type type, BindingFlags bindingFlags)
         {

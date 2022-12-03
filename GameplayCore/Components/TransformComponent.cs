@@ -285,5 +285,20 @@ namespace GameplayCore.Components
             Vector3.Transform(ref vector, ref rotation, out var result);
             return result;
         }
+
+        public void FindChildren()
+        {
+            foreach (var gameObject in GameObject.Scene)
+            {
+                if (gameObject == GameObject) continue;
+
+                TransformComponent component = gameObject.GetComponent<TransformComponent>();
+                if(component == null) continue;
+                
+                if(component.Parent == this)
+                    _children.Add(component);
+            }
+        }
+        
     }
 }

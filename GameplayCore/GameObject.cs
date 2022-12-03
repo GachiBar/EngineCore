@@ -108,7 +108,7 @@ namespace GameplayCore
             _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
             Scene = scene;
-            Name = $"GameObject({scene.Count})";
+            Name = $"GameObject({scene?.Count})";
         }
 
         public void Initialize()
@@ -196,6 +196,7 @@ namespace GameplayCore
 
             _componentsMap[instance.GetType()] = instance;
             instance.GameObject = this;
+            _isUpdatableComponentsInvalid = true;
         }
 
         public T RemoveComponent<T>() where T : Component
