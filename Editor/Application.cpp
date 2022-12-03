@@ -10,6 +10,7 @@
 #include "InputCoreSystem/InputEvent/Events.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "Interfaces/ILayer.h"
+#include "Resources/ResourceDrawer.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";
@@ -25,7 +26,8 @@ Application::Application()
 	mono::mono_domain::set_current_domain(m_Domain);
 	engine::Scene::CacheMethods(m_Assembly);
 	engine::GameObject::CacheMethods(m_Assembly);
-	engine::Component::CacheMethods(m_Assembly);	
+	engine::Component::CacheMethods(m_Assembly);
+	ResourceDrawer::CacheMethods(m_Assembly);
 }
 
 void Application::PushLayer(Layer* layer)

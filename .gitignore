@@ -373,3 +373,5 @@ GameplayCore.dll
 .idea/.idea.EngineCore/.idea/
 
 Newtonsoft.Json.dll
+
+scene.dat

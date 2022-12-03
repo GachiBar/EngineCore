@@ -8,7 +8,6 @@ namespace GameplayCore.Components
     {
         [SerializeField]
         [HideInInspector]
-        [JsonConverter(typeof(GameObjectGuidJsonConverter))]
         private GameObject _gameObject = null;
 
         public GameObject GameObject

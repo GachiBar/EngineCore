@@ -11,6 +11,7 @@
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
 #include "imgui/imgui.h"
+#include "Resources/ResourceDrawer.h"
 
 namespace Renderer
 {
@@ -29,6 +30,7 @@ void EditorLayer::OnAttach()
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>(GetApp()->GetAssembly());
     properties = std::make_shared<GameObjectInspectorWindow>(GetApp()->GetAssembly());
+    resourceDrawer = std::make_shared<ResourceDrawer>();
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
     explorer = std::make_shared<ExplorerWindow>(GetApp());
     log = std::make_shared<LogWindow>();
@@ -38,6 +40,11 @@ void EditorLayer::OnAttach()
 		selected_go = go;
         properties->SetGameObject(go);
 	});
+
+    explorer.get()->FileSelected.AddLambda([&](const std::filesystem::path& path)
+    {
+        resourceDrawer.get()->TrySelect(path);
+    });
 
     hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
     properties->SetScene(GetApp()->GetEngine()->GetScene());
@@ -243,6 +250,7 @@ void EditorLayer::OnGuiRender()
     properties->Draw();
     SettingsWindow->Draw();
     explorer->Draw();
+    resourceDrawer->Draw();
     ImGui::EndDisabled();
 
     if(log->bIsOpen)
