@@ -21,24 +21,24 @@ private:
 
 	void** game_objects_pointers;
 	char** game_objects_names;
-	size_t game_objects_copasity;
+	size_t game_objects_capacity;
 
-	bool DrawFloatField(engine::Field field);
-	bool DrawDoubleField(engine::Field field);
-	bool DrawBoolField(engine::Field field);
-	bool DrawByteField(engine::Field field);
-	bool DrawShortField(engine::Field field);
-	bool DrawIntField(engine::Field field);
-	bool DrawLongField(engine::Field field);
-	bool DrawUByteField(engine::Field field);
-	bool DrawUShortField(engine::Field field);
-	bool DrawUIntField(engine::Field field);
-	bool DrawULongField(engine::Field field);
-	bool DrawVector2Field(engine::Field field);
-	bool DrawVector3Field(engine::Field field);
-	bool DrawVector4Field(engine::Field field);
-	bool DrawStringField(engine::Field field);
-	bool DrawGameObjectField(engine::Field field);
+	bool DrawFloatField(const engine::Object& object, engine::Field field);
+	bool DrawDoubleField(const engine::Object& object, engine::Field field);
+	bool DrawBoolField(const engine::Object& object, engine::Field field);
+	bool DrawByteField(const engine::Object& object, engine::Field field);
+	bool DrawShortField(const engine::Object& object, engine::Field field);
+	bool DrawIntField(const engine::Object& object, engine::Field field);
+	bool DrawLongField(const engine::Object& object, engine::Field field);
+	bool DrawUByteField(const engine::Object& object, engine::Field field);
+	bool DrawUShortField(const engine::Object& object, engine::Field field);
+	bool DrawUIntField(const engine::Object& object, engine::Field field);
+	bool DrawULongField(const engine::Object& object, engine::Field field);
+	bool DrawVector2Field(const engine::Object& object, engine::Field field);
+	bool DrawVector3Field(const engine::Object& object, engine::Field field);
+	bool DrawVector4Field(const engine::Object& object, engine::Field field);
+	bool DrawStringField(const engine::Object& object, engine::Field field);
+	bool DrawGameObjectField(const engine::Object& object, engine::Field field);
 
 	static std::string GetFieldName(
 		const engine::Field& field,
@@ -53,6 +53,6 @@ private:
 		float& min_out,
 		float& max_out);
 
-	void ChangeGameObjectResourcesCopasity(size_t size);
+	void ChangeGameObjectResourcesCapacity(size_t size);
 	void CopyAsNullTerminated(char* destination, const std::string& source);
 };

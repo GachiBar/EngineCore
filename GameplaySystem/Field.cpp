@@ -12,13 +12,13 @@ const std::string& Field::GetName() const {
 	return field_.get_name();
 }
 
-const TypeData& Field::GetTypeData() const {
-	return type_data_;
+const Type& Field::GetType() const {
+	return field_type_;
 }
 
 std::vector<Object> Field::GetAttributes() const {
 	std::vector<Object> attributes;
-	auto object_class = object_.GetType().get_internal_ptr();
+	auto object_class = class_type_.GetInternal().get_internal_ptr();
 	auto field = field_.get_internal_ptr();
 	auto ainfo = mono_custom_attrs_from_field(object_class, field);
 
@@ -38,38 +38,51 @@ bool Field::IsPublic() const {
 	return field_.get_visibility() == mono::visibility::vis_public;
 }
 
-Field::Field(const Object& object, const std::string& field_name)
-	: Field(object, object.GetType().get_field(field_name))
+Field::Field(const Type& type, const std::string& field_name)
+	: Field(type, type.GetInternal().get_field(field_name))
 {}
 
-Field::Field(const Object& object, mono::mono_field field)
-	: object_(object)
-	, field_(std::move(field))
+Field::Field(const Type& type, mono::mono_field field)
+	: field_(std::move(field))
 	, field_invoker_(field_)
-	, type_data_(Types::GetTypeData(field_.get_type().get_fullname()))
+	, class_type_(type)
+	, field_type_(field_.get_type())
 {}
 
 std::optional<Object> Field::GetValue() {
-	auto raw_value = field_invoker_.get_value(object_.GetInternal());
+	auto raw_value = field_invoker_.get_value();
 
 	if (raw_value.has_value()) {
-		mono::mono_object value(raw_value.value());
-		return { value };
+		return { raw_value.value() };
+	}
+
+	return {};
+}
+
+std::optional<Object> Field::GetValue(const Object& object) {
+	auto raw_value = field_invoker_.get_value(object.GetInternal());
+
+	if (raw_value.has_value()) {
+		return { raw_value.value() };
 	}
 
 	return {};
 }
 
 void Field::SetValue(void* data) {
-	field_invoker_.set_value(object_.GetInternal(), data);
-}
-
-void Field::SetValue(const mono::mono_object& value) {
-	SetValue(value.get_internal_ptr());
+	field_invoker_.set_value(data);
 }
 
 void Field::SetValue(const Object& value) {
 	SetValue(value.GetInternal());
+}
+
+void Field::SetValue(const Object& object, void* data) {
+	field_invoker_.set_value(object.GetInternal(), data);
+}
+
+void Field::SetValue(const Object& object, const Object& value) {
+	SetValue(object, value.GetInternal().get_internal_ptr());
 }
 
 } // namespace engine;

@@ -31,9 +31,11 @@ public:
 
     GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
 
+    std::shared_ptr<Component> AddComponent(const TypeData& type_data);
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
     std::shared_ptr<Component> AddComponent(const mono::mono_type& component_type);
     void RemoveComponent(std::shared_ptr<Component> component);
+    std::shared_ptr<Component> GetComponent(const TypeData& type_data);
     std::shared_ptr<Component> GetComponent(const std::string& name_space, const std::string& name);
     std::shared_ptr<Component> GetComponent(const mono::mono_type& component_type);
 

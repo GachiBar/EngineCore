@@ -28,8 +28,8 @@ void EditorLayer::OnAttach()
 	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture,this);
     gvm->editor_layer = this;
 
-	hierarchy = std::make_shared<SceneHierarchyWindow>(GetApp()->GetAssembly());
-    properties = std::make_shared<GameObjectInspectorWindow>(GetApp()->GetAssembly());
+	hierarchy = std::make_shared<SceneHierarchyWindow>(GetApp()->GetRuntime());
+    properties = std::make_shared<GameObjectInspectorWindow>(GetApp()->GetRuntime());
     resourceDrawer = std::make_shared<ResourceDrawer>();
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
     explorer = std::make_shared<ExplorerWindow>(GetApp());

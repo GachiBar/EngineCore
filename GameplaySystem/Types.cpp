@@ -8,7 +8,7 @@ namespace engine {
 
 std::unordered_set<TypeData> registered_types_;
 
-const TypeData& Types::kUndefined = Types::RegisterType("Undefined", "Undefined");
+const TypeData& Types::kUndefined = Types::RegisterType("", "");
 
 // System
 const TypeData& Types::kObject = Types::RegisterType("System", "Object");

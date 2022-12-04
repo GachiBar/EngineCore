@@ -45,7 +45,7 @@ public:
     ILayer* GetCurrentUpdateLayer() override;
     EEditorInputMode::Type GetCurrentInputMode() const override;
 
-    const mono::mono_assembly& GetAssembly() const;
+    const engine::Runtime& GetRuntime() const;
     virtual WNDPROC GetWndProc() override;
 
     virtual ~Application() = default;
@@ -64,9 +64,7 @@ protected:
 	LayerStack m_LayerStack;
     std::vector<std::shared_ptr<FGenericWindow>> wnds;
 
-    mono::mono_jit_domain m_JitDomain;
-    mono::mono_domain m_Domain;
-    mono::mono_assembly m_Assembly;
+    engine::Runtime runtime;
 
     std::shared_ptr<engine::Engine> engine_;
 

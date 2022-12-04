@@ -16,14 +16,14 @@ void ObjectDrawer::SetScene(std::shared_ptr<engine::Scene> scene)
 ObjectDrawer::ObjectDrawer()
     : game_objects_pointers(nullptr)
     , game_objects_names(nullptr)
-    , game_objects_copasity(0)
+    , game_objects_capacity(0)
 {}
 
 ObjectDrawer::~ObjectDrawer()
 {
-	if (game_objects_copasity > 0)
+	if (game_objects_capacity > 0)
 	{
-		for (size_t i = 0; i < game_objects_copasity; ++i)
+		for (size_t i = 0; i < game_objects_capacity; ++i)
 		{
 			delete[] game_objects_names[i];
 		}
@@ -35,81 +35,81 @@ ObjectDrawer::~ObjectDrawer()
 
 bool ObjectDrawer::DrawObject(engine::Object& object)
 {
-	auto fields = object.GetFields();
+	auto fields = object.GetType().GetFields();
 	bool isFieldChanged = false;
 
 	for (auto field : fields) 
 	{
-		if (field.GetTypeData() == engine::Types::kSingle) 
+		if (field.GetType().Is(engine::Types::kSingle)) 
 		{
-			isFieldChanged |= DrawFloatField(field);
+			isFieldChanged |= DrawFloatField(object, field);
 		} 
-		else if (field.GetTypeData() == engine::Types::kDouble) 
+		else if (field.GetType().Is(engine::Types::kDouble)) 
 		{
-			isFieldChanged |= DrawDoubleField(field);
+			isFieldChanged |= DrawDoubleField(object, field);
 		} 
-		else if (field.GetTypeData() == engine::Types::kBoolean) 
+		else if (field.GetType().Is(engine::Types::kBoolean)) 
 		{
-			isFieldChanged |= DrawBoolField(field);
+			isFieldChanged |= DrawBoolField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kSByte) 
+		else if (field.GetType().Is(engine::Types::kSByte)) 
 		{
-			isFieldChanged |= DrawByteField(field);
+			isFieldChanged |= DrawByteField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kInt16) 
+		else if (field.GetType().Is(engine::Types::kInt16)) 
 		{
-			isFieldChanged |= DrawShortField(field);
+			isFieldChanged |= DrawShortField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kInt32)
+		else if (field.GetType().Is(engine::Types::kInt32))
 		{
-			isFieldChanged |= DrawIntField(field);
+			isFieldChanged |= DrawIntField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kInt64)
+		else if (field.GetType().Is(engine::Types::kInt64))
 		{
-			isFieldChanged |= DrawLongField(field);
+			isFieldChanged |= DrawLongField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kByte)
+		else if (field.GetType().Is(engine::Types::kByte))
 		{
-			isFieldChanged |= DrawUByteField(field);
+			isFieldChanged |= DrawUByteField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kUInt16) 
+		else if (field.GetType().Is(engine::Types::kUInt16)) 
 		{
-			isFieldChanged |= DrawUShortField(field);
+			isFieldChanged |= DrawUShortField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kUInt32)
+		else if (field.GetType().Is(engine::Types::kUInt32))
 		{
-			isFieldChanged |= DrawUIntField(field);
+			isFieldChanged |= DrawUIntField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kUInt64)
+		else if (field.GetType().Is(engine::Types::kUInt64))
 		{
-			isFieldChanged |= DrawULongField(field);
+			isFieldChanged |= DrawULongField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kVector2)
+		else if (field.GetType().Is(engine::Types::kVector2))
 		{
-			isFieldChanged |= DrawVector2Field(field);
+			isFieldChanged |= DrawVector2Field(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kVector3)
+		else if (field.GetType().Is(engine::Types::kVector3))
 		{
-			isFieldChanged |= DrawVector3Field(field);
+			isFieldChanged |= DrawVector3Field(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kVector4)
+		else if (field.GetType().Is(engine::Types::kVector4))
 		{
-			isFieldChanged |= DrawVector4Field(field);
+			isFieldChanged |= DrawVector4Field(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kString)
+		else if (field.GetType().Is(engine::Types::kString))
 		{
-			isFieldChanged |= DrawStringField(field);
+			isFieldChanged |= DrawStringField(object, field);
 		}
-		else if (field.GetTypeData() == engine::Types::kGameObject) 
+		else if (field.GetType().Is(engine::Types::kGameObject)) 
 		{
-			isFieldChanged |= DrawGameObjectField(field);
+			isFieldChanged |= DrawGameObjectField(object, field);
 		}
 	}
 
 	return isFieldChanged;
 }
 
-bool ObjectDrawer::DrawFloatField(engine::Field field)
+bool ObjectDrawer::DrawFloatField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -119,7 +119,7 @@ bool ObjectDrawer::DrawFloatField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	auto value = monoObject.Unbox<float>();
 
 	float min = 0;
@@ -129,7 +129,7 @@ bool ObjectDrawer::DrawFloatField(engine::Field field)
 	{
 		if (ImGui::SliderFloat(fieldName.c_str(), &value, min, max))
 		{
-			field.SetValue(&value);
+			field.SetValue(object, &value);
 			return true;
 		}
 	}
@@ -137,7 +137,7 @@ bool ObjectDrawer::DrawFloatField(engine::Field field)
 	{
 		if (ImGui::InputFloat(fieldName.c_str(), &value))
 		{
-			field.SetValue(&value);
+			field.SetValue(object, &value);
 			return true;
 		}
 	}
@@ -145,7 +145,7 @@ bool ObjectDrawer::DrawFloatField(engine::Field field)
 	return false;
 }
 
-bool ObjectDrawer::DrawDoubleField(engine::Field field)
+bool ObjectDrawer::DrawDoubleField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -155,19 +155,19 @@ bool ObjectDrawer::DrawDoubleField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	auto value = monoObject.Unbox<double>();
 
 	if (ImGui::InputDouble(fieldName.c_str(), &value))
 	{
-		field.SetValue(&value);
+		field.SetValue(object, &value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawBoolField(engine::Field field)
+bool ObjectDrawer::DrawBoolField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -177,19 +177,19 @@ bool ObjectDrawer::DrawBoolField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	bool* value = reinterpret_cast<bool*>(monoObject.Unbox());
 
 	if (ImGui::Checkbox(fieldName.c_str(), value))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawByteField(engine::Field field)
+bool ObjectDrawer::DrawByteField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -199,20 +199,20 @@ bool ObjectDrawer::DrawByteField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImS8 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S8, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawShortField(engine::Field field)
+bool ObjectDrawer::DrawShortField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -222,20 +222,20 @@ bool ObjectDrawer::DrawShortField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImS16 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S16, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawIntField(engine::Field field)
+bool ObjectDrawer::DrawIntField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -245,20 +245,20 @@ bool ObjectDrawer::DrawIntField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImS32 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S32, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawLongField(engine::Field field)
+bool ObjectDrawer::DrawLongField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -268,20 +268,20 @@ bool ObjectDrawer::DrawLongField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImS64 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_S64, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawUByteField(engine::Field field)
+bool ObjectDrawer::DrawUByteField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -291,20 +291,20 @@ bool ObjectDrawer::DrawUByteField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImU8 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U8, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawUShortField(engine::Field field)
+bool ObjectDrawer::DrawUShortField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -314,20 +314,20 @@ bool ObjectDrawer::DrawUShortField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImU16 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U16, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawUIntField(engine::Field field)
+bool ObjectDrawer::DrawUIntField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -337,20 +337,20 @@ bool ObjectDrawer::DrawUIntField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImU32 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U32, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawULongField(engine::Field field)
+bool ObjectDrawer::DrawULongField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -360,20 +360,20 @@ bool ObjectDrawer::DrawULongField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	void* value = monoObject.Unbox();
 	ImU64 step = 1;
 
 	if (ImGui::InputScalar(fieldName.c_str(), ImGuiDataType_U64, value, &step))
 	{
-		field.SetValue(value);
+		field.SetValue(object, value);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawVector2Field(engine::Field field)
+bool ObjectDrawer::DrawVector2Field(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -383,7 +383,7 @@ bool ObjectDrawer::DrawVector2Field(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	auto value = monoObject.Unbox<DirectX::SimpleMath::Vector2>();
 	float vector[2] = { value.x, value.y };
 
@@ -394,7 +394,7 @@ bool ObjectDrawer::DrawVector2Field(engine::Field field)
 	{
 		if (ImGui::SliderFloat2(fieldName.c_str(), vector, min, max))
 		{
-			field.SetValue(vector);
+			field.SetValue(object, vector);
 			return true;
 		}
 	}
@@ -402,7 +402,7 @@ bool ObjectDrawer::DrawVector2Field(engine::Field field)
 	{
 		if (ImGui::InputFloat2(fieldName.c_str(), vector))
 		{
-			field.SetValue(vector);
+			field.SetValue(object, vector);
 			return true;
 		}
 	}
@@ -410,7 +410,7 @@ bool ObjectDrawer::DrawVector2Field(engine::Field field)
 	return false;
 }
 
-bool ObjectDrawer::DrawVector3Field(engine::Field field)
+bool ObjectDrawer::DrawVector3Field(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -420,7 +420,7 @@ bool ObjectDrawer::DrawVector3Field(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	auto value = monoObject.Unbox<DirectX::SimpleMath::Vector3>();
 	float vector[3] = { value.x, value.y, value.z };
 
@@ -431,7 +431,7 @@ bool ObjectDrawer::DrawVector3Field(engine::Field field)
 	{
 		if (ImGui::SliderFloat3(fieldName.c_str(), vector, min, max))
 		{
-			field.SetValue(vector);
+			field.SetValue(object, vector);
 			return true;
 		}
 	}
@@ -439,7 +439,7 @@ bool ObjectDrawer::DrawVector3Field(engine::Field field)
 	{
 		if (ImGui::InputFloat3(fieldName.c_str(), vector))
 		{
-			field.SetValue(vector);
+			field.SetValue(object, vector);
 			return true;
 		}
 	}
@@ -447,7 +447,7 @@ bool ObjectDrawer::DrawVector3Field(engine::Field field)
 	return false;
 }
 
-bool ObjectDrawer::DrawVector4Field(engine::Field field)
+bool ObjectDrawer::DrawVector4Field(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -457,7 +457,7 @@ bool ObjectDrawer::DrawVector4Field(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue().value();
+	auto monoObject = field.GetValue(object).value();
 	auto value = monoObject.Unbox<DirectX::SimpleMath::Vector4>();
 	float vector[4] = { value.x, value.y, value.z, value.w };
 
@@ -468,7 +468,7 @@ bool ObjectDrawer::DrawVector4Field(engine::Field field)
 	{
 		if (ImGui::SliderFloat4(fieldName.c_str(), vector, min, max))
 		{
-			field.SetValue(vector);
+			field.SetValue(object, vector);
 			return true;
 		}
 	}
@@ -476,7 +476,7 @@ bool ObjectDrawer::DrawVector4Field(engine::Field field)
 	{
 		if (ImGui::InputFloat4(fieldName.c_str(), vector))
 		{
-			field.SetValue(vector);
+			field.SetValue(object, vector);
 			return true;
 		}
 	}
@@ -484,7 +484,7 @@ bool ObjectDrawer::DrawVector4Field(engine::Field field)
 	return false;
 }
 
-bool ObjectDrawer::DrawStringField(engine::Field field)
+bool ObjectDrawer::DrawStringField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -498,7 +498,7 @@ bool ObjectDrawer::DrawStringField(engine::Field field)
 	buffer[0] = '\0';
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto mono_object = field.GetValue();
+	auto mono_object = field.GetValue(object);
 
 	if (mono_object.has_value())
 	{
@@ -513,14 +513,14 @@ bool ObjectDrawer::DrawStringField(engine::Field field)
 		auto& domain = mono::mono_domain::get_current_domain();
 		std::string newContent(buffer);
 		mono::mono_string newValue(domain, newContent);
-		field.SetValue(newValue);
+		field.SetValue(object, newValue);
 		return true;
 	}
 
 	return false;
 }
 
-bool ObjectDrawer::DrawGameObjectField(engine::Field field)
+bool ObjectDrawer::DrawGameObjectField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -530,13 +530,12 @@ bool ObjectDrawer::DrawGameObjectField(engine::Field field)
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue();
-	auto c = scene->Count();
+	auto monoObject = field.GetValue(object);
 
-	if (scene->Count() + 1 > game_objects_copasity)
+	if (scene->Count() + 1 > game_objects_capacity)
 	{
 		auto degree = std::ceil(std::log2(scene->Count() + 1));
-		ChangeGameObjectResourcesCopasity(std::pow(2, degree));
+		ChangeGameObjectResourcesCapacity(std::pow(2, degree));
 	}
 
 	auto current = game_objects_names;
@@ -570,7 +569,7 @@ bool ObjectDrawer::DrawGameObjectField(engine::Field field)
 	if (ImGui::Combo(fieldName.c_str(), &selected, game_objects_names, scene->Count() + 1))
 	{
 		auto gameObject = game_objects_pointers[selected];
-		field.SetValue(gameObject);
+		field.SetValue(object, gameObject);
 		return true;
 	}
 
@@ -583,7 +582,7 @@ std::string ObjectDrawer::GetFieldName(
 {
 	auto predicate = [](auto attr)
 	{
-		return attr.GetTypeData() == engine::Types::kInspectorNameAttribute;
+		return attr.GetType().Is(engine::Types::kInspectorNameAttribute);
 	};
 
 	auto nameAttribute = std::find_if(attributes.begin(), attributes.end(), predicate);
@@ -593,8 +592,8 @@ std::string ObjectDrawer::GetFieldName(
 		return field.GetName();
 	}
 
-	auto nameProperty = nameAttribute->GetProperty("Name");
-	auto value = nameProperty.GetValue().value();
+	auto nameProperty = nameAttribute->GetType().GetProperty("Name");
+	auto value = nameProperty.GetValue(*nameAttribute).value();
 	mono::mono_string result(value.GetInternal());
 	return result.as_utf8();
 }
@@ -605,7 +604,7 @@ bool ObjectDrawer::IsEditableField(
 {
 	for (auto attr : attributes)
 	{
-		if (attr.GetTypeData() == engine::Types::kHideInInspectorAttribute)
+		if (attr.GetType().Is(engine::Types::kHideInInspectorAttribute))
 		{
 			return false;
 		}
@@ -613,7 +612,7 @@ bool ObjectDrawer::IsEditableField(
 
 	for (auto attr : attributes)
 	{
-		if (attr.GetTypeData() == engine::Types::kSerializeFieldAttribute)
+		if (attr.GetType().Is(engine::Types::kSerializeFieldAttribute))
 		{
 			return true;
 		}
@@ -629,7 +628,7 @@ bool ObjectDrawer::TryGetSliderConstraints(
 {
 	auto predicate = [](auto attr)
 	{
-		return attr.GetTypeData() == engine::Types::kSliderAttribute;
+		return attr.GetType().Is(engine::Types::kSliderAttribute);
 	};
 
 	auto it = std::find_if(attributes.begin(), attributes.end(), predicate);
@@ -639,23 +638,23 @@ bool ObjectDrawer::TryGetSliderConstraints(
 		return false;
 	}
 
-	auto minProperty = it->GetProperty("Min");
-	auto minValue = minProperty.GetValue().value();
+	auto minProperty = it->GetType().GetProperty("Min");
+	auto minValue = minProperty.GetValue(*it).value();
 	min_out = minValue.Unbox<float>();
 
-	auto maxProperty = it->GetProperty("Max");
-	auto maxValue = maxProperty.GetValue().value();
+	auto maxProperty = it->GetType().GetProperty("Max");
+	auto maxValue = maxProperty.GetValue(*it).value();
 	max_out = maxValue.Unbox<float>();
 
 	return true;
 }
 
 
-void ObjectDrawer::ChangeGameObjectResourcesCopasity(size_t size)
+void ObjectDrawer::ChangeGameObjectResourcesCapacity(size_t size)
 {
-	if (game_objects_copasity > 0)
+	if (game_objects_capacity > 0)
 	{
-		for (size_t i = 0; i < game_objects_copasity; ++i)
+		for (size_t i = 0; i < game_objects_capacity; ++i)
 		{
 			delete[] game_objects_names[i];
 		}
@@ -664,11 +663,11 @@ void ObjectDrawer::ChangeGameObjectResourcesCopasity(size_t size)
 		delete[] game_objects_names;
 	}
 
-	game_objects_copasity = size;
-	game_objects_pointers = new void* [game_objects_copasity];
-	game_objects_names = new char* [game_objects_copasity];
+	game_objects_capacity = size;
+	game_objects_pointers = new void* [game_objects_capacity];
+	game_objects_names = new char* [game_objects_capacity];
 
-	for (size_t i = 0; i < game_objects_copasity; ++i)
+	for (size_t i = 0; i < game_objects_capacity; ++i)
 	{
 		game_objects_names[i] = new char[kGameObjectNameMaxSize];
 	}

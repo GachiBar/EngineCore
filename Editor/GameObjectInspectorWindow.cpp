@@ -35,8 +35,8 @@ void GameObjectInspectorWindow::SetGameObject(std::shared_ptr<engine::GameObject
 	}	
 }
 
-GameObjectInspectorWindow::GameObjectInspectorWindow(const mono::mono_assembly& assembly)
-	: assembly(assembly)
+GameObjectInspectorWindow::GameObjectInspectorWindow(const engine::Runtime& runtime)
+	: runtime(runtime)
 {
 	CacheComponentsData();
 	available_components_items = new const char* [components_names.size()];
@@ -71,8 +71,8 @@ void GameObjectInspectorWindow::Draw()
 
 void GameObjectInspectorWindow::CacheComponentsData()
 {
-	auto baseComponentType = assembly.get_type("GameplayCore.Components", "Component");
-	auto typeNames = assembly.dump_type_names();
+	auto baseComponentType = runtime.GetAssembly().get_type("GameplayCore.Components", "Component");
+	auto typeNames = runtime.GetAssembly().dump_type_names();
 
 	for (auto typeName : typeNames)
 	{
@@ -81,7 +81,7 @@ void GameObjectInspectorWindow::CacheComponentsData()
 		try
 		{
 			auto typeDeclaration = engine::Types::ParseFullName(typeName);
-			type = assembly.get_type(typeDeclaration.name_space, typeDeclaration.name);
+			type = runtime.GetAssembly().get_type(typeDeclaration.name_space, typeDeclaration.name);
 		}
 		catch (mono::mono_exception& ex)
 		{
@@ -136,9 +136,9 @@ void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Comp
 			//	component->GetMethod("Invalidate", 1).Invoke(params);
 			//}
 
-			if (component->HasMethod("Invalidate")) 
+			if (component->GetType().HasMethod("Invalidate")) 
 			{
-				component->GetMethod("Invalidate").Invoke();
+				component->GetType().GetMethod("Invalidate").Invoke();
 			}
 		}
 

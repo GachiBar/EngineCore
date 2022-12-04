@@ -57,6 +57,11 @@ GameObject::GameObject(const mono::mono_assembly& assembly, mono::mono_object ob
     , assembly_(assembly)
 {}
 
+std::shared_ptr<Component> GameObject::AddComponent(const TypeData& type_data)
+{
+    return AddComponent(type_data.name_space, type_data.name);
+}
+
 std::shared_ptr<Component> GameObject::AddComponent(const std::string& name_space, const std::string& name) {
     return AddComponent(assembly_.get_type(name_space, name));
 }
@@ -81,6 +86,11 @@ void GameObject::RemoveComponent(std::shared_ptr<Component> component) {
 
     ComponentRemoved.Broadcast(*this, component);
     component.reset();
+}
+
+std::shared_ptr<Component> GameObject::GetComponent(const TypeData& type_data)
+{
+    return GetComponent(type_data.name_space, type_data.name);
 }
 
 std::shared_ptr<Component> GameObject::GetComponent(const std::string& name_space, const std::string& name) {
