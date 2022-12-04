@@ -41,10 +41,5 @@ private:
 	void DrawComponentFields(std::shared_ptr<engine::Component> component);
 	void DrawAddComponentPanel();
 
-	void ParseFullName(
-		const std::string& fullName, 
-		std::string& namespace_out, 
-		std::string& name_out);
-
 	void FindAvaliableComponents();
 };

@@ -6,6 +6,12 @@ namespace engine {
 
 struct Types;
 
+struct TypeDeclaration {
+public:
+	const std::string name_space;
+	const std::string name;
+};
+
 struct TypeData {
 	friend Types;
 
@@ -31,10 +37,14 @@ public:
 
 private:
 	TypeData(std::string name_space, std::string name)
-		: name_space(name_space)
-		, name(name)
-		, full_name(name_space + "." + name)
+		: name_space(std::move(name_space))
+		, name(std::move(name))
+		, full_name(this->name_space + "." + this->name)
 		, type_hash(std::hash<std::string>{}(full_name))
+	{}
+
+	TypeData(TypeDeclaration type_declaration)
+		: TypeData(type_declaration.name_space, type_declaration.name)
 	{}
 };
 
@@ -76,7 +86,8 @@ public:
 	static const TypeData& RegisterType(std::string name_space, std::string name);
 	static const TypeData& GetTypeData(std::string name_space, std::string name);
 	static const TypeData& GetTypeData(std::string full_name);
-	static void ParseFullName(const std::string& fullName, std::string& namespace_out, std::string& name_out);
+	static const TypeData& GetTypeData(TypeDeclaration type_declaration);
+	static TypeDeclaration ParseFullName(const std::string& full_name);
 };
 
 } // namespace engine

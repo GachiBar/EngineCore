@@ -62,17 +62,20 @@ const TypeData& Types::GetTypeData(std::string name_space, std::string name) {
 }
 
 const TypeData& Types::GetTypeData(std::string full_name) {
-	std::string name_space;
-	std::string name;
-	Types::ParseFullName(full_name, name_space, name);
-	return GetTypeData(name_space, name);
+	auto type_declaration = Types::ParseFullName(full_name);
+	return GetTypeData(std::move(type_declaration));
 }
 
-void Types::ParseFullName(const std::string& fullName, std::string& namespace_out, std::string& name_out)
+const TypeData& Types::GetTypeData(TypeDeclaration type_declaration) {
+	return GetTypeData(type_declaration.name_space, type_declaration.name);
+}
+
+TypeDeclaration Types::ParseFullName(const std::string& full_name)
 {
-	size_t lastDotPosition = fullName.find_last_of(".");
-	namespace_out = fullName.substr(0, lastDotPosition);
-	name_out = fullName.substr(lastDotPosition + 1, fullName.size() - lastDotPosition - 1);
+	size_t lastDotPosition = full_name.find_last_of(".");
+	auto name_space = full_name.substr(0, lastDotPosition);
+	auto name = full_name.substr(lastDotPosition + 1, full_name.size() - lastDotPosition - 1);
+	return { name_space, name };
 }
 
 } // namespace engine

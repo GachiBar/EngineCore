@@ -80,10 +80,8 @@ void GameObjectInspectorWindow::CacheComponentsData()
 
 		try
 		{
-			std::string nameSpace;
-			std::string name;
-			ParseFullName(typeName, nameSpace, name);
-			type = assembly.get_type(nameSpace, name);
+			auto typeDeclaration = engine::Types::ParseFullName(typeName);
+			type = assembly.get_type(typeDeclaration.name_space, typeDeclaration.name);
 		}
 		catch (mono::mono_exception& ex)
 		{
@@ -162,24 +160,11 @@ void GameObjectInspectorWindow::DrawAddComponentPanel()
 	if (ImGui::Combo("Add", &selected, available_components_items, avaliable_components_count))
 	{		
 		std::string fullName(available_components_items[selected]);
-		std::string nameSpace;
-		std::string name;
-		ParseFullName(fullName, nameSpace, name);
-
-		game_object->AddComponent(nameSpace, name);	
+		auto typeDeclaration = engine::Types::ParseFullName(fullName);
+		game_object->AddComponent(typeDeclaration.name_space, typeDeclaration.name);
 		game_object->Invalidate();
 		FindAvaliableComponents();
 	}
-}
-
-void GameObjectInspectorWindow::ParseFullName(
-	const std::string& fullName, 
-	std::string& namespace_out, 
-	std::string& name_out)
-{
-	size_t lastDotPosition = fullName.find_last_of(".");
-	namespace_out = fullName.substr(0, lastDotPosition);
-	name_out = fullName.substr(lastDotPosition + 1, fullName.size() - lastDotPosition - 1);
 }
 
 void GameObjectInspectorWindow::FindAvaliableComponents()
