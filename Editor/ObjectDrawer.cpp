@@ -40,58 +40,69 @@ bool ObjectDrawer::DrawObject(engine::Object& object)
 
 	for (auto field : fields) 
 	{
-		switch (field.GetTypeData().type)
+		if (field.GetTypeData() == engine::Types::kSingle) 
 		{
-		case engine::Type::kFloat:
 			isFieldChanged |= DrawFloatField(field);
-			break;
-		case engine::Type::kDouble:
+		} 
+		else if (field.GetTypeData() == engine::Types::kDouble) 
+		{
 			isFieldChanged |= DrawDoubleField(field);
-			break;
-		case engine::Type::kBool:
+		} 
+		else if (field.GetTypeData() == engine::Types::kBoolean) 
+		{
 			isFieldChanged |= DrawBoolField(field);
-			break;
-		case engine::Type::kByte:
+		}
+		else if (field.GetTypeData() == engine::Types::kSByte) 
+		{
 			isFieldChanged |= DrawByteField(field);
-			break;
-		case engine::Type::kShort:
+		}
+		else if (field.GetTypeData() == engine::Types::kInt16) 
+		{
 			isFieldChanged |= DrawShortField(field);
-			break;
-		case engine::Type::kInt:
+		}
+		else if (field.GetTypeData() == engine::Types::kInt32)
+		{
 			isFieldChanged |= DrawIntField(field);
-			break;
-		case engine::Type::kLong:
+		}
+		else if (field.GetTypeData() == engine::Types::kInt64)
+		{
 			isFieldChanged |= DrawLongField(field);
-			break;
-		case engine::Type::kUByte:
+		}
+		else if (field.GetTypeData() == engine::Types::kByte)
+		{
 			isFieldChanged |= DrawUByteField(field);
-			break;
-		case engine::Type::kUShort:
+		}
+		else if (field.GetTypeData() == engine::Types::kUInt16) 
+		{
 			isFieldChanged |= DrawUShortField(field);
-			break;
-		case engine::Type::kUInt:
+		}
+		else if (field.GetTypeData() == engine::Types::kUInt32)
+		{
 			isFieldChanged |= DrawUIntField(field);
-			break;
-		case engine::Type::kULong:
+		}
+		else if (field.GetTypeData() == engine::Types::kUInt64)
+		{
 			isFieldChanged |= DrawULongField(field);
-			break;
-		case engine::Type::kVector2:
+		}
+		else if (field.GetTypeData() == engine::Types::kVector2)
+		{
 			isFieldChanged |= DrawVector2Field(field);
-			break;
-		case engine::Type::kVector3:
+		}
+		else if (field.GetTypeData() == engine::Types::kVector3)
+		{
 			isFieldChanged |= DrawVector3Field(field);
-			break;
-		case engine::Type::kVector4:
+		}
+		else if (field.GetTypeData() == engine::Types::kVector4)
+		{
 			isFieldChanged |= DrawVector4Field(field);
-			break;
-		case engine::Type::kString:
+		}
+		else if (field.GetTypeData() == engine::Types::kString)
+		{
 			isFieldChanged |= DrawStringField(field);
-			break;
-		case engine::Type::kGameObject:
+		}
+		else if (field.GetTypeData() == engine::Types::kGameObject) 
+		{
 			isFieldChanged |= DrawGameObjectField(field);
-			break;
-		default:
-			break;
 		}
 	}
 
@@ -572,7 +583,7 @@ std::string ObjectDrawer::GetFieldName(
 {
 	auto predicate = [](auto attr)
 	{
-		return attr.GetTypeData().type == engine::Type::kInspectorNameAttribute;
+		return attr.GetTypeData() == engine::Types::kInspectorNameAttribute;
 	};
 
 	auto nameAttribute = std::find_if(attributes.begin(), attributes.end(), predicate);
@@ -594,7 +605,7 @@ bool ObjectDrawer::IsEditableField(
 {
 	for (auto attr : attributes)
 	{
-		if (attr.GetTypeData().type == engine::Type::kHideInInspectorAttribute)
+		if (attr.GetTypeData() == engine::Types::kHideInInspectorAttribute)
 		{
 			return false;
 		}
@@ -602,7 +613,7 @@ bool ObjectDrawer::IsEditableField(
 
 	for (auto attr : attributes)
 	{
-		if (attr.GetTypeData().type == engine::Type::kSerializeFieldAttribute)
+		if (attr.GetTypeData() == engine::Types::kSerializeFieldAttribute)
 		{
 			return true;
 		}
@@ -618,7 +629,7 @@ bool ObjectDrawer::TryGetSliderConstraints(
 {
 	auto predicate = [](auto attr)
 	{
-		return attr.GetTypeData().type == engine::Type::kSliderAttribute;
+		return attr.GetTypeData() == engine::Types::kSliderAttribute;
 	};
 
 	auto it = std::find_if(attributes.begin(), attributes.end(), predicate);
