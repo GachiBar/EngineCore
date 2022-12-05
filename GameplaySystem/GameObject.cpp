@@ -51,15 +51,15 @@ GameObject::GameObject(const Object& other)
 
 std::shared_ptr<Component> GameObject::AddComponent(const TypeData& type_data)
 {
-    return AddComponent(Runtime::GetCurrentRuntime().GetType(type_data).GetInternal());
+    return AddComponent(Runtime::GetCurrentRuntime().GetType(type_data));
 }
 
 std::shared_ptr<Component> GameObject::AddComponent(const std::string& name_space, const std::string& name) {
-    return AddComponent(Runtime::GetCurrentRuntime().GetType(name_space, name).GetInternal());
+    return AddComponent(Runtime::GetCurrentRuntime().GetType(name_space, name));
 }
 
 std::shared_ptr<Component> GameObject::AddComponent(const std::string& full_name) {
-    return AddComponent(Runtime::GetCurrentRuntime().GetType(full_name).GetInternal());
+    return AddComponent(Runtime::GetCurrentRuntime().GetType(full_name));
 }
 
 std::shared_ptr<Component> GameObject::AddComponent(const Type& type) {
@@ -89,15 +89,15 @@ void GameObject::RemoveComponent(std::shared_ptr<Component> component) {
 
 std::shared_ptr<Component> GameObject::GetComponent(const TypeData& type_data)
 {
-    return GetComponent(Runtime::GetCurrentRuntime().GetType(type_data).GetInternal());
+    return GetComponent(Runtime::GetCurrentRuntime().GetType(type_data));
 }
 
 std::shared_ptr<Component> GameObject::GetComponent(const std::string& name_space, const std::string& name) {
-    return GetComponent(Runtime::GetCurrentRuntime().GetType(name_space, name).GetInternal());
+    return GetComponent(Runtime::GetCurrentRuntime().GetType(name_space, name));
 }
 
 std::shared_ptr<Component> GameObject::GetComponent(const std::string& full_name) {
-    return GetComponent(Runtime::GetCurrentRuntime().GetType(full_name).GetInternal());
+    return GetComponent(Runtime::GetCurrentRuntime().GetType(full_name));
 }
 
 std::shared_ptr<Component> GameObject::GetComponent(const Type& type) {

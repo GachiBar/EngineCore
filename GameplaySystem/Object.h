@@ -19,12 +19,9 @@ class Object {
 
 	 virtual ~Object();
 
-	 void* Unbox() const;
-
 	 template<typename T>
-	 T Unbox() const {
-		 return *(T*)object_.unbox();
-	 }
+	 T Unbox() const;
+	 void* Unbox() const;
 
 	 friend bool operator== (const Object& lhs, const Object& rhs);
 	 friend bool operator== (const Object& lhs, const mono::mono_object& rhs);
@@ -35,5 +32,10 @@ class Object {
 	Type type_;
 	uint32_t handle_;	
 };
+
+template<typename T>
+T Object::Unbox() const {
+	return *reinterpret_cast<T*>(object_.unbox());
+}
 
 } // namespace engine
