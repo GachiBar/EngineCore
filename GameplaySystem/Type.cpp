@@ -10,11 +10,35 @@ const mono::mono_type& Type::GetInternal() const {
 }
 
 const TypeData& Type::GetTypeData() const {
-	return type_data_;
+	return *type_data_;
+}
+
+const bool Type::HasBaseType() const {
+	return type_.has_base_type();
 }
 
 const Type Type::GetBaseType() const {
 	return { type_.get_base_type() };
+}
+
+const std::string Type::GetName() const {
+	return type_.get_name();
+}
+
+const std::string Type::GetNameSpace() const {
+	return type_.get_namespace();
+}
+
+const std::string Type::GetFullName() const {
+	return type_.get_fullname();
+}
+
+const bool Type::IsAbstract() const {
+	return type_.is_abstract();
+}
+
+const bool Type::IsDerivedFrom(const Type& type) const {
+	return type_.is_derived_from(type.GetInternal());
 }
 
 Field Type::GetField(const std::string& name) const {
@@ -74,11 +98,11 @@ std::vector<Method> Type::GetMethods() const {
 
 Type::Type(mono::mono_type type)
 	: type_(type)
-	, type_data_(Types::GetTypeData(type_.get_fullname()))
+	, type_data_(&Types::GetTypeData(type_.get_fullname()))
 {}
 
 bool Type::Is(const TypeData& type_data) const {
-	return type_data_ == type_data;
+	return *type_data_ == type_data;
 }
 
 Object Type::Instantiate() const {

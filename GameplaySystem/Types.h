@@ -10,6 +10,8 @@ struct TypeDeclaration {
 public:
 	const std::string name_space;
 	const std::string name;
+
+	TypeDeclaration(std::string name_space, std::string name);
 };
 
 struct TypeData {
@@ -21,31 +23,13 @@ public:
 	const std::string full_name;
 	const size_t type_hash;
 
-	friend bool operator==(const TypeData& lhs, const TypeData& rhs) {
-		if (lhs.type_hash != rhs.type_hash) {
-			return false;
-		} else if (lhs.full_name != rhs.full_name) {
-			return false;
-		}
+	friend bool operator==(const TypeData& lhs, const TypeData& rhs);
 
-		return true;
-	}
-
-	friend bool operator!=(const TypeData& lhs, const TypeData& rhs) {
-		return !(lhs == rhs);
-	}
+	friend bool operator!=(const TypeData& lhs, const TypeData& rhs);
 
 private:
-	TypeData(std::string name_space, std::string name)
-		: name_space(std::move(name_space))
-		, name(std::move(name))
-		, full_name(this->name_space + "." + this->name)
-		, type_hash(std::hash<std::string>{}(full_name))
-	{}
-
-	TypeData(TypeDeclaration type_declaration)
-		: TypeData(type_declaration.name_space, type_declaration.name)
-	{}
+	TypeData(std::string name_space, std::string name);
+	TypeData(TypeDeclaration type_declaration);
 };
 
 struct Types {		

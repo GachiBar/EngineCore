@@ -12,7 +12,7 @@ public:
 	ObjectDrawer();
 	~ObjectDrawer();
 
-	bool DrawObject(engine::Object& object);
+	bool DrawObject(engine::Object& object, std::vector<std::string>& modifiedFields);
 
 private:
 	static const size_t kGameObjectNameMaxSize = 15;

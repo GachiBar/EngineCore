@@ -14,7 +14,16 @@ class Type {
 public:
 	const mono::mono_type& GetInternal() const;
 	const TypeData& GetTypeData() const;
+
+	const bool HasBaseType() const;
 	const Type GetBaseType() const;
+
+	const std::string GetName() const;
+	const std::string GetNameSpace() const;
+	const std::string GetFullName() const;
+
+	const bool IsAbstract() const;
+	const bool IsDerivedFrom(const Type& type) const;
 
 	Field GetField(const std::string& name) const;
 	std::vector<Field> GetFields() const;
@@ -36,7 +45,7 @@ public:
 
 private:
 	mono::mono_type type_;
-	const TypeData& type_data_;
+	const TypeData* type_data_;
 };
 
 } // namespace engine

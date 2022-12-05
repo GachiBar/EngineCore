@@ -22,6 +22,12 @@ Object::Object(const mono::mono_object& object)
     , handle_(mono_gchandle_new(object_.get_internal_ptr(), true))
 {}
 
+Object::Object(const Object& other) 
+    : object_(other.GetInternal())
+    , type_(other.GetType())
+    , handle_(mono_gchandle_new(object_.get_internal_ptr(), true))
+{}
+
 Object::~Object() {
     mono_gchandle_free(handle_);
 }

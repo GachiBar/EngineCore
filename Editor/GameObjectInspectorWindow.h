@@ -19,7 +19,7 @@ public:
 	std::shared_ptr<engine::GameObject> GetGameObject();
 	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
 
-	GameObjectInspectorWindow(const engine::Runtime& runtime);
+	GameObjectInspectorWindow();
 
 	~GameObjectInspectorWindow() override;
 
@@ -33,7 +33,6 @@ private:
 	const char** available_components_items;
 	size_t avaliable_components_count;
 
-	const engine::Runtime& runtime;
 	std::vector<std::string> components_names;
 
 	void CacheComponentsData();

@@ -18,9 +18,8 @@ void SceneHierarchyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
     this->scene = scene;
 }
 
-SceneHierarchyWindow::SceneHierarchyWindow(const engine::Runtime& runtime)
-    : runtime(runtime)
-    , tree_level_id(0)
+SceneHierarchyWindow::SceneHierarchyWindow()
+    : tree_level_id(0)
 {}
 
 void SceneHierarchyWindow::Draw()
@@ -166,7 +165,7 @@ void SceneHierarchyWindow::DrawHierarchy(engine::Component& transform)
             params[0] = &i;
 
             auto childObject = getChildMethod.Invoke(transform, params).value();
-            engine::Component childTransform(runtime, childObject.GetInternal());
+            engine::Component childTransform(childObject.GetInternal());
             DrawHierarchy(childTransform);
             tree_level_id += 1;
         }
@@ -237,7 +236,7 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
         params[0] = &i;
 
         auto childObject = getChildMethod.Invoke(transform, params).value();
-        engine::Component childTransform(runtime, childObject.GetInternal());
+        engine::Component childTransform(childObject);
         DeleteHierarchy(childTransform);
     }
 

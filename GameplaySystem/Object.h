@@ -15,6 +15,8 @@ class Object {
 
 	 Object(MonoObject* mono_object);
 	 Object(const mono::mono_object& object);
+	 Object(const Object& other);
+
 	 virtual ~Object();
 
 	 void* Unbox() const;

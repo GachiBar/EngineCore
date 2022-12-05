@@ -35,8 +35,7 @@ void GameObjectInspectorWindow::SetGameObject(std::shared_ptr<engine::GameObject
 	}	
 }
 
-GameObjectInspectorWindow::GameObjectInspectorWindow(const engine::Runtime& runtime)
-	: runtime(runtime)
+GameObjectInspectorWindow::GameObjectInspectorWindow()
 {
 	CacheComponentsData();
 	available_components_items = new const char* [components_names.size()];
@@ -71,39 +70,37 @@ void GameObjectInspectorWindow::Draw()
 
 void GameObjectInspectorWindow::CacheComponentsData()
 {
-	auto baseComponentType = runtime.GetAssembly().get_type("GameplayCore.Components", "Component");
-	auto typeNames = runtime.GetAssembly().dump_type_names();
+	auto& runtime = engine::Runtime::GetCurrentRuntime();
+	auto baseComponentType = runtime.GetType(engine::Types::kComponent);
+	auto typeNames = runtime.DumpTypeNames();
 
 	for (auto typeName : typeNames)
 	{
-		mono::mono_type type;
-
 		try
 		{
-			auto typeDeclaration = engine::Types::ParseFullName(typeName);
-			type = runtime.GetAssembly().get_type(typeDeclaration.name_space, typeDeclaration.name);
+			auto typeDeclarartion = engine::Types::ParseFullName(typeName);
+			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);
+			bool isComponent = false;
+
+			while (type.HasBaseType() && !type.IsAbstract())
+			{
+				if (type.IsDerivedFrom(baseComponentType))
+				{
+					isComponent = true;
+					break;
+				}
+
+				type = type.GetBaseType();
+			}
+
+			if (isComponent)
+			{
+				components_names.push_back(typeName);
+			}
 		}
 		catch (mono::mono_exception& ex)
 		{
 			continue;
-		}
-
-		bool isComponent = false;
-
-		while (type.has_base_type() && !type.is_abstract())
-		{
-			if (type.is_derived_from(baseComponentType))
-			{
-				isComponent = true;
-				break;
-			}
-			
-			type = type.get_base_type();
-		}
-
-		if (isComponent)
-		{
-			components_names.push_back(type.get_fullname());
 		}
 	}
 }
@@ -112,7 +109,8 @@ void GameObjectInspectorWindow::DrawGameObjectFields()
 {
 	if (ImGui::CollapsingHeader("GameObject", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		object_drawer.DrawObject(*game_object);
+		std::vector<std::string> modifiedFields;
+		object_drawer.DrawObject(*game_object, modifiedFields);
 		ImGui::NewLine();
 	}	
 }
@@ -123,22 +121,24 @@ void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Comp
 
 	if (ImGui::CollapsingHeader(component->Name().c_str(), &visible, ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if (object_drawer.DrawObject(*component)) 
+		std::vector<std::string> modifiedFields;
+
+		if (object_drawer.DrawObject(*component, modifiedFields)) 
 		{
-			//if (isFieldChanged && component->HasMethod("Invalidate", 1))
-			//{
-			//	auto& domain = mono::mono_domain::get_current_domain();
-			//	mono::mono_string fieldName(domain, field.GetName());
-
-			//	void* params[1];
-			//	params[0] = fieldName.get_internal_ptr();
-
-			//	component->GetMethod("Invalidate", 1).Invoke(params);
-			//}
-
-			if (component->GetType().HasMethod("Invalidate")) 
+			if (component->GetType().HasMethod("Invalidate", 1)) 
 			{
-				component->GetType().GetMethod("Invalidate").Invoke();
+				auto invalidate = component->GetType().GetMethod("Invalidate", 1);
+
+				for (auto field : modifiedFields)
+				{
+					auto& domain = mono::mono_domain::get_current_domain();
+					mono::mono_string fieldName(domain, field);
+
+					void* params[1];
+					params[0] = fieldName.get_internal_ptr();
+
+					invalidate.Invoke(*component, params);
+				}				
 			}
 		}
 
@@ -160,8 +160,7 @@ void GameObjectInspectorWindow::DrawAddComponentPanel()
 	if (ImGui::Combo("Add", &selected, available_components_items, avaliable_components_count))
 	{		
 		std::string fullName(available_components_items[selected]);
-		auto typeDeclaration = engine::Types::ParseFullName(fullName);
-		game_object->AddComponent(typeDeclaration.name_space, typeDeclaration.name);
+		game_object->AddComponent(fullName);
 		game_object->Invalidate();
 		FindAvaliableComponents();
 	}

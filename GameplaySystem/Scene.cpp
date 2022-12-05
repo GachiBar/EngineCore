@@ -29,16 +29,15 @@ size_t Scene::Count() const {
     return static_cast<size_t>(count);
 }
 
-Scene::Scene(const Runtime& runtime)
-    : Object(runtime.GetType(Types::kScene).Instantiate())
-    , runtime_(runtime)
+Scene::Scene(const Object& object)
+    : Object(object)
 {}
 
 std::shared_ptr<GameObject> Scene::CreateGameObject() {
     assert(create_game_object_ != nullptr && kIsNotCachedErrorMessage);
 
     auto game_object = create_game_object_->Invoke(*this).value();
-    return std::make_shared<GameObject>(runtime_, game_object.GetInternal());
+    return std::make_shared<GameObject>(game_object);
 }
 
 void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
@@ -118,7 +117,7 @@ std::shared_ptr<GameObject> Scene::operator[](size_t index) const {
     args[0] = &index;
     
     auto game_object = get_item_->Invoke(*this, args).value();
-    return std::make_shared<GameObject>(runtime_, game_object.GetInternal());
+    return std::make_shared<GameObject>(game_object);
 }
 
 void Scene::CacheMethods(const Runtime& runtime) {

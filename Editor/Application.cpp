@@ -21,6 +21,10 @@ Application::Application()
 	, engine_(new engine::Engine(runtime))
 	, exit_code_(0)
 {
+	engine::Runtime::SetCurrentRuntime(runtime);
+	engine::Scene::CacheMethods(runtime);
+	engine::GameObject::CacheMethods(runtime);
+	engine::Component::CacheMethods(runtime);
 	ResourceDrawer::CacheMethods(runtime.GetAssembly());
 }
 

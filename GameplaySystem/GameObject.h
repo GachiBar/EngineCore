@@ -13,6 +13,8 @@ class Component;
 
 class GameObject : public Object {
 public:
+    using Object::Object;
+
     std::string Name() const;
     void Name(std::string& value);
     size_t Count() const;
@@ -23,15 +25,17 @@ public:
     DECLARE_EVENT(ComponentRemovedEvent, GameObject, GameObject&, std::shared_ptr<Component>)
     ComponentRemovedEvent ComponentRemoved;
 
-    GameObject(const Runtime& runtime, mono::mono_object object);
+    GameObject(const Object& other);
 
     std::shared_ptr<Component> AddComponent(const TypeData& type_data);
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
-    std::shared_ptr<Component> AddComponent(const mono::mono_type& component_type);
+    std::shared_ptr<Component> AddComponent(const std::string& full_name);
+    std::shared_ptr<Component> AddComponent(const Type& type);
     void RemoveComponent(std::shared_ptr<Component> component);
     std::shared_ptr<Component> GetComponent(const TypeData& type_data);
     std::shared_ptr<Component> GetComponent(const std::string& name_space, const std::string& name);
-    std::shared_ptr<Component> GetComponent(const mono::mono_type& component_type);
+    std::shared_ptr<Component> GetComponent(const std::string& full_name);
+    std::shared_ptr<Component> GetComponent(const Type& type);
 
     // Cached methods
     void Initialize();
@@ -46,8 +50,6 @@ public:
     static void CacheMethods(const Runtime& runtime);
 
 private:
-    const Runtime& runtime_;
-
     static Property* name_;
     static Property* count_;
     static Method* get_item_;

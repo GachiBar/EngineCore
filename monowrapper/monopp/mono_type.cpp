@@ -185,7 +185,7 @@ auto mono_type::is_derived_from(const mono_type& type) const -> bool
 {
 	return mono_class_is_subclass_of(class_, type.get_internal_ptr(), false) != 0;
 }
-auto mono_type::is_abstract() -> bool
+auto mono_type::is_abstract() const -> bool
 {
 	size_t flags = mono_class_get_flags(class_);
 	return (flags & TYPE_ATTRIBUTE_ABSTRACT) == TYPE_ATTRIBUTE_ABSTRACT;

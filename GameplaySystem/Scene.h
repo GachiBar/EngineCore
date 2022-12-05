@@ -9,9 +9,11 @@ class GameObject;
 
 class Scene : public Object {
 public:
-	size_t Count() const;
+	using Object::Object;
 
-	Scene(const Runtime& runtime);
+	size_t Count() const;	
+
+	Scene(const Object& object);
 
 	std::shared_ptr<GameObject> CreateGameObject();
 	void DeleteGameObject(std::shared_ptr<GameObject> game_object);
@@ -31,8 +33,6 @@ public:
 	static void CacheMethods(const Runtime& runtime);
 
 private:
-	const const Runtime& runtime_;
-
 	static Property* count_;
 	static Method* get_item_;
 

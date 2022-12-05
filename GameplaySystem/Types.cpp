@@ -49,6 +49,37 @@ const TypeData& Types::kTime = Types::RegisterType("GameplayCore", "Time");
 const TypeData& Types::kScreen = Types::RegisterType("GameplayCore", "Screen");
 const TypeData& Types::kInput = Types::RegisterType("GameplayCore", "Input");
 
+TypeDeclaration::TypeDeclaration(std::string name_space, std::string name)
+	: name_space(std::move(name_space))
+	, name(std::move(name))
+{}
+
+bool operator==(const TypeData& lhs, const TypeData& rhs) {
+	if (lhs.type_hash != rhs.type_hash) {
+		return false;
+	}
+	else if (lhs.full_name != rhs.full_name) {
+		return false;
+	}
+
+	return true;
+}
+
+bool operator!=(const TypeData& lhs, const TypeData& rhs) {
+	return !(lhs == rhs);
+}
+
+TypeData::TypeData(std::string name_space, std::string name)
+	: name_space(std::move(name_space))
+	, name(std::move(name))
+	, full_name(this->name_space + "." + this->name)
+	, type_hash(std::hash<std::string>{}(full_name))
+{}
+
+TypeData::TypeData(TypeDeclaration type_declaration)
+	: TypeData(type_declaration.name_space, type_declaration.name)
+{}
+
 const TypeData& Types::RegisterType(std::string name_space, std::string name) {
 	TypeData type_data(name_space, name);
 

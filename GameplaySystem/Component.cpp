@@ -16,12 +16,11 @@ std::shared_ptr<GameObject> Component::GameObject() {
     assert(game_object_ != nullptr && kIsNotCachedErrorMessage);
 
     auto result = game_object_->GetValue(*this).value();
-    return std::make_shared<engine::GameObject>(runtime_, result.GetInternal());
+    return std::make_shared<engine::GameObject>(result.GetInternal());
 }
 
-Component::Component(const Runtime& runtime, mono::mono_object object)
-    : Object(std::move(object))
-    , runtime_(runtime)
+Component::Component(const Object& other)
+    : Object(other)
 {}
 
 void Component::CacheMethods(const Runtime& runtime) {

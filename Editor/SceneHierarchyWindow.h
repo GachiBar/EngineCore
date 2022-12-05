@@ -16,7 +16,7 @@ public:
 	std::shared_ptr<engine::Scene> GetScene();
 	void SetScene(std::shared_ptr<engine::Scene> scene);
 
-	SceneHierarchyWindow(const engine::Runtime& runtime);
+	SceneHierarchyWindow();
 
 	void Draw() override;
 
@@ -72,7 +72,6 @@ private:
 
 	std::shared_ptr<engine::Scene> scene;
 	std::shared_ptr<engine::GameObject> selected;
-	const engine::Runtime& runtime;
 
 	void DrawWithTransformHeaderPopup();
 	void DrawWithoutTransformHeaderPopup();

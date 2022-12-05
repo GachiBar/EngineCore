@@ -33,77 +33,101 @@ ObjectDrawer::~ObjectDrawer()
 	}
 }
 
-bool ObjectDrawer::DrawObject(engine::Object& object)
+bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& modifiedFields)
 {
-	auto fields = object.GetType().GetFields();
+	modifiedFields.clear();
+	auto type = object.GetType();
 	bool isFieldChanged = false;
 
-	for (auto field : fields) 
+	while (!type.Is(engine::Types::kObject)) 
 	{
-		if (field.GetType().Is(engine::Types::kSingle)) 
+		auto fields = type.GetFields();
+
+		for (auto field : fields)
 		{
-			isFieldChanged |= DrawFloatField(object, field);
-		} 
-		else if (field.GetType().Is(engine::Types::kDouble)) 
-		{
-			isFieldChanged |= DrawDoubleField(object, field);
-		} 
-		else if (field.GetType().Is(engine::Types::kBoolean)) 
-		{
-			isFieldChanged |= DrawBoolField(object, field);
+			if (field.GetType().Is(engine::Types::kSingle))
+			{
+				isFieldChanged |= DrawFloatField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kDouble))
+			{
+				isFieldChanged |= DrawDoubleField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kBoolean))
+			{
+				isFieldChanged |= DrawBoolField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kSByte))
+			{
+				isFieldChanged |= DrawByteField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kInt16))
+			{
+				isFieldChanged |= DrawShortField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kInt32))
+			{
+				isFieldChanged |= DrawIntField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kInt64))
+			{
+				isFieldChanged |= DrawLongField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kByte))
+			{
+				isFieldChanged |= DrawUByteField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kUInt16))
+			{
+				isFieldChanged |= DrawUShortField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kUInt32))
+			{
+				isFieldChanged |= DrawUIntField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kUInt64))
+			{
+				isFieldChanged |= DrawULongField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kVector2))
+			{
+				isFieldChanged |= DrawVector2Field(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kVector3))
+			{
+				isFieldChanged |= DrawVector3Field(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kVector4))
+			{
+				isFieldChanged |= DrawVector4Field(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kString))
+			{
+				isFieldChanged |= DrawStringField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kGameObject))
+			{
+				isFieldChanged |= DrawGameObjectField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
 		}
-		else if (field.GetType().Is(engine::Types::kSByte)) 
-		{
-			isFieldChanged |= DrawByteField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kInt16)) 
-		{
-			isFieldChanged |= DrawShortField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kInt32))
-		{
-			isFieldChanged |= DrawIntField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kInt64))
-		{
-			isFieldChanged |= DrawLongField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kByte))
-		{
-			isFieldChanged |= DrawUByteField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kUInt16)) 
-		{
-			isFieldChanged |= DrawUShortField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kUInt32))
-		{
-			isFieldChanged |= DrawUIntField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kUInt64))
-		{
-			isFieldChanged |= DrawULongField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kVector2))
-		{
-			isFieldChanged |= DrawVector2Field(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kVector3))
-		{
-			isFieldChanged |= DrawVector3Field(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kVector4))
-		{
-			isFieldChanged |= DrawVector4Field(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kString))
-		{
-			isFieldChanged |= DrawStringField(object, field);
-		}
-		else if (field.GetType().Is(engine::Types::kGameObject)) 
-		{
-			isFieldChanged |= DrawGameObjectField(object, field);
-		}
+
+		type = type.GetBaseType();
 	}
 
 	return isFieldChanged;
