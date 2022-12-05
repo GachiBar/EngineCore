@@ -47,19 +47,18 @@ JPH::PhysicsSystem& Engine::GetPhysicsSystem() {
 	return physics_system_;
 }
 
-Engine::Engine(const mono::mono_domain& domain, const mono::mono_assembly& assembly)
+Engine::Engine(const Runtime& runtime)
 	: temp_allocator_(10 * 1024 * 1024)
 	, job_system_(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1)
 	, scene_(nullptr)
-	, domain_(domain)
-	, assembly_(assembly)
-	, renderer_property_(GetProperty("GameplayCore.EngineApi", "RenderApi", "Renderer"))
-	, physics_system_property_(GetProperty("GameplayCore.EngineApi", "PhysicsApi", "PhysicsSystem"))
-	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
-	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
-	, screen_width_property_(GetProperty("GameplayCore", "Screen", "Width"))
-	, screen_height_property_(GetProperty("GameplayCore", "Screen", "Height"))
-	, mouse_position_property_(GetProperty("GameplayCore", "Input", "MousePosition"))
+	, runtime_(runtime)
+	, renderer_property_(runtime_.GetType(Types::kRenderApi).GetProperty("Renderer"))
+	, physics_system_property_(runtime_.GetType(Types::kPhysicsApi).GetProperty("PhysicsSystem"))
+	, delta_time_property_(runtime_.GetType(Types::kTime).GetProperty("DeltaTime"))
+	, ellapsed_time_property_(runtime_.GetType(Types::kTime).GetProperty("EllapsedTime"))
+	, screen_width_property_(runtime_.GetType(Types::kScreen).GetProperty("Width"))
+	, screen_height_property_(runtime_.GetType(Types::kScreen).GetProperty("Height"))
+	, mouse_position_property_(runtime_.GetType(Types::kInput).GetProperty("MousePosition"))
 {}
 
 void Engine::Initialize(HWND handle, UINT width, UINT height) {
@@ -154,7 +153,7 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
-	renderer_property_.set_value(&renderer_);
+	renderer_property_.SetValue(&renderer_);
 }
 
 void Engine::SetupPhysicsInternalCalls() 
@@ -173,7 +172,7 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 
-	physics_system_property_.set_value(&physics_system_);
+	physics_system_property_.SetValue(&physics_system_);
 }
 
 void Engine::SetupInputInternalCalls() {
@@ -194,36 +193,35 @@ void Engine::SetupInputInternalCalls() {
 	mono_add_internal_call("GameplayCore.Log::Internal_RemoveLogMessage", Internal_RemoveLogMessage);
 }
 
-mono::mono_property Engine::GetProperty(std::string name_space, std::string klass, std::string property) {
-	return assembly_.get_type(name_space, klass).get_property(property);
-}
-
 void Engine::SendTimeData() {
-	auto time_type = assembly_.get_type("GameplayCore", "Time");
+	auto time_type = runtime_.GetAssembly().get_type("GameplayCore", "Time");
 
 	float dt = duration<float>(dt_).count();
-	delta_time_property_.set_value(&dt);
+	delta_time_property_.SetValue(&dt);
 
 	float ellapsed = duration<float>(ellapsed_).count();
-	ellapsed_time_property_.set_value(&ellapsed);
+	ellapsed_time_property_.SetValue(&ellapsed);
 }
 
 void Engine::SendScreenData() {
 	auto out_texture = renderer_.GetRenderTargetTexture("outTexture");
 
-	screen_width_property_.set_value(&out_texture.width);
-	screen_height_property_.set_value(&out_texture.height);
+	screen_width_property_.SetValue(&out_texture.width);
+	screen_height_property_.SetValue(&out_texture.height);
 }
 
 void Engine::SendInputData() {
 	auto mouse_position = InputManager::getInstance().GetMousePosition();
 	DirectX::SimpleMath::Vector2 point(mouse_position.first, mouse_position.second);
-	mouse_position_property_.set_value(&point);
+	mouse_position_property_.SetValue(&point);
 }
 
 #pragma region Renderer
 
-void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
+void Engine::Internal_RegisterModel(
+	RenderDevice* renderer, 
+	size_t id) 
+{
 	std::vector<ModelVertex> verticies;
 	std::vector<uint32_t> indexes;
 	size_t primitiveCount = 0;
@@ -245,7 +243,11 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	renderer->RegisterTexture(id, texture_width, texture_height, data);
 }
 
-void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
+void Engine::Internal_DrawModel(
+	RenderDevice* renderer,
+	size_t id, 
+	DirectX::SimpleMath::Matrix model_matrix) 
+{
 	renderer->DrawModel({ id, id, model_matrix });
 }
 
@@ -317,14 +319,21 @@ JPH::uint32 Engine::Internal_CreateBoxBody(
 	return body_id.GetIndexAndSequenceNumber();
 }
 
-void Engine::Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+void Engine::Internal_DestroyBody(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.RemoveBody(body_id);
 	body_interface.DestroyBody(body_id);
 }
 
-void Engine::Internal_SetSphereShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, float radius) {
+void Engine::Internal_SetSphereShape(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id, 
+	float radius) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::SphereShape* sphere_shape = new JPH::SphereShape(radius);
@@ -332,7 +341,11 @@ void Engine::Internal_SetSphereShape(JPH::PhysicsSystem* physics_system, JPH::ui
 	body_interface.SetShape(body_id, sphere_shape, true, activation_mode);
 }
 
-void Engine::Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 half_extent) {
+void Engine::Internal_SetBoxShape(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id, 
+	JPH::Vec3 half_extent) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
@@ -340,14 +353,22 @@ void Engine::Internal_SetBoxShape(JPH::PhysicsSystem* physics_system, JPH::uint3
 	body_interface.SetShape(body_id, box_shape, true, activation_mode);
 }
 
-void Engine::Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type) {
+void Engine::Internal_SetMotionType(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id, 
+	JPH::EMotionType motion_type) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	auto activation_mode = body_interface.IsActive(body_id) ? JPH::EActivation::Activate : JPH::EActivation::DontActivate;
 	body_interface.SetMotionType(body_id, motion_type, activation_mode);
 }
 
-void Engine::Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active) {
+void Engine::Internal_SetActive(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id, 
+	bool is_active) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 
@@ -358,13 +379,19 @@ void Engine::Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 
 	}	
 }
 
-bool Engine::Internal_IsActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+bool Engine::Internal_IsActive(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	return body_interface.IsActive(body_id);
 }
 
-JPH::Vec3 Engine::Internal_GetBodyPosition(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+JPH::Vec3 Engine::Internal_GetBodyPosition(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	return body_interface.GetPosition(body_id);
@@ -381,7 +408,10 @@ void Engine::Internal_SetBodyPosition(
 	body_interface.SetPosition(body_id, position, activation_mode);
 }
 
-JPH::Quat Engine::Internal_GetBodyRotation(JPH::PhysicsSystem* physics_system, JPH::uint32 id) {
+JPH::Quat Engine::Internal_GetBodyRotation(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	return body_interface.GetRotation(body_id);
@@ -398,7 +428,11 @@ void Engine::Internal_SetBodyRotation(
 	body_interface.SetRotation(body_id, rotation, activation_mode);
 }
 
-void Engine::Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force) {
+void Engine::Internal_AddForce(
+	JPH::PhysicsSystem* physics_system, 
+	JPH::uint32 id, 
+	JPH::Vec3 force) 
+{
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.AddForce(body_id, force);
@@ -461,29 +495,35 @@ void Engine::Internal_RemoveLogMessage(MonoString* guid)
 	LogManager::getInstance().OnRemoveViewportPrint(guid_string);
 }
 
-void Engine::Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
+void Engine::Internal_Log(MonoString* message, bool should_print_to_screen, bool should_print_to_log, MonoString* guid)
 {
-	Internal_Log_Implementation(loguru::Verbosity_INFO, message, bPrintToScreen, bPrintToLog, guid);
+	Internal_Log_Implementation(loguru::Verbosity_INFO, message, should_print_to_screen, should_print_to_log, guid);
 }
 
-void Engine::Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
+void Engine::Internal_LogWarning(MonoString* message, bool should_print_to_screen, bool should_print_to_log, MonoString* guid)
 {
-	Internal_Log_Implementation(loguru::Verbosity_WARNING, message, bPrintToScreen, bPrintToLog, guid);
+	Internal_Log_Implementation(loguru::Verbosity_WARNING, message, should_print_to_screen, should_print_to_log, guid);
 }
 
-void Engine::Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid)
+void Engine::Internal_LogError(MonoString* message, bool should_print_to_screen, bool should_print_to_log, MonoString* guid)
 {
-	Internal_Log_Implementation(loguru::Verbosity_ERROR, message, bPrintToScreen, bPrintToLog, guid);
+	Internal_Log_Implementation(loguru::Verbosity_ERROR, message, should_print_to_screen, should_print_to_log, guid);
 }
 
-void Engine::Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen,
-	bool bPrintToLog, MonoString* guid)
+void Engine::Internal_Log_Implementation(
+	loguru::Verbosity verbosity, 
+	MonoString* message, 
+	bool should_print_to_screen,
+	bool should_print_to_log, 
+	MonoString* guid)
 {
-	if (!bPrintToLog)
+	if (!should_print_to_log) {
 		LogManager::getInstance().SetNextMessageNotBroadcastLog();
+	}		
 
-	if (!bPrintToScreen)
+	if (!should_print_to_screen) {
 		LogManager::getInstance().SetNextMessageNotBroadcastLogViewport();
+	}		
 
 	const auto raw_string = mono_string_to_utf8(message);
 	const std::string message_string(raw_string);
@@ -494,8 +534,9 @@ void Engine::Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString
 	const auto guid_raw_string = mono_string_to_utf8(guid);
 	const std::string guid_string(guid_raw_string);
 
-	if (bPrintToScreen && !guid_string.empty())
+	if (should_print_to_screen && !guid_string.empty()) {
 		LogManager::getInstance().OnViewportPrint(message_string, verbosity, guid_string);
+	}		
 }
 
 } // namespace engine

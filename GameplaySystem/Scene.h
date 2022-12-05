@@ -1,16 +1,19 @@
 ﻿#pragma once
 
-#include "GameObject.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
-#include "../monowrapper/monopp/mono_object.h"
+#include "Object.h"
+#include "Runtime.h"
 
 namespace engine {
 
+class GameObject;
+
 class Scene : public Object {
 public:
-	size_t Count() const;
+	using Object::Object;
 
-	Scene(const mono::mono_assembly& assembly);
+	size_t Count() const;	
+
+	Scene(const Object& object);
 
 	std::shared_ptr<GameObject> CreateGameObject();
 	void DeleteGameObject(std::shared_ptr<GameObject> game_object);
@@ -27,25 +30,23 @@ public:
 
 	std::shared_ptr<GameObject> operator[](size_t index) const;
 
-	static void CacheMethods(const mono::mono_assembly& assembly);
+	static void CacheMethods(const Runtime& runtime);
 
 private:
-	const mono::mono_assembly& assembly_;
+	static Property* count_;
+	static Method* get_item_;
 
-	static mono::mono_property_invoker* count_;
-	static mono::mono_method_invoker* get_item_;
+	static Method* initialize_;
+	static Method* terminate_;
+	static Method* fixed_update_;
+	static Method* update_;
+	static Method* render_;
+	static Method* invalidate_;
+	static Method* serialize_;
+	static Method* deserialize_;
 
-	static mono::mono_method_invoker* initialize_;
-	static mono::mono_method_invoker* terminate_;
-	static mono::mono_method_invoker* fixed_update_;
-	static mono::mono_method_invoker* update_;
-	static mono::mono_method_invoker* render_;
-	static mono::mono_method_invoker* invalidate_;
-	static mono::mono_method_invoker* serialize_;
-	static mono::mono_method_invoker* deserialize_;
-
-	static mono::mono_method_invoker* create_game_object_;
-	static mono::mono_method_invoker* delete_game_object_;
+	static Method* create_game_object_;
+	static Method* delete_game_object_;
 };
 
 } // namespace engine

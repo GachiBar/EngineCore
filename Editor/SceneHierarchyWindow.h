@@ -3,6 +3,7 @@
 #include "IEditorWindow.h"
 #include "imgui/imgui.h"
 #include "libs/Delegates.h"
+#include "../GameplaySystem/Runtime.h"
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
 
@@ -15,7 +16,7 @@ public:
 	std::shared_ptr<engine::Scene> GetScene();
 	void SetScene(std::shared_ptr<engine::Scene> scene);
 
-	SceneHierarchyWindow(const mono::mono_assembly& assembly);
+	SceneHierarchyWindow();
 
 	void Draw() override;
 
@@ -71,7 +72,6 @@ private:
 
 	std::shared_ptr<engine::Scene> scene;
 	std::shared_ptr<engine::GameObject> selected;
-	const mono::mono_assembly& assembly;
 
 	void DrawWithTransformHeaderPopup();
 	void DrawWithoutTransformHeaderPopup();

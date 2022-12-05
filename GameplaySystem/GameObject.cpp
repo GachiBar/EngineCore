@@ -2,139 +2,151 @@
 #include "GameObject.h"
 #include "Scene.h"
 #include "Component.h"
-#include "../monowrapper/monopp/mono_assembly.h"
-#include "../monowrapper/monopp/mono_domain.h"
-#include "../monowrapper/monopp/mono_string.h"
 
 namespace engine {
 
-mono::mono_property_invoker* GameObject::name_ = nullptr;
-mono::mono_property_invoker* GameObject::count_ = nullptr;
-mono::mono_method_invoker* GameObject::get_item_ = nullptr;
+Property* GameObject::name_ = nullptr;
+Property* GameObject::count_ = nullptr;
+Method* GameObject::get_item_ = nullptr;
 
-mono::mono_method_invoker* GameObject::add_component_ = nullptr;
-mono::mono_method_invoker* GameObject::remove_component_ = nullptr;
-mono::mono_method_invoker* GameObject::get_component_ = nullptr;
+Method* GameObject::add_component_ = nullptr;
+Method* GameObject::remove_component_ = nullptr;
+Method* GameObject::get_component_ = nullptr;
 
-mono::mono_method_invoker* GameObject::initialize_ = nullptr;
-mono::mono_method_invoker* GameObject::terminate_ = nullptr;
-mono::mono_method_invoker* GameObject::fixed_update_ = nullptr;
-mono::mono_method_invoker* GameObject::update_ = nullptr;
-mono::mono_method_invoker* GameObject::render_ = nullptr;
-mono::mono_method_invoker* GameObject::invalidate_ = nullptr;
+Method* GameObject::initialize_ = nullptr;
+Method* GameObject::terminate_ = nullptr;
+Method* GameObject::fixed_update_ = nullptr;
+Method* GameObject::update_ = nullptr;
+Method* GameObject::render_ = nullptr;
+Method* GameObject::invalidate_ = nullptr;
 
 const char kIsNotCachedErrorMessage[] = "GameObject methods are not cached.";
 
 std::string GameObject::Name() const {
     assert(name_ != nullptr && kIsNotCachedErrorMessage);
 
-    mono::mono_object value(name_->get_value(GetInternal()).value());
-    mono::mono_string name(value);
+    auto result = name_->GetValue(*this).value();
+    mono::mono_string name(result.GetInternal());
     return name.as_utf8();
 }
 
 void GameObject::Name(std::string& value) {
     assert(name_ != nullptr && kIsNotCachedErrorMessage);
 
-    auto& domain = mono::mono_domain::get_current_domain();
-    mono::mono_string name(domain, value);
-    name_->set_value(GetInternal(), name.get_internal_ptr());
+    mono::mono_string name(Runtime::GetCurrentRuntime().GetDomain(), value);
+    name_->SetValue(GetInternal(), name.get_internal_ptr());
 }
 
 size_t GameObject::Count() const {
     assert(count_ != nullptr && kIsNotCachedErrorMessage);
 
-    mono::mono_object value(count_->get_value(GetInternal()).value());
-    int count = *reinterpret_cast<int*>(value.unbox());
-    
-    assert(count >= 0 && "Count less then zero.");
-
+    auto result = count_->GetValue(*this).value();
+    int count = result.Unbox<int>();
     return static_cast<size_t>(count);
 }
 
-GameObject::GameObject(const mono::mono_assembly& assembly, mono::mono_object object)
-    : Object(std::move(object))
-    , assembly_(assembly)
+GameObject::GameObject(const Object& other)
+    : Object(other)
 {}
 
-std::shared_ptr<Component> GameObject::AddComponent(const std::string& name_space, const std::string& name) {
-    return AddComponent(assembly_.get_type(name_space, name));
+std::shared_ptr<Component> GameObject::AddComponent(const TypeData& type_data)
+{
+    return AddComponent(Runtime::GetCurrentRuntime().GetType(type_data));
 }
 
-std::shared_ptr<Component> GameObject::AddComponent(const mono::mono_type& component_type) {
-    MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
+std::shared_ptr<Component> GameObject::AddComponent(const std::string& name_space, const std::string& name) {
+    return AddComponent(Runtime::GetCurrentRuntime().GetType(name_space, name));
+}
+
+std::shared_ptr<Component> GameObject::AddComponent(const std::string& full_name) {
+    return AddComponent(Runtime::GetCurrentRuntime().GetType(full_name));
+}
+
+std::shared_ptr<Component> GameObject::AddComponent(const Type& type) {
+    assert(add_component_ != nullptr && kIsNotCachedErrorMessage);
+
+    MonoReflectionType* reflection_type = type.GetInternal().get_internal_reflection_type_ptr();
     void* params[1] = { reflection_type };
 
-    auto raw_value = add_component_->invoke(GetInternal(), params);
-    mono::mono_object component(raw_value.value());
-    auto result = std::make_shared<Component>(assembly_, std::move(component));
+    auto component = add_component_->Invoke(*this, params).value();
+    auto result = std::make_shared<Component>(component);
 
     ComponentAdded.Broadcast(*this, result);
     return result;
 }
 
 void GameObject::RemoveComponent(std::shared_ptr<Component> component) {
-    MonoReflectionType* reflection_type = component->GetInternal().get_type().get_internal_reflection_type_ptr();
+    assert(remove_component_ != nullptr && kIsNotCachedErrorMessage);
+
+    MonoReflectionType* reflection_type = component->GetType().GetInternal().get_internal_reflection_type_ptr();
     void* params[1] = { reflection_type };
 
-    remove_component_->invoke(GetInternal(), params);
+    remove_component_->Invoke(GetInternal(), params);
 
     ComponentRemoved.Broadcast(*this, component);
     component.reset();
 }
 
-std::shared_ptr<Component> GameObject::GetComponent(const std::string& name_space, const std::string& name) {
-    return GetComponent(assembly_.get_type(name_space, name));
+std::shared_ptr<Component> GameObject::GetComponent(const TypeData& type_data)
+{
+    return GetComponent(Runtime::GetCurrentRuntime().GetType(type_data));
 }
 
-std::shared_ptr<Component> GameObject::GetComponent(const mono::mono_type& component_type) {
-    MonoReflectionType* reflection_type = component_type.get_internal_reflection_type_ptr();
+std::shared_ptr<Component> GameObject::GetComponent(const std::string& name_space, const std::string& name) {
+    return GetComponent(Runtime::GetCurrentRuntime().GetType(name_space, name));
+}
+
+std::shared_ptr<Component> GameObject::GetComponent(const std::string& full_name) {
+    return GetComponent(Runtime::GetCurrentRuntime().GetType(full_name));
+}
+
+std::shared_ptr<Component> GameObject::GetComponent(const Type& type) {
+    MonoReflectionType* reflection_type = type.GetInternal().get_internal_reflection_type_ptr();
     void* params[1] = { reflection_type };
 
-    auto raw_component = get_component_->invoke(GetInternal(), params);
+    auto result = get_component_->Invoke(*this, params);
 
-    if (!raw_component.has_value()) {
+    if (!result.has_value()) {
         return nullptr;
     }
 
-    mono::mono_object component(raw_component.value());
-    return std::shared_ptr<Component>(new Component(assembly_, std::move(component)));
+    return std::make_shared<Component>(result.value());
 }
 
 void GameObject::Initialize() {
     assert(initialize_ != nullptr && kIsNotCachedErrorMessage);
 
-    initialize_->invoke(GetInternal());
+    initialize_->Invoke(*this);
 }
 
 void GameObject::FixedUpdate() {
     assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
 
-    fixed_update_->invoke(GetInternal());
+    fixed_update_->Invoke(*this);
 }
 
 void GameObject::Update() {
     assert(update_ != nullptr && kIsNotCachedErrorMessage);
 
-    update_->invoke(GetInternal());
+    update_->Invoke(*this);
 }
 
 void GameObject::Render() {
     assert(render_ != nullptr && kIsNotCachedErrorMessage);
 
-    render_->invoke(GetInternal());
+    render_->Invoke(*this);
 }
 
 void GameObject::Terminate() {
     assert(terminate_ != nullptr && kIsNotCachedErrorMessage);
 
-    terminate_->invoke(GetInternal());
+    terminate_->Invoke(*this);
 }
 
 void GameObject::Invalidate() {
     assert(invalidate_ != nullptr && kIsNotCachedErrorMessage);
 
-    invalidate_->invoke(GetInternal());
+    invalidate_->Invoke(*this);
 }
 
 std::shared_ptr<Component> GameObject::operator[](size_t index) const {
@@ -143,49 +155,26 @@ std::shared_ptr<Component> GameObject::operator[](size_t index) const {
     void* args[1];
     args[0] = &index;
 
-    auto raw_value = get_item_->invoke(GetInternal(), args);
-    mono::mono_object component(raw_value.value());
-    return std::shared_ptr<Component>(new Component(assembly_, component));
+    auto result = get_item_->Invoke(*this, args).value();
+    return std::make_shared<Component>(result);
 }
 
-void GameObject::CacheMethods(const mono::mono_assembly& assembly) {
-    mono::mono_type type = assembly.get_type("GameplayCore", "GameObject");
+void GameObject::CacheMethods(const Runtime& runtime) {
+    auto type = runtime.GetType(Types::kGameObject);
 
-    mono::mono_property name_property(type, "Name");
-    name_ = new mono::mono_property_invoker(name_property);
+    name_ = new Property(type, "Name");
+    count_ = new Property(type, "Count");
 
-    mono::mono_property count_property(type, "Count");
-    count_ = new mono::mono_property_invoker(count_property);
-
-    mono::mono_method get_item_method(type, "get_Item", 1);
-    get_item_ = new mono::mono_method_invoker(get_item_method);
-
-    mono::mono_method add_component_method(type, "AddComponent", 1);
-    add_component_ = new mono::mono_method_invoker(add_component_method);
-
-    mono::mono_method remove_component_method(type, "RemoveComponent", 1);
-    remove_component_ = new mono::mono_method_invoker(remove_component_method);
-
-    mono::mono_method get_component_method(type, "GetComponent", 1);
-    get_component_ = new mono::mono_method_invoker(get_component_method);
-
-    mono::mono_method initialize_method(type, "Initialize", 0);
-    initialize_ = new mono::mono_method_invoker(initialize_method);
-
-    mono::mono_method terminate_method(type, "Terminate", 0);
-    terminate_ = new mono::mono_method_invoker(terminate_method);
-
-    mono::mono_method fixed_update_method(type, "FixedUpdate", 0);
-    fixed_update_ = new mono::mono_method_invoker(fixed_update_method);
-
-    mono::mono_method update_method(type, "Update", 0);
-    update_ = new mono::mono_method_invoker(update_method);
-
-    mono::mono_method render_method(type, "Render", 0);
-    render_ = new mono::mono_method_invoker(render_method);
-
-    mono::mono_method invalidate_method(type, "Invalidate", 0);
-    invalidate_ = new mono::mono_method_invoker(invalidate_method);
+    get_item_ = new Method(type, "get_Item", 1);
+    add_component_ = new Method(type, "AddComponent", 1);
+    remove_component_ = new Method(type, "RemoveComponent", 1);
+    get_component_ = new Method(type, "GetComponent", 1);
+    initialize_ = new Method(type, "Initialize", 0);
+    terminate_ = new Method(type, "Terminate", 0);
+    fixed_update_ = new Method(type, "FixedUpdate", 0);
+    update_ = new Method(type, "Update", 0);
+    render_ = new Method(type, "Render", 0);
+    invalidate_ = new Method(type, "Invalidate", 0);
 }
 
 } // namespace engine

@@ -2,6 +2,7 @@
 
 #include "IEditorWindow.h"
 #include "ObjectDrawer.h"
+#include "../GameplaySystem/Runtime.h"
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
 #include "../GameplaySystem/Field.h"
@@ -18,7 +19,7 @@ public:
 	std::shared_ptr<engine::GameObject> GetGameObject();
 	void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
 
-	GameObjectInspectorWindow(const mono::mono_assembly& assembly);
+	GameObjectInspectorWindow();
 
 	~GameObjectInspectorWindow() override;
 
@@ -32,7 +33,6 @@ private:
 	const char** available_components_items;
 	size_t avaliable_components_count;
 
-	const mono::mono_assembly& assembly;
 	std::vector<std::string> components_names;
 
 	void CacheComponentsData();
@@ -40,11 +40,6 @@ private:
 	void DrawGameObjectFields();
 	void DrawComponentFields(std::shared_ptr<engine::Component> component);
 	void DrawAddComponentPanel();
-
-	void ParseFullName(
-		const std::string& fullName, 
-		std::string& namespace_out, 
-		std::string& name_out);
 
 	void FindAvaliableComponents();
 };

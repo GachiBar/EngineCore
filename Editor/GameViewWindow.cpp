@@ -91,8 +91,7 @@ void GameViewWindow::Draw()
 				bIsEditorInputMode = false;
 			}
 
-			if (!bIsPlaying && editor_layer->GetSelectedGo() && editor_layer->GetSelectedGo()->GetComponent(
-				"GameplayCore.Components", "TransformComponent"))
+			if (!bIsPlaying && editor_layer->GetSelectedGo() && editor_layer->GetSelectedGo()->GetComponent(engine::Types::kTransformComponent))
 			{
 				draw_gizmos();
 			}
@@ -225,14 +224,16 @@ void GameViewWindow::draw_gizmos() const
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
-	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent("GameplayCore.Components", "TransformComponent");
-	auto scale_property = transform_component->GetProperty("LocalScale");
-	auto rotation_property = transform_component->GetProperty("Rotation");
-	auto position_property = transform_component->GetProperty("Position");
+	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent(engine::Types::kTransformComponent);
+	const auto& transform_type = transform_component->GetType();
 
-	const auto scale = scale_property.GetValue().value().Unbox<DirectX::SimpleMath::Vector3>();
-	const auto rotation = rotation_property.GetValue().value().Unbox<DirectX::SimpleMath::Quaternion>();
-	const auto position = position_property.GetValue().value().Unbox<DirectX::SimpleMath::Vector3>();
+	auto scale_property = transform_type.GetProperty("LocalScale");
+	auto rotation_property = transform_type.GetProperty("Rotation");
+	auto position_property = transform_type.GetProperty("Position");
+
+	const auto scale = scale_property.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Vector3>();
+	const auto rotation = rotation_property.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Quaternion>();
+	const auto position = position_property.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Vector3>();
 
 	auto model = Matrix::Identity;
 	model *= Matrix::CreateScale(scale);
@@ -256,15 +257,15 @@ void GameViewWindow::draw_gizmos() const
 
 		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
 		{
-			position_property.SetValue(&new_position);
+			position_property.SetValue(*transform_component, &new_position);
 		}			
 		else if (CurrentGizmoOperation & ImGuizmo::ROTATE)
 		{
-			rotation_property.SetValue(&new_rotation);
+			rotation_property.SetValue(*transform_component, &new_rotation);
 		}			
 		else if (CurrentGizmoOperation & ImGuizmo::SCALE)
 		{			
-			scale_property.SetValue(&new_scale);
+			scale_property.SetValue(*transform_component, &new_scale);
 		}			
 		else
 		{

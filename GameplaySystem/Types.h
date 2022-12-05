@@ -1,98 +1,98 @@
 #pragma once
 
 #include <string>
-#include <vector>
 
 namespace engine {
 
-enum class Type {
-	kUndefined,
+struct Types;
 
-	kObject,
-	kFloat,
-	kDouble,
-	kBool,
-	kByte,
-	kShort,
-	kInt,
-	kLong,
-	kUByte,
-	kUShort,
-	kUInt,
-	kULong,
-	kVector2,
-	kVector3,
-	kVector4,
-	kString,
+struct TypeDeclaration {
+public:
+	const std::string name_space;
+	const std::string name;
 
-	kGameObject,
-
-	kTransformComponent,
-	kComponent,
-
-	kHideInInspectorAttribute,
-	kSerializeFieldAttribute,
-	kInspectorNameAttribute,
-	kSliderAttribute,
+	TypeDeclaration(std::string name_space, std::string name);
 };
 
 struct TypeData {
+	friend Types;
+
+public:
 	const std::string name_space;
 	const std::string name;
 	const std::string full_name;
-	const Type type;
+	const size_t type_hash;
 
-	TypeData(std::string name_space, std::string name, Type type)
-		: name_space(name_space)
-		, name(name)
-		, full_name(name_space + "." + name)
-		, type(type)
-	{}
+	friend bool operator==(const TypeData& lhs, const TypeData& rhs);
+
+	friend bool operator!=(const TypeData& lhs, const TypeData& rhs);
+
+private:
+	TypeData(std::string name_space, std::string name);
+	TypeData(TypeDeclaration type_declaration);
 };
 
 struct Types {		
 public:
-	static const TypeData kUndefined;
+	static const TypeData& kUndefined;
 
 	// System
-	static const TypeData kObject;
-	static const TypeData kSingle;
-	static const TypeData kDouble;
-	static const TypeData kBoolean;
-	static const TypeData kSByte;
-	static const TypeData kInt16;
-	static const TypeData kInt32;
-	static const TypeData kInt64;
-	static const TypeData kByte;
-	static const TypeData kUInt16;
-	static const TypeData kUInt32;
-	static const TypeData kUInt64;
-	static const TypeData kVector2;
-	static const TypeData kVector3;
-	static const TypeData kVector4;
-	static const TypeData kString;
+	static const TypeData& kObject;
+	static const TypeData& kSingle;
+	static const TypeData& kDouble;
+	static const TypeData& kBoolean;
+	static const TypeData& kSByte;
+	static const TypeData& kInt16;
+	static const TypeData& kInt32;
+	static const TypeData& kInt64;
+	static const TypeData& kByte;
+	static const TypeData& kUInt16;
+	static const TypeData& kUInt32;
+	static const TypeData& kUInt64;
+	static const TypeData& kVector2;
+	static const TypeData& kVector3;
+	static const TypeData& kVector4;
+	static const TypeData& kString;
 
 	// GameplayCore
-	static const TypeData kGameObject;
+	static const TypeData& kScene;
+	static const TypeData& kGameObject;
 
 	// GameplayCore.Components
-	static const TypeData kComponent;
-	static const TypeData kTransformComponent;
+	static const TypeData& kComponent;
+	static const TypeData& kTransformComponent;
 
 	// Attributes
-	static const TypeData kHideInInspectorAttribute;
-	static const TypeData kSerializeFieldAttribute;
-	static const TypeData kInspectorNameAttribute;
-	static const TypeData kSliderAttribute;
+	static const TypeData& kHideInInspectorAttribute;
+	static const TypeData& kSerializeFieldAttribute;
+	static const TypeData& kInspectorNameAttribute;
+	static const TypeData& kSliderAttribute;
 
+	// Api
+	static const TypeData& kRenderApi;
+	static const TypeData& kPhysicsApi;
+	static const TypeData& kTime;
+	static const TypeData& kScreen;
+	static const TypeData& kInput;
+
+	static const TypeData& RegisterType(std::string name_space, std::string name);
 	static const TypeData& GetTypeData(std::string name_space, std::string name);
 	static const TypeData& GetTypeData(std::string full_name);
-	static const TypeData& GetTypeData(Type type);
-
-private:
-	static const std::vector<const TypeData*> types_data_;
+	static const TypeData& GetTypeData(TypeDeclaration type_declaration);
+	static TypeDeclaration ParseFullName(const std::string& full_name);
 };
 
-
-
 } // namespace engine
+
+namespace std {
+
+	template<>
+	struct hash<engine::TypeData>
+	{
+		size_t operator()(const engine::TypeData& type_data) const noexcept
+		{
+			return type_data.type_hash;
+		}
+	};
+
+} // namespace std

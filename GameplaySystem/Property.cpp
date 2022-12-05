@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Property.h"
+#include "Method.h"
 #include "Object.h"
 
 #include <mono/metadata/object.h>
@@ -14,13 +15,13 @@ const std::string& Property::GetName() const {
 	return property_.get_name();
 }
 
-const TypeData& Property::GetTypeData() const {
-	return type_data_;
+const Type& Property::GetType() const {
+	return property_type_;
 }
 
 std::vector<Object> Property::GetAttributes() const {
 	std::vector<Object> attributes;
-	auto component_class = object_.GetType().get_internal_ptr();
+	auto component_class = class_type_.GetInternal().get_internal_ptr();
 	auto property = property_.get_internal_ptr();
 	auto ainfo = mono_custom_attrs_from_property(component_class, property);
 
@@ -47,45 +48,58 @@ bool Property::CanWrite() const {
 }
 
 Method Property::GetGetMethod() const {
-	return { object_, property_.get_get_method() };
+	return Method(class_type_, property_.get_get_method());
 }
 
 Method Property::GetSetMethod() const {
-	return { object_, property_.get_set_method() };
+	return Method(class_type_, property_.get_set_method());
 }
 
+Property::Property(Type type, const std::string name)
+	: Property(type, type.GetInternal().get_property(name))
+{}
+
+Property::Property(Type type, mono::mono_property property)
+	: property_(std::move(property))
+	, property_invoker_(property_)
+	, class_type_(type)
+	, property_type_(property_.get_type())
+{}
+
 std::optional<Object> Property::GetValue() {
-	auto raw_value = property_invoker_.get_value(object_.GetInternal());
+	auto raw_value = property_invoker_.get_value();
 
 	if (raw_value.has_value()) {
-		mono::mono_object value(raw_value.value());
-		return { value };
+		return { raw_value.value() };
+	}
+
+	return {};
+}
+
+std::optional<Object> Property::GetValue(const Object& object) {
+	auto raw_value = property_invoker_.get_value(object.GetInternal());
+
+	if (raw_value.has_value()) {
+		return { raw_value.value() };
 	}
 
 	return {};
 }
 
 void Property::SetValue(void* data) {
-	property_invoker_.set_value(object_.GetInternal(), data);
-}
-
-void Property::SetValue(const mono::mono_object& value) {
-	SetValue(value.get_internal_ptr());
+	property_invoker_.set_value(data);
 }
 
 void Property::SetValue(const Object& value) {
-	SetValue(value.GetInternal());
+	SetValue(value.GetInternal().get_internal_ptr());
 }
 
-Property::Property(const Object& object, const std::string& property_name)
-	: Property(object, object.GetType().get_property(property_name))
-{}
+void Property::SetValue(const Object& object, void* data) {
+	property_invoker_.set_value(object.GetInternal(), data);
+}
 
-Property::Property(const Object& object, mono::mono_property property)
-	: object_(object)
-	, property_(std::move(property))
-	, property_invoker_(property_)
-	, type_data_(Types::GetTypeData(property_.get_type().get_fullname()))
-{}
+void Property::SetValue(const Object& object, const Object& value) {
+	SetValue(object, value.GetInternal().get_internal_ptr());
+}
 
 } // namespace engine
