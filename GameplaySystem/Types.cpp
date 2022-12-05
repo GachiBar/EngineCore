@@ -89,7 +89,7 @@ const TypeData Types::RegisterType(std::string name_space, std::string name) {
 	return *result.first;
 }
 
-const TypeData& Types::GetTypeData(std::string name_space, std::string name) {
+const TypeData Types::GetTypeData(std::string name_space, std::string name) {
 	TypeData type_data(name_space, name);
 	auto it = registered_types_.find(type_data);
 
@@ -100,12 +100,12 @@ const TypeData& Types::GetTypeData(std::string name_space, std::string name) {
 	return kUndefined;
 }
 
-const TypeData& Types::GetTypeData(std::string full_name) {
+const TypeData Types::GetTypeData(std::string full_name) {
 	auto type_declaration = Types::ParseFullName(full_name);
 	return GetTypeData(std::move(type_declaration));
 }
 
-const TypeData& Types::GetTypeData(TypeDeclaration type_declaration) {
+const TypeData Types::GetTypeData(TypeDeclaration type_declaration) {
 	return GetTypeData(type_declaration.name_space, type_declaration.name);
 }
 

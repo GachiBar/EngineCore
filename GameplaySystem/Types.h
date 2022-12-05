@@ -14,22 +14,38 @@ public:
 	TypeDeclaration(std::string name_space, std::string name);
 };
 
-struct TypeData {
+class TypeData {
 	friend Types;
 
 public:
-	const std::string name_space;
-	const std::string name;
-	const std::string full_name;
-	const size_t type_hash;
+	const std::string& GetNameSpace() const {
+		return name_space;
+	}
+
+	const std::string& GetName() const {
+		return name;
+	}
+
+	const std::string& GetFullName() const {
+		return full_name;
+	}
+
+	const size_t GetTypeHash() const {
+		return type_hash;
+	}
 
 	friend bool operator==(const TypeData& lhs, const TypeData& rhs);
 
 	friend bool operator!=(const TypeData& lhs, const TypeData& rhs);
 
-private:
 	TypeData(std::string name_space, std::string name);
 	TypeData(TypeDeclaration type_declaration);
+
+private:
+	std::string name_space;
+	std::string name;
+	std::string full_name;
+	size_t type_hash;
 };
 
 struct Types {		
@@ -76,9 +92,9 @@ public:
 	static const TypeData kInput;
 
 	static const TypeData RegisterType(std::string name_space, std::string name);
-	static const TypeData& GetTypeData(std::string name_space, std::string name);
-	static const TypeData& GetTypeData(std::string full_name);
-	static const TypeData& GetTypeData(TypeDeclaration type_declaration);
+	static const TypeData GetTypeData(std::string name_space, std::string name);
+	static const TypeData GetTypeData(std::string full_name);
+	static const TypeData GetTypeData(TypeDeclaration type_declaration);
 	static TypeDeclaration ParseFullName(const std::string& full_name);
 };
 
@@ -91,7 +107,7 @@ namespace std {
 	{
 		size_t operator()(const engine::TypeData& type_data) const noexcept
 		{
-			return type_data.type_hash;
+			return type_data.GetTypeHash();
 		}
 	};
 

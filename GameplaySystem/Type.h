@@ -45,7 +45,7 @@ public:
 
 private:
 	mono::mono_type type_;
-	const TypeData* type_data_;
+	TypeData type_data_;
 };
 
 } // namespace engine
