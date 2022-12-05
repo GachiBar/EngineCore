@@ -1,28 +1,25 @@
 ﻿#pragma once
 
 #include "Object.h"
-#include "GameObject.h"
-#include "../monowrapper/monopp/mono_object.h"
-#include "../monowrapper/monopp/mono_property_invoker.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
+#include "Runtime.h"
 
 namespace engine {
 
-class Component : public Object{
-    friend class GameObject;
+class GameObject;
 
+class Component : public Object{
 public:
     std::string Name() const;
     std::shared_ptr<GameObject> GameObject();
 
-    Component(const mono::mono_assembly& assembly , mono::mono_object object);
+    Component(const Runtime& runtime , mono::mono_object object);
 
-    static void CacheMethods(const mono::mono_assembly& assembly);
+    static void CacheMethods(const Runtime& runtime);
 
 private:
-    const mono::mono_assembly& assembly_;
+    const Runtime& runtime_;
 
-    static mono::mono_property_invoker* game_object_;
+    static Property* game_object_;
 };
 
 } // namespace engine

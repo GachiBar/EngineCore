@@ -66,13 +66,13 @@ private:
 
 	const Runtime& runtime_;
 
-	mono::mono_property_invoker renderer_property_;
-	mono::mono_property_invoker physics_system_property_;
-	mono::mono_property_invoker delta_time_property_;
-	mono::mono_property_invoker ellapsed_time_property_;
-	mono::mono_property_invoker screen_width_property_;
-	mono::mono_property_invoker screen_height_property_;
-	mono::mono_property_invoker mouse_position_property_;	
+	Property renderer_property_;
+	Property physics_system_property_;
+	Property delta_time_property_;
+	Property ellapsed_time_property_;
+	Property screen_width_property_;
+	Property screen_height_property_;
+	Property mouse_position_property_;
 
 	void InitRenderer(HWND handle, size_t width, size_t height);	
 	void InitPhysicsSystem();
@@ -80,8 +80,6 @@ private:
 	void SetupRendererInternalCalls();
 	void SetupPhysicsInternalCalls();
 	void SetupInputInternalCalls();
-
-	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
 
 	void SendTimeData();
 	void SendScreenData();

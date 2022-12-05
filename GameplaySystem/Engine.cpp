@@ -52,13 +52,13 @@ Engine::Engine(const Runtime& runtime)
 	, job_system_(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1)
 	, scene_(nullptr)
 	, runtime_(runtime)
-	, renderer_property_(GetProperty("GameplayCore.EngineApi", "RenderApi", "Renderer"))
-	, physics_system_property_(GetProperty("GameplayCore.EngineApi", "PhysicsApi", "PhysicsSystem"))
-	, delta_time_property_(GetProperty("GameplayCore", "Time", "DeltaTime"))
-	, ellapsed_time_property_(GetProperty("GameplayCore", "Time", "EllapsedTime"))
-	, screen_width_property_(GetProperty("GameplayCore", "Screen", "Width"))
-	, screen_height_property_(GetProperty("GameplayCore", "Screen", "Height"))
-	, mouse_position_property_(GetProperty("GameplayCore", "Input", "MousePosition"))
+	, renderer_property_(runtime_.GetType(Types::kRenderApi).GetProperty("Renderer"))
+	, physics_system_property_(runtime_.GetType(Types::kPhysicsApi).GetProperty("PhysicsSystem"))
+	, delta_time_property_(runtime_.GetType(Types::kTime).GetProperty("DeltaTime"))
+	, ellapsed_time_property_(runtime_.GetType(Types::kTime).GetProperty("EllapsedTime"))
+	, screen_width_property_(runtime_.GetType(Types::kScreen).GetProperty("Width"))
+	, screen_height_property_(runtime_.GetType(Types::kScreen).GetProperty("Height"))
+	, mouse_position_property_(runtime_.GetType(Types::kInput).GetProperty("MousePosition"))
 {}
 
 void Engine::Initialize(HWND handle, UINT width, UINT height) {
@@ -153,7 +153,7 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
-	renderer_property_.set_value(&renderer_);
+	renderer_property_.SetValue(&renderer_);
 }
 
 void Engine::SetupPhysicsInternalCalls() 
@@ -172,7 +172,7 @@ void Engine::SetupPhysicsInternalCalls()
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 
-	physics_system_property_.set_value(&physics_system_);
+	physics_system_property_.SetValue(&physics_system_);
 }
 
 void Engine::SetupInputInternalCalls() {
@@ -193,31 +193,27 @@ void Engine::SetupInputInternalCalls() {
 	mono_add_internal_call("GameplayCore.Log::Internal_RemoveLogMessage", Internal_RemoveLogMessage);
 }
 
-mono::mono_property Engine::GetProperty(std::string name_space, std::string klass, std::string property) {
-	return runtime_.GetAssembly().get_type(name_space, klass).get_property(property);
-}
-
 void Engine::SendTimeData() {
 	auto time_type = runtime_.GetAssembly().get_type("GameplayCore", "Time");
 
 	float dt = duration<float>(dt_).count();
-	delta_time_property_.set_value(&dt);
+	delta_time_property_.SetValue(&dt);
 
 	float ellapsed = duration<float>(ellapsed_).count();
-	ellapsed_time_property_.set_value(&ellapsed);
+	ellapsed_time_property_.SetValue(&ellapsed);
 }
 
 void Engine::SendScreenData() {
 	auto out_texture = renderer_.GetRenderTargetTexture("outTexture");
 
-	screen_width_property_.set_value(&out_texture.width);
-	screen_height_property_.set_value(&out_texture.height);
+	screen_width_property_.SetValue(&out_texture.width);
+	screen_height_property_.SetValue(&out_texture.height);
 }
 
 void Engine::SendInputData() {
 	auto mouse_position = InputManager::getInstance().GetMousePosition();
 	DirectX::SimpleMath::Vector2 point(mouse_position.first, mouse_position.second);
-	mouse_position_property_.set_value(&point);
+	mouse_position_property_.SetValue(&point);
 }
 
 #pragma region Renderer

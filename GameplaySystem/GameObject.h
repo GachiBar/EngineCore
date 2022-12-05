@@ -1,10 +1,8 @@
 ﻿#pragma once
 
 #include "Object.h"
+#include "Runtime.h"
 #include "../Core/libs/Delegates.h"
-#include "../monowrapper/monopp/mono_object.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
-#include "../monowrapper/monopp/mono_property_invoker.h"
 
 #include <string>
 
@@ -15,10 +13,6 @@ class Component;
 
 class GameObject : public Object {
 public:
-    // TODO: Find way to sync links
-    // TODO: Write getting reference type from mono_type
-    // TODO: Write dem funcs
-    // Add & Get can be linked to one instance btw
     std::string Name() const;
     void Name(std::string& value);
     size_t Count() const;
@@ -29,7 +23,7 @@ public:
     DECLARE_EVENT(ComponentRemovedEvent, GameObject, GameObject&, std::shared_ptr<Component>)
     ComponentRemovedEvent ComponentRemoved;
 
-    GameObject(const mono::mono_assembly& assembly, mono::mono_object object);
+    GameObject(const Runtime& runtime, mono::mono_object object);
 
     std::shared_ptr<Component> AddComponent(const TypeData& type_data);
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
@@ -49,26 +43,26 @@ public:
 
     std::shared_ptr<Component> operator[](size_t index) const;
 
-    static void CacheMethods(const mono::mono_assembly& assembly);
+    static void CacheMethods(const Runtime& runtime);
 
 private:
-    const mono::mono_assembly& assembly_;
+    const Runtime& runtime_;
 
-    static mono::mono_property_invoker* name_;
-    static mono::mono_property_invoker* count_;
-    static mono::mono_method_invoker* get_item_;
+    static Property* name_;
+    static Property* count_;
+    static Method* get_item_;
 
-    static mono::mono_method_invoker* add_component_;
-    static mono::mono_method_invoker* remove_component_;
-    static mono::mono_method_invoker* get_component_;
+    static Method* add_component_;
+    static Method* remove_component_;
+    static Method* get_component_;
 
-    static mono::mono_method_invoker* initialize_;
-    static mono::mono_method_invoker* fixed_update_;
-    static mono::mono_method_invoker* update_;
-    static mono::mono_method_invoker* render_;
-    static mono::mono_method_invoker* terminate_;
+    static Method* initialize_;
+    static Method* fixed_update_;
+    static Method* update_;
+    static Method* render_;
+    static Method* terminate_;
 
-    static mono::mono_method_invoker* invalidate_;    
+    static Method* invalidate_;    
 };
 
 } // namespace engine

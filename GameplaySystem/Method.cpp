@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "Method.h"
 #include "Object.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
-
-#include <cassert>
 
 namespace engine {	
 
@@ -27,9 +24,7 @@ Method::Method(const Type& type, mono::mono_method method)
 	: type_(type)
 	, method_(std::move(method))
 	, method_invoker_(method_)
-{
-	assert(!method_.is_static() && "Method should not be static.");
-}
+{}
 
 std::optional<Object> Method::Invoke() {
 	return Invoke(nullptr);
@@ -39,7 +34,7 @@ std::optional<Object> Method::Invoke(void** args) {
 	auto result = method_invoker_.invoke(args);
 	
 	if (result.has_value()) {
-		return { result };
+		return { result.value()};
 	}
 
 	return {};
@@ -53,7 +48,7 @@ std::optional<Object> Method::Invoke(const Object& object, void** args) {
 	auto result = method_invoker_.invoke(object.GetInternal(), args);
 
 	if (result.has_value()) {
-		return { result };
+		return { result.value() };
 	}
 
 	return {};

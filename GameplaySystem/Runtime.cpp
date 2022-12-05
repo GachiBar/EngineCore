@@ -22,15 +22,19 @@ Type Runtime::GetType(const std::string& name_space, const std::string& name) co
 	return { assembly_.get_type(name_space, name) };
 }
 
+Type Runtime::GetType(const TypeData& type_data) const {
+	return GetType(type_data.name_space, type_data.name);
+}
+
 Runtime::Runtime(const std::string& mono_lib_path, const std::string& dll_path)
 	: jit_domain_(mono_lib_path, kRuntimeName)
 	, domain_(kDomainName)
 	, assembly_(domain_.get_assembly(dll_path))
 {
 	mono::mono_domain::set_current_domain(domain_);
-	Scene::CacheMethods(assembly_);
-	GameObject::CacheMethods(assembly_);
-	Component::CacheMethods(assembly_);
+	Scene::CacheMethods(*this);
+	GameObject::CacheMethods(*this);
+	Component::CacheMethods(*this);
 }
 
 } // namespace engine

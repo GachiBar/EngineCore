@@ -29,6 +29,7 @@ const TypeData& Types::kVector4 = Types::RegisterType("GameplayCore.Mathematics"
 const TypeData& Types::kString = Types::RegisterType("System", "String");
 
 // GameplayCore
+const TypeData& Types::kScene = Types::RegisterType("GameplayCore", "Scene");
 const TypeData& Types::kGameObject = Types::RegisterType("GameplayCore", "GameObject");
 
 // GameplayCore.Components
@@ -40,6 +41,13 @@ const TypeData& Types::kHideInInspectorAttribute = Types::RegisterType("Gameplay
 const TypeData& Types::kSerializeFieldAttribute = Types::RegisterType("GameplayCore.Serialization", "SerializeFieldAttribute");
 const TypeData& Types::kInspectorNameAttribute = Types::RegisterType("GameplayCore.Editor", "InspectorNameAttribute");
 const TypeData& Types::kSliderAttribute = Types::RegisterType("GameplayCore.Editor", "SliderAttribute");
+
+//Api
+const TypeData& Types::kRenderApi = Types::RegisterType("GameplayCore.EngineApi", "RenderApi");
+const TypeData& Types::kPhysicsApi = Types::RegisterType("GameplayCore.EngineApi", "PhysicsApi");
+const TypeData& Types::kTime = Types::RegisterType("GameplayCore", "Time");
+const TypeData& Types::kScreen = Types::RegisterType("GameplayCore", "Screen");
+const TypeData& Types::kInput = Types::RegisterType("GameplayCore", "Input");
 
 const TypeData& Types::RegisterType(std::string name_space, std::string name) {
 	TypeData type_data(name_space, name);

@@ -71,6 +71,7 @@ public:
 	static const TypeData& kString;
 
 	// GameplayCore
+	static const TypeData& kScene;
 	static const TypeData& kGameObject;
 
 	// GameplayCore.Components
@@ -82,6 +83,13 @@ public:
 	static const TypeData& kSerializeFieldAttribute;
 	static const TypeData& kInspectorNameAttribute;
 	static const TypeData& kSliderAttribute;
+
+	// Api
+	static const TypeData& kRenderApi;
+	static const TypeData& kPhysicsApi;
+	static const TypeData& kTime;
+	static const TypeData& kScreen;
+	static const TypeData& kInput;
 
 	static const TypeData& RegisterType(std::string name_space, std::string name);
 	static const TypeData& GetTypeData(std::string name_space, std::string name);

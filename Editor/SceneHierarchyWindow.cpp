@@ -166,7 +166,7 @@ void SceneHierarchyWindow::DrawHierarchy(engine::Component& transform)
             params[0] = &i;
 
             auto childObject = getChildMethod.Invoke(transform, params).value();
-            engine::Component childTransform(runtime.GetAssembly(), childObject.GetInternal());
+            engine::Component childTransform(runtime, childObject.GetInternal());
             DrawHierarchy(childTransform);
             tree_level_id += 1;
         }
@@ -237,7 +237,7 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
         params[0] = &i;
 
         auto childObject = getChildMethod.Invoke(transform, params).value();
-        engine::Component childTransform(runtime.GetAssembly(), childObject.GetInternal());
+        engine::Component childTransform(runtime, childObject.GetInternal());
         DeleteHierarchy(childTransform);
     }
 
