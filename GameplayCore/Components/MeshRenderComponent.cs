@@ -2,20 +2,14 @@
 {
     public class MeshRenderComponent : Component
     {
-        private static ulong _id = 0;
         private TransformComponent _transformComponent = null;
         //Material{Texture, Metalic, Raffness, Normal}
-        public ulong Id { get; private set; }
 
-        public MeshRenderComponent()
-        {
-            Id = _id;
-            _id += 1;
-        }
+        public ulong Id = 1;
 
         public override void Initialize() 
         {
-            EngineApi.RenderApi.RegisterModel(Id);
+            //EngineApi.RenderApi.RegisterModel(Id);
         }
 
         public override void Render()

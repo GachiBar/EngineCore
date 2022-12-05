@@ -145,6 +145,38 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 		}
 	});
 	renderer_.InitDevice({ "..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\" });
+	
+	OpaqueMesh model{ EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST };
+
+	// Stool
+	std::string path = "Content\\Stool.obj";
+	ModelLoader::LoadObj(path, model);
+
+	renderer_.RegisterModel(1, model);
+
+	DirectX::ScratchImage stool_image;
+	TextureLoader::LoadWic(L"Content\\Stool.jpg", stool_image);
+
+	int texture_width = stool_image.GetImage(0, 0, 0)->width;
+	int texture_height = stool_image.GetImage(0, 0, 0)->height;
+	void* data = stool_image.GetImage(0, 0, 0)->pixels;
+
+	renderer_.RegisterTexture(1, texture_width, texture_height, data);
+
+	// Cube
+	std::string cube_path = "Content\\Cube.obj";
+	ModelLoader::LoadObj(cube_path, model);
+
+	renderer_.RegisterModel(2, model);
+
+	DirectX::ScratchImage cube_image;
+	TextureLoader::LoadWic(L"Content\\Breaks.jpg", cube_image);
+
+	texture_width = cube_image.GetImage(0, 0, 0)->width;
+	texture_height = cube_image.GetImage(0, 0, 0)->height;
+	data = cube_image.GetImage(0, 0, 0)->pixels;
+
+	renderer_.RegisterTexture(2, texture_width, texture_height, data);
 }
 
 void Engine::SetupRendererInternalCalls() {
@@ -241,14 +273,18 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 }
 
 void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
-	renderer->DrawOpaqueModel({ 
-		id, model_matrix, model_matrix, 1, 1, 
-		{{{255, 0, 0}}, {{1, 0, 0}}, {{01}}, {{0.0}}},
-	});
+	MaterialData material_data{
+		{(uint64_t)id}, {{1, 0, 0}}, {{1}}, {{0.0}}
+	};
+	OpaqueModelDrawData opaque_model_draw_data{
+		id, model_matrix, model_matrix, 1.0f, 1.0f, material_data, {}
+	};
+	
+	renderer->DrawOpaqueModel(opaque_model_draw_data);
 	renderer->DrawLight({ {},
 		DirectionalLight{float3(0.5,-1,0),
-			100,
-			color(200,200,200) } });
+			1,
+			color(0,200,200) } });
 }
 
 void Engine::Internal_DrawCurve(
