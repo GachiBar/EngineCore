@@ -45,7 +45,7 @@ Type Runtime::GetType(const TypeDeclaration& declaration) const {
 }
 
 Type Runtime::GetType(const TypeData& type_data) const {
-	return GetType(type_data.name_space, type_data.name);
+	return GetType(type_data.GetNameSpace(), type_data.GetName());
 }
 
 Runtime::Runtime(const std::string& mono_lib_path, const std::string& dll_path)

@@ -66,8 +66,6 @@ void SceneHierarchyWindow::DrawWithTransform(const std::vector<std::shared_ptr<e
 
 void SceneHierarchyWindow::DrawWithTransformHeaderPopup()
 {
-    using namespace engine;
-
     if (ImGui::BeginPopupContextItem())
     {
         if (ImGui::Selectable("Create empty"))
@@ -75,9 +73,7 @@ void SceneHierarchyWindow::DrawWithTransformHeaderPopup()
             auto child = scene->CreateGameObject();
             scene->Invalidate();
 
-            child->AddComponent(
-                Types::kTransformComponent.name_space, 
-                Types::kTransformComponent.name);
+            child->AddComponent(engine::Types::kTransformComponent);
             child->Invalidate();
         }
 

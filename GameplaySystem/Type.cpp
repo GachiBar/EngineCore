@@ -10,7 +10,7 @@ const mono::mono_type& Type::GetInternal() const {
 }
 
 const TypeData& Type::GetTypeData() const {
-	return *type_data_;
+	return type_data_;
 }
 
 const bool Type::HasBaseType() const {
@@ -98,11 +98,11 @@ std::vector<Method> Type::GetMethods() const {
 
 Type::Type(mono::mono_type type)
 	: type_(type)
-	, type_data_(&Types::GetTypeData(type_.get_fullname()))
+	, type_data_(Types::GetTypeData(type_.get_fullname()))
 {}
 
 bool Type::Is(const TypeData& type_data) const {
-	return *type_data_ == type_data;
+	return type_data_ == type_data;
 }
 
 Object Type::Instantiate() const {
