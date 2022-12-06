@@ -16,6 +16,7 @@ class Object {
 	 Object(MonoObject* mono_object);
 	 Object(const mono::mono_object& object);
 	 Object(const Object& other);
+	 Object(Object&& other) noexcept;
 
 	 virtual ~Object();
 
@@ -23,9 +24,13 @@ class Object {
 	 T Unbox() const;
 	 void* Unbox() const;
 
+	 Object& operator= (Object other);
+
 	 friend bool operator== (const Object& lhs, const Object& rhs);
 	 friend bool operator== (const Object& lhs, const mono::mono_object& rhs);
 	 friend bool operator== (const mono::mono_object& lhs, const Object& rhs);
+
+	 friend void swap(Object& first, Object& second);
 
  private:
 	mono::mono_object object_;

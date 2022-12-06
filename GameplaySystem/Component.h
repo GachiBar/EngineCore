@@ -15,6 +15,7 @@ public:
     std::shared_ptr<GameObject> GameObject(); 
 
     Component(const Object& other);
+    Component(Object&& other) noexcept;
 
     static void CacheMethods(const Runtime& runtime);
 

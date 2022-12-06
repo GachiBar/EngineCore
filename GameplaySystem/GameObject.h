@@ -26,6 +26,7 @@ public:
     ComponentRemovedEvent ComponentRemoved;
 
     GameObject(const Object& other);
+    GameObject(Object&& other);
 
     std::shared_ptr<Component> AddComponent(const TypeData& type_data);
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
