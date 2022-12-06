@@ -82,6 +82,7 @@
     <LinkIncremental>true</LinkIncremental>
     <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</ExternalIncludePath>
     <LibraryPath>$(SolutionDir)vendor\DirectXTex\lib;$(SolutionDir)vendor\assimp\lib;$(SolutionDir)vendor\mono\lib;$(SolutionDir)vendor\JoltPhysics\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(VC_ExecutablePath_x64);$(CommonExecutablePath);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -132,7 +133,8 @@
       <AdditionalDependencies>Jolt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib;assimp-vc143-mt.lib;DirectXTex.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(SolutionDir)GameplayCore\bin\Debug\net472\* $(SolutionDir) /y </Command>
+      <Command>xcopy $(SolutionDir)GameplayCore\bin\$(Configuration)\net472\* $(SolutionDir) /y 
+xcopy $(SolutionDir)vendor\mono\bin\$(Configuration)\* $(SolutionDir) /y </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
