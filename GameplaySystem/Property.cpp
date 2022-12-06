@@ -34,7 +34,7 @@ std::vector<Object> Property::GetAttributes() const {
 		}
 	}
 
-	//mono_free(ainfo);
+	mono_free(ainfo);
 	return attributes;
 }
 

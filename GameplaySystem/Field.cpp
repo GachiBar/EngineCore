@@ -31,7 +31,7 @@ std::vector<Object> Field::GetAttributes() const {
 		}
 	}
 
-	//mono_free(ainfo);
+	mono_free(ainfo);
 	return attributes;
 }
 
