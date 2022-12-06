@@ -5,7 +5,7 @@
 
 GameLayer::GameLayer(LayerStack* owner)
 	: Layer(owner, "EditorLayer")
-	, scene(new engine::Scene(engine::Runtime::GetCurrentRuntime().GetType(engine::Types::kScene).Instantiate()))
+	, scene(new engine::Scene())
 {
 	CurrentInputMode = EEditorInputMode::Type::GameOnlyMode;
 }

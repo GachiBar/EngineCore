@@ -232,7 +232,7 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
         params[0] = &i;
 
         auto childObject = getChildMethod.Invoke(transform, params).value();
-        engine::Component childTransform(childObject);
+        engine::Component childTransform(std::move(childObject));
         DeleteHierarchy(childTransform);
     }
 

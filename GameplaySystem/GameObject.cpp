@@ -49,6 +49,10 @@ GameObject::GameObject(const Object& other)
     : Object(other)
 {}
 
+GameObject::GameObject(Object&& other)
+    : Object(std::forward<Object>(other))
+{}
+
 std::shared_ptr<Component> GameObject::AddComponent(const TypeData& type_data)
 {
     return AddComponent(Runtime::GetCurrentRuntime().GetType(type_data));
@@ -65,21 +69,21 @@ std::shared_ptr<Component> GameObject::AddComponent(const std::string& full_name
 std::shared_ptr<Component> GameObject::AddComponent(const Type& type) {
     assert(add_component_ != nullptr && kIsNotCachedErrorMessage);
 
-    MonoReflectionType* reflection_type = type.GetInternal().get_internal_reflection_type_ptr();
-    void* params[1] = { reflection_type };
+    void* params[1];
+    params[0] = type.GetInternal().get_internal_reflection_type_ptr();
 
-    auto component = add_component_->Invoke(*this, params).value();
-    auto result = std::make_shared<Component>(component);
+    auto result = add_component_->Invoke(*this, params).value();
+    auto component = std::make_shared<Component>(std::move(result));
 
-    ComponentAdded.Broadcast(*this, result);
-    return result;
+    ComponentAdded.Broadcast(*this, component);
+    return component;
 }
 
 void GameObject::RemoveComponent(std::shared_ptr<Component> component) {
     assert(remove_component_ != nullptr && kIsNotCachedErrorMessage);
 
-    MonoReflectionType* reflection_type = component->GetType().GetInternal().get_internal_reflection_type_ptr();
-    void* params[1] = { reflection_type };
+    void* params[1];
+    params[0] = component->GetType().GetInternal().get_internal_reflection_type_ptr();
 
     remove_component_->Invoke(GetInternal(), params);
 
@@ -101,8 +105,10 @@ std::shared_ptr<Component> GameObject::GetComponent(const std::string& full_name
 }
 
 std::shared_ptr<Component> GameObject::GetComponent(const Type& type) {
-    MonoReflectionType* reflection_type = type.GetInternal().get_internal_reflection_type_ptr();
-    void* params[1] = { reflection_type };
+    assert(get_component_ != nullptr && kIsNotCachedErrorMessage);
+
+    void* params[1];
+    params[0] = type.GetInternal().get_internal_reflection_type_ptr();
 
     auto result = get_component_->Invoke(*this, params);
 
@@ -110,7 +116,8 @@ std::shared_ptr<Component> GameObject::GetComponent(const Type& type) {
         return nullptr;
     }
 
-    return std::make_shared<Component>(result.value());
+    auto component = std::make_shared<Component>(result.value());
+    return component;
 }
 
 void GameObject::Initialize() {
@@ -156,7 +163,8 @@ std::shared_ptr<Component> GameObject::operator[](size_t index) const {
     args[0] = &index;
 
     auto result = get_item_->Invoke(*this, args).value();
-    return std::make_shared<Component>(result);
+    auto component = std::make_shared<Component>(result);
+    return component;
 }
 
 void GameObject::CacheMethods(const Runtime& runtime) {
