@@ -31,6 +31,7 @@ std::vector<Object> Field::GetAttributes() const {
 		}
 	}
 
+	//mono_free(ainfo);
 	return attributes;
 }
 
@@ -38,14 +39,14 @@ bool Field::IsPublic() const {
 	return field_.get_visibility() == mono::visibility::vis_public;
 }
 
-Field::Field(const Type& type, const std::string& field_name)
+Field::Field(Type type, const std::string& field_name)
 	: Field(type, type.GetInternal().get_field(field_name))
 {}
 
-Field::Field(const Type& type, mono::mono_field field)
+Field::Field(Type type, mono::mono_field field)
 	: field_(std::move(field))
 	, field_invoker_(field_)
-	, class_type_(type)
+	, class_type_(std::move(type))
 	, field_type_(field_.get_type())
 {}
 

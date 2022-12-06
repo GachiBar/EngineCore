@@ -445,45 +445,57 @@ void Engine::Internal_AddForce(
 bool Engine::Internal_IsPressed(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->IsPressed(key);
 }
 
 bool Engine::Internal_WasJustPressed(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->WasJustPressed(key);
 }
 
 bool Engine::Internal_WasJustReleased(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->WasJustReleased(key);
 }
 
 bool Engine::Internal_IsActionPressed(MonoString* action_name) {
 	auto raw_string = mono_string_to_utf8(action_name);
-	return InputManager::getInstance().GetPlayerInput()->IsActionPressed(raw_string);
+	std::string action(raw_string);
+	mono_free(raw_string);
+	return InputManager::getInstance().GetPlayerInput()->IsActionPressed(action);
 }
 
 bool Engine::Internal_WasActionJustPressed(MonoString* action_name) {
 	auto raw_string = mono_string_to_utf8(action_name);
-	return InputManager::getInstance().GetPlayerInput()->WasActionJustPressed(raw_string);
+	std::string action(raw_string);
+	mono_free(action_name);
+	return InputManager::getInstance().GetPlayerInput()->WasActionJustPressed(action);
 }
 
 bool Engine::Internal_WasActionJustReleased(MonoString* action_name) {
 	auto raw_string = mono_string_to_utf8(action_name);
-	return InputManager::getInstance().GetPlayerInput()->WasActionJustReleased(raw_string);
+	std::string action(raw_string);
+	mono_free(raw_string);
+	return InputManager::getInstance().GetPlayerInput()->WasActionJustReleased(action);
 }
 
 float Engine::Internal_GetKeyValue(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->GetKeyValue(key);
 }
 
 float Engine::Internal_GetAxisValue(MonoString* axis_name) {
 	auto raw_string = mono_string_to_utf8(axis_name);
-	return InputManager::getInstance().GetPlayerInput()->GetAxisValue(raw_string);
+	std::string axis(raw_string);
+	mono_free(raw_string);
+	return InputManager::getInstance().GetPlayerInput()->GetAxisValue(axis);
 }
 
 #pragma endregion Inputs
@@ -527,12 +539,14 @@ void Engine::Internal_Log_Implementation(
 
 	const auto raw_string = mono_string_to_utf8(message);
 	const std::string message_string(raw_string);
+	mono_free(raw_string);
 
 	//call log callback
 	LogManager::getInstance().Log(verbosity, raw_string);
 
 	const auto guid_raw_string = mono_string_to_utf8(guid);
 	const std::string guid_string(guid_raw_string);
+	mono_free(guid_raw_string);
 
 	if (should_print_to_screen && !guid_string.empty()) {
 		LogManager::getInstance().OnViewportPrint(message_string, verbosity, guid_string);
