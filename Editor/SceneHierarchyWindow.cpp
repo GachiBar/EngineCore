@@ -95,7 +95,7 @@ void SceneHierarchyWindow::DrawWithoutTransformHeaderPopup()
     }
 }
 
-void SceneHierarchyWindow::DrawHierarchyPopup(std::shared_ptr<engine::GameObject> gameObject)
+void SceneHierarchyWindow::DrawWithTransformPopup(std::shared_ptr<engine::GameObject> gameObject)
 {
     if (ImGui::BeginPopupContextItem())
     {
@@ -125,6 +125,19 @@ void SceneHierarchyWindow::DrawHierarchyPopup(std::shared_ptr<engine::GameObject
     }
 }
 
+void SceneHierarchyWindow::DrawWithoutTransformPopup(std::shared_ptr<engine::GameObject> gameObject)
+{
+    if (ImGui::BeginPopupContextItem())
+    {
+        if (ImGui::Selectable("Delete"))
+        {
+            scene->DeleteGameObject(gameObject);
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
 void SceneHierarchyWindow::DrawHierarchy(engine::Component& transform)
 {
     ImGui::PushID(tree_level_id);
@@ -146,7 +159,7 @@ void SceneHierarchyWindow::DrawHierarchy(engine::Component& transform)
 
     bool isExpanded = ImGui::TreeNodeEx(gameObject->Name().c_str(), flags);
     DrawSelected(gameObject);
-    DrawHierarchyPopup(gameObject);
+    DrawWithTransformPopup(gameObject);
 
     SetupDragSource(gameObject);
     SetupDropTarget<HierarchyDragAndDropHandler>(gameObject);
@@ -200,6 +213,7 @@ void SceneHierarchyWindow::DrawWithoutTransform(
                 GameObjectSelected.Broadcast(gameObject);
             }
 
+            DrawWithoutTransformPopup(gameObject);
             SetupDragSource(gameObject);            
 
             tree_level_id += 1;
@@ -232,7 +246,7 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
         params[0] = &i;
 
         auto childObject = getChildMethod.Invoke(transform, params).value();
-        engine::Component childTransform(childObject);
+        engine::Component childTransform(std::move(childObject));
         DeleteHierarchy(childTransform);
     }
 

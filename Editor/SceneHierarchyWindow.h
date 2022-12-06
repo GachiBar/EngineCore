@@ -75,7 +75,8 @@ private:
 
 	void DrawWithTransformHeaderPopup();
 	void DrawWithoutTransformHeaderPopup();
-	void DrawHierarchyPopup(std::shared_ptr<engine::GameObject> gameObject);
+	void DrawWithTransformPopup(std::shared_ptr<engine::GameObject> gameObject);
+	void DrawWithoutTransformPopup(std::shared_ptr<engine::GameObject> gameObject);
 
 	void DrawWithTransform(const std::vector<std::shared_ptr<engine::GameObject>>& roots);
 	void DrawHierarchy(engine::Component& transform);

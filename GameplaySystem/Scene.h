@@ -13,7 +13,9 @@ public:
 
 	size_t Count() const;	
 
-	Scene(const Object& object);
+	Scene();
+	Scene(const Object& other);
+	Scene(Object&& other) noexcept;
 
 	std::shared_ptr<GameObject> CreateGameObject();
 	void DeleteGameObject(std::shared_ptr<GameObject> game_object);

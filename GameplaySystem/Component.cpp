@@ -23,6 +23,10 @@ Component::Component(const Object& other)
     : Object(other)
 {}
 
+Component::Component(Object&& other) noexcept
+    : Object(std::forward<Object>(other))
+{}
+
 void Component::CacheMethods(const Runtime& runtime) {
     auto type = runtime.GetType(Types::kComponent);
 
