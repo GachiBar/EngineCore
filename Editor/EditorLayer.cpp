@@ -168,6 +168,7 @@ void EditorLayer::OnGuiRender()
                 getline(file, content, '\0');
                 
                 GetApp()->GetEngine()->GetScene()->Deserialize(content);
+                GetApp()->GetEngine()->GetScene()->Initialize();
                 file.close();
             }
 

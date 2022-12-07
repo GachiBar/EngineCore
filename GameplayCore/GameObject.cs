@@ -204,6 +204,7 @@ namespace GameplayCore
 
             _componentsMap[instance.GetType()] = instance;
             instance.GameObject = this;
+            ComponentAdded?.Invoke(this, instance);
             _isUpdatableComponentsInvalid = true;
         }
 

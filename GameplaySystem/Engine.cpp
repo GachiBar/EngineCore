@@ -207,6 +207,7 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_RegisterModel", Internal_RegisterModel);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawModel", Internal_DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawDirectionalLight", Internal_DrawDirectionalLight);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
@@ -306,10 +307,25 @@ void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::Simp
 	};
 	
 	renderer->DrawOpaqueModel(opaque_model_draw_data);
-	renderer->DrawLight({ {},
-		DirectionalLight{float3(0.5,-1,0),
-			1,
-			color(0,200,200) } });
+	//renderer->DrawLight({ {},
+	//	DirectionalLight{float3(0.5,-1,0),
+	//		1,
+	//		color(0,200,200) } });
+}
+
+void Engine::Internal_DrawDirectionalLight(
+	RenderDevice* renderer,
+	DirectX::SimpleMath::Vector3 direction,
+	float itencity,
+	DirectX::SimpleMath::Color color) 
+{
+	DirectionalLight directional_light(direction, itencity, color);
+	LightDrawData light_draw_data{
+		DirectX::SimpleMath::Matrix::Identity,
+		directional_light,
+	};
+
+	renderer->DrawLight(light_draw_data);
 }
 
 void Engine::Internal_DrawCurve(

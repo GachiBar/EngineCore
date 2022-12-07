@@ -104,6 +104,12 @@ private:
 		size_t id, 
 		DirectX::SimpleMath::Matrix model_matrix);
 
+	static void Internal_DrawDirectionalLight(
+		RenderDevice* renderer,
+		DirectX::SimpleMath::Vector3 direction,
+		float itencity,
+		DirectX::SimpleMath::Color color);
+
 	static void Internal_DrawCurve(
 		RenderDevice* renderer, 
 		MonoArray* points, 
