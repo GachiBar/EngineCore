@@ -139,9 +139,7 @@ namespace GameplayCore
             _gameObjects = JsonConvert.DeserializeObject<List<GameObject>>(data, options);
             
             // And then set it
-            gameObjectConverter.PassGuidReferences(data);
-            Invalidate();
-            Initialize();
+            gameObjectConverter.PassGuidReferences(data);            
 
             foreach (var item in _gameObjects)
             {
@@ -149,6 +147,8 @@ namespace GameplayCore
                 if(component == null) continue;
                 component.FindChildren();
             }
+
+            Invalidate();
         }
 
         public GameObject CreateGameObject()

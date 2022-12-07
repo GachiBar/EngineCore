@@ -100,9 +100,17 @@ private:
 		size_t id);
 
 	static void Internal_DrawModel(
-		RenderDevice* renderer, 
-		size_t id, 
+		RenderDevice* renderer,
+		size_t id,
+		float metallic, 
+		float roughness,
 		DirectX::SimpleMath::Matrix model_matrix);
+
+	static void Internal_DrawDirectionalLight(
+		RenderDevice* renderer,
+		DirectX::SimpleMath::Vector3 direction,
+		float itencity,
+		DirectX::SimpleMath::Color color);
 
 	static void Internal_DrawCurve(
 		RenderDevice* renderer, 

@@ -170,11 +170,44 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 		}
 	});
 	renderer_.InitDevice({ "..\\DX11RenderEngine\\GachiRenderSystem\\Shaders\\" });
+	
+	OpaqueMesh model{ EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST };
+
+	// Stool
+	std::string path = "Content\\Stool.obj";
+	ModelLoader::LoadObj(path, model);
+
+	renderer_.RegisterModel(1, model);
+
+	DirectX::ScratchImage stool_image;
+	TextureLoader::LoadWic(L"Content\\Stool.jpg", stool_image);
+
+	int texture_width = stool_image.GetImage(0, 0, 0)->width;
+	int texture_height = stool_image.GetImage(0, 0, 0)->height;
+	void* data = stool_image.GetImage(0, 0, 0)->pixels;
+
+	renderer_.RegisterTexture(1, texture_width, texture_height, data);
+
+	// Cube
+	std::string cube_path = "Content\\Cube.obj";
+	ModelLoader::LoadObj(cube_path, model);
+
+	renderer_.RegisterModel(2, model);
+
+	DirectX::ScratchImage cube_image;
+	TextureLoader::LoadWic(L"Content\\Breaks.jpg", cube_image);
+
+	texture_width = cube_image.GetImage(0, 0, 0)->width;
+	texture_height = cube_image.GetImage(0, 0, 0)->height;
+	data = cube_image.GetImage(0, 0, 0)->pixels;
+
+	renderer_.RegisterTexture(2, texture_width, texture_height, data);
 }
 
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_RegisterModel", Internal_RegisterModel);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawModel", Internal_DrawModel);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawDirectionalLight", Internal_DrawDirectionalLight);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 
@@ -243,23 +276,20 @@ void Engine::SendInputData() {
 
 #pragma region Renderer
 
-void Engine::Internal_RegisterModel(
-	RenderDevice* renderer, 
-	size_t id) 
-{
-	std::vector<ModelVertex> verticies;
+void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
+	std::vector<OpaqueModelVertex> verticies;
 	std::vector<uint32_t> indexes;
 	size_t primitiveCount = 0;
 
-	ModelMesh model(EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes);
+	OpaqueMesh model{ EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes };
 
-	std::string path = "Content\\Cube.obj";
+	std::string path = "Content\\Stool.obj";
 	ModelLoader::LoadObj(path, model);
 
 	renderer->RegisterModel(id, model);
 
 	DirectX::ScratchImage image;
-	TextureLoader::LoadWic(L"Content\\Breaks.jpg", image);
+	TextureLoader::LoadWic(L"Content\\Stool.jpg", image);
 
 	int texture_width = image.GetImage(0, 0, 0)->width;
 	int texture_height = image.GetImage(0, 0, 0)->height;
@@ -269,11 +299,35 @@ void Engine::Internal_RegisterModel(
 }
 
 void Engine::Internal_DrawModel(
-	RenderDevice* renderer,
+	RenderDevice* renderer, 
 	size_t id, 
+	float metallic,
+	float roughness,
 	DirectX::SimpleMath::Matrix model_matrix) 
 {
-	renderer->DrawModel({ id, id, model_matrix });
+	MaterialData material_data{
+		{(uint64_t)id}, {{1, 0, 0}}, {{roughness}}, {{metallic}}
+	};
+	OpaqueModelDrawData opaque_model_draw_data{
+		id, model_matrix, model_matrix, 1.0f, 1.0f, material_data, {}
+	};
+	
+	renderer->DrawOpaqueModel(opaque_model_draw_data);
+}
+
+void Engine::Internal_DrawDirectionalLight(
+	RenderDevice* renderer,
+	DirectX::SimpleMath::Vector3 direction,
+	float itencity,
+	DirectX::SimpleMath::Color color) 
+{
+	DirectionalLight directional_light(direction, itencity, color);
+	LightDrawData light_draw_data{
+		DirectX::SimpleMath::Matrix::Identity,
+		directional_light,
+	};
+
+	renderer->DrawLight(light_draw_data);
 }
 
 void Engine::Internal_DrawCurve(

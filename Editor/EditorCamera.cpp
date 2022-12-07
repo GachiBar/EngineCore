@@ -15,7 +15,8 @@ void EditorCamera::UpdateProjectionMatrix()
 
 void EditorCamera::UpdateEditorViewProjectionMatrix(float dt) const
 {
-	owner_layer->GetApp()->GetEngine()->GetRenderer().SetRenderData({ dt,View,Proj });
+	DirectX::SimpleMath::Vector4 position(CameraPos.x, CameraPos.y, CameraPos.z, 0.0f);
+	owner_layer->GetApp()->GetEngine()->GetRenderer().SetRenderData({ dt,View,Proj,position });
 }
 
 void EditorCamera::Tick(float dt)

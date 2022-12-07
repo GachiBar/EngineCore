@@ -1,28 +1,30 @@
-﻿namespace GameplayCore.Components
+﻿using System;
+
+namespace GameplayCore.Components
 {
     public class MeshRenderComponent : Component
     {
-        private static ulong _id = 0;
         private TransformComponent _transformComponent = null;
+        //Material{Texture, Metalic, Raffness, Normal}
 
-        public ulong Id { get; private set; }
-
-        public MeshRenderComponent()
-        {
-            Id = _id;
-            _id += 1;
-        }
+        public ulong Id = 1;
+        public float Metallic = 0;
+        public float Roughness = 0;
 
         public override void Initialize() 
         {
-            EngineApi.RenderApi.RegisterModel(Id);
+            //EngineApi.RenderApi.RegisterModel(Id);
         }
 
         public override void Render()
         {
             if (_transformComponent != null)
             {
-                EngineApi.RenderApi.DrawModel(Id, _transformComponent.ModelMatrix);
+                EngineApi.RenderApi.DrawModel(
+                    Id, 
+                    Metallic, 
+                    Roughness, 
+                    _transformComponent.ModelMatrix);
             }            
         }
 
@@ -43,7 +45,7 @@
         private void OnComponentAdded(GameObject gameObject, Component component)
         {
             if (component is TransformComponent transformComponent)
-            {
+            {                
                 _transformComponent = transformComponent;
             }
         }
