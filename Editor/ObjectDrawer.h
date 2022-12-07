@@ -15,13 +15,13 @@ private:
 
 		void update(std::filesystem::path basepath);
 		std::string get_name(int index) const;
-		mono::mono_object get_pointer(int index);
+		std::optional<mono::mono_object> get_pointer(int index);
 		int get_index(mono::mono_object pointer);
 
 		int size() const;
 
 	private:
-		std::vector<std::pair<std::filesystem::path, mono::mono_object>> files_path;
+		std::vector<std::pair<std::filesystem::path, std::optional<mono::mono_object>>> files_path;
 		std::vector<std::string> resource_names;
 	};
 	

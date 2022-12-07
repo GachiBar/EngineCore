@@ -127,6 +127,17 @@ bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& 
 				isFieldChanged |= DrawGameObjectField(object, field);
 				modifiedFields.push_back(field.GetName());
 			}
+			else if (field.GetType().Is(engine::Types::kResource) ||
+				field.GetType().IsDerivedFrom(engine::Runtime::GetCurrentRuntime().GetType(engine::Types::kResource)))
+			{
+				isFieldChanged |= DrawResourceField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+
+			if(field.GetType().GetName().find("Resource") !=std::string::npos)
+			{
+				continue;
+			}
 		}
 
 		type = type.GetBaseType();
@@ -602,7 +613,7 @@ bool ObjectDrawer::DrawGameObjectField(const engine::Object& object, engine::Fie
 	return false;
 }
 
-bool ObjectDrawer::DrawResourceField(engine::Field field)
+bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -613,15 +624,23 @@ bool ObjectDrawer::DrawResourceField(engine::Field field)
 
 	auto fieldName = GetFieldName(field, attributes);
 	auto monoObject = field.GetValue();
-	mono::mono_object value = monoObject.has_value() ? monoObject.value().GetInternal() : mono::mono_object(nullptr);
 	
 	cache_.update(MetadataReader::AssetsPath);
+
+	// TODO: Add nullptr in vector
+	int selected_index;
+	if(monoObject.has_value())
+		selected_index = cache_.get_index(monoObject.value().GetInternal());
+	else
+		selected_index = 0;
 	
-	int selected_index = cache_.get_index(value);
 	if (ImGui::Combo(fieldName.c_str(), &selected_index, game_objects_names, scene->Count() + 1))
 	{
 		auto resource = cache_.get_pointer(selected_index);
-		field.SetValue(resource);
+		if(!resource.has_value())
+			return false;
+		
+		field.SetValue(resource.value());
 		return true;
 	}
 	
@@ -743,7 +762,7 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 		FileData data = iterator();
 		if(files_path.size() <= i)
 		{
-			files_path.push_back(std::make_pair(data.path, mono::mono_object(nullptr)));
+			files_path.push_back(std::make_pair(data.path, std::optional<mono::mono_object>{}));
 			resource_names.push_back(data.filename());
 			break;
 		}
@@ -752,7 +771,7 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 		{
 			files_path.insert(
 				files_path.begin() + i,
-				std::make_pair(data.path, mono::mono_object(nullptr)));
+				std::make_pair(data.path, std::optional<mono::mono_object>{}));
 			
 			resource_names.insert(
 				resource_names.begin() + i,
@@ -768,28 +787,27 @@ std::string ObjectDrawer::resources_cache::get_name(int index) const
 	return path.filename().generic_string();
 }
 
-mono::mono_object ObjectDrawer::resources_cache::get_pointer(int index)
+std::optional<mono::mono_object> ObjectDrawer::resources_cache::get_pointer(int index)
 {
 	assert(index > -1 && index < files_path.size());
 	// Call MetadataReader to get object by path string
 	std::filesystem::path path = files_path[index].first;
 
-	if(files_path[index].second.get_internal_ptr() != nullptr)
-		return files_path[index].second;
+	if(files_path[index].second.has_value())
+		return files_path[index].second.value();
 	
 	// Use Dotnet.MetadataReader.Read()
 	std::optional<mono::mono_object> raw_resource = MetadataReader::read_internal(path);
-	mono::mono_object value = raw_resource.has_value() ? raw_resource.value() : mono::mono_object(nullptr);
-	files_path[index].second = value;
+	files_path[index].second = raw_resource;
 
-	return value;
+	return raw_resource;
 }
 
 int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
 {
 	// Get Filename of instance
 	engine::Object resource(pointer);
-	auto property = resource.GetProperty("FilePath");
+	auto property = resource.GetType().GetProperty("FilePath");
 	std::optional<engine::Object> propertyValue = property.GetValue();
 
 	if(!propertyValue.has_value())
@@ -805,7 +823,7 @@ int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
 	{
 		if(files_path[i].first == path)
 		{
-			if(files_path[i].second.get_internal_ptr() == nullptr)
+			if(!files_path[i].second.has_value())
 				files_path[i].second = pointer;
 			
 			return i;	

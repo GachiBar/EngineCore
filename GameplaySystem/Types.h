@@ -91,6 +91,9 @@ public:
 	static const TypeData kScreen;
 	static const TypeData kInput;
 
+	// Resources
+	static const TypeData kResource;
+
 	static const TypeData RegisterType(std::string name_space, std::string name);
 	static const TypeData GetTypeData(std::string name_space, std::string name);
 	static const TypeData GetTypeData(std::string full_name);

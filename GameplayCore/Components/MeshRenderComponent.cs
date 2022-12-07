@@ -1,9 +1,13 @@
-﻿namespace GameplayCore.Components
+﻿using GameplayCore.Resources;
+using GameplayCore.Serialization;
+
+namespace GameplayCore.Components
 {
     public class MeshRenderComponent : Component
     {
         private static ulong _id = 0;
         private TransformComponent _transformComponent = null;
+        [SerializeField] private Resource _asset;
 
         public ulong Id { get; private set; }
 
