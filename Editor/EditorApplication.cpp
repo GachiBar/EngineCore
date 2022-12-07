@@ -1,10 +1,5 @@
 #include "EditorApplication.h"
-#include "EditorLayer.h"
 #include "../GameplaySystem/Component.h"
-
-#include <iostream>
-
-#include "GameLayer.h"
 #include "InputManager.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "Windows/GenericWindow.h"
@@ -25,14 +20,14 @@ void EditorApplication::OnSetup()
 void EditorApplication::OnStart()
 {
 	Application::OnStart();
-	const auto game_layer = new GameLayer(&m_LayerStack);
-	PushLayer(game_layer);
+	game_layer = std::make_shared<GameLayer>(&m_LayerStack);
+	PushLayer(game_layer.get());
 
-	const auto editor_layer = new EditorLayer(&m_LayerStack);
-	Camera->owner_layer = editor_layer;
-	PushLayer(editor_layer);
-	editor_layer->gvm->EnteringGameMode.AddRaw(this, &EditorApplication::SetGameOnlyOnlyInputMode);
-	editor_layer->gvm->ExitGameMode.AddRaw(this, &EditorApplication::SetEditorOnlyInputMode);
+	editor_layer = std::make_shared<EditorLayer>(&m_LayerStack);
+	Camera->owner_layer = editor_layer.get();
+	PushLayer(editor_layer.get());
+	editor_layer->gvm->EnterGameMode.AddRaw(this, &EditorApplication::OnEnterGameMode);
+	editor_layer->gvm->ExitGameMode.AddRaw(this, &EditorApplication::OnExitGameMode);
 
 	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::on_resize_viewport);
 }
@@ -42,17 +37,14 @@ EEditorInputMode::Type EditorApplication::GetCurrentInputMode() const
 	return editor_input_mode;
 }
 
-engine::GameObject* EditorApplication::GetCamera() const
-{
-	return camera_go.get();
-}
-
-void EditorApplication::SetEditorOnlyInputMode()
-{
-	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
-}
-
-void EditorApplication::SetGameOnlyOnlyInputMode()
+void EditorApplication::OnEnterGameMode()
 {
 	editor_input_mode = EEditorInputMode::Type::GameOnlyMode;
+	game_layer->SetIsPlaying(true);
+}
+
+void EditorApplication::OnExitGameMode()
+{
+	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
+	game_layer->SetIsPlaying(false);
 }

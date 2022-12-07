@@ -8,6 +8,8 @@ namespace GameplayCore.Components
 {
     public class SphereBodyComponent : BodyComponent
     {
+        private TransformComponent _transformComponent;
+        
         [SerializeField]
         [InspectorName("Radius")]
         private float _radius = 1.0f;
@@ -31,7 +33,44 @@ namespace GameplayCore.Components
 
         protected override void RenderCollider()
         {
-            Gizmos.DrawSphere(Position, Rotation, Vector3.One, _radius, new Vector3(0.0f, 255.0f, 0.0f));
+            Gizmos.DrawSphere(
+                _transformComponent.Position, 
+                _transformComponent.Rotation, 
+                Vector3.One,
+                _radius, 
+                new Vector3(0.0f, 255.0f, 0.0f));
+        }
+
+        protected override void OnAttach(GameObject gameObject)
+        {
+            base.OnAttach(gameObject);
+            _transformComponent = GameObject.GetComponent<TransformComponent>();
+
+            gameObject.ComponentAdded += OnComponentAdded;
+            gameObject.ComponentRemoved += OnComponentRemoved;
+        }
+
+        protected override void OnDetach(GameObject gameObject)
+        {
+            base.OnDetach(gameObject);
+            gameObject.ComponentAdded -= OnComponentAdded;
+            gameObject.ComponentRemoved -= OnComponentRemoved;
+        }
+
+        private void OnComponentAdded(GameObject gameObject, Component component)
+        {
+            if (component is TransformComponent transformComponent)
+            {
+                _transformComponent = transformComponent;
+            }
+        }
+
+        private void OnComponentRemoved(GameObject gameObject, Component component)
+        {
+            if (component is TransformComponent)
+            {
+                _transformComponent = null;
+            }
         }
     }
 }

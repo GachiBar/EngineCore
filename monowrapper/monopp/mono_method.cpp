@@ -50,8 +50,11 @@ mono_method::mono_method(const mono_type& type, const std::string& name, int arg
 void mono_method::generate_meta()
 {
 	signature_ = mono_method_signature(method_);
-	name_ = mono_method_get_name(method_);
-	fullname_ = mono_method_full_name(method_, true);
+	auto raw_name = mono_method_get_name(method_);
+	auto raw_fullname = mono_method_full_name(method_, true);
+	name_ = raw_name;
+	fullname_ = raw_fullname;
+	mono_free(raw_fullname);
 	std::string storage = (is_static() ? " static " : " ");
 	full_declname_ = to_string(get_visibility()) + storage + fullname_;
 }

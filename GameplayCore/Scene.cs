@@ -84,6 +84,16 @@ namespace GameplayCore
             Invalidate();
         }
 
+        public void DebugRender()
+        {
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.DebugRender();
+            }
+
+            Invalidate();
+        }
+
         public void Terminate()
         {
             foreach (var gameObject in _gameObjects)

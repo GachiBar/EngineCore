@@ -2,7 +2,7 @@
 
 #include "IEditorWindow.h"
 #include "imgui/imgui.h"
-#include "libs/Delegates.h"
+#include "../Core/libs/Delegates.h"
 #include "../GameplaySystem/Runtime.h"
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"

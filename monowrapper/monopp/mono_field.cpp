@@ -31,7 +31,9 @@ void mono_field::generate_meta()
 {
 	auto type = mono_field_get_type(field_);
 	type_ = mono_type(mono_class_from_mono_type(type));
-	fullname_ = mono_field_full_name(field_);
+	auto raw_fullname = mono_field_full_name(field_);
+	fullname_ = raw_fullname;
+	mono_free(raw_fullname);
 	std::string storage = (is_static() ? " static " : " ");
 	full_declname_ = to_string(get_visibility()) + storage + fullname_;
 }

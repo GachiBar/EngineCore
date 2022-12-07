@@ -31,6 +31,10 @@ namespace engine {
 const float Engine::kDt = 16.0f / 1000;
 const std::chrono::nanoseconds Engine::kTimestep = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 
+bool Engine::IsRunning() {
+	return is_running_;
+}
+
 std::shared_ptr<Scene> Engine::GetScene() {
 	return scene_;
 }
@@ -59,6 +63,7 @@ Engine::Engine(const Runtime& runtime)
 	, screen_width_property_(runtime_.GetType(Types::kScreen).GetProperty("Width"))
 	, screen_height_property_(runtime_.GetType(Types::kScreen).GetProperty("Height"))
 	, mouse_position_property_(runtime_.GetType(Types::kInput).GetProperty("MousePosition"))
+	, is_running_(false)
 {}
 
 void Engine::Initialize(HWND handle, UINT width, UINT height) {
@@ -74,6 +79,19 @@ void Engine::Terminate() {
 
 	delete JPH::Factory::sInstance;
 	JPH::Factory::sInstance = nullptr;
+}
+
+void Engine::Stop() {
+	RunFrame();
+	is_running_ = false;
+}
+
+void Engine::Start() {
+	using namespace std::chrono;
+	using clock = high_resolution_clock;
+
+	time_start_ = clock::now();
+	is_running_ = true;
 }
 
 void Engine::RunFrame() {
@@ -99,17 +117,24 @@ void Engine::RunFrame() {
 }
 
 void Engine::BeginRender() {
-	renderer_.BeginFrame();
-	scene_->Render();
+	renderer_.BeginFrame();	
+}
 
+void Engine::Render() {
+	scene_->Render();
+}
+
+void Engine::DebugRender() {
+	scene_->DebugRender();
+}
+
+void Engine::EndRender() {
 	while (!renderer_.Present()) {
 		renderer_.EndFrame();
 		renderer_.ReloadShaders();
 		renderer_.BeginFrame();
 	};
-}
 
-void Engine::EndRender() {
 	renderer_.EndFrame();
 }
 
@@ -481,45 +506,57 @@ void Engine::Internal_AddForce(
 bool Engine::Internal_IsPressed(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->IsPressed(key);
 }
 
 bool Engine::Internal_WasJustPressed(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->WasJustPressed(key);
 }
 
 bool Engine::Internal_WasJustReleased(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->WasJustReleased(key);
 }
 
 bool Engine::Internal_IsActionPressed(MonoString* action_name) {
 	auto raw_string = mono_string_to_utf8(action_name);
-	return InputManager::getInstance().GetPlayerInput()->IsActionPressed(raw_string);
+	std::string action(raw_string);
+	mono_free(raw_string);
+	return InputManager::getInstance().GetPlayerInput()->IsActionPressed(action);
 }
 
 bool Engine::Internal_WasActionJustPressed(MonoString* action_name) {
 	auto raw_string = mono_string_to_utf8(action_name);
-	return InputManager::getInstance().GetPlayerInput()->WasActionJustPressed(raw_string);
+	std::string action(raw_string);
+	mono_free(action_name);
+	return InputManager::getInstance().GetPlayerInput()->WasActionJustPressed(action);
 }
 
 bool Engine::Internal_WasActionJustReleased(MonoString* action_name) {
 	auto raw_string = mono_string_to_utf8(action_name);
-	return InputManager::getInstance().GetPlayerInput()->WasActionJustReleased(raw_string);
+	std::string action(raw_string);
+	mono_free(raw_string);
+	return InputManager::getInstance().GetPlayerInput()->WasActionJustReleased(action);
 }
 
 float Engine::Internal_GetKeyValue(MonoString* key_name) {
 	auto raw_string = mono_string_to_utf8(key_name);
 	FKey key(raw_string);
+	mono_free(raw_string);
 	return InputManager::getInstance().GetPlayerInput()->GetKeyValue(key);
 }
 
 float Engine::Internal_GetAxisValue(MonoString* axis_name) {
 	auto raw_string = mono_string_to_utf8(axis_name);
-	return InputManager::getInstance().GetPlayerInput()->GetAxisValue(raw_string);
+	std::string axis(raw_string);
+	mono_free(raw_string);
+	return InputManager::getInstance().GetPlayerInput()->GetAxisValue(axis);
 }
 
 #pragma endregion Inputs
@@ -563,12 +600,14 @@ void Engine::Internal_Log_Implementation(
 
 	const auto raw_string = mono_string_to_utf8(message);
 	const std::string message_string(raw_string);
+	mono_free(raw_string);
 
 	//call log callback
 	LogManager::getInstance().Log(verbosity, raw_string);
 
 	const auto guid_raw_string = mono_string_to_utf8(guid);
 	const std::string guid_string(guid_raw_string);
+	mono_free(guid_raw_string);
 
 	if (should_print_to_screen && !guid_string.empty()) {
 		LogManager::getInstance().OnViewportPrint(message_string, verbosity, guid_string);
