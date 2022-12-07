@@ -26,6 +26,7 @@ public:
 	static const float kDt;
 	static const std::chrono::nanoseconds kTimestep;
 
+	bool IsRunning();
 	std::shared_ptr<Scene> GetScene();
 	void SetScene(std::shared_ptr<Scene> scene);
 	RenderDevice& GetRenderer();
@@ -41,6 +42,8 @@ public:
 
 	void RunFrame();
 	void BeginRender();
+	void Render();
+	void DebugRender();
 	void EndRender();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -76,6 +79,8 @@ private:
 	Property screen_width_property_;
 	Property screen_height_property_;
 	Property mouse_position_property_;
+
+	bool is_running_;
 
 	void InitRenderer(HWND handle, size_t width, size_t height);	
 	void InitPhysicsSystem();

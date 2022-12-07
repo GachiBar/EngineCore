@@ -31,6 +31,10 @@ namespace engine {
 const float Engine::kDt = 16.0f / 1000;
 const std::chrono::nanoseconds Engine::kTimestep = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
 
+bool Engine::IsRunning() {
+	return is_running_;
+}
+
 std::shared_ptr<Scene> Engine::GetScene() {
 	return scene_;
 }
@@ -59,6 +63,7 @@ Engine::Engine(const Runtime& runtime)
 	, screen_width_property_(runtime_.GetType(Types::kScreen).GetProperty("Width"))
 	, screen_height_property_(runtime_.GetType(Types::kScreen).GetProperty("Height"))
 	, mouse_position_property_(runtime_.GetType(Types::kInput).GetProperty("MousePosition"))
+	, is_running_(false)
 {}
 
 void Engine::Initialize(HWND handle, UINT width, UINT height) {
@@ -78,6 +83,7 @@ void Engine::Terminate() {
 
 void Engine::Stop() {
 	RunFrame();
+	is_running_ = false;
 }
 
 void Engine::Start() {
@@ -85,6 +91,7 @@ void Engine::Start() {
 	using clock = high_resolution_clock;
 
 	time_start_ = clock::now();
+	is_running_ = true;
 }
 
 void Engine::RunFrame() {
@@ -110,17 +117,24 @@ void Engine::RunFrame() {
 }
 
 void Engine::BeginRender() {
-	renderer_.BeginFrame();
-	scene_->Render();
+	renderer_.BeginFrame();	
+}
 
+void Engine::Render() {
+	scene_->Render();
+}
+
+void Engine::DebugRender() {
+	scene_->DebugRender();
+}
+
+void Engine::EndRender() {
 	while (!renderer_.Present()) {
 		renderer_.EndFrame();
 		renderer_.ReloadShaders();
 		renderer_.BeginFrame();
 	};
-}
 
-void Engine::EndRender() {
 	renderer_.EndFrame();
 }
 

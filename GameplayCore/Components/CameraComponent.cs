@@ -1,4 +1,5 @@
 ﻿using GameplayCore.Mathematics;
+using System;
 
 namespace GameplayCore.Components
 {
@@ -51,7 +52,7 @@ namespace GameplayCore.Components
             }
         }
 
-        public override void Render()
+        public override void DebugRender()
         {
             if (_transformComponent != null)
             {
