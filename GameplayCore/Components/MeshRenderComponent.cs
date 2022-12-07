@@ -8,6 +8,8 @@ namespace GameplayCore.Components
         //Material{Texture, Metalic, Raffness, Normal}
 
         public ulong Id = 1;
+        public float Metallic = 0;
+        public float Roughness = 0;
 
         public override void Initialize() 
         {
@@ -18,7 +20,11 @@ namespace GameplayCore.Components
         {
             if (_transformComponent != null)
             {
-                EngineApi.RenderApi.DrawModel(Id, _transformComponent.ModelMatrix);
+                EngineApi.RenderApi.DrawModel(
+                    Id, 
+                    Metallic, 
+                    Roughness, 
+                    _transformComponent.ModelMatrix);
             }            
         }
 

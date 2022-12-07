@@ -298,19 +298,21 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
 	renderer->RegisterTexture(id, texture_width, texture_height, data);
 }
 
-void Engine::Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix) {
+void Engine::Internal_DrawModel(
+	RenderDevice* renderer, 
+	size_t id, 
+	float metallic,
+	float roughness,
+	DirectX::SimpleMath::Matrix model_matrix) 
+{
 	MaterialData material_data{
-		{(uint64_t)id}, {{1, 0, 0}}, {{1}}, {{0.0}}
+		{(uint64_t)id}, {{1, 0, 0}}, {{roughness}}, {{metallic}}
 	};
 	OpaqueModelDrawData opaque_model_draw_data{
 		id, model_matrix, model_matrix, 1.0f, 1.0f, material_data, {}
 	};
 	
 	renderer->DrawOpaqueModel(opaque_model_draw_data);
-	//renderer->DrawLight({ {},
-	//	DirectionalLight{float3(0.5,-1,0),
-	//		1,
-	//		color(0,200,200) } });
 }
 
 void Engine::Internal_DrawDirectionalLight(
