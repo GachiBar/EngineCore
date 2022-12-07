@@ -59,7 +59,7 @@ namespace EngineDotnetUnitTests
             
             SetAssetsBasepath();
 
-            Resource readen = MetadataReader.GetByGuid(resource.Guid);
+            Resource readen = MetadataReader.TryGetByGuid(resource.Guid);
             Assert.That(resource.Guid, Is.EqualTo(readen.Guid));
         }
         

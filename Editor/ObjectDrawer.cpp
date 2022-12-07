@@ -3,6 +3,8 @@
 #include <imgui/imgui.h>
 #include <SimpleMath.h>
 
+#include "Resources/MetadataReader.h"
+
 std::shared_ptr<engine::Scene> ObjectDrawer::GetScene() const
 {
     return scene;
@@ -566,6 +568,32 @@ bool ObjectDrawer::DrawGameObjectField(engine::Field field)
 	return false;
 }
 
+bool ObjectDrawer::DrawResourceField(engine::Field field)
+{
+	auto attributes = field.GetAttributes();
+
+	if (!IsEditableField(field, attributes))
+	{
+		return false;
+	}
+
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue();
+	mono::mono_object value = monoObject.has_value() ? monoObject.value().GetInternal() : mono::mono_object(nullptr);
+	
+	cache_.update(MetadataReader::AssetsPath);
+	
+	int selected_index = cache_.get_index(value);
+	if (ImGui::Combo(fieldName.c_str(), &selected_index, game_objects_names, scene->Count() + 1))
+	{
+		auto resource = cache_.get_pointer(selected_index);
+		field.SetValue(resource);
+		return true;
+	}
+	
+	return false;
+}
+
 std::string ObjectDrawer::GetFieldName(
 	const engine::Field& field,
 	const std::vector<engine::Object>& attributes)
@@ -668,4 +696,92 @@ void ObjectDrawer::CopyAsNullTerminated(char* destination, const std::string& so
 {
 	source.copy(destination, source.size());
 	destination[source.size()] = '\0';
+}
+
+void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
+{
+	if(MetadataReader::calculate_assets_count(basepath) == files_path.size())
+		return;
+	
+	auto iterator = MetadataReader::iterate_assets_recursive(basepath);
+	for (int i = 0; iterator; i++)
+	{
+		FileData data = iterator();
+		if(files_path.size() <= i)
+		{
+			files_path.push_back(std::make_pair(data.path, mono::mono_object(nullptr)));
+			resource_names.push_back(data.filename());
+			break;
+		}
+
+		if(files_path[i].first != data.path)
+		{
+			files_path.insert(
+				files_path.begin() + i,
+				std::make_pair(data.path, mono::mono_object(nullptr)));
+			
+			resource_names.insert(
+				resource_names.begin() + i,
+				data.filename());
+		}
+	}
+}
+
+std::string ObjectDrawer::resources_cache::get_name(int index) const
+{
+	assert(index > -1 && index < files_path.size());
+	std::filesystem::path path = files_path[index].first;
+	return path.filename().generic_string();
+}
+
+mono::mono_object ObjectDrawer::resources_cache::get_pointer(int index)
+{
+	assert(index > -1 && index < files_path.size());
+	// Call MetadataReader to get object by path string
+	std::filesystem::path path = files_path[index].first;
+
+	if(files_path[index].second.get_internal_ptr() != nullptr)
+		return files_path[index].second;
+	
+	// Use Dotnet.MetadataReader.Read()
+	std::optional<mono::mono_object> raw_resource = MetadataReader::read_internal(path);
+	mono::mono_object value = raw_resource.has_value() ? raw_resource.value() : mono::mono_object(nullptr);
+	files_path[index].second = value;
+
+	return value;
+}
+
+int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
+{
+	// Get Filename of instance
+	engine::Object resource(pointer);
+	auto property = resource.GetProperty("FilePath");
+	std::optional<engine::Object> propertyValue = property.GetValue();
+
+	if(!propertyValue.has_value())
+		return -1;
+
+	std::string pathString = mono::mono_string(propertyValue.value().GetInternal()).as_utf8();
+	
+	// Convert string to std::filesystem::path
+	std::filesystem::path path(pathString);
+	
+	// Find equality
+	for(int i=0; i<files_path.size();i++)
+	{
+		if(files_path[i].first == path)
+		{
+			if(files_path[i].second.get_internal_ptr() == nullptr)
+				files_path[i].second = pointer;
+			
+			return i;	
+		}
+	}
+
+	return -1;
+}
+
+int ObjectDrawer::resources_cache::size() const
+{
+	return files_path.size();
 }

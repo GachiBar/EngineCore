@@ -12,6 +12,6 @@ namespace GameplayCore.Serialization
         public override Resource ReadJson(JsonReader reader, Type objectType, Resource existingValue,
             bool hasExistingValue,
             JsonSerializer serializer)
-            => MetadataReader.GetByGuid(reader.Value != null ? System.Guid.Parse(reader.Value.ToString()):System.Guid.Empty);
+            => MetadataReader.TryGetByGuid(reader.Value != null ? System.Guid.Parse(reader.Value.ToString()):System.Guid.Empty);
     }
 }

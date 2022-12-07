@@ -4,6 +4,7 @@
 
 #include "imgui/imgui.h"
 #include "FileType.h"
+#include "MetadataReader.h"
 #include "../Application.h"
 #include "../GameplaySystem/Engine.h"
 
@@ -34,25 +35,20 @@ void ExplorerWindow::Draw()
         }
     }
 
-    for (const auto& entry : std::filesystem::directory_iterator(current_path))
+    auto iterator = MetadataReader::iterate_assets(current_path);
+    for (int j = 0; iterator; j++)
     {
-        const std::filesystem::path& file_path = entry.path();
-        const std::string entryName = std::filesystem::relative(file_path, current_path).string();
-
-        const FileType type = get_file_type(entry);
-        if(type == Meta || type == Other)
-            continue;
-
-        if(draw_button_with_icon(entryName, type))
+        FileData data = iterator();
+        if(draw_button_with_icon(data.filename(), data.file_type))
         {
-            if(type == Directory)
+            if(data.file_type == Directory)
             {
-                current_path = file_path;
+                current_path = data.path;
                 break;
             }
             else
             {
-                on_file_picked(file_path);
+                on_file_picked(data.path);
                 break;
             }
         }
@@ -74,59 +70,6 @@ bool ExplorerWindow::draw_button_with_icon(const std::string& name, FileType typ
     ImGui::PopID();
     return clicked;
 };
-
-const std::vector<FileData>& ExplorerWindow::get_files_data() const
-{
-    std::vector<FileData> data;
-
-    for (const auto& item : fs::directory_iterator(current_path))
-    {
-        const FileType type = get_file_type(item);
-
-        if(type == Meta || type == Other)
-            continue;
-        
-        FileData file_data(
-            item.path().filename().generic_string(),
-            type
-        );
-
-        data.push_back(file_data);
-    }
-
-    return data;
-}
-
-FileType ExplorerWindow::get_file_type(const fs::directory_entry& entry) const
-{
-    if (entry.is_directory())
-        return FileType::Directory;
-
-    // Actually there is should be .meta search, but let it be here for now
-    if (entry.is_regular_file())
-    {
-        std::string extension = entry.path().filename().extension().generic_string();
-        if(extension == ".scene")
-            return FileType::Scene;
-        else if (extension == ".prefab")
-            return FileType::Prefab;
-        else if (extension == ".mesh")
-            return FileType::Mesh;
-        else if (extension == ".material")
-            return FileType::Material;
-        else if (extension == ".texture")
-            return FileType::Texture;
-        else if (extension == ".meta")
-            return FileType::Meta;
-        else if (extension == ".txt")
-            return FileType::PlainText;
-    }
-
-    // std::cout << "Can't handle non-directory and non-file!\n";
-    return FileType::Other;
-}
-
-
 
 ID3D11ShaderResourceView* ExplorerWindow::get_texture(const char* filename) const
 {

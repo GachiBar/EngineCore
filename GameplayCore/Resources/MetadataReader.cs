@@ -87,6 +87,8 @@ namespace GameplayCore.Resources
             return Guid.Parse(reader.Value as string ?? string.Empty);
         }
 
+        // For tests only!
+        [Obsolete]
         public static Resource ReadWithoutSave(string path)
         {
             Debug($"Reading metadata of {path}!");
@@ -112,7 +114,7 @@ namespace GameplayCore.Resources
             file.Close();
         }
 
-        public static Resource GetByGuid(System.Guid guid)
+        public static Resource TryGetByGuid(System.Guid guid)
         {
             if (guid.Equals(System.Guid.Empty)) 
                 return null;
@@ -125,7 +127,7 @@ namespace GameplayCore.Resources
 
             return null;
         }
-
+        
         private static IEnumerable<(System.Guid, string)> IterateAllResourcesFast()
         {
             string path = Path.Combine(Path.GetFullPath("."), BasePath);
