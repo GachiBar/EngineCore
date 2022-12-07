@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RenderEngine.h"
+#include "Runtime.h"
 #include "Scene.h"
 #include "BPLayerInterfaceImplementation.h"
 #include "../monowrapper/monopp/mono_assembly.h"
@@ -30,9 +31,7 @@ public:
 	RenderDevice& GetRenderer();
 	JPH::PhysicsSystem& GetPhysicsSystem();
 
-	Engine(
-		const mono::mono_domain& domain,
-		const mono::mono_assembly& assembly);
+	Engine(const Runtime& runtime);
 
 	void Initialize(HWND handle,UINT width, UINT height);
 	void Terminate();
@@ -65,16 +64,15 @@ private:
 	nanoseconds lag_ = 0ns;
 	nanoseconds ellapsed_ = 0ns;
 
-	const::mono::mono_domain& domain_;
-	const::mono::mono_assembly& assembly_;
+	const Runtime& runtime_;
 
-	mono::mono_property_invoker renderer_property_;
-	mono::mono_property_invoker physics_system_property_;
-	mono::mono_property_invoker delta_time_property_;
-	mono::mono_property_invoker ellapsed_time_property_;
-	mono::mono_property_invoker screen_width_property_;
-	mono::mono_property_invoker screen_height_property_;
-	mono::mono_property_invoker mouse_position_property_;	
+	Property renderer_property_;
+	Property physics_system_property_;
+	Property delta_time_property_;
+	Property ellapsed_time_property_;
+	Property screen_width_property_;
+	Property screen_height_property_;
+	Property mouse_position_property_;
 
 	void InitRenderer(HWND handle, size_t width, size_t height);	
 	void InitPhysicsSystem();
@@ -83,16 +81,27 @@ private:
 	void SetupPhysicsInternalCalls();
 	void SetupInputInternalCalls();
 
-	mono::mono_property GetProperty(std::string name_space, std::string clazz, std::string property);
-
 	void SendTimeData();
 	void SendScreenData();
 	void SendInputData();
 
 #pragma region Renderer
 
-	static void Internal_RegisterModel(RenderDevice* renderer, size_t id);
-	static void Internal_DrawModel(RenderDevice* renderer, size_t id, DirectX::SimpleMath::Matrix model_matrix);
+	static void Internal_RegisterModel(
+		RenderDevice* renderer, 
+		size_t id);
+
+	static void Internal_DrawModel(
+		RenderDevice* renderer, 
+		size_t id, 
+		DirectX::SimpleMath::Matrix model_matrix);
+
+	static void Internal_DrawCurve(
+		RenderDevice* renderer, 
+		MonoArray* points, 
+		DirectX::SimpleMath::Vector3 color,
+		DirectX::SimpleMath::Matrix model_matrix);
+
 	static void Internal_SetViewProjection(
 		RenderDevice* renderer, 
 		float ellapsed, 
@@ -110,6 +119,7 @@ private:
 		JPH::Quat rotation, 
 		JPH::EMotionType motion_type, 
 		JPH::uint8 layer);
+
 	static JPH::uint32 Internal_CreateBoxBody(
 		JPH::PhysicsSystem* physics_system,
 		JPH::Vec3 half_extent, 
@@ -117,43 +127,106 @@ private:
 		JPH::Quat rotation, 
 		JPH::EMotionType motion_type, 
 		JPH::uint8 layer);
-	static void Internal_DestroyBody(JPH::PhysicsSystem* physics_system, JPH::uint32 id);
-	static void Internal_SetMotionType(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::EMotionType motion_type);
-	static void Internal_SetActive(JPH::PhysicsSystem* physics_system, JPH::uint32 id, bool is_active);
-	static void Internal_GetBodyPositionAndRotation(
+
+	static void Internal_DestroyBody(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id);
+
+	static void Internal_SetSphereShape(
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
-		JPH::Vec3& position, 
-		JPH::Quat& rotation);
-	static void Internal_SetBodyPositionAndRotation(
-		JPH::PhysicsSystem* physics_system,
-		JPH::uint32 id,
-		JPH::Vec3 position,
+		float radius);
+
+	static void Internal_SetBoxShape(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
+		JPH::Vec3 half_extent);
+
+	static void Internal_SetMotionType(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
+		JPH::EMotionType motion_type);
+
+	static void Internal_SetActive(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
+		bool is_active);
+
+	static bool Internal_IsActive(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id);
+
+	static JPH::Vec3 Internal_GetBodyPosition(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id);
+
+	static void Internal_SetBodyPosition(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
+		JPH::Vec3 position);
+
+	static JPH::Quat Internal_GetBodyRotation(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id);	
+
+	static void Internal_SetBodyRotation(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
 		JPH::Quat rotation);
-	static void Internal_AddForce(JPH::PhysicsSystem* physics_system, JPH::uint32 id, JPH::Vec3 force);
+
+	static void Internal_AddForce(
+		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id, 
+		JPH::Vec3 force);
 
 #pragma endregion Physics
 
 #pragma region Inputs
 
 	static bool Internal_IsPressed(MonoString* key_name);
+
 	static bool Internal_WasJustPressed(MonoString* key_name);
+
 	static bool Internal_WasJustReleased(MonoString* key_name);
 
 	static bool Internal_IsActionPressed(MonoString* action_name);
+
 	static bool Internal_WasActionJustPressed(MonoString* action_name);
+
 	static bool Internal_WasActionJustReleased(MonoString* action_name);
 
 	static float Internal_GetKeyValue(MonoString* key_name);
+
 	static float Internal_GetAxisValue(MonoString* axis_name);
 
 #pragma endregion Inputs
 
 	static void Internal_RemoveLogMessage(MonoString* guid);
-	static void Internal_Log(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
-	static void Internal_LogWarning(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
-	static void Internal_LogError(MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
-	static void Internal_Log_Implementation(loguru::Verbosity verbosity, MonoString* message, bool bPrintToScreen, bool bPrintToLog, MonoString* guid);
+
+	static void Internal_Log(
+		MonoString* message, 
+		bool should_print_to_screen, 
+		bool should_print_to_log, 
+		MonoString* guid);
+
+	static void Internal_LogWarning(
+		MonoString* message, 
+		bool should_print_to_screen, 
+		bool should_print_to_log, 
+		MonoString* guid);
+
+	static void Internal_LogError(
+		MonoString* message, 
+		bool should_print_to_screen, 
+		bool should_print_to_log, 
+		MonoString* guid);
+
+	static void Internal_Log_Implementation(
+		loguru::Verbosity verbosity, 
+		MonoString* message, 
+		bool should_print_to_screen, 
+		bool should_print_to_log, 
+		MonoString* guid);
 };
 
 } // namespace engine

@@ -1,8 +1,11 @@
 #include "GameLayer.h"
+#include "../GameplaySystem/GameObject.h"
 
 #include <iostream>
 
-GameLayer::GameLayer(LayerStack* owner): Layer(owner, "EditorLayer"),scene(new engine::Scene(GetApp()->GetAssembly()))
+GameLayer::GameLayer(LayerStack* owner)
+	: Layer(owner, "EditorLayer")
+	, scene(new engine::Scene())
 {
 	CurrentInputMode = EEditorInputMode::Type::GameOnlyMode;
 }

@@ -3,125 +3,41 @@ using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
 using GameplayCore.Physics;
 using GameplayCore.Serialization;
-using System;
 
 namespace GameplayCore.Components
 {
-    public class BoxBodyComponent : Component
+    public class BoxBodyComponent : BodyComponent
     {
-        private TransformComponent _transformComponent;
-        private bool _isInitialized;
-        private uint _bodyId;
-
-        Vector3 _position;
-        Quaternion _rotation;
-
         [SerializeField]
-        [InspectorName("IsStatic")]
-        private bool _isStatic;
-        [SerializeField]
-        [InspectorName("IsActive")]
-        private bool _isActive;
+        [InspectorName("Size")]
+        private Vector3 _size = Vector3.One;
 
-        public bool IsStatic
+        internal override void Invalidate(string fieldName)
         {
-            get => _isStatic;
-            set
+            base.Invalidate(fieldName);
+
+            switch (fieldName)
             {
-                _isStatic = value;
-                PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
+                case nameof(_size):
+                    PhysicsApi.SetBoxShape(BodyId, _size / 2);
+                    break;
             }
         }
 
-        public bool IsActive
+        protected override uint CreateBody(Vector3 position, Quaternion rotation, MotionType motionType, CollisionLayer collisionLayer)
         {
-            get => _isActive;
-            set
-            {
-                _isActive = value;
-                PhysicsApi.SetActive(_bodyId, _isActive);
-            }
+            Vector3 halfExtent = _size / 2;
+            return PhysicsApi.CreateBoxBody(halfExtent, position, rotation, motionType, collisionLayer);
         }
 
-        public override void Initialize()
+        protected override void RenderCollider()
         {
-            if (_transformComponent != null)
-            {
-                Vector3 halfExtent = _transformComponent.Scale / 2;
-                _position = _transformComponent.Position;
-                _rotation = _transformComponent.Rotation;
-                MotionType motionType = IsStatic ? MotionType.Static : MotionType.Dynamic;
-                _bodyId = PhysicsApi.CreateBoxBody(halfExtent, _position, _rotation, motionType, CollisionLayer.Moving);
-                _isInitialized = true;
-            }
-        }
-
-        public override void FixedUpdate()
-        {
-            if (_isInitialized && _transformComponent != null)
-            {               
-                if (_position != _transformComponent.Position || 
-                    _rotation != _transformComponent.Rotation)
-                {
-                    PhysicsApi.SetBodyPositionAndRotation(_bodyId, _transformComponent.Position, _transformComponent.Rotation);
-                }
-
-                PhysicsApi.GetBodyPositionAndRotation(_bodyId, ref _position, ref _rotation);
-                _transformComponent.Position = _position;
-                _transformComponent.Rotation = _rotation;
-            }
-        }
-
-        public override void Terminate()
-        {
-            if (_isInitialized)
-            {
-                PhysicsApi.DestroyBody(_bodyId);
-            }
-        }
-
-        public void AddForce(Vector3 force)
-        {
-            if (_isInitialized && _transformComponent != null)
-            {
-                PhysicsApi.AddForce(_bodyId, force);
-            }
-        }
-
-        protected override void OnAttach(GameObject gameObject)
-        {
-            _transformComponent = GameObject.GetComponent<TransformComponent>();
-
-            gameObject.ComponentAdded += OnComponentAdded;
-            gameObject.ComponentRemoved += OnComponentRemoved;
-        }
-
-        protected override void OnDetach(GameObject gameObject)
-        {
-            gameObject.ComponentAdded -= OnComponentAdded;
-            gameObject.ComponentRemoved -= OnComponentRemoved;
-        }
-
-        private void OnComponentAdded(GameObject gameObject, Component component)
-        {
-            if (component is TransformComponent transformComponent)
-            {
-                _transformComponent = transformComponent;
-            }
-        }
-
-        private void OnComponentRemoved(GameObject gameObject, Component component)
-        {
-            if (component is TransformComponent)
-            {
-                _transformComponent = null;
-            }
-        }
-
-        internal override void Invalidate()
-        {
-            PhysicsApi.SetMotionType(_bodyId, _isStatic ? MotionType.Static : MotionType.Dynamic);
-            PhysicsApi.SetActive(_bodyId, _isActive);
+            Gizmos.DrawCube(
+                Position,
+                Rotation,
+                Vector3.One,
+                _size,
+                new Vector3(0.0f, 255.0f, 0.0f));            
         }
     }
 }

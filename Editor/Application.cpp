@@ -18,17 +18,15 @@ const char* Application::kDllPath = "GameplayCore.dll";
 
 Application::Application()
 	: m_LayerStack(this)
-	, m_JitDomain(kMonoLibPath, "KtripRuntime")
-	, m_Domain("KtripDomain")
-	, m_Assembly(m_Domain.get_assembly(kDllPath))
-	, engine_(new engine::Engine(m_Domain, m_Assembly))
+	, runtime(kMonoLibPath, kDllPath)
+	, engine_(new engine::Engine(runtime))
 	, exit_code_(0)
 {
-	mono::mono_domain::set_current_domain(m_Domain);
-	engine::Scene::CacheMethods(m_Assembly);
-	engine::GameObject::CacheMethods(m_Assembly);
-	engine::Component::CacheMethods(m_Assembly);
-	MetadataReader::CacheMethods(m_Assembly);
+	engine::Runtime::SetCurrentRuntime(runtime);
+	engine::Scene::CacheMethods(runtime);
+	engine::GameObject::CacheMethods(runtime);
+	engine::Component::CacheMethods(runtime);
+	MetadataReader::CacheMethods(runtime.GetAssembly());
 }
 
 void Application::PushLayer(Layer* layer)
@@ -187,9 +185,9 @@ std::shared_ptr<FGenericWindow> Application::GetMainWindow()
 	return wnds.at(0);
 }
 
-const mono::mono_assembly& Application::GetAssembly() const
+const engine::Runtime& Application::GetRuntime() const
 {
-	return m_Assembly;
+	return runtime;
 }
 
 engine::Engine* Application::GetEngine() const

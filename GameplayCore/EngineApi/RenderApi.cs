@@ -23,6 +23,14 @@ namespace GameplayCore.EngineApi
             }            
         }
 
+        public static void DrawCurve(Vector3[] points, Vector3 color, Matrix modelMatrix)
+        {
+            unsafe
+            {
+                Internal_DrawCurve(Renderer, points, color, modelMatrix);
+            }
+        }
+
         public static void SetViewProjection(float ellapsed, Matrix view, Matrix projection)
         {
             unsafe
@@ -35,6 +43,8 @@ namespace GameplayCore.EngineApi
         extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, Matrix modelMatrix);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_DrawCurve(void* renderer, Vector3[] points, Vector3 color, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetViewProjection(void* renderer, float ellapsed, Matrix view, Matrix projection);
     }

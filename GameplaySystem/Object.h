@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.h"
+#include "Type.h"
 #include "Field.h"
 #include "Property.h"
 #include "Method.h"
@@ -11,44 +11,36 @@ namespace engine {
 class Object {
  public:
 	 const mono::mono_object& GetInternal() const;
-	 const TypeData& GetTypeData() const;
-
-	 const std::string& GetNameSpace() const;
-	 const std::string& GetName() const;
-	 const std::string& GetFullName() const;
-
-	 Property GetProperty(const std::string& name) const;
-	 std::vector<Property> GetProperties() const;
-
-	 Field GetField(const std::string& name) const;
-	 std::vector<Field> GetFields() const;
-
-	 bool HasMethod(const std::string& name) const;
-	 bool HasMethod(const std::string& name, int argc) const;
-
-	 Method GetMethod(const std::string& name) const;
-	 Method GetMethod(const std::string& name, int argc) const;
-	 std::vector<Method> GetMethods() const;
+	 const Type& GetType() const;
 
 	 Object(MonoObject* mono_object);
-	 Object(mono::mono_object object);
+	 Object(const mono::mono_object& object);
+	 Object(const Object& other);
+	 Object(Object&& other) noexcept;
+
 	 virtual ~Object();
 
+	 template<typename T>
+	 T Unbox() const;
 	 void* Unbox() const;
 
-	 template<typename T>
-	 T Unbox() const {
-		 return *(T*)object_.unbox();
-	 }
+	 Object& operator= (Object other);
 
 	 friend bool operator== (const Object& lhs, const Object& rhs);
 	 friend bool operator== (const Object& lhs, const mono::mono_object& rhs);
 	 friend bool operator== (const mono::mono_object& lhs, const Object& rhs);
 
+	 friend void swap(Object& first, Object& second);
+
  private:
 	mono::mono_object object_;
+	Type type_;
 	uint32_t handle_;	
-	const TypeData& type_data_;
 };
+
+template<typename T>
+T Object::Unbox() const {
+	return *reinterpret_cast<T*>(object_.unbox());
+}
 
 } // namespace engine
