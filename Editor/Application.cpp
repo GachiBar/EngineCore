@@ -152,10 +152,15 @@ int Application::Run(int argc, char* argv[])
 		for (const auto layer : m_LayerStack)
 		{
 			current_layer_on_update = layer;
-			layer->OnUpdate(engine_->kDt);;
+			layer->OnUpdate(engine_->kDt);
 		}
 	
 		engine_->BeginRender();
+		engine_->Render();
+
+		if (!engine_->IsRunning()) {
+			engine_->DebugRender();
+		}
 
 		for (const auto layer : m_LayerStack)
 			layer->OnGuiRender();

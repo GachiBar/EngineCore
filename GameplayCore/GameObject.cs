@@ -145,6 +145,14 @@ namespace GameplayCore
             }
         }
 
+        public void DebugRender()
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.DebugRender();
+            }
+        }
+
         public void Terminate()
         {
             foreach (var component in _updatableComponents)
@@ -196,6 +204,7 @@ namespace GameplayCore
 
             _componentsMap[instance.GetType()] = instance;
             instance.GameObject = this;
+            ComponentAdded?.Invoke(this, instance);
             _isUpdatableComponentsInvalid = true;
         }
 

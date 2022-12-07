@@ -4,7 +4,7 @@
 
 #include "IEditorWindow.h"
 #include "imgui/imgui.h"
-#include "libs/loguru/loguru.hpp"
+#include "../Core/libs/loguru/loguru.hpp"
 
 class LogWindow : public IEditorWindow
 {

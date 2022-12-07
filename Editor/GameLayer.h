@@ -4,6 +4,9 @@
 class GameLayer final : public Layer
 {
 public:
+	bool GetIsPlaying() const;
+	void SetIsPlaying(bool value);
+
 	GameLayer(LayerStack* owner);
 	~GameLayer() override = default;
 
@@ -14,5 +17,6 @@ public:
 	virtual void OnGuiRender() override;
 	virtual void OnPostRender() override;
 protected:
-	std::shared_ptr<engine::Scene> scene;
+	std::shared_ptr<engine::Scene> scene;	
+	bool is_playing;
 };
