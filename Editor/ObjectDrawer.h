@@ -11,7 +11,7 @@ private:
 	struct resources_cache
 	{
 	public:
-		resources_cache() = default;
+		resources_cache();
 
 		void update(std::filesystem::path basepath);
 		std::string get_name(int index) const;
@@ -20,9 +20,11 @@ private:
 
 		int size() const;
 
+		const char** get_names_pointer() {return resource_names.data();}
+
 	private:
 		std::vector<std::pair<std::filesystem::path, std::optional<mono::mono_object>>> files_path;
-		std::vector<std::string> resource_names;
+		std::vector<const char*> resource_names;
 	};
 	
 public:

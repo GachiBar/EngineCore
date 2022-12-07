@@ -78,7 +78,7 @@ public:
         {
             const FileType type = get_file_type(item);
 
-            if(type == Meta || type == Other)
+            if(type == Meta || type == Other || type == Directory)
                 continue;
         
             count++;

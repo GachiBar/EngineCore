@@ -133,11 +133,6 @@ bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& 
 				isFieldChanged |= DrawResourceField(object, field);
 				modifiedFields.push_back(field.GetName());
 			}
-
-			if(field.GetType().GetName().find("Resource") !=std::string::npos)
-			{
-				continue;
-			}
 		}
 
 		type = type.GetBaseType();
@@ -634,8 +629,15 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 	else
 		selected_index = 0;
 	
-	if (ImGui::Combo(fieldName.c_str(), &selected_index, game_objects_names, scene->Count() + 1))
+	if (ImGui::Combo(fieldName.c_str(), &selected_index, cache_.get_names_pointer(), cache_.size()))
 	{
+		if(selected_index == 0)
+		{
+			// TODO: Set null and add support in get_index()
+			// field.SetValue(nullptr);
+			return true;
+		}
+		
 		auto resource = cache_.get_pointer(selected_index);
 		if(!resource.has_value())
 			return false;
@@ -751,20 +753,27 @@ void ObjectDrawer::CopyAsNullTerminated(char* destination, const std::string& so
 	destination[source.size()] = '\0';
 }
 
+ObjectDrawer::resources_cache::resources_cache()
+{
+	files_path.push_back(std::make_pair(std::filesystem::path("none"), std::optional<mono::mono_object>{}));
+	resource_names.push_back("None");
+}
+
 void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 {
-	if(MetadataReader::calculate_assets_count(basepath) == files_path.size())
+	if(MetadataReader::calculate_assets_count(basepath) == files_path.size() + 1)
 		return;
 	
 	auto iterator = MetadataReader::iterate_assets_recursive(basepath);
-	for (int i = 0; iterator; i++)
+	for (int i = 1; iterator; i++)
 	{
 		FileData data = iterator();
+		
 		if(files_path.size() <= i)
 		{
 			files_path.push_back(std::make_pair(data.path, std::optional<mono::mono_object>{}));
-			resource_names.push_back(data.filename());
-			break;
+			resource_names.push_back(data.filename().c_str());
+			continue;;
 		}
 
 		if(files_path[i].first != data.path)
@@ -775,7 +784,7 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 			
 			resource_names.insert(
 				resource_names.begin() + i,
-				data.filename());
+				data.filename().c_str());
 		}
 	}
 }
