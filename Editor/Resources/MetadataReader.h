@@ -36,7 +36,7 @@ public:
         {
             const FileType type = get_file_type(item);
 
-            if(type == Meta || type == Other)
+            if(type == Meta || type == Other || type == Directory)
                 continue;
         
             FileData file_data(
@@ -56,7 +56,7 @@ public:
         {
             const FileType type = get_file_type(item);
 
-            if(type == Meta || type == Other)
+            if(type == Meta || type == Other || type == Directory)
                 continue;
         
             FileData file_data(
