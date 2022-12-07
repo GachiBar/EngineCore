@@ -12,16 +12,16 @@ bool Method::IsPublic() const {
 	return method_.get_visibility() == mono::visibility::vis_public;
 }
 
-Method::Method(const Type& type, const std::string& method_name_with_args)
+Method::Method(Type type, const std::string& method_name_with_args)
 	: Method(type, type.GetInternal().get_method(method_name_with_args))
 {}
 
-Method::Method(const Type& type, const std::string& method_name, int argc)
+Method::Method(Type type, const std::string& method_name, int argc)
 	: Method(type, type.GetInternal().get_method(method_name, argc))
 {}
 
-Method::Method(const Type& type, mono::mono_method method)
-	: type_(type)
+Method::Method(Type type, mono::mono_method method)
+	: type_(std::move(type))
 	, method_(std::move(method))
 	, method_invoker_(method_)
 {}

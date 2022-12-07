@@ -12,6 +12,7 @@ Method* Scene::terminate_ = nullptr;
 Method* Scene::fixed_update_ = nullptr;
 Method* Scene::update_ = nullptr;
 Method* Scene::render_ = nullptr;
+Method* Scene::debug_render_ = nullptr;
 Method* Scene::invalidate_ = nullptr;
 Method* Scene::serialize_ = nullptr;
 Method* Scene::deserialize_ = nullptr;
@@ -29,15 +30,24 @@ size_t Scene::Count() const {
     return static_cast<size_t>(count);
 }
 
-Scene::Scene(const Object& object)
-    : Object(object)
+Scene::Scene()
+    : Scene(Runtime::GetCurrentRuntime().GetType(engine::Types::kScene).Instantiate())
 {}
+
+Scene::Scene(const Object& other)
+    : Object(other)
+{}
+
+Scene::Scene(Object&& other) noexcept
+    : Object(std::forward<Object>(other))
+{}
+
 
 std::shared_ptr<GameObject> Scene::CreateGameObject() {
     assert(create_game_object_ != nullptr && kIsNotCachedErrorMessage);
 
     auto game_object = create_game_object_->Invoke(*this).value();
-    return std::make_shared<GameObject>(game_object);
+    return std::make_shared<GameObject>(std::move(game_object));
 }
 
 void Scene::DeleteGameObject(std::shared_ptr<GameObject> game_object) {
@@ -72,6 +82,12 @@ void Scene::Render() {
     assert(render_ != nullptr && kIsNotCachedErrorMessage);
 
     render_->Invoke(*this);
+}
+
+void Scene::DebugRender() {
+    assert(debug_render_ != nullptr && kIsNotCachedErrorMessage);
+
+    debug_render_->Invoke(*this);
 }
 
 void Scene::Terminate() {
@@ -117,7 +133,7 @@ std::shared_ptr<GameObject> Scene::operator[](size_t index) const {
     args[0] = &index;
     
     auto game_object = get_item_->Invoke(*this, args).value();
-    return std::make_shared<GameObject>(game_object);
+    return std::make_shared<GameObject>(std::move(game_object));
 }
 
 void Scene::CacheMethods(const Runtime& runtime) {
@@ -131,6 +147,7 @@ void Scene::CacheMethods(const Runtime& runtime) {
     fixed_update_ = new Method(type, "FixedUpdate", 0);
     update_ = new Method(type, "Update", 0);
     render_ = new Method(type, "Render", 0);
+    debug_render_ = new Method(type, "DebugRender");
     invalidate_ = new Method(type, "Invalidate", 0);
     create_game_object_ = new Method(type, "CreateGameObject", 0);
     delete_game_object_ = new Method(type, "DeleteGameObject", 1);

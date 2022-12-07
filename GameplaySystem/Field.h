@@ -19,8 +19,8 @@ public:
 
 	bool IsPublic() const;
 	
-	Field(const Type& object, const std::string& field_name);
-	Field(const Type& object, mono::mono_field field);
+	Field(Type object, const std::string& field_name);
+	Field(Type object, mono::mono_field field);
 
 	std::optional<Object> GetValue();
 	std::optional<Object> GetValue(const Object& object);

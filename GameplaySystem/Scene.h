@@ -13,7 +13,9 @@ public:
 
 	size_t Count() const;	
 
-	Scene(const Object& object);
+	Scene();
+	Scene(const Object& other);
+	Scene(Object&& other) noexcept;
 
 	std::shared_ptr<GameObject> CreateGameObject();
 	void DeleteGameObject(std::shared_ptr<GameObject> game_object);
@@ -22,6 +24,7 @@ public:
 	void FixedUpdate();
 	void Update();
 	void Render();
+	void DebugRender();
 	void Terminate();
 	void Invalidate();
 
@@ -41,6 +44,7 @@ private:
 	static Method* fixed_update_;
 	static Method* update_;
 	static Method* render_;
+	static Method* debug_render_;
 	static Method* invalidate_;
 	static Method* serialize_;
 	static Method* deserialize_;

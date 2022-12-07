@@ -22,9 +22,6 @@ Application::Application()
 	, exit_code_(0)
 {
 	engine::Runtime::SetCurrentRuntime(runtime);
-	engine::Scene::CacheMethods(runtime);
-	engine::GameObject::CacheMethods(runtime);
-	engine::Component::CacheMethods(runtime);
 	ResourceDrawer::CacheMethods(runtime.GetAssembly());
 }
 
@@ -151,10 +148,15 @@ int Application::Run(int argc, char* argv[])
 		for (const auto layer : m_LayerStack)
 		{
 			current_layer_on_update = layer;
-			layer->OnUpdate(engine_->kDt);;
+			layer->OnUpdate(engine_->kDt);
 		}
 	
 		engine_->BeginRender();
+		engine_->Render();
+
+		if (!engine_->IsRunning()) {
+			engine_->DebugRender();
+		}
 
 		for (const auto layer : m_LayerStack)
 			layer->OnGuiRender();

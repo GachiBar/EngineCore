@@ -26,6 +26,7 @@ public:
     ComponentRemovedEvent ComponentRemoved;
 
     GameObject(const Object& other);
+    GameObject(Object&& other);
 
     std::shared_ptr<Component> AddComponent(const TypeData& type_data);
     std::shared_ptr<Component> AddComponent(const std::string& name_space, const std::string& name);
@@ -42,6 +43,7 @@ public:
     void FixedUpdate();
     void Update();
     void Render();
+    void DebugRender();
     void Terminate();
     void Invalidate();
 
@@ -62,6 +64,7 @@ private:
     static Method* fixed_update_;
     static Method* update_;
     static Method* render_;
+    static Method* debug_render_;
     static Method* terminate_;
 
     static Method* invalidate_;    

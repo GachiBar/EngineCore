@@ -3,9 +3,27 @@
 
 #include <iostream>
 
+bool GameLayer::GetIsPlaying() const {
+	return is_playing;
+}
+
+void GameLayer::SetIsPlaying(bool value) {
+	is_playing = value;
+	
+	if (is_playing) 
+	{
+		GetApp()->GetEngine()->Start();
+	}
+	else
+	{
+		GetApp()->GetEngine()->Stop();
+	}
+}
+
 GameLayer::GameLayer(LayerStack* owner)
 	: Layer(owner, "EditorLayer")
-	, scene(new engine::Scene(engine::Runtime::GetCurrentRuntime().GetType(engine::Types::kScene).Instantiate()))
+	, scene(new engine::Scene())
+	, is_playing(false)
 {
 	CurrentInputMode = EEditorInputMode::Type::GameOnlyMode;
 }
@@ -47,7 +65,10 @@ void GameLayer::OnUpdate(float const dt)
 {
 	Layer::OnUpdate(dt);
 
-	GetApp()->GetEngine()->RunFrame();
+	if (GetIsPlaying()) 
+	{
+		GetApp()->GetEngine()->RunFrame();
+	}	
 }
 
 void GameLayer::OnGuiRender()
