@@ -145,6 +145,14 @@ namespace GameplayCore
             }
         }
 
+        public void DebugRender()
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.DebugRender();
+            }
+        }
+
         public void Terminate()
         {
             foreach (var component in _updatableComponents)

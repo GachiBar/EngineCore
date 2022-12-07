@@ -2,6 +2,8 @@
 
 #include "Application.h"
 #include "EditorCamera.h"
+#include "EditorLayer.h"
+#include "GameLayer.h"
 
 class EditorApplication final : public Application
 {
@@ -14,16 +16,14 @@ public:
 
 	EEditorInputMode::Type GetCurrentInputMode() const override;
 
-	engine::GameObject* GetCamera() const;
-
-	std::shared_ptr < EditorCamera> Camera;
+	std::shared_ptr<EditorCamera> Camera;
 	
-	void SetEditorOnlyInputMode();
-
-	void SetGameOnlyOnlyInputMode();
+	void OnEnterGameMode();
+	void OnExitGameMode();
 	
-protected:
+private:
 	EEditorInputMode::Type editor_input_mode;
 
-	std::shared_ptr<engine::GameObject> camera_go;
+	std::shared_ptr<GameLayer> game_layer;
+	std::shared_ptr<EditorLayer> editor_layer;
 };

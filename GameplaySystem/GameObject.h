@@ -43,6 +43,7 @@ public:
     void FixedUpdate();
     void Update();
     void Render();
+    void DebugRender();
     void Terminate();
     void Invalidate();
 
@@ -63,6 +64,7 @@ private:
     static Method* fixed_update_;
     static Method* update_;
     static Method* render_;
+    static Method* debug_render_;
     static Method* terminate_;
 
     static Method* invalidate_;    

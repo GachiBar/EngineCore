@@ -44,24 +44,12 @@ namespace GameplayCore.Components
             private set => _bodyId = value;
         }
 
-        protected Vector3 Position 
-        { 
-            get => _position; 
-            private set => _position = value; 
-        }
-
-        protected Quaternion Rotation 
-        { 
-            get => _rotation; 
-            private set => _rotation = value; 
-        }
-
         public override void Initialize()
         {
             if (_transformComponent != null)
             {
-                Position = _transformComponent.Position;
-                Rotation = _transformComponent.Rotation;
+                _position = _transformComponent.Position;
+                _rotation = _transformComponent.Rotation;
 
                 if (IsStatic)
                 {
@@ -81,18 +69,18 @@ namespace GameplayCore.Components
         {
             if (_isInitialized && _transformComponent != null)
             {
-                if (Position != _transformComponent.Position ||
-                    Rotation != _transformComponent.Rotation)
+                if (_position != _transformComponent.Position ||
+                    _rotation != _transformComponent.Rotation)
                 {
                     PhysicsApi.SetBodyPosition(BodyId, _transformComponent.Position);
                     PhysicsApi.SetBodyRotation(BodyId, _transformComponent.Rotation);
                     PhysicsApi.SetActive(BodyId, true);
                 }
 
-                Position = PhysicsApi.GetBodyPosition(BodyId);
-                Rotation = PhysicsApi.GetBodyRoation(BodyId);
-                _transformComponent.Position = Position;
-                _transformComponent.Rotation = Rotation;
+                _position = PhysicsApi.GetBodyPosition(BodyId);
+                _rotation = PhysicsApi.GetBodyRoation(BodyId);
+                _transformComponent.Position = _position;
+                _transformComponent.Rotation = _rotation;
             }
         }
 
@@ -121,7 +109,7 @@ namespace GameplayCore.Components
         }
 
         protected override void OnAttach(GameObject gameObject)
-        {
+        {            
             _transformComponent = GameObject.GetComponent<TransformComponent>();
 
             gameObject.ComponentAdded += OnComponentAdded;
@@ -129,7 +117,7 @@ namespace GameplayCore.Components
         }
 
         protected override void OnDetach(GameObject gameObject)
-        {
+        {            
             gameObject.ComponentAdded -= OnComponentAdded;
             gameObject.ComponentRemoved -= OnComponentRemoved;
         }

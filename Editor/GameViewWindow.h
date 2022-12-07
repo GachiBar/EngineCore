@@ -8,10 +8,10 @@
 #include <Windows.h>
 
 #include "IEditorWindow.h"
-#include "Definitions.h"
 #include "ImGuizmo/ImGuizmo.h"
-#include "libs/Delegates.h"
-#include "libs/loguru/loguru.hpp"
+#include "../Core/Definitions.h"
+#include "../Core/libs/Delegates.h"
+#include "../Core/libs/loguru/loguru.hpp"
 
 class EditorLayer;
 
@@ -33,8 +33,8 @@ public:
 
     void SwitchOperationMode();
 
-    DECLARE_EVENT(EnterToPlayFromEditorEvent, GameViewWindow)
-	EnterToPlayFromEditorEvent EnteringGameMode;
+    DECLARE_EVENT(EnterGameModeEvent, GameViewWindow)
+    EnterGameModeEvent EnterGameMode;
 
     DECLARE_EVENT(ExitGameModeEvent, GameViewWindow)
 	ExitGameModeEvent ExitGameMode;

@@ -1,14 +1,41 @@
 ﻿using GameplayCore.Mathematics;
+using System;
 
 namespace GameplayCore.Components
 {
     public class CameraComponent : Component
     {
+        private const int PlainPointsCount = 4;
+        private readonly Vector3 FrustrumColor = new Vector3(255.0f, 255.0f, 255.0f);
+
         public float FieldOfView = 90;
         public float Near = 0.1f;
         public float Far = 100.0f;
 
+        private static readonly Vector3[] NearPlain;
+        private static readonly Vector3[] FarPlain;
+
         private TransformComponent _transformComponent = null;      
+        
+        static CameraComponent()
+        {
+            NearPlain = new Vector3[PlainPointsCount + 1]
+            {
+                new Vector3(0.1f, 0.1f, -0.1f),
+                new Vector3(-0.1f, 0.1f, -0.1f),
+                new Vector3(-0.1f, -0.1f, -0.1f),
+                new Vector3(0.1f, -0.1f, -0.1f),
+                new Vector3(0.1f, 0.1f, -0.1f),
+            };
+
+            FarPlain = new Vector3[PlainPointsCount + 1];
+            Vector3 scale = new Vector3(2.0f, 2.0f, 4.0f);
+
+            for (int i = 0; i < PlainPointsCount + 1; i++)
+            {
+                FarPlain[i] = NearPlain[i] * scale;
+            }
+        }
 
         public override void Update()
         {
@@ -22,6 +49,25 @@ namespace GameplayCore.Components
                 float aspect = (float)Screen.Width / Screen.Height;
                 var projection = Matrix.PerspectiveFovRH(fow, aspect, Near, Far);
                 EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection);
+            }
+        }
+
+        public override void DebugRender()
+        {
+            if (_transformComponent != null)
+            {
+                var model = Matrix.Identity;
+                model *= Matrix.RotationQuaternion(_transformComponent.Rotation);
+                model *= Matrix.Translation(_transformComponent.Position);
+
+                Gizmos.DrawSphere(model, 0.2f, FrustrumColor);
+                Gizmos.DrawCurve(model, NearPlain, FrustrumColor);
+                Gizmos.DrawCurve(model, FarPlain, FrustrumColor);
+
+                for (int i = 0; i < PlainPointsCount; i++)
+                {
+                    Gizmos.DrawLine(model, NearPlain[i], FarPlain[i], FrustrumColor);
+                }
             }
         }
 
