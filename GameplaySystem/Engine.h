@@ -36,6 +36,9 @@ public:
 	void Initialize(HWND handle,UINT width, UINT height);
 	void Terminate();
 
+	void Stop();
+	void Start();
+
 	void RunFrame();
 	void BeginRender();
 	void EndRender();

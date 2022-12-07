@@ -183,7 +183,7 @@ void GameViewWindow::StartPlay()
 {
 	if (!bIsPlaying)
 	{
-		EnteringGameMode.Broadcast();
+		EnterGameMode.Broadcast();
 		bIsPlaying = true;
 		auto& io = ImGui::GetIO();
 		io.WantCaptureKeyboard = io.WantCaptureMouse = false;

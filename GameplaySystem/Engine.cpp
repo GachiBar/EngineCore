@@ -76,6 +76,17 @@ void Engine::Terminate() {
 	JPH::Factory::sInstance = nullptr;
 }
 
+void Engine::Stop() {
+	RunFrame();
+}
+
+void Engine::Start() {
+	using namespace std::chrono;
+	using clock = high_resolution_clock;
+
+	time_start_ = clock::now();
+}
+
 void Engine::RunFrame() {
 	using namespace std::chrono;
 	using clock = high_resolution_clock;
