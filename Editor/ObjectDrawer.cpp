@@ -127,8 +127,8 @@ bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& 
 				isFieldChanged |= DrawGameObjectField(object, field);
 				modifiedFields.push_back(field.GetName());
 			}
-			else if (field.GetType().Is(engine::Types::kResource) ||
-				field.GetType().IsDerivedFrom(engine::Runtime::GetCurrentRuntime().GetType(engine::Types::kResource)))
+			else if (field.GetType().Is(engine::Types::kResource) || 
+				field.GetType().IsDerivedFrom(engine::Types::kResource))
 			{
 				isFieldChanged |= DrawResourceField(object, field);
 				modifiedFields.push_back(field.GetName());
@@ -618,7 +618,7 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 	}
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto monoObject = field.GetValue();
+	auto monoObject = field.GetValue(object);
 	
 	cache_.update(MetadataReader::AssetsPath);
 	
@@ -634,7 +634,7 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 		// if(!resource.valid())
 		// 	return false;
 		
-		field.SetValue(resource);
+		field.SetValue(object, resource);
 		return true;
 	}
 	
@@ -751,6 +751,12 @@ ObjectDrawer::resources_cache::resources_cache()
 	resource_names.push_back("None\0");
 }
 
+ObjectDrawer::resources_cache::~resources_cache() {
+	for (auto it : resource_names) {
+		delete it;
+	}
+}
+
 void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 {
 	if (MetadataReader::calculate_assets_count(basepath) == files_path.size() + 1)
@@ -764,7 +770,12 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 		if (files_path.size() <= i)
 		{
 			files_path.push_back(std::make_pair(data.path, mono::mono_object(mono::mono_type())));
-			resource_names.push_back(data.filename().c_str() + '\0');
+
+			auto file_name = data.filename();
+			char* resource_name = new char[file_name.size() + 1];
+			CopyAsNullTerminated(resource_name, file_name);
+
+			resource_names.push_back(resource_name);
 			printf(data.filename().c_str() + '\n');
 			continue;
 		}
@@ -775,9 +786,11 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 				files_path.begin() + i,
 				std::make_pair(data.path, mono::mono_object(mono::mono_type())));
 
-			resource_names.insert(
-				resource_names.begin() + i,
-				data.filename().c_str() + '\0');
+			auto file_name = data.filename();
+			char* resource_name = new char[file_name.size() + 1];
+			CopyAsNullTerminated(resource_name, file_name);
+
+			resource_names.insert(resource_names.begin() + i, resource_name);
 		}
 	}
 }
@@ -816,7 +829,7 @@ int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
 	// Get Filename of instance
 	engine::Object resource(pointer);
 	auto property = resource.GetType().GetProperty("FilePath");
-	std::optional<engine::Object> propertyValue = property.GetValue();
+	std::optional<engine::Object> propertyValue = property.GetValue(resource);
 
 	if (!propertyValue.has_value())
 		return -1;

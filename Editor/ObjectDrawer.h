@@ -12,6 +12,7 @@ private:
 	{
 	public:
 		resources_cache();
+		~resources_cache();
 
 		void update(std::filesystem::path basepath);
 		std::string get_name(int index) const;
@@ -79,7 +80,5 @@ private:
 		float& max_out);
 
 	void ChangeGameObjectResourcesCapacity(size_t size);
-	void CopyAsNullTerminated(char* destination, const std::string& source);
-
-	
+	static void CopyAsNullTerminated(char* destination, const std::string& source);	
 };
