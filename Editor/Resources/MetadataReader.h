@@ -28,7 +28,7 @@ private:
     static FileType get_file_type(const std::filesystem::directory_entry& entry);
     
 public:
-    static Coroutine<FileData> iterate_assets(std::filesystem::path path)
+    static Coroutine<FileData> iterate_assets_with_folder(std::filesystem::path path)
     {
         if(path.empty()) co_return;
     
@@ -36,7 +36,7 @@ public:
         {
             const FileType type = get_file_type(item);
 
-            if(type == Meta || type == Other || type == Directory)
+            if(type == Meta || type == Other)
                 continue;
         
             FileData file_data(

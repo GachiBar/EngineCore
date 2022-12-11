@@ -15,7 +15,7 @@ private:
 
 		void update(std::filesystem::path basepath);
 		std::string get_name(int index) const;
-		std::optional<mono::mono_object> get_pointer(int index);
+		mono::mono_object get_pointer(int index);
 		int get_index(mono::mono_object pointer);
 
 		int size() const;
@@ -23,7 +23,7 @@ private:
 		const char** get_names_pointer() {return resource_names.data();}
 
 	private:
-		std::vector<std::pair<std::filesystem::path, std::optional<mono::mono_object>>> files_path;
+		std::vector<std::pair<std::filesystem::path, mono::mono_object>> files_path;
 		std::vector<const char*> resource_names;
 	};
 	

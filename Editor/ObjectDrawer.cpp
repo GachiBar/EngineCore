@@ -621,8 +621,7 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 	auto monoObject = field.GetValue();
 	
 	cache_.update(MetadataReader::AssetsPath);
-
-	// TODO: Add nullptr in vector
+	
 	int selected_index;
 	if(monoObject.has_value())
 		selected_index = cache_.get_index(monoObject.value().GetInternal());
@@ -631,18 +630,11 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 	
 	if (ImGui::Combo(fieldName.c_str(), &selected_index, cache_.get_names_pointer(), cache_.size()))
 	{
-		if(selected_index == 0)
-		{
-			// TODO: Set null and add support in get_index()
-			// field.SetValue(nullptr);
-			return true;
-		}
-		
 		auto resource = cache_.get_pointer(selected_index);
-		if(!resource.has_value())
-			return false;
+		// if(!resource.valid())
+		// 	return false;
 		
-		field.SetValue(resource.value());
+		field.SetValue(resource);
 		return true;
 	}
 	
@@ -755,36 +747,37 @@ void ObjectDrawer::CopyAsNullTerminated(char* destination, const std::string& so
 
 ObjectDrawer::resources_cache::resources_cache()
 {
-	files_path.push_back(std::make_pair(std::filesystem::path("none"), std::optional<mono::mono_object>{}));
-	resource_names.push_back("None");
+	files_path.push_back(std::make_pair(std::filesystem::path("none"), mono::mono_object(mono::mono_type())));
+	resource_names.push_back("None\0");
 }
 
 void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 {
-	if(MetadataReader::calculate_assets_count(basepath) == files_path.size() + 1)
+	if (MetadataReader::calculate_assets_count(basepath) == files_path.size() + 1)
 		return;
-	
+
 	auto iterator = MetadataReader::iterate_assets_recursive(basepath);
 	for (int i = 1; iterator; i++)
 	{
 		FileData data = iterator();
-		
-		if(files_path.size() <= i)
+
+		if (files_path.size() <= i)
 		{
-			files_path.push_back(std::make_pair(data.path, std::optional<mono::mono_object>{}));
-			resource_names.push_back(data.filename().c_str());
-			continue;;
+			files_path.push_back(std::make_pair(data.path, mono::mono_object(mono::mono_type())));
+			resource_names.push_back(data.filename().c_str() + '\0');
+			printf(data.filename().c_str() + '\n');
+			continue;
 		}
 
-		if(files_path[i].first != data.path)
+		if (files_path[i].first != data.path)
 		{
 			files_path.insert(
 				files_path.begin() + i,
-				std::make_pair(data.path, std::optional<mono::mono_object>{}));
-			
+				std::make_pair(data.path, mono::mono_object(mono::mono_type())));
+
 			resource_names.insert(
 				resource_names.begin() + i,
-				data.filename().c_str());
+				data.filename().c_str() + '\0');
 		}
 	}
 }
@@ -796,20 +789,26 @@ std::string ObjectDrawer::resources_cache::get_name(int index) const
 	return path.filename().generic_string();
 }
 
-std::optional<mono::mono_object> ObjectDrawer::resources_cache::get_pointer(int index)
+mono::mono_object ObjectDrawer::resources_cache::get_pointer(int index)
 {
 	assert(index > -1 && index < files_path.size());
+
+	if (index == 0)
+		return mono::mono_object(mono::mono_type());
+
 	// Call MetadataReader to get object by path string
 	std::filesystem::path path = files_path[index].first;
 
-	if(files_path[index].second.has_value())
-		return files_path[index].second.value();
-	
+	if (files_path[index].second.valid())
+		return files_path[index].second;
+
 	// Use Dotnet.MetadataReader.Read()
 	std::optional<mono::mono_object> raw_resource = MetadataReader::read_internal(path);
-	files_path[index].second = raw_resource;
+	mono::mono_object value = raw_resource.has_value() ? raw_resource.value() : mono::mono_object(mono::mono_type());
 
-	return raw_resource;
+	files_path[index].second = value;
+
+	return value;
 }
 
 int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
@@ -819,23 +818,23 @@ int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
 	auto property = resource.GetType().GetProperty("FilePath");
 	std::optional<engine::Object> propertyValue = property.GetValue();
 
-	if(!propertyValue.has_value())
+	if (!propertyValue.has_value())
 		return -1;
 
 	std::string pathString = mono::mono_string(propertyValue.value().GetInternal()).as_utf8();
-	
+
 	// Convert string to std::filesystem::path
 	std::filesystem::path path(pathString);
-	
+
 	// Find equality
-	for(int i=0; i<files_path.size();i++)
+	for (int i = 1; i < files_path.size(); i++)
 	{
-		if(files_path[i].first == path)
+		if (files_path[i].first == path)
 		{
-			if(!files_path[i].second.has_value())
+			if (!files_path[i].second.valid() || files_path[i].second.get_internal_ptr() != pointer.get_internal_ptr())
 				files_path[i].second = pointer;
-			
-			return i;	
+
+			return i;
 		}
 	}
 
@@ -844,5 +843,5 @@ int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
 
 int ObjectDrawer::resources_cache::size() const
 {
-	return files_path.size();
+	return static_cast<int>(files_path.size());
 }

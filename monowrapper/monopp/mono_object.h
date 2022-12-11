@@ -16,6 +16,7 @@ class mono_object
 public:
 	explicit mono_object(MonoObject* object);
 	explicit mono_object(const mono_domain& domain, const mono_type& type);
+	explicit mono_object(mono_type type);
 
 	auto unbox() const -> void*;
 

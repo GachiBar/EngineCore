@@ -35,7 +35,7 @@ void ExplorerWindow::Draw()
         }
     }
 
-    auto iterator = MetadataReader::iterate_assets(current_path);
+    auto iterator = MetadataReader::iterate_assets_with_folder(current_path);
     for (int j = 0; iterator; j++)
     {
         FileData data = iterator();
