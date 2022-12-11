@@ -6,23 +6,23 @@
 #include "FileType.h"
 #include "../coroutine.h"
 
-namespace mono
+namespace engine 
 {
-    class mono_object;
-    class mono_assembly;
-    class mono_method_invoker;
+    class Object;
+    class Method;
+    class Runtime;
 }
 
 class MetadataReader
 {
 public:
-    static std::optional<mono::mono_object> read_internal(const std::filesystem::path& path);
-    static void CacheMethods(const mono::mono_assembly& assembly);
+    static std::optional<engine::Object> read_internal(const std::filesystem::path& path);
+    static void CacheMethods(engine::Runtime& runtime);
 
     static const std::filesystem::path AssetsPath;// = std::filesystem::current_path() / "Assets";
 
 private:
-    static mono::mono_method_invoker* read_;
+    static engine::Method* read_;
 
 private:
     static FileType get_file_type(const std::filesystem::directory_entry& entry);

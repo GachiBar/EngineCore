@@ -3,33 +3,29 @@
 
 #include "ExplorerWindow.h"
 
-#include "../monowrapper/monopp/mono_assembly.h"
-#include "../monowrapper/monopp/mono_domain.h"
-#include "../monowrapper/monopp/mono_object.h"
 #include "../monowrapper/monopp/mono_string.h"
-#include "../monowrapper/monopp/mono_method_invoker.h"
+#include "../../GameplaySystem/Object.h"
+#include "../../GameplaySystem/Method.h"
+#include "../../GameplaySystem/Runtime.h"
 
-mono::mono_method_invoker* MetadataReader::read_ = nullptr;
+engine::Method* MetadataReader::read_ = nullptr;
 const std::filesystem::path MetadataReader::AssetsPath = std::filesystem::current_path() / "Assets";
 
-std::optional<mono::mono_object> MetadataReader::read_internal(const std::filesystem::path& path)
+std::optional<engine::Object> MetadataReader::read_internal(const std::filesystem::path& path)
 {
-    auto& domain = mono::mono_domain::get_current_domain();
+    auto& domain = engine::Runtime::GetCurrentRuntime().GetDomain();
     mono::mono_string path_string(domain, absolute(path).generic_string());
 
     void* params[1];
     params[0] = path_string.get_internal_ptr();
-    
-    auto value = read_->invoke(params);
-    return value;
+
+    return read_->Invoke(params);
 }
 
-void MetadataReader::CacheMethods(const mono::mono_assembly& assembly)
+void MetadataReader::CacheMethods(engine::Runtime& runtime)
 {
-    mono::mono_type type = assembly.get_type("GameplayCore.Resources", "MetadataReader");
-
-    mono::mono_method read_method(type, "Read", 1);
-    read_ = new mono::mono_method_invoker(read_method);
+    auto type = runtime.GetType("GameplayCore.Resources", "MetadataReader");
+    read_ = new engine::Method(type, "Read", 1);
 }
 
 FileType MetadataReader::get_file_type(const std::filesystem::directory_entry& entry)

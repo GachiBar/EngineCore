@@ -141,7 +141,7 @@ bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& 
 	return isFieldChanged;
 }
 
-bool ObjectDrawer::DrawFloatField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawFloatField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -177,7 +177,7 @@ bool ObjectDrawer::DrawFloatField(const engine::Object& object, engine::Field fi
 	return false;
 }
 
-bool ObjectDrawer::DrawDoubleField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawDoubleField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -199,7 +199,7 @@ bool ObjectDrawer::DrawDoubleField(const engine::Object& object, engine::Field f
 	return false;
 }
 
-bool ObjectDrawer::DrawBoolField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawBoolField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -221,7 +221,7 @@ bool ObjectDrawer::DrawBoolField(const engine::Object& object, engine::Field fie
 	return false;
 }
 
-bool ObjectDrawer::DrawByteField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawByteField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -244,7 +244,7 @@ bool ObjectDrawer::DrawByteField(const engine::Object& object, engine::Field fie
 	return false;
 }
 
-bool ObjectDrawer::DrawShortField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawShortField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -267,7 +267,7 @@ bool ObjectDrawer::DrawShortField(const engine::Object& object, engine::Field fi
 	return false;
 }
 
-bool ObjectDrawer::DrawIntField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawIntField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -290,7 +290,7 @@ bool ObjectDrawer::DrawIntField(const engine::Object& object, engine::Field fiel
 	return false;
 }
 
-bool ObjectDrawer::DrawLongField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawLongField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -313,7 +313,7 @@ bool ObjectDrawer::DrawLongField(const engine::Object& object, engine::Field fie
 	return false;
 }
 
-bool ObjectDrawer::DrawUByteField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawUByteField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -336,7 +336,7 @@ bool ObjectDrawer::DrawUByteField(const engine::Object& object, engine::Field fi
 	return false;
 }
 
-bool ObjectDrawer::DrawUShortField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawUShortField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -359,7 +359,7 @@ bool ObjectDrawer::DrawUShortField(const engine::Object& object, engine::Field f
 	return false;
 }
 
-bool ObjectDrawer::DrawUIntField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawUIntField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -382,7 +382,7 @@ bool ObjectDrawer::DrawUIntField(const engine::Object& object, engine::Field fie
 	return false;
 }
 
-bool ObjectDrawer::DrawULongField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawULongField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -405,7 +405,7 @@ bool ObjectDrawer::DrawULongField(const engine::Object& object, engine::Field fi
 	return false;
 }
 
-bool ObjectDrawer::DrawVector2Field(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawVector2Field(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -442,7 +442,7 @@ bool ObjectDrawer::DrawVector2Field(const engine::Object& object, engine::Field 
 	return false;
 }
 
-bool ObjectDrawer::DrawVector3Field(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawVector3Field(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -479,7 +479,7 @@ bool ObjectDrawer::DrawVector3Field(const engine::Object& object, engine::Field 
 	return false;
 }
 
-bool ObjectDrawer::DrawVector4Field(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawVector4Field(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -516,7 +516,7 @@ bool ObjectDrawer::DrawVector4Field(const engine::Object& object, engine::Field 
 	return false;
 }
 
-bool ObjectDrawer::DrawStringField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawStringField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -552,7 +552,7 @@ bool ObjectDrawer::DrawStringField(const engine::Object& object, engine::Field f
 	return false;
 }
 
-bool ObjectDrawer::DrawGameObjectField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawGameObjectField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -608,7 +608,7 @@ bool ObjectDrawer::DrawGameObjectField(const engine::Object& object, engine::Fie
 	return false;
 }
 
-bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field field)
+bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field& field)
 {
 	auto attributes = field.GetAttributes();
 
@@ -631,10 +631,16 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 	if (ImGui::Combo(fieldName.c_str(), &selected_index, cache_.get_names_pointer(), cache_.size()))
 	{
 		auto resource = cache_.get_pointer(selected_index);
-		// if(!resource.valid())
-		// 	return false;
-		
-		field.SetValue(object, resource);
+
+		if (resource != nullptr) 
+		{
+			field.SetValue(object, *resource);
+		}
+		else 
+		{
+			field.SetValue(object, nullptr);
+		}
+
 		return true;
 	}
 	
@@ -747,7 +753,7 @@ void ObjectDrawer::CopyAsNullTerminated(char* destination, const std::string& so
 
 ObjectDrawer::resources_cache::resources_cache()
 {
-	files_path.push_back(std::make_pair(std::filesystem::path("none"), mono::mono_object(mono::mono_type())));
+	files_path.push_back(std::make_pair(std::filesystem::path("none"), nullptr));
 	resource_names.push_back("None\0");
 }
 
@@ -769,7 +775,7 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 
 		if (files_path.size() <= i)
 		{
-			files_path.push_back(std::make_pair(data.path, mono::mono_object(mono::mono_type())));
+			files_path.push_back(std::make_pair(data.path, nullptr));
 
 			auto file_name = data.filename();
 			char* resource_name = new char[file_name.size() + 1];
@@ -782,9 +788,7 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 
 		if (files_path[i].first != data.path)
 		{
-			files_path.insert(
-				files_path.begin() + i,
-				std::make_pair(data.path, mono::mono_object(mono::mono_type())));
+			files_path.insert(files_path.begin() + i, std::make_pair(data.path, nullptr));
 
 			auto file_name = data.filename();
 			char* resource_name = new char[file_name.size() + 1];
@@ -802,32 +806,35 @@ std::string ObjectDrawer::resources_cache::get_name(int index) const
 	return path.filename().generic_string();
 }
 
-mono::mono_object ObjectDrawer::resources_cache::get_pointer(int index)
+std::shared_ptr<engine::Object> ObjectDrawer::resources_cache::get_pointer(int index)
 {
 	assert(index > -1 && index < files_path.size());
 
 	if (index == 0)
-		return mono::mono_object(mono::mono_type());
+		return nullptr;
 
 	// Call MetadataReader to get object by path string
 	std::filesystem::path path = files_path[index].first;
 
-	if (files_path[index].second.valid())
+	if (files_path[index].second != nullptr)
 		return files_path[index].second;
 
 	// Use Dotnet.MetadataReader.Read()
-	std::optional<mono::mono_object> raw_resource = MetadataReader::read_internal(path);
-	mono::mono_object value = raw_resource.has_value() ? raw_resource.value() : mono::mono_object(mono::mono_type());
+	std::optional<engine::Object> resource = MetadataReader::read_internal(path);
 
-	files_path[index].second = value;
+	if (resource.has_value()) 
+	{
+		auto result = std::make_shared<engine::Object>(resource.value());
+		files_path[index].second = result;
+		return result;
+	}
 
-	return value;
+	return nullptr;
 }
 
-int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
+int ObjectDrawer::resources_cache::get_index(const engine::Object& resource)
 {
 	// Get Filename of instance
-	engine::Object resource(pointer);
 	auto property = resource.GetType().GetProperty("FilePath");
 	std::optional<engine::Object> propertyValue = property.GetValue(resource);
 
@@ -844,8 +851,8 @@ int ObjectDrawer::resources_cache::get_index(mono::mono_object pointer)
 	{
 		if (files_path[i].first == path)
 		{
-			if (!files_path[i].second.valid() || files_path[i].second.get_internal_ptr() != pointer.get_internal_ptr())
-				files_path[i].second = pointer;
+			if (files_path[i].second == nullptr || *files_path[i].second != resource)
+				files_path[i].second = std::make_shared<engine::Object>(resource);
 
 			return i;
 		}

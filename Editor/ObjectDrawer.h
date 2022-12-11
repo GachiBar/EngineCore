@@ -16,15 +16,15 @@ private:
 
 		void update(std::filesystem::path basepath);
 		std::string get_name(int index) const;
-		mono::mono_object get_pointer(int index);
-		int get_index(mono::mono_object pointer);
+		std::shared_ptr<engine::Object> get_pointer(int index);
+		int get_index(const engine::Object& resource);
 
 		int size() const;
 
 		const char** get_names_pointer() {return resource_names.data();}
 
 	private:
-		std::vector<std::pair<std::filesystem::path, mono::mono_object>> files_path;
+		std::vector<std::pair<std::filesystem::path, std::shared_ptr<engine::Object>>> files_path;
 		std::vector<const char*> resource_names;
 	};
 	
@@ -48,23 +48,23 @@ private:
 
 	resources_cache cache_;
 
-	bool DrawFloatField(const engine::Object& object, engine::Field field);
-	bool DrawDoubleField(const engine::Object& object, engine::Field field);
-	bool DrawBoolField(const engine::Object& object, engine::Field field);
-	bool DrawByteField(const engine::Object& object, engine::Field field);
-	bool DrawShortField(const engine::Object& object, engine::Field field);
-	bool DrawIntField(const engine::Object& object, engine::Field field);
-	bool DrawLongField(const engine::Object& object, engine::Field field);
-	bool DrawUByteField(const engine::Object& object, engine::Field field);
-	bool DrawUShortField(const engine::Object& object, engine::Field field);
-	bool DrawUIntField(const engine::Object& object, engine::Field field);
-	bool DrawULongField(const engine::Object& object, engine::Field field);
-	bool DrawVector2Field(const engine::Object& object, engine::Field field);
-	bool DrawVector3Field(const engine::Object& object, engine::Field field);
-	bool DrawVector4Field(const engine::Object& object, engine::Field field);
-	bool DrawStringField(const engine::Object& object, engine::Field field);
-	bool DrawGameObjectField(const engine::Object& object, engine::Field field);
-	bool DrawResourceField(const engine::Object& object, engine::Field field);
+	bool DrawFloatField(const engine::Object& object, engine::Field& field);
+	bool DrawDoubleField(const engine::Object& object, engine::Field& field);
+	bool DrawBoolField(const engine::Object& object, engine::Field& field);
+	bool DrawByteField(const engine::Object& object, engine::Field& field);
+	bool DrawShortField(const engine::Object& object, engine::Field& field);
+	bool DrawIntField(const engine::Object& object, engine::Field& field);
+	bool DrawLongField(const engine::Object& object, engine::Field& field);
+	bool DrawUByteField(const engine::Object& object, engine::Field& field);
+	bool DrawUShortField(const engine::Object& object, engine::Field& field);
+	bool DrawUIntField(const engine::Object& object, engine::Field& field);
+	bool DrawULongField(const engine::Object& object, engine::Field& field);
+	bool DrawVector2Field(const engine::Object& object, engine::Field& field);
+	bool DrawVector3Field(const engine::Object& object, engine::Field& field);
+	bool DrawVector4Field(const engine::Object& object, engine::Field& field);
+	bool DrawStringField(const engine::Object& object, engine::Field& field);
+	bool DrawGameObjectField(const engine::Object& object, engine::Field& field);
+	bool DrawResourceField(const engine::Object& object, engine::Field& field);
 
 	static std::string GetFieldName(
 		const engine::Field& field,

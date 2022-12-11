@@ -4,6 +4,7 @@
 #include "imgui/imgui.h"
 
 #include "MetadataReader.h"
+#include "../../GameplaySystem/Object.h"
 
 void ResourceDrawer::Draw()
 {
@@ -27,11 +28,10 @@ void ResourceDrawer::TrySelect(const std::filesystem::path& path)
     try
     {
         printf("Reading metadata of %s\n", path.generic_string().c_str());
-        std::optional<mono::mono_object> raw_resource = MetadataReader::read_internal(path);
+        std::optional<engine::Object> resource = MetadataReader::read_internal(path);
         
         // Save resource in _selectedInstance
-        mono::mono_object object(raw_resource.value());
-        _selectedInstance = std::make_shared<engine::Object>(engine::Object(object));
+        _selectedInstance = std::make_shared<engine::Object>(std::move(resource.value()));
     }
     catch (std::exception& e)
     {

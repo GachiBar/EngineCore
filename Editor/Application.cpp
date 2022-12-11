@@ -26,7 +26,7 @@ Application::Application()
 	engine::Scene::CacheMethods(runtime);
 	engine::GameObject::CacheMethods(runtime);
 	engine::Component::CacheMethods(runtime);
-	MetadataReader::CacheMethods(runtime.GetAssembly());
+	MetadataReader::CacheMethods(runtime);
 }
 
 void Application::PushLayer(Layer* layer)
