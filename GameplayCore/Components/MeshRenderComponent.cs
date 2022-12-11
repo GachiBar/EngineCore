@@ -7,7 +7,7 @@ namespace GameplayCore.Components
     public class MeshRenderComponent : Component
     {
         private TransformComponent _transformComponent = null;
-        [SerializeField] private Resource _asset;
+        [SerializeField] private MeshAsset _asset;
         //Material{Texture, Metalic, Raffness, Normal}
 
         public ulong Id = 1;
@@ -16,7 +16,11 @@ namespace GameplayCore.Components
 
         public override void Initialize() 
         {
-            //EngineApi.RenderApi.RegisterModel(Id);
+            if (_asset != null)
+            {
+                _asset.Load();
+                Id = _asset.Id;
+            }
         }
 
         public override void Render()
