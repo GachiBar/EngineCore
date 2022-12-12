@@ -128,6 +128,13 @@ private:
 
 #pragma region Physics
 
+	static JPH::uint32 Internal_CreateBody(
+		JPH::PhysicsSystem* physics_system,
+		JPH::Vec3 position,
+		JPH::Quat rotation,
+		JPH::EMotionType motion_type,
+		JPH::uint8 layer);
+
 	static JPH::uint32 Internal_CreateSphereBody(
 		JPH::PhysicsSystem* physics_system,
 		float radius, 
@@ -144,6 +151,15 @@ private:
 		JPH::EMotionType motion_type, 
 		JPH::uint8 layer);
 
+	static JPH::uint32 Internal_CreateCapsuleBody(
+		JPH::PhysicsSystem* physics_system,
+		float half_height,
+		float radius,
+		JPH::Vec3 position,
+		JPH::Quat rotation,
+		JPH::EMotionType motion_type,
+		JPH::uint8 layer);
+
 	static void Internal_DestroyBody(
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id);
@@ -157,6 +173,12 @@ private:
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
 		JPH::Vec3 half_extent);
+
+	static void Internal_SetCapsuleShape(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		float half_height,
+		float radius);
 
 	static void Internal_SetMotionType(
 		JPH::PhysicsSystem* physics_system, 

@@ -3,7 +3,7 @@ using System;
 
 namespace GameplayCore.Components
 {
-    public class ForceComponent : Component
+    public class TestForceComponent : Component
     {
         private BoxBodyComponent _bodyComponent;
 

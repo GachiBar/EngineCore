@@ -37,6 +37,21 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static uint CreateCapsuleBody(
+            float halfHeight,
+            float radius,
+            Vector3 position,
+            Quaternion rotation,
+            MotionType motionType,
+            CollisionLayer collisionLayer) 
+        {
+            unsafe
+            {
+                var inPosition = new Vector4(position, position.Z);
+                return Internal_CreateCapsuleBody(PhysicsSystem, halfHeight, radius, inPosition, rotation, motionType, collisionLayer);
+            }
+        }
+
         public static void DestroyBody(uint bodyId)
         {
             unsafe
@@ -59,6 +74,14 @@ namespace GameplayCore.EngineApi
             {
                 var inHalfExtent = new Vector4(halfExtent, halfExtent.Z);
                 Internal_SetBoxShape(PhysicsSystem, bodyId, inHalfExtent);
+            }
+        }
+
+        public static void SetCapsuleShape(uint bodyId, float halfHeight, float radius)
+        {
+            unsafe
+            {
+                Internal_SetCapsuleShape(PhysicsSystem, bodyId, halfHeight, radius);
             }
         }
 
@@ -147,6 +170,16 @@ namespace GameplayCore.EngineApi
             CollisionLayer collisionLayer);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe uint Internal_CreateCapsuleBody(
+            void* physicsSystem,
+            float halfHeight,
+            float radius,
+            Vector4 position,
+            Quaternion rotation,
+            MotionType motionType,
+            CollisionLayer collisionLayer);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DestroyBody(void* physicsSystem, uint bodyId);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -154,6 +187,8 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetBoxShape(void* physicsSystem, uint bodyId, Vector4 halfExtent);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetCapsuleShape(void* physicsSystem, uint bodyId, float halfHeight, float radius);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetMotionType(void* physicsSystem, uint bodyId, MotionType motionType);

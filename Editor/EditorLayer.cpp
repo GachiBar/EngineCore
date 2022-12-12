@@ -167,6 +167,7 @@ void EditorLayer::OnGuiRender()
                 file.open("scene.dat", std::fstream::in);
                 getline(file, content, '\0');
                 
+                GetApp()->GetEngine()->GetScene()->Terminate();
                 GetApp()->GetEngine()->GetScene()->Deserialize(content);
                 GetApp()->GetEngine()->GetScene()->Initialize();
                 file.close();
