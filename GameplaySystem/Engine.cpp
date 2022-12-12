@@ -231,6 +231,7 @@ void Engine::SetupPhysicsInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyRotation", Internal_GetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddImpulse", Internal_AddImpulse);
 
 	physics_system_property_.SetValue(&physics_system_);
 }
@@ -560,6 +561,16 @@ void Engine::Internal_AddForce(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.AddForce(body_id, force);
+}
+
+void Engine::Internal_AddImpulse(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id,
+	JPH::Vec3 impulse)
+{
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	body_interface.AddImpulse(body_id, impulse);
 }
 
 #pragma endregion Physics

@@ -217,6 +217,11 @@ private:
 		JPH::uint32 id, 
 		JPH::Vec3 force);
 
+	static void Internal_AddImpulse(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::Vec3 impulse);
+
 #pragma endregion Physics
 
 #pragma region Inputs

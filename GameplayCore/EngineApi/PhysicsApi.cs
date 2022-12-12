@@ -151,6 +151,15 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static void AddImpulse(uint bodyId, Vector3 impulse)
+        {
+            unsafe
+            {
+                var inImpulse = new Vector4(impulse, impulse.Z);
+                Internal_AddImpulse(PhysicsSystem, bodyId, inImpulse);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe uint Internal_CreateSphereBody(
             void* physicsSystem, 
@@ -213,5 +222,7 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_AddForce(void* physicsSystem, uint bodyId, Vector4 force);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_AddImpulse(void* physicsSystem, uint bodyId, Vector4 impulse);
     }
 }

@@ -108,6 +108,14 @@ namespace GameplayCore.Components
             }
         }
 
+        public void AddImpulse(Vector3 impulse)
+        {
+            if (_isInitialized && _transformComponent != null)
+            {
+                PhysicsApi.AddImpulse(BodyId, impulse);
+            }
+        }
+
         protected override void OnAttach(GameObject gameObject)
         {            
             _transformComponent = GameObject.GetComponent<TransformComponent>();
