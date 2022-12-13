@@ -28,6 +28,7 @@ private:
     static FileType get_file_type(const std::filesystem::directory_entry& entry);
     
 public:
+    static int calculate_assets_count(std::filesystem::path path);
     static Coroutine<FileData> iterate_assets_with_folder(std::filesystem::path path)
     {
         if(path.empty()) co_return;
@@ -68,22 +69,23 @@ public:
         }
     }
 
-    static int calculate_assets_count(std::filesystem::path path)
+    static Coroutine<FileData> iterate_assets_recursive_by_type(std::filesystem::path path, FileType target)
     {
-        if(path.empty())
-            return 0;
-
-        int count = 0;
+        if(path.empty()) co_return;
+    
         for (const auto& item : std::filesystem::recursive_directory_iterator(path))
         {
             const FileType type = get_file_type(item);
 
-            if(type == Meta || type == Other || type == Directory)
+            if(type != target)
                 continue;
         
-            count++;
-        }
+            FileData file_data(
+                item.path(),
+                type
+            );
 
-        return count;
+            co_yield file_data;
+        }
     }
 };
