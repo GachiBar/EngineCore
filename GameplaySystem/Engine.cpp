@@ -212,6 +212,7 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawDirectionalLight", Internal_DrawDirectionalLight);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsIdUsed", Internal_IsIdUsed);
 
 	renderer_property_.SetValue(&renderer_);
 }
@@ -366,6 +367,11 @@ void Engine::Internal_SetViewProjection(
 	DirectX::SimpleMath::Matrix projection)
 {
 	renderer->SetRenderData({ ellapsed, view, projection });
+}
+
+bool Engine::Internal_IsIdUsed(RenderDevice* renderer, size_t id)
+{
+	return renderer->WasIdUsed(id);
 }
 
 #pragma endregion Renderer

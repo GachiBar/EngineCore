@@ -2,6 +2,7 @@
 #include "Type.h"
 #include "Object.h"
 #include "Method.h"
+#include "Runtime.h"
 
 namespace engine {
 
@@ -39,6 +40,11 @@ const bool Type::IsAbstract() const {
 
 const bool Type::IsDerivedFrom(const Type& type) const {
 	return type_.is_derived_from(type.GetInternal());
+}
+
+const bool Type::IsDerivedFrom(const TypeData& type_data) const {
+	auto other_type = Runtime::GetCurrentRuntime().GetType(type_data);
+	return IsDerivedFrom(other_type);
 }
 
 Field Type::GetField(const std::string& name) const {

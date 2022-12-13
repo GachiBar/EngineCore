@@ -11,6 +11,7 @@ namespace GameplayCore.Resources
     public class MetadataReader
     {
         private static string BasePath = "Assets";
+        private static ResourcesHolder _holder = new ResourcesHolder();
         
         public static Resource Create(string path)
         {
@@ -31,12 +32,64 @@ namespace GameplayCore.Resources
             
             Resource resource = Activator.CreateInstance(classType, args) as Resource;
             Write(resource);
+            _holder.Set(resource);
 
-            Console.WriteLine(resource);
+            Debug(resource.ToString());
             return resource;
         }
 
         public static Resource Read(string path)
+        {
+            Debug($"Reading metadata of {path}!");
+            if (!File.Exists(GetMetaPath(path)))
+                return Create(path);
+
+            string metadataPath = GetMetaPath(path);
+
+            if (_holder.TryGet(ReadOnlyGuid(metadataPath), out var value))
+                return value;
+            
+            FileStream file = File.OpenRead(metadataPath);
+            StreamReader reader = new StreamReader(file);
+            Resource resource = Deserialize(reader.ReadToEnd(), path);
+            file.Close();
+
+            _holder.Set(resource);
+            Debug($"Resource is {resource}");
+            return resource;
+        }
+
+        private static System.Guid ReadOnlyGuid(string path)
+        {
+            if (!File.Exists(GetMetaPath(path)))
+                return System.Guid.Empty;
+            
+            FileStream file = File.OpenRead(GetMetaPath(path));
+            StreamReader stream = new StreamReader(file);
+            JsonReader reader = new JsonTextReader(stream);
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonToken.PropertyName &&
+                    string.Equals((string) reader.Value, "_guid"))
+                    break;
+            }
+
+            if (reader.TokenType != JsonToken.PropertyName)
+            {
+                file.Close();
+                return System.Guid.Empty;
+            }
+
+            reader.Read();
+            file.Close();
+            
+            return Guid.Parse(reader.Value as string ?? string.Empty);
+        }
+
+        // For tests only!
+        [Obsolete]
+        public static Resource ReadWithoutSave(string path)
         {
             Debug($"Reading metadata of {path}!");
             if (!File.Exists(GetMetaPath(path)))
@@ -61,23 +114,37 @@ namespace GameplayCore.Resources
             file.Close();
         }
 
-        public static Resource GetByGuid(System.Guid guid)
+        public static Resource TryGetByGuid(System.Guid guid)
         {
             if (guid.Equals(System.Guid.Empty)) 
                 return null;
 
-            foreach (var resource in IterateAllResources())
+            foreach (var pair in IterateAllResourcesFast())
             {
-                if (resource != null && resource.Guid.Equals(guid))
-                    return resource;
+                if (pair.Item1.Equals(guid))
+                    return Read(pair.Item2);
             }
 
             return null;
         }
+        
+        private static IEnumerable<(System.Guid, string)> IterateAllResourcesFast()
+        {
+            string path = Path.Combine(Path.GetFullPath("."), BasePath);
+            Debug($"Full assets path is {path}");
+            if (Directory.Exists(path))
+            {
+                foreach (string file in Directory.EnumerateFiles(path , "*.*", SearchOption.AllDirectories))
+                {
+                    if(Path.GetExtension(file).Equals(".meta")) continue;
 
+                    yield return (ReadOnlyGuid(file), file);
+                }    
+            }
+        }
+        
         private static IEnumerable<Resource> IterateAllResources()
         {
-            // TODO: Add ResourceHolder : Dictionary<System.Guid, Resource>
             string path = Path.Combine(Path.GetFullPath("."), BasePath);
             Debug($"Full assets path is {path}");
             if (Directory.Exists(path))
@@ -176,6 +243,8 @@ namespace GameplayCore.Resources
                 case ".prefab":
                     return FileType.Prefab;
                 case ".mesh":
+                case ".fbx":
+                case  ".obj":
                     return FileType.Mesh;
                 case ".material":
                     return FileType.Material;

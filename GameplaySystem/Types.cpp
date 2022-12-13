@@ -49,6 +49,10 @@ const TypeData Types::kTime = Types::RegisterType("GameplayCore", "Time");
 const TypeData Types::kScreen = Types::RegisterType("GameplayCore", "Screen");
 const TypeData Types::kInput = Types::RegisterType("GameplayCore", "Input");
 
+// Resource
+const TypeData Types::kResource = Types::RegisterType("GameplayCore.Resources", "Resource");
+	
+
 TypeDeclaration::TypeDeclaration(std::string name_space, std::string name)
 	: name_space(std::move(name_space))
 	, name(std::move(name))
