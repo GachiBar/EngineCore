@@ -13,7 +13,7 @@ namespace GameplayCore.Components
         private float _yaw = 0.0f;
         private float _pitch = 0.0f;
         
-        public float Speed = 2.0f;
+        public float Speed = 3.0f;
         public float Sensivity = 1.0f;
         public float BulletImpulse = 10000.0f;
         public float BulletLifeTime = 2.0f;
@@ -44,7 +44,7 @@ namespace GameplayCore.Components
                     var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
                     var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
 
-                    bulletTransform.Position = headTransform.Position + headTransform.Forward;
+                    bulletTransform.Position = headTransform.Position + headTransform.Forward * 0.5f;
                     bulletSphere.Radius = BulletRadius;
                     bulletTimer.Timer = BulletLifeTime;
                     bulletRigidbody.AddImpulse(headTransform.Forward * BulletImpulse);
@@ -61,8 +61,8 @@ namespace GameplayCore.Components
                 if (headTransform != null)
                 {
                     var rotation = Quaternion.RotationYawPitchRoll(_yaw, 0, 0);
-                    var direction = Vector3.Normalize(_axis);
-                    direction = Vector3.Transform(direction, rotation);
+                    var direction = Vector3.Transform(_axis, rotation);
+                    direction.Normalize();
                     _rigidbodyComponent.Velocity = direction * Speed;
                 }                
             }

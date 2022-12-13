@@ -135,7 +135,7 @@
       },
       {
         "Type": "GameplayCore.Components.FpsControllerComponent",
-        "Speed": 2.0,
+        "Speed": 3.0,
         "Sensivity": 1.0,
         "BulletImpulse": 10000.0,
         "BulletLifeTime": 2.0,
