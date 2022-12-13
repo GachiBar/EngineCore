@@ -14,11 +14,17 @@ namespace GameplayCore.Resources
 
         public void Load()
         {
-            if(_id != ulong.MaxValue) return;
+            if (_id != ulong.MaxValue)
+            {
+                Console.WriteLine($"Load avoid: Current id is {_id}");
+                return;
+            }
             
             ulong id = RenderApi.CalculateFreeId();
             RenderApi.RegisterModel(id, FilePath);
             _id = id;
+            
+            Console.WriteLine($"Loaded new mesh with id {id} from {FilePath}");
         }
     }
 }

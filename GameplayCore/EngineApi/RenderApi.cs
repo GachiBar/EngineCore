@@ -6,7 +6,7 @@ namespace GameplayCore.EngineApi
     internal static class RenderApi
     {
         private static unsafe void* Renderer { get; set; }
-        private static ulong _lastCalculatedId = 0;
+        private static ulong _lastCalculatedId = 1;
 
         public static void RegisterModel(ulong id, string path="")
         {

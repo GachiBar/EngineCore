@@ -35,6 +35,23 @@ namespace GameplayCore.Components
             }            
         }
 
+        internal override void Invalidate(string fieldName)
+        {
+            base.Invalidate(fieldName);
+            
+            if(fieldName != "_asset") return;
+            
+            if (_asset != null)
+            {
+                _asset.Load();
+                Id = _asset.Id;
+            }
+            else
+            {
+                Id = 0;
+            }
+        }
+
         protected override void OnAttach(GameObject gameObject)
         {
             _transformComponent = GameObject.GetComponent<TransformComponent>();
