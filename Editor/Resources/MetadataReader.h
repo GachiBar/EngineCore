@@ -78,7 +78,7 @@ public:
         {
             const FileType type = get_file_type(item);
 
-            if(type != Other && type != target)
+            if(target != Other && type != target)
                 continue;
         
             FileData file_data(
