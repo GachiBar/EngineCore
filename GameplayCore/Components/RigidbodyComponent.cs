@@ -15,8 +15,8 @@ namespace GameplayCore.Components
         private Quaternion _rotation = Quaternion.Identity;
 
         [SerializeField]
-        [InspectorName("IsStatic")]
-        public bool _isStatic = false;
+        [InspectorName("IsKinematic")]
+        public bool _isKinematic = false;
 
         //[SerializeField]
         //[InspectorName("Friction (not implemented)")]
@@ -28,22 +28,14 @@ namespace GameplayCore.Components
 
         public uint BodyId => _bodyId;
 
-        public bool IsStatic
+        public bool IsKinematic
         {
-            get => _isStatic;
+            get => _isKinematic;
             set
             {
-                _isStatic = value;
-
-                if (_isStatic)
-                {
-                    PhysicsApi.SetMotionType(BodyId, MotionType.Static);
-                }
-                else
-                {
-                    PhysicsApi.SetMotionType(BodyId, MotionType.Dynamic);
-                    PhysicsApi.SetActive(BodyId, true);
-                }
+                _isKinematic = value;
+                PhysicsApi.SetMotionType(BodyId, _isKinematic ? MotionType.Kinematic : MotionType.Dynamic);
+                PhysicsApi.SetActive(BodyId, true);
             }
         }
 
@@ -91,16 +83,8 @@ namespace GameplayCore.Components
         {
             switch (fieldName)
             {
-                case nameof(_isStatic):
-                    if (_isStatic)
-                    {
-                        PhysicsApi.SetMotionType(_bodyId, MotionType.Static);
-                    }
-                    else
-                    {
-                        PhysicsApi.SetMotionType(_bodyId, MotionType.Dynamic);
-                        PhysicsApi.SetActive(_bodyId, true);
-                    }
+                case nameof(_isKinematic):
+                    IsKinematic = _isKinematic;
                     break;
             }
         }
@@ -111,7 +95,7 @@ namespace GameplayCore.Components
             _bodyId = PhysicsApi.CreateBody(
                 _position, 
                 _rotation,
-                _isStatic ? MotionType.Static : MotionType.Dynamic);
+                _isKinematic ? MotionType.Kinematic : MotionType.Dynamic);
 
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
