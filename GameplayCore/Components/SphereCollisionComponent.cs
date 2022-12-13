@@ -18,6 +18,7 @@ namespace GameplayCore.Components
             { 
                 _radius = value;
                 SetShape();
+                PhysicsApi.SetActive(BodyId, true);
             }
         }
 

@@ -16,6 +16,7 @@ namespace GameplayCore.Components
         public float Speed = 2.0f;
         public float Sensivity = 1.0f;
         public float BulletImpulse = 10000.0f;
+        public float BulletLifeTime = 2.0f;
         public GameObject Head;
 
         public override void Update()
@@ -38,10 +39,14 @@ namespace GameplayCore.Components
                 if (Input.WasJustPressed(Keys.LeftMouseButton))
                 {
                     var bullet = GameObject.Scene.CreateGameObject();
-                    bullet.AddComponent<TransformComponent>();
+                    var bulletTransform = bullet.AddComponent<TransformComponent>();                    
                     var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
                     var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
+                    var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
+
+                    bulletTransform.Position = headTransform.Position + headTransform.Forward;
                     bulletSphere.Radius = BulletRadius;
+                    bulletTimer.Timer = BulletLifeTime;
                     bulletRigidbody.AddImpulse(headTransform.Forward * BulletImpulse);
                 }
             }            

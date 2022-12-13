@@ -62,6 +62,11 @@ namespace GameplayCore.Components
             if (component is TransformComponent transformComponent)
             {
                 _transformComponent = transformComponent;
+
+                if (_rigidbodyComponent != null)
+                {
+                    PhysicsApi.SetCollisionLayer(BodyId, CollisionLayer.Moving);
+                }
             }
         }
 
