@@ -6,12 +6,13 @@ namespace GameplayCore.EngineApi
     internal static class RenderApi
     {
         private static unsafe void* Renderer { get; set; }
+        private static ulong _lastCalculatedId = 1;
 
-        public static void RegisterModel(ulong id)
+        public static void RegisterModel(ulong id, string path="")
         {
             unsafe
             {
-                Internal_RegisterModel(Renderer, id, "");
+                Internal_RegisterModel(Renderer, id, path);
             }           
         }
 
@@ -48,6 +49,24 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static bool IsIdUsed(ulong id)
+        {
+            bool value;
+            unsafe
+            {
+                value = Internal_IsIdUsed(Renderer, id);
+            }
+            return value;
+        }
+
+        public static ulong CalculateFreeId()
+        {
+            while (IsIdUsed(_lastCalculatedId))
+                _lastCalculatedId++;
+
+            return _lastCalculatedId;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -58,5 +77,7 @@ namespace GameplayCore.EngineApi
         extern private static unsafe void Internal_DrawCurve(void* renderer, Vector3[] points, Vector3 color, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetViewProjection(void* renderer, float ellapsed, Matrix view, Matrix projection);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_IsIdUsed(void* renderer, ulong id);
     }
 }

@@ -55,12 +55,22 @@ namespace EngineDotnetUnitTests
         public void FindByGuidTest()
         {
             string path = Path.Combine(_basePath, "Assets\\oh_dis_is_file.txt");
-            Resource resource = MetadataReader.Read(path);
+            Resource resource = MetadataReader.ReadWithoutSave(path);
             
             SetAssetsBasepath();
 
-            Resource readen = MetadataReader.GetByGuid(resource.Guid);
+            Resource readen = MetadataReader.TryGetByGuid(resource.Guid);
             Assert.That(resource.Guid, Is.EqualTo(readen.Guid));
+        }
+        
+        [Test]
+        public void ReadTwice_SameRef()
+        {
+            string path = Path.Combine(_basePath, "Assets\\oh_dis_is_file.txt");
+            Resource one = MetadataReader.Read(path);
+            Resource two = MetadataReader.Read(path);
+            
+            Assert.IsTrue(ReferenceEquals(one, two));
         }
 
         [Test]

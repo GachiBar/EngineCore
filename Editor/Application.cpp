@@ -10,6 +10,7 @@
 #include "InputCoreSystem/InputEvent/Events.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "Interfaces/ILayer.h"
+#include "Resources/MetadataReader.h"
 #include "Resources/ResourceDrawer.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
@@ -22,7 +23,10 @@ Application::Application()
 	, exit_code_(0)
 {
 	engine::Runtime::SetCurrentRuntime(runtime);
-	ResourceDrawer::CacheMethods(runtime.GetAssembly());
+	engine::Scene::CacheMethods(runtime);
+	engine::GameObject::CacheMethods(runtime);
+	engine::Component::CacheMethods(runtime);
+	MetadataReader::CacheMethods(runtime);
 }
 
 void Application::PushLayer(Layer* layer)

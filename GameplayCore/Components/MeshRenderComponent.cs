@@ -1,3 +1,5 @@
+﻿using GameplayCore.Resources;
+using GameplayCore.Serialization;
 ﻿using System;
 
 namespace GameplayCore.Components
@@ -5,6 +7,7 @@ namespace GameplayCore.Components
     public class MeshRenderComponent : Component
     {
         private TransformComponent _transformComponent = null;
+        [SerializeField] private MeshAsset _asset;
         //Material{Texture, Metalic, Raffness, Normal}
 
         public ulong Id = 1;
@@ -13,7 +16,11 @@ namespace GameplayCore.Components
 
         public override void Initialize() 
         {
-            //EngineApi.RenderApi.RegisterModel(Id);
+            if (_asset != null)
+            {
+                _asset.Load();
+                Id = _asset.Id;
+            }
         }
 
         public override void Render()
@@ -26,6 +33,23 @@ namespace GameplayCore.Components
                     Roughness, 
                     _transformComponent.ModelMatrix);
             }            
+        }
+
+        internal override void Invalidate(string fieldName)
+        {
+            base.Invalidate(fieldName);
+            
+            if(fieldName != "_asset") return;
+            
+            if (_asset != null)
+            {
+                _asset.Load();
+                Id = _asset.Id;
+            }
+            else
+            {
+                Id = 0;
+            }
         }
 
         protected override void OnAttach(GameObject gameObject)

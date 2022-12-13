@@ -17,6 +17,12 @@ mono_object::mono_object(const mono_domain& domain, const mono_type& type)
 	mono_runtime_object_init(object_);
 }
 
+// Create nullref
+mono_object::mono_object(mono_type type):
+	type_(std::move(type)), object_(nullptr)
+{
+}
+
 auto mono_object::unbox() const -> void*
 {
 	return mono_object_unbox(object_);

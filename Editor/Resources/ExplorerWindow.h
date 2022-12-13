@@ -38,12 +38,16 @@ private:
 
 struct FileData
 {
-    FileData(const std::string& name, const FileType type)
-        :file_name(name), file_type(type)
+    FileData() = default;
+    
+    FileData(const std::filesystem::path& path, const FileType type)
+        :path(path), file_type(type)
     {
         
     }
-    
-    std::string file_name;
+
+    std::string filename() const {return path.filename().generic_string();}
+
+    std::filesystem::path path;
     FileType file_type;
 };

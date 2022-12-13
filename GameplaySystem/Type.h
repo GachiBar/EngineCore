@@ -24,6 +24,7 @@ public:
 
 	const bool IsAbstract() const;
 	const bool IsDerivedFrom(const Type& type) const;
+	const bool IsDerivedFrom(const TypeData& type_data) const;
 
 	Field GetField(const std::string& name) const;
 	std::vector<Field> GetFields() const;

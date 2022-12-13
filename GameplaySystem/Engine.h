@@ -21,7 +21,8 @@ namespace engine {
 
 using namespace std::chrono;
 
-class Engine {
+class Engine
+{
 public:
 	static const float kDt;
 	static const std::chrono::nanoseconds kTimestep;
@@ -123,6 +124,10 @@ private:
 		float ellapsed, 
 		DirectX::SimpleMath::Matrix view, 
 		DirectX::SimpleMath::Matrix projection);
+
+	static bool Internal_IsIdUsed(
+		RenderDevice* renderer,
+		size_t id);
 
 #pragma endregion Renderer
 
