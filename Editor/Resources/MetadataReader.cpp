@@ -56,3 +56,22 @@ FileType MetadataReader::get_file_type(const std::filesystem::directory_entry& e
     // std::cout << "Can't handle non-directory and non-file!\n";
     return FileType::Other;
 }
+
+int MetadataReader::calculate_assets_count(std::filesystem::path path)
+{
+    if(path.empty())
+        return 0;
+
+    int count = 0;
+    for (const auto& item : std::filesystem::recursive_directory_iterator(path))
+    {
+        const FileType type = get_file_type(item);
+
+        if(type == Meta || type == Other || type == Directory)
+            continue;
+        
+        count++;
+    }
+
+    return count;
+}

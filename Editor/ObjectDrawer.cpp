@@ -769,7 +769,9 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 		return;
 
 	auto iterator = MetadataReader::iterate_assets_recursive(basepath);
-	for (int i = 1; iterator; i++)
+
+	int i;
+	for (i = 1; iterator; i++)
 	{
 		FileData data = iterator();
 
@@ -797,6 +799,9 @@ void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
 			resource_names.insert(resource_names.begin() + i, resource_name);
 		}
 	}
+
+	// Handle case with deleted resource
+	files_path.resize(i);
 }
 
 std::string ObjectDrawer::resources_cache::get_name(int index) const
