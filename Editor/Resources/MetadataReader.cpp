@@ -41,7 +41,7 @@ FileType MetadataReader::get_file_type(const std::filesystem::directory_entry& e
             return FileType::Scene;
         else if (extension == ".prefab")
             return FileType::Prefab;
-        else if (extension == ".mesh")
+        else if (extension == ".mesh" || extension == ".fbx" || extension == ".obj")
             return FileType::Mesh;
         else if (extension == ".material")
             return FileType::Material;
@@ -54,6 +54,24 @@ FileType MetadataReader::get_file_type(const std::filesystem::directory_entry& e
     }
 
     // std::cout << "Can't handle non-directory and non-file!\n";
+    return FileType::Other;
+}
+
+FileType MetadataReader::GetTypeByClassName(const std::string& classname)
+{
+    if(classname == "SceneAsset")
+        return FileType::Scene;
+    else if (classname == "Prefab")
+        return FileType::Prefab;
+    else if (classname == "MeshAsset")
+        return FileType::Mesh;
+    else if (classname == "MaterialAsset")
+        return FileType::Material;
+    else if (classname == "TextureAsset")
+        return FileType::Texture;
+    else if (classname == "TextAsset")
+        return FileType::PlainText;
+
     return FileType::Other;
 }
 

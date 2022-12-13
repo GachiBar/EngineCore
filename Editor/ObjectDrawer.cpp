@@ -619,8 +619,10 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 
 	auto fieldName = GetFieldName(field, attributes);
 	auto monoObject = field.GetValue(object);
+
+	FileType type = MetadataReader::GetTypeByClassName(field.GetType().GetName().c_str());
 	
-	cache_.update(MetadataReader::AssetsPath);
+	cache_.update(MetadataReader::AssetsPath, type);
 	
 	int selected_index;
 	if(monoObject.has_value())
@@ -763,12 +765,12 @@ ObjectDrawer::resources_cache::~resources_cache() {
 	}
 }
 
-void ObjectDrawer::resources_cache::update(std::filesystem::path basepath)
+void ObjectDrawer::resources_cache::update(std::filesystem::path basepath, FileType type = Other)
 {
 	if (MetadataReader::calculate_assets_count(basepath) == files_path.size() + 1)
 		return;
-
-	auto iterator = MetadataReader::iterate_assets_recursive(basepath);
+	
+	auto iterator = MetadataReader::iterate_assets_recursive_by_type(basepath, type);
 
 	int i;
 	for (i = 1; iterator; i++)

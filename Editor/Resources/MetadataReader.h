@@ -17,6 +17,7 @@ class MetadataReader
 {
 public:
     static std::optional<engine::Object> read_internal(const std::filesystem::path& path);
+    static FileType GetTypeByClassName(const std::string& classname);
     static void CacheMethods(engine::Runtime& runtime);
 
     static const std::filesystem::path AssetsPath;// = std::filesystem::current_path() / "Assets";
@@ -77,7 +78,7 @@ public:
         {
             const FileType type = get_file_type(item);
 
-            if(type != target)
+            if(type != Other && type != target)
                 continue;
         
             FileData file_data(

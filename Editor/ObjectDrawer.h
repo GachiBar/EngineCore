@@ -4,6 +4,7 @@
 
 #include "../GameplaySystem/Scene.h"
 #include "../GameplaySystem/GameObject.h"
+#include "Resources/FileType.h"
 
 class ObjectDrawer 
 {
@@ -14,7 +15,7 @@ private:
 		resources_cache();
 		~resources_cache();
 
-		void update(std::filesystem::path basepath);
+		void update(std::filesystem::path basepath, FileType type);
 		std::string get_name(int index) const;
 		std::shared_ptr<engine::Object> get_pointer(int index);
 		int get_index(const engine::Object& resource);

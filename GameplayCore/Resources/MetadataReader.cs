@@ -243,6 +243,8 @@ namespace GameplayCore.Resources
                 case ".prefab":
                     return FileType.Prefab;
                 case ".mesh":
+                case ".fbx":
+                case  ".obj":
                     return FileType.Mesh;
                 case ".material":
                     return FileType.Material;
