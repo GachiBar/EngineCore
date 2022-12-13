@@ -6,6 +6,10 @@ namespace GameplayCore
 {
     public static class Gizmos
     {
+        private const int Step = 10;
+        private const int CircleStepsCount = 360 / Step + 1;
+        private const int HalfCircleStepsCount = 180 / Step + 1;
+
         public static void DrawLine(Vector3 from, Vector3 to, Vector3 color)
         {
             DrawLine(Vector3.Zero, Quaternion.Identity, Vector3.One, from, to, color);
@@ -61,46 +65,42 @@ namespace GameplayCore
 
         public static void DrawSphere(Matrix model, float radius, Vector3 color)
         {
-            int circle = 360;
-            int step = 10;
-            int stepCount = circle / step + 2;
+            var section1 = new Vector3[CircleStepsCount];
 
-            var circle1 = new Vector3[stepCount];
-
-            for (int i = 0; i < stepCount; i++)
+            for (int i = 0; i < CircleStepsCount; i++)
             {
-                float angle = step * i;
+                float angle = Step * i;
                 float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
                 float y = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
                 Vector3 point = new Vector3(x, y, 0);
-                circle1[i] = point;
+                section1[i] = point;
             }
+           
+            var section2 = new Vector3[CircleStepsCount];
 
-            DrawCurve(model, circle1, color);
-            var circle2 = new Vector3[stepCount];
-
-            for (int i = 0; i < stepCount; i++)
+            for (int i = 0; i < CircleStepsCount; i++)
             {
-                float angle = step * i;
+                float angle = Step * i;
                 float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
                 float z = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
                 Vector3 point = new Vector3(x, 0, z);
-                circle2[i] = point;
+                section2[i] = point;
             }
+            
+            var section3 = new Vector3[CircleStepsCount];
 
-            DrawCurve(model, circle2, color);
-            var circle3 = new Vector3[stepCount];
-
-            for (int i = 0; i < stepCount; i++)
+            for (int i = 0; i < CircleStepsCount; i++)
             {
-                float angle = step * i;
+                float angle = Step * i;
                 float y = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
                 float z = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
                 Vector3 point = new Vector3(0, y, z);
-                circle3[i] = point;
+                section3[i] = point;
             }
 
-            DrawCurve(model, circle3, color);
+            DrawCurve(model, section1, color);
+            DrawCurve(model, section2, color);
+            DrawCurve(model, section3, color);
         }
 
         public static void DrawCube(Vector3 position, Vector3 size, Vector3 color)
@@ -128,9 +128,7 @@ namespace GameplayCore
                 new Vector3( halfExtent.X, -halfExtent.Y, -halfExtent.Z),
                 new Vector3( halfExtent.X,  halfExtent.Y, -halfExtent.Z),
                 new Vector3(-halfExtent.X,  halfExtent.Y, -halfExtent.Z),
-            };
-
-            DrawCurve(model, frontFace, color);
+            };            
 
             Vector3[] backFace =
             {
@@ -141,6 +139,7 @@ namespace GameplayCore
                 new Vector3( halfExtent.X,  halfExtent.Y,  halfExtent.Z),
             };
 
+            DrawCurve(model, frontFace, color);
             DrawCurve(model, backFace, color);
 
             DrawLine(
@@ -166,6 +165,98 @@ namespace GameplayCore
                 new Vector3(halfExtent.X, -halfExtent.Y, -halfExtent.Z),
                 new Vector3(halfExtent.X, -halfExtent.Y, halfExtent.Z),
                 color);
+        }
+
+        public static void DrawCapsule(Vector3 position, float height, float radius, Vector3 color)
+        {
+            DrawCapsule(position, Quaternion.Identity, Vector3.One, height, radius, color);
+        }
+
+        public static void DrawCapsule(Vector3 position, Quaternion rotation, Vector3 scale, float height, float radius, Vector3 color)
+        {
+            var model = Matrix.Identity;
+            model *= Matrix.Scaling(scale);
+            model *= Matrix.RotationQuaternion(rotation);
+            model *= Matrix.Translation(position);
+            DrawCapsule(model, height, radius, color);
+        }
+
+        public static void DrawCapsule(Matrix model, float height, float radius, Vector3 color)
+        {
+            float halfHeight = height / 2;
+            
+            Vector3[] section1 = new Vector3[2 * HalfCircleStepsCount + 1];
+            int index1 = 0;
+
+            for (; index1 < HalfCircleStepsCount; index1++)
+            {
+                float angle = Step * index1;
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float y = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
+                Vector3 point = new Vector3(x, y + halfHeight, 0);
+                section1[index1] = point;
+            }
+
+            for (; index1 < 2 * HalfCircleStepsCount; index1++)
+            {
+                float angle = Step * index1;
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float y = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
+                Vector3 point = new Vector3(x, y - halfHeight, 0);
+                section1[index1] = point;
+            }
+
+            section1[2 * HalfCircleStepsCount] = section1[0];
+
+            Vector3[] section2 = new Vector3[2 * HalfCircleStepsCount + 1];
+            int index2 = 0;
+
+            for (; index2 < HalfCircleStepsCount; index2++)
+            {
+                float angle = Step * index2;
+                float z = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float y = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
+                Vector3 point = new Vector3(0, y + halfHeight, z);
+                section2[index2] = point;
+            }
+
+            for (; index2 < 2 * HalfCircleStepsCount; index2++)
+            {
+                float angle = Step * index2;
+                float z = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float y = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
+                Vector3 point = new Vector3(0, y - halfHeight, z);
+                section2[index2] = point;
+            }
+
+            section2[2 * HalfCircleStepsCount] = section2[0];
+
+            var section3 = new Vector3[CircleStepsCount];
+
+            for (int i = 0; i < CircleStepsCount; i++)
+            {
+                float angle = Step * i;
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float z = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
+                Vector3 point = new Vector3(x, halfHeight, z);
+                section3[i] = point;
+            }
+
+            var section4 = new Vector3[CircleStepsCount];
+
+            for (int i = 0; i < CircleStepsCount; i++)
+            {
+                float angle = Step * i;
+                float x = (float)Math.Cos(angle * MathUtil.Pi / 180) * radius;
+                float z = (float)Math.Sin(angle * MathUtil.Pi / 180) * radius;
+                Vector3 point = new Vector3(x, -halfHeight, z);
+                section4[i] = point;
+            }
+
+            DrawCurve(model, section1, color);
+            DrawCurve(model, section2, color);
+            DrawCurve(model, section3, color);
+            DrawCurve(model, section4, color);
         }
     }
 }

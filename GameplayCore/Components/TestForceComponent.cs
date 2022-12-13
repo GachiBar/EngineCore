@@ -1,25 +1,24 @@
 ﻿using GameplayCore.Mathematics;
-using System;
 
 namespace GameplayCore.Components
 {
-    public class ForceComponent : Component
+    public class TestForceComponent : Component
     {
-        private BoxBodyComponent _bodyComponent;
+        private RigidbodyComponent _rigidbodyComponent;
 
         public Vector3 Force;
 
         public override void FixedUpdate()
         {
-            if (_bodyComponent != null)
+            if (_rigidbodyComponent != null)
             {
-                _bodyComponent.AddForce(Force);
+                _rigidbodyComponent.AddForce(Force);
             }
         }
 
         protected override void OnAttach(GameObject gameObject)
         {
-            _bodyComponent = GameObject.GetComponent<BoxBodyComponent>();
+            _rigidbodyComponent = GameObject.GetComponent<RigidbodyComponent>();
 
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
@@ -33,17 +32,17 @@ namespace GameplayCore.Components
 
         private void OnComponentAdded(GameObject gameObject, Component component)
         {
-            if (component is BoxBodyComponent bodyComponent)
+            if (component is RigidbodyComponent rigidbodyComponent)
             {
-                _bodyComponent = bodyComponent;
+                _rigidbodyComponent = rigidbodyComponent;
             }
         }
 
         private void OnComponentRemoved(GameObject gameObject, Component component)
         {
-            if (component is BoxBodyComponent)
+            if (component is RigidbodyComponent)
             {
-                _bodyComponent = null;
+                _rigidbodyComponent = null;
             }
         }
     }

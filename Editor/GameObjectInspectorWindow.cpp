@@ -9,6 +9,7 @@
 #include <imgui/imgui.h>
 #include <SimpleMath.h>
 #include <format>
+#include <iostream>
 
 std::shared_ptr<engine::Scene> GameObjectInspectorWindow::GetScene() const
 {
@@ -79,23 +80,17 @@ void GameObjectInspectorWindow::CacheComponentsData()
 		try
 		{
 			auto typeDeclarartion = engine::Types::ParseFullName(typeName);
-			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);
-			bool isComponent = false;
+			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);			
 
 			while (type.HasBaseType() && !type.IsAbstract())
 			{
 				if (type.IsDerivedFrom(baseComponentType))
 				{
-					isComponent = true;
+					components_names.push_back(typeName);
 					break;
 				}
 
 				type = type.GetBaseType();
-			}
-
-			if (isComponent)
-			{
-				components_names.push_back(typeName);
 			}
 		}
 		catch (mono::mono_exception& ex)
@@ -125,20 +120,9 @@ void GameObjectInspectorWindow::DrawComponentFields(std::shared_ptr<engine::Comp
 
 		if (object_drawer.DrawObject(*component, modifiedFields)) 
 		{
-			if (component->GetType().HasMethod("Invalidate", 1)) 
+			for (auto field : modifiedFields)
 			{
-				auto invalidate = component->GetType().GetMethod("Invalidate", 1);
-
-				for (auto field : modifiedFields)
-				{
-					auto& domain = mono::mono_domain::get_current_domain();
-					mono::mono_string fieldName(domain, field);
-
-					void* params[1];
-					params[0] = fieldName.get_internal_ptr();
-
-					invalidate.Invoke(*component, params);
-				}				
+				component->Invalidate(field);
 			}
 		}
 

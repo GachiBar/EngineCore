@@ -276,6 +276,8 @@ namespace GameplayCore.Components
 
         internal override void Invalidate(string fieldName)
         {
+            Console.WriteLine("Here&!");
+
             if (fieldName == nameof(_editorEuler))
             {
                 var euler = _editorEuler * MathUtil.Pi / 180.0f;

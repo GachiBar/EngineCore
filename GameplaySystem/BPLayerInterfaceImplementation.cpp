@@ -7,6 +7,7 @@ namespace engine {
 
 BPLayerInterfaceImplementation::BPLayerInterfaceImplementation() {
 	// Create a mapping table from object to broad phase layer
+	object_to_broad_phase_[CollisionLayers::kNoCollision] = BroadPhaseLayers::kNoCollision;
 	object_to_broad_phase_[CollisionLayers::kNonMoving] = BroadPhaseLayers::kNonMoving;
 	object_to_broad_phase_[CollisionLayers::kMoving] = BroadPhaseLayers::kMoving;
 }
@@ -24,6 +25,9 @@ JPH::BroadPhaseLayer BPLayerInterfaceImplementation::GetBroadPhaseLayer(JPH::Obj
 const char* BPLayerInterfaceImplementation::GetBroadPhaseLayerName(JPH::BroadPhaseLayer layer) const {
 	using namespace JPH;
 	switch ((BroadPhaseLayer::Type)layer) {
+		case (BroadPhaseLayer::Type)BroadPhaseLayers::kNoCollision: {
+			return "kNoCollision";
+		}
 		case (BroadPhaseLayer::Type)BroadPhaseLayers::kNonMoving:	{
 			return "kNonMoving";
 		}				
