@@ -108,6 +108,13 @@ namespace GameplayCore.Serialization
                     string fieldName = reader.Value as string;
 
                     FieldInfo field = componentType.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                    Type temp = componentType.BaseType;
+                    
+                    while (field == null && temp != typeof(Component))
+                    {                        
+                        field = temp.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                        temp = temp.BaseType;
+                    }
 
                     if (field == null)
                     {
