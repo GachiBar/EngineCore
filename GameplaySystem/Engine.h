@@ -211,6 +211,15 @@ private:
 		JPH::uint32 id,
 		JPH::Vec3 impulse);
 
+	static JPH::Vec3 Internal_GetLinearVelocity(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id);
+
+	static void Internal_SetLinearVelocity(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::Vec3 velocity);
+
 #pragma endregion Physics
 
 #pragma region Inputs

@@ -1,7 +1,6 @@
 ﻿using GameplayCore.Editor;
 using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
-using GameplayCore.Physics;
 using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
@@ -11,6 +10,16 @@ namespace GameplayCore.Components
         [SerializeField]
         [InspectorName("Radius")]
         private float _radius = 1.0f;
+
+        public float Radius
+        {
+            get => _radius;
+            set 
+            { 
+                _radius = value;
+                SetShape();
+            }
+        }
 
         internal override void Invalidate(string fieldName)
         {

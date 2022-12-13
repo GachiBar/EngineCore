@@ -1,0 +1,183 @@
+[
+  {
+    "Guid": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 1,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": null,
+        "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
+      },
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": -3.24132061
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
+      },
+      {
+        "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "_size": {
+          "X": 10.0,
+          "Y": 1.0,
+          "Z": 10.0
+        },
+        "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_isKinematic": true,
+        "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
+      }
+    ]
+  },
+  {
+    "Guid": "c16bc8d8-58d3-4f10-a522-1ba8f3a12601",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.84076184,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": -0.541405141
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 0.0,
+          "Y": 9.374025,
+          "Z": -5.661534
+        },
+        "_editorEuler": {
+          "X": -65.5586853,
+          "Y": 180.0,
+          "Z": 180.0
+        },
+        "_gameObject": "c16bc8d8-58d3-4f10-a522-1ba8f3a12601"
+      },
+      {
+        "Type": "GameplayCore.Components.DirectionalLightComponent",
+        "Intencity": 1.0,
+        "Color": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0
+        },
+        "_gameObject": "c16bc8d8-58d3-4f10-a522-1ba8f3a12601"
+      }
+    ]
+  },
+  {
+    "Guid": "4bc85478-a2d3-419e-bb2d-d850b6f14421",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 0.376754045,
+          "Y": 1.49999988,
+          "Z": -3.28129935
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
+      },
+      {
+        "Type": "GameplayCore.Components.CapsuleCollisionComponent",
+        "_height": 1.0,
+        "_radius": 0.5,
+        "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_isKinematic": true,
+        "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
+      },
+      {
+        "Type": "GameplayCore.Components.FpsControllerComponent",
+        "Speed": 2.0,
+        "Sensivity": 1.0,
+        "Head": "4bbef915-bf19-4a4c-95bd-893de7c81afd",
+        "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
+      }
+    ]
+  },
+  {
+    "Guid": "4bbef915-bf19-4a4c-95bd-893de7c81afd",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": "4bc85478-a2d3-419e-bb2d-d850b6f14421",
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 0.0,
+          "Y": 0.6,
+          "Z": 0.0
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "4bbef915-bf19-4a4c-95bd-893de7c81afd"
+      },
+      {
+        "Type": "GameplayCore.Components.CameraComponent",
+        "FieldOfView": 90.0,
+        "Near": 0.1,
+        "Far": 100.0,
+        "_gameObject": "4bbef915-bf19-4a4c-95bd-893de7c81afd"
+      }
+    ]
+  }
+]

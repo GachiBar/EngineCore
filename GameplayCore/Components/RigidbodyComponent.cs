@@ -39,6 +39,12 @@ namespace GameplayCore.Components
             }
         }
 
+        public Vector3 Velocity
+        {
+            get => PhysicsApi.GetLinearVelocity(BodyId);
+            set => PhysicsApi.SetLinearVelocity(BodyId, value);
+        }
+
         public override void FixedUpdate()
         {
             if (_transformComponent != null)

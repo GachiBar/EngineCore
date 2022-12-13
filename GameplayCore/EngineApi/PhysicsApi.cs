@@ -144,6 +144,24 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static Vector3 GetLinearVelocity(uint bodyId)
+        {
+            unsafe
+            {
+                var velocity = Internal_GetLinearVelocity(PhysicsSystem, bodyId);
+                return new Vector3(velocity.X, velocity.Y, velocity.Z);
+            }
+        }
+
+        public static void SetLinearVelocity(uint bodyId, Vector3 velocity)
+        {
+            unsafe
+            {
+                var inVelocity = new Vector4(velocity, velocity.Z);
+                Internal_SetLinearVelocity(PhysicsSystem, bodyId, inVelocity);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe uint Internal_CreateBody(
             void* physicsSystem,
@@ -191,7 +209,14 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_AddForce(void* physicsSystem, uint bodyId, Vector4 force);
+        
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_AddImpulse(void* physicsSystem, uint bodyId, Vector4 impulse);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe Vector4 Internal_GetLinearVelocity(void* physicsSystem, uint bodyId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetLinearVelocity(void* physicsSystem, uint bodyId, Vector4 velocity);
     }
 }

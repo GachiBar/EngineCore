@@ -234,6 +234,8 @@ void Engine::SetupPhysicsInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddImpulse", Internal_AddImpulse);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetLinearVelocity", Internal_GetLinearVelocity);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetLinearVelocity", Internal_SetLinearVelocity);
 
 	physics_system_property_.SetValue(&physics_system_);
 }
@@ -546,6 +548,25 @@ void Engine::Internal_AddImpulse(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.AddImpulse(body_id, impulse);
+}
+
+JPH::Vec3 Engine::Internal_GetLinearVelocity(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id)
+{
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	return body_interface.GetLinearVelocity(body_id);
+}
+
+void Engine::Internal_SetLinearVelocity(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id,
+	JPH::Vec3 velocity)
+{
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	body_interface.SetLinearVelocity(body_id, velocity);
 }
 
 #pragma endregion Physics
