@@ -8,47 +8,15 @@ namespace GameplayCore.EngineApi
     {
         private static unsafe void* PhysicsSystem { get; set; }
 
-        public static uint CreateSphereBody(
-            float radius,
+        public static uint CreateBody(
             Vector3 position,
             Quaternion rotation,
-            MotionType motionType,
-            CollisionLayer collisionLayer)
+            MotionType motionType)
         {
             unsafe
             {
                 var inPosition = new Vector4(position, position.Z);
-                return Internal_CreateSphereBody(PhysicsSystem, radius, inPosition, rotation, motionType, collisionLayer);
-            }            
-        }
-
-        public static uint CreateBoxBody(
-            Vector3 halfExtent,
-            Vector3 position,
-            Quaternion rotation,
-            MotionType motionType,
-            CollisionLayer collisionLayer)
-        {
-            unsafe
-            {
-                var inHalfExtent = new Vector4(halfExtent, halfExtent.Z);
-                var inPosition = new Vector4(position, position.Z);
-                return Internal_CreateBoxBody(PhysicsSystem, inHalfExtent, inPosition, rotation, motionType, collisionLayer);
-            }
-        }
-
-        public static uint CreateCapsuleBody(
-            float halfHeight,
-            float radius,
-            Vector3 position,
-            Quaternion rotation,
-            MotionType motionType,
-            CollisionLayer collisionLayer) 
-        {
-            unsafe
-            {
-                var inPosition = new Vector4(position, position.Z);
-                return Internal_CreateCapsuleBody(PhysicsSystem, halfHeight, radius, inPosition, rotation, motionType, collisionLayer);
+                return Internal_CreateBody(PhysicsSystem, inPosition, rotation, motionType);
             }
         }
 
@@ -57,6 +25,22 @@ namespace GameplayCore.EngineApi
             unsafe
             {
                 Internal_DestroyBody(PhysicsSystem, bodyId);
+            }
+        }
+
+        public static void SetCollisionLayer(uint bodyId, CollisionLayer collisionLayer)
+        {
+            unsafe
+            {
+                Internal_SetCollisionLayer(PhysicsSystem, bodyId, collisionLayer);
+            }
+        }
+
+        public static void SetEmptyShape(uint bodyId) 
+        {
+            unsafe
+            {
+                Internal_SetEmptyShape(PhysicsSystem, bodyId);
             }
         }
 
@@ -126,7 +110,7 @@ namespace GameplayCore.EngineApi
             }
         }
 
-        public static Quaternion GetBodyRoation(uint bodyId)
+        public static Quaternion GetBodyRotation(uint bodyId)
         {
             unsafe
             {
@@ -161,35 +145,20 @@ namespace GameplayCore.EngineApi
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe uint Internal_CreateSphereBody(
-            void* physicsSystem, 
-            float radius, 
-            Vector4 position, 
-            Quaternion rotation,
-            MotionType motionType, 
-            CollisionLayer collisionLayer);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe uint Internal_CreateBoxBody(
+        extern private static unsafe uint Internal_CreateBody(
             void* physicsSystem,
-            Vector4 halfExtent,
             Vector4 position,
             Quaternion rotation,
-            MotionType motionType,
-            CollisionLayer collisionLayer);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe uint Internal_CreateCapsuleBody(
-            void* physicsSystem,
-            float halfHeight,
-            float radius,
-            Vector4 position,
-            Quaternion rotation,
-            MotionType motionType,
-            CollisionLayer collisionLayer);
+            MotionType motionType);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DestroyBody(void* physicsSystem, uint bodyId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetCollisionLayer(void* physicsSystem, uint bodyId, CollisionLayer collisionLayer);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetEmptyShape(void* physicsSystem, uint bodyId);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetSphereShape(void* physicsSystem, uint bodyId, float radius);

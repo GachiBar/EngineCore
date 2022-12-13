@@ -2,6 +2,7 @@
 {
     public enum CollisionLayer
     {
+        NoCollision,
         NonMoving,
         Moving,
     }

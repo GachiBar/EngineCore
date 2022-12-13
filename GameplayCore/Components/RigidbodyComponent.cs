@@ -1,23 +1,32 @@
 ﻿using GameplayCore.Editor;
 using GameplayCore.EngineApi;
-using GameplayCore.Physics;
 using GameplayCore.Mathematics;
+using GameplayCore.Physics;
 using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
 {
-    public abstract class BodyComponent : Component
+    public class RigidbodyComponent : Component
     {
-        private TransformComponent _transformComponent;
-        private bool _isInitialized;
-        private uint _bodyId;
+        private TransformComponent _transformComponent = null;
+        private uint _bodyId = 0;
 
         private Vector3 _position = Vector3.Zero;
         private Quaternion _rotation = Quaternion.Identity;
 
         [SerializeField]
         [InspectorName("IsStatic")]
-        private bool _isStatic = false;
+        public bool _isStatic = false;
+
+        //[SerializeField]
+        //[InspectorName("Friction (not implemented)")]
+        //private float _friction = 0.0f;
+
+        //[SerializeField]
+        //[InspectorName("GravityFactor (not implemented)")]
+        //private float _gravityFactor = 0.0f;
+
+        public uint BodyId => _bodyId;
 
         public bool IsStatic
         {
@@ -38,36 +47,9 @@ namespace GameplayCore.Components
             }
         }
 
-        protected uint BodyId
-        {
-            get => _bodyId;
-            private set => _bodyId = value;
-        }
-
-        public override void Initialize()
-        {
-            if (_transformComponent != null)
-            {
-                _position = _transformComponent.Position;
-                _rotation = _transformComponent.Rotation;
-
-                if (IsStatic)
-                {
-                    BodyId = CreateBody(_position, _rotation, MotionType.Static, CollisionLayer.Moving);
-                }
-                else
-                {
-                    BodyId = CreateBody(_position, _rotation, MotionType.Dynamic, CollisionLayer.Moving);
-                    PhysicsApi.SetActive(BodyId, true);
-                }
-
-                _isInitialized = true;
-            }
-        }
-
         public override void FixedUpdate()
         {
-            if (_isInitialized && _transformComponent != null)
+            if (_transformComponent != null)
             {
                 if (_position != _transformComponent.Position ||
                     _rotation != _transformComponent.Rotation)
@@ -78,31 +60,20 @@ namespace GameplayCore.Components
                 }
 
                 _position = PhysicsApi.GetBodyPosition(BodyId);
-                _rotation = PhysicsApi.GetBodyRoation(BodyId);
+                _rotation = PhysicsApi.GetBodyRotation(BodyId);
                 _transformComponent.Position = _position;
                 _transformComponent.Rotation = _rotation;
             }
         }
 
-        public override void Render()
-        {
-            if (_transformComponent != null)
-            {
-                RenderCollider();
-            }
-        }
-
         public override void Terminate()
         {
-            if (_isInitialized)
-            {
-                PhysicsApi.DestroyBody(BodyId);
-            }
+            PhysicsApi.DestroyBody(_bodyId);
         }
 
         public void AddForce(Vector3 force)
         {
-            if (_isInitialized && _transformComponent != null)
+            if (_transformComponent != null)
             {
                 PhysicsApi.AddForce(BodyId, force);
             }
@@ -110,29 +81,47 @@ namespace GameplayCore.Components
 
         public void AddImpulse(Vector3 impulse)
         {
-            if (_isInitialized && _transformComponent != null)
+            if (_transformComponent != null)
             {
                 PhysicsApi.AddImpulse(BodyId, impulse);
             }
         }
 
+        internal override void Invalidate(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(_isStatic):
+                    if (_isStatic)
+                    {
+                        PhysicsApi.SetMotionType(_bodyId, MotionType.Static);
+                    }
+                    else
+                    {
+                        PhysicsApi.SetMotionType(_bodyId, MotionType.Dynamic);
+                        PhysicsApi.SetActive(_bodyId, true);
+                    }
+                    break;
+            }
+        }
+
         protected override void OnAttach(GameObject gameObject)
-        {            
+        {
             _transformComponent = GameObject.GetComponent<TransformComponent>();
+            _bodyId = PhysicsApi.CreateBody(
+                _position, 
+                _rotation,
+                _isStatic ? MotionType.Static : MotionType.Dynamic);
 
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
         }
 
         protected override void OnDetach(GameObject gameObject)
-        {            
+        {       
             gameObject.ComponentAdded -= OnComponentAdded;
-            gameObject.ComponentRemoved -= OnComponentRemoved;
+            gameObject.ComponentRemoved -= OnComponentRemoved;            
         }
-
-        protected abstract uint CreateBody(Vector3 position, Quaternion rotation, MotionType motionType, CollisionLayer collisionLayer);
-
-        protected abstract void RenderCollider();
 
         private void OnComponentAdded(GameObject gameObject, Component component)
         {
@@ -147,24 +136,6 @@ namespace GameplayCore.Components
             if (component is TransformComponent)
             {
                 _transformComponent = null;
-            }
-        }
-
-        internal override void Invalidate(string fieldName)
-        {
-            switch (fieldName)
-            {
-                case nameof(_isStatic):
-                    if (_isStatic)
-                    {
-                        PhysicsApi.SetMotionType(BodyId, MotionType.Static);
-                    }
-                    else
-                    {
-                        PhysicsApi.SetMotionType(BodyId, MotionType.Dynamic);
-                        PhysicsApi.SetActive(BodyId, true);
-                    }
-                    break;
             }
         }
     }

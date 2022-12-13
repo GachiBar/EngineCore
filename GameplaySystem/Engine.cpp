@@ -73,6 +73,7 @@ void Engine::Initialize(HWND handle, UINT width, UINT height) {
 	SetupRendererInternalCalls();
 	SetupPhysicsInternalCalls();
 	SetupInputInternalCalls();
+	SetupLogInternalCalls();
 }
 
 void Engine::Terminate() {
@@ -216,10 +217,10 @@ void Engine::SetupRendererInternalCalls() {
 }
 
 void Engine::SetupPhysicsInternalCalls() {
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateSphereBody", Internal_CreateSphereBody);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBoxBody", Internal_CreateBoxBody);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateCapsuleBody", Internal_CreateCapsuleBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CreateBody", Internal_CreateBody);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_DestroyBody", Internal_DestroyBody);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetCollisionLayer", Internal_SetCollisionLayer);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetEmptyShape", Internal_SetEmptyShape);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetSphereShape", Internal_SetSphereShape);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBoxShape", Internal_SetBoxShape);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetCapsuleShape", Internal_SetCapsuleShape);
@@ -240,14 +241,14 @@ void Engine::SetupInputInternalCalls() {
 	mono_add_internal_call("GameplayCore.Input::Internal_IsPressed", Internal_IsPressed);
 	mono_add_internal_call("GameplayCore.Input::Internal_WasJustPressed", Internal_WasJustPressed);
 	mono_add_internal_call("GameplayCore.Input::Internal_Internal_WasJustReleased", Internal_WasJustReleased);
-
 	mono_add_internal_call("GameplayCore.Input::Internal_IsActionPressed", Internal_IsActionPressed);
 	mono_add_internal_call("GameplayCore.Input::Internal_WasActionJustPressed", Internal_WasActionJustPressed);
 	mono_add_internal_call("GameplayCore.Input::Internal_WasActionJustReleased", Internal_WasActionJustReleased);
-
 	mono_add_internal_call("GameplayCore.Input::Internal_GetKeyValue", Internal_GetKeyValue);
 	mono_add_internal_call("GameplayCore.Input::Internal_GetAxisValue", Internal_GetAxisValue);
+}
 
+void Engine::SetupLogInternalCalls() {
 	mono_add_internal_call("GameplayCore.Log::Internal_Log", Internal_Log);
 	mono_add_internal_call("GameplayCore.Log::Internal_LogWarning", Internal_LogWarning);
 	mono_add_internal_call("GameplayCore.Log::Internal_LogError", Internal_LogError);
@@ -375,61 +376,11 @@ JPH::uint32 Engine::Internal_CreateBody(
 	JPH::PhysicsSystem* physics_system,
 	JPH::Vec3 position,
 	JPH::Quat rotation,
-	JPH::EMotionType motion_type,
-	JPH::uint8 layer) 
+	JPH::EMotionType motion_type) 
 {
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON);
-	JPH::BodyCreationSettings body_settings(sphere_shape, position, rotation, motion_type, layer);
-	body_settings.mAllowDynamicOrKinematic = true;
-	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
-	return body_id.GetIndexAndSequenceNumber();
-}
-
-JPH::uint32 Engine::Internal_CreateSphereBody(
-	JPH::PhysicsSystem* physics_system,
-	float radius,
-	JPH::Vec3 position,
-	JPH::Quat rotation,
-	JPH::EMotionType motion_type,
-	JPH::uint8 layer) 
-{
-	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	JPH::SphereShape* sphere_shape = new JPH::SphereShape(radius);	
-	JPH::BodyCreationSettings body_settings(sphere_shape, position, rotation, motion_type, layer);
-	body_settings.mAllowDynamicOrKinematic = true;
-	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
-	return body_id.GetIndexAndSequenceNumber();
-}
-
-JPH::uint32 Engine::Internal_CreateBoxBody(
-	JPH::PhysicsSystem* physics_system,
-	JPH::Vec3 half_extent,
-	JPH::Vec3 position,
-	JPH::Quat rotation,
-	JPH::EMotionType motion_type,
-	JPH::uint8 layer)
-{
-	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
-	JPH::BodyCreationSettings body_settings(box_shape, position, rotation, motion_type, layer);	
-	body_settings.mAllowDynamicOrKinematic = true;
-	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);		
-	return body_id.GetIndexAndSequenceNumber();
-}
-
-JPH::uint32 Engine::Internal_CreateCapsuleBody(
-	JPH::PhysicsSystem* physics_system,
-	float half_height,
-	float radius,
-	JPH::Vec3 position,
-	JPH::Quat rotation,
-	JPH::EMotionType motion_type,
-	JPH::uint8 layer)
-{
-	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	JPH::CapsuleShape* capsule_shape = new JPH::CapsuleShape(half_height, radius);
-	JPH::BodyCreationSettings body_settings(capsule_shape, position, rotation, motion_type, layer);
+	JPH::BodyCreationSettings body_settings(sphere_shape, position, rotation, motion_type, CollisionLayers::kNoCollision);
 	body_settings.mAllowDynamicOrKinematic = true;
 	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
 	return body_id.GetIndexAndSequenceNumber();
@@ -443,6 +394,26 @@ void Engine::Internal_DestroyBody(
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.RemoveBody(body_id);
 	body_interface.DestroyBody(body_id);
+}
+
+void Engine::Internal_SetCollisionLayer(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id,
+	JPH::uint8 layer)
+{
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	body_interface.SetObjectLayer(body_id, layer);
+}
+
+void Engine::Internal_SetEmptyShape(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id) 
+{
+	JPH::BodyID body_id(id);
+	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
+	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON);
+	body_interface.SetShape(body_id, sphere_shape, true, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetSphereShape(
@@ -529,8 +500,7 @@ void Engine::Internal_SetBodyPosition(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	auto activation_mode = JPH::EActivation::DontActivate;
-	body_interface.SetPosition(body_id, position, activation_mode);
+	body_interface.SetPosition(body_id, position, JPH::EActivation::DontActivate);
 }
 
 JPH::Quat Engine::Internal_GetBodyRotation(
@@ -549,8 +519,7 @@ void Engine::Internal_SetBodyRotation(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	auto activation_mode = JPH::EActivation::DontActivate;
-	body_interface.SetRotation(body_id, rotation, activation_mode);
+	body_interface.SetRotation(body_id, rotation, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_AddForce(

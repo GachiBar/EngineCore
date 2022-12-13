@@ -88,6 +88,7 @@ private:
 	void SetupRendererInternalCalls();
 	void SetupPhysicsInternalCalls();
 	void SetupInputInternalCalls();
+	void SetupLogInternalCalls();
 
 	void SendTimeData();
 	void SendScreenData();
@@ -132,36 +133,19 @@ private:
 		JPH::PhysicsSystem* physics_system,
 		JPH::Vec3 position,
 		JPH::Quat rotation,
-		JPH::EMotionType motion_type,
-		JPH::uint8 layer);
-
-	static JPH::uint32 Internal_CreateSphereBody(
-		JPH::PhysicsSystem* physics_system,
-		float radius, 
-		JPH::Vec3 position, 
-		JPH::Quat rotation, 
-		JPH::EMotionType motion_type, 
-		JPH::uint8 layer);
-
-	static JPH::uint32 Internal_CreateBoxBody(
-		JPH::PhysicsSystem* physics_system,
-		JPH::Vec3 half_extent, 
-		JPH::Vec3 position, 
-		JPH::Quat rotation, 
-		JPH::EMotionType motion_type, 
-		JPH::uint8 layer);
-
-	static JPH::uint32 Internal_CreateCapsuleBody(
-		JPH::PhysicsSystem* physics_system,
-		float half_height,
-		float radius,
-		JPH::Vec3 position,
-		JPH::Quat rotation,
-		JPH::EMotionType motion_type,
-		JPH::uint8 layer);
+		JPH::EMotionType motion_type);
 
 	static void Internal_DestroyBody(
 		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id);
+
+	static void Internal_SetCollisionLayer(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::uint8 layer);
+
+	static void Internal_SetEmptyShape(
+		JPH::PhysicsSystem* physics_system,
 		JPH::uint32 id);
 
 	static void Internal_SetSphereShape(
