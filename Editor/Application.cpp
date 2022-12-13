@@ -7,6 +7,7 @@
 #include "InputManager.h"
 #include "Windows/WindowsWindow.h"
 #include "../GameplaySystem/Component.h"
+#include "imgui/imgui_internal.h"
 #include "InputCoreSystem/InputEvent/Events.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "Interfaces/ILayer.h"
@@ -247,6 +248,8 @@ void Application::ApplyInput()
 LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 	Application* application;
 
+	auto * io = ImGui::GetCurrentContext() ? &ImGui::GetCurrentContext()->IO : nullptr;
+
 	if (msg == WM_CREATE) {
 		const auto create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);
 		application = static_cast<Application*>(create_struct->lpCreateParams);
@@ -268,7 +271,7 @@ LRESULT CALLBACK Application::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		PostQuitMessage(0);
 		return 0;
 	}
-	//else if ((io.WantCaptureMouse || io.WantCaptureKeyboard) && InputManager::IsInputMessage(msg))
+	//else if (io && (io->WantCaptureMouse || io->WantCaptureKeyboard) && InputManager::IsInputMessage(msg))
 	//{
 		//return DefWindowProc(hwnd, msg, wparam, lparam);
 	//}

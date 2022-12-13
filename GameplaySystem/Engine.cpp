@@ -72,6 +72,9 @@ void Engine::Initialize(HWND handle, UINT width, UINT height) {
 	SetupRendererInternalCalls();
 	SetupPhysicsInternalCalls();
 	SetupInputInternalCalls();
+	SetupGuiInternalCalls();
+	SetupLogInternalCalls();
+
 }
 
 void Engine::Terminate() {
@@ -245,11 +248,25 @@ void Engine::SetupInputInternalCalls() {
 
 	mono_add_internal_call("GameplayCore.Input::Internal_GetKeyValue", Internal_GetKeyValue);
 	mono_add_internal_call("GameplayCore.Input::Internal_GetAxisValue", Internal_GetAxisValue);
+}
 
+void Engine::SetupLogInternalCalls()
+{
 	mono_add_internal_call("GameplayCore.Log::Internal_Log", Internal_Log);
 	mono_add_internal_call("GameplayCore.Log::Internal_LogWarning", Internal_LogWarning);
 	mono_add_internal_call("GameplayCore.Log::Internal_LogError", Internal_LogError);
 	mono_add_internal_call("GameplayCore.Log::Internal_RemoveLogMessage", Internal_RemoveLogMessage);
+}
+
+void Engine::SetupGuiInternalCalls()
+{
+	mono_add_internal_call("GameplayCore.Gui::Internal_LabelText", Internal_LabelText);
+	mono_add_internal_call("GameplayCore.Gui::Internal_Text", Internal_LogWarning);
+	mono_add_internal_call("GameplayCore.Gui::Internal_Button", Internal_LogError);
+	mono_add_internal_call("GameplayCore.Gui::Internal_Begin", Internal_RemoveLogMessage);
+	mono_add_internal_call("GameplayCore.Gui::Internal_BeginChild", Internal_LogError);
+	mono_add_internal_call("GameplayCore.Gui::Internal_EndChild", Internal_RemoveLogMessage);
+	mono_add_internal_call("GameplayCore.Gui::Internal_End", Internal_LogError);
 }
 
 void Engine::SendTimeData() {
@@ -638,4 +655,58 @@ void Engine::Internal_Log_Implementation(
 	}		
 }
 
+void Engine::Internal_LabelText(MonoString* text)
+{
+	const auto raw_string = mono_string_to_utf8(text);
+	const std::string message_string(raw_string);
+	mono_free(raw_string);
+
+	ImGui::LabelText(message_string.c_str(),nullptr);
+}
+
+void Engine::Internal_Text(MonoString* text)
+{
+	const auto raw_string = mono_string_to_utf8(text);
+	const std::string message_string(raw_string);
+	mono_free(raw_string);
+
+	ImGui::Text(message_string.c_str());
+}
+
+bool Engine::Internal_Button(MonoString* text, float x, float y)
+{
+	const auto raw_string = mono_string_to_utf8(text);
+	const std::string message_string(raw_string);
+	mono_free(raw_string);
+
+	return ImGui::Button(message_string.c_str(), ImVec2(x,y));
+}
+
+bool Engine::Internal_Begin(MonoString* name, bool open, int flags)
+{
+	const auto raw_string = mono_string_to_utf8(name);
+	const std::string message_string(raw_string);
+	mono_free(raw_string);
+
+	return ImGui::Begin(message_string.c_str(), &open, flags);
+}
+
+void Engine::Internal_End()
+{
+	ImGui::End();
+}
+
+bool Engine::Internal_BeginChild(MonoString* str_id, float size_arg_x, float size_arg_y, bool border, int extra_flags)
+{
+	const auto raw_string = mono_string_to_utf8(str_id);
+	const std::string message_string(raw_string);
+	mono_free(raw_string);
+
+	return ImGui::BeginChild(message_string.c_str(), ImVec2(size_arg_x,size_arg_y),border,extra_flags);
+}
+
+void Engine::Internal_EndChild()
+{
+	ImGui::EndChild();
+}
 } // namespace engine

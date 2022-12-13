@@ -171,7 +171,7 @@ void EditorLayer::OnGuiRender()
                 GetApp()->GetEngine()->GetScene()->Initialize();
                 file.close();
             }
-
+            
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
                 std::string json = GetApp()->GetEngine()->GetScene()->Serialize();

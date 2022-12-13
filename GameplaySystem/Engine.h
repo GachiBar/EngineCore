@@ -89,6 +89,8 @@ private:
 	void SetupRendererInternalCalls();
 	void SetupPhysicsInternalCalls();
 	void SetupInputInternalCalls();
+	void SetupLogInternalCalls();
+	void SetupGuiInternalCalls();
 
 	void SendTimeData();
 	void SendScreenData();
@@ -222,6 +224,7 @@ private:
 
 #pragma endregion Inputs
 
+#pragma region Log
 	static void Internal_RemoveLogMessage(MonoString* guid);
 
 	static void Internal_Log(
@@ -248,6 +251,22 @@ private:
 		bool should_print_to_screen, 
 		bool should_print_to_log, 
 		MonoString* guid);
+#pragma endregion Log
+
+#pragma region Gui
+	static void Internal_LabelText(
+		MonoString* text);
+	static void Internal_Text(
+		MonoString* text);
+	static bool Internal_Button(
+		MonoString* text, float x,float y);
+	static bool Internal_Begin(
+		MonoString* name, bool open, int flags);
+	static void Internal_End();
+	static bool Internal_BeginChild(
+		MonoString* str_id, float size_arg_x, float size_arg_y, bool border, int extra_flags);
+	static void Internal_EndChild();
+#pragma endregion Gui
 };
 
 } // namespace engine
