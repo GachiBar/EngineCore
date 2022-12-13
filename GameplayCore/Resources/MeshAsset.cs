@@ -5,7 +5,7 @@ namespace GameplayCore.Resources
 {
     public class MeshAsset : Resource
     {
-        private ulong _id;
+        private ulong _id = ulong.MaxValue;
         public ulong Id => _id;
         
         public MeshAsset(string filepath, Guid? guid = null) : base(filepath, guid)
@@ -14,6 +14,8 @@ namespace GameplayCore.Resources
 
         public void Load()
         {
+            if(_id != ulong.MaxValue) return;
+            
             ulong id = RenderApi.CalculateFreeId();
             RenderApi.RegisterModel(id, FilePath);
             _id = id;
