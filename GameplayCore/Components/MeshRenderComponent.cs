@@ -1,6 +1,6 @@
 ﻿using GameplayCore.Resources;
 using GameplayCore.Serialization;
-﻿using System;
+using System;
 
 namespace GameplayCore.Components
 {

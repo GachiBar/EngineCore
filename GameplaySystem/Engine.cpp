@@ -131,13 +131,15 @@ void Engine::DebugRender() {
 }
 
 void Engine::EndRender() {
-	while (!renderer_.Present()) {
-		renderer_.EndFrame();
+	while (!renderer_.EndFrame()) {
 		renderer_.ReloadShaders();
 		renderer_.BeginFrame();
 	};
+}
 
-	renderer_.EndFrame();
+void Engine::Present()
+{
+	renderer_.Present();
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -208,11 +210,14 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 
 void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_RegisterModel", Internal_RegisterModel);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_RegisterTexture", Internal_RegisterTexture);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawModel", Internal_DrawModel);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawDirectionalLight", Internal_DrawDirectionalLight);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsIdUsed", Internal_IsIdUsed);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsMeshIdUsed", Internal_IsMeshIdUsed);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsTextureIdUsed", Internal_IsTextureIdUsed);
 
 	renderer_property_.SetValue(&renderer_);
 }
@@ -283,23 +288,32 @@ void Engine::SendInputData() {
 
 #pragma region Renderer
 
-void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id) {
+void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id, MonoString* path)
+{
+	const auto raw_string = mono_string_to_utf8(path);
+	const std::string path_string(raw_string);
+	mono_free(raw_string);
+
 	std::vector<OpaqueModelVertex> verticies;
 	std::vector<uint32_t> indexes;
-	size_t primitiveCount = 0;
-
 	OpaqueMesh model{ EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes };
-
-	std::string path = "Content\\Stool.obj";
-	ModelLoader::LoadObj(path, model);
-
+	
+	ModelLoader::LoadObj(path_string, model);
 	renderer->RegisterModel(id, model);
+}
+
+void Engine::Internal_RegisterTexture(RenderDevice* renderer, size_t id, MonoString* path)
+{
+	const auto raw_string = mono_string_to_utf8(path);
+	const std::string path_string(raw_string);
+	mono_free(raw_string);
 
 	DirectX::ScratchImage image;
-	TextureLoader::LoadWic(L"Content\\Stool.jpg", image);
+	std::wstring wpath(path_string.begin(), path_string.end());
+	TextureLoader::LoadWic(wpath, image);
 
-	int texture_width = image.GetImage(0, 0, 0)->width;
-	int texture_height = image.GetImage(0, 0, 0)->height;
+	const int texture_width = image.GetImage(0, 0, 0)->width;
+	const int texture_height = image.GetImage(0, 0, 0)->height;
 	void* data = image.GetImage(0, 0, 0)->pixels;
 
 	renderer->RegisterTexture(id, texture_width, texture_height, data);
@@ -374,6 +388,16 @@ void Engine::Internal_SetViewProjection(
 bool Engine::Internal_IsIdUsed(RenderDevice* renderer, size_t id)
 {
 	return renderer->WasIdUsed(id);
+}
+
+bool Engine::Internal_IsMeshIdUsed(RenderDevice* renderer, size_t id)
+{
+	return renderer->IsMeshIdUsed(id);
+}
+
+bool Engine::Internal_IsTextureIdUsed(RenderDevice* renderer, size_t id)
+{
+	return renderer->IsTextureIdUsed(id);
 }
 
 #pragma endregion Renderer

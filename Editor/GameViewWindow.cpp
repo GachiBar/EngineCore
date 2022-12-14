@@ -39,11 +39,15 @@ void GameViewWindow::update()
 	}
 }
 
+
+static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs)            { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
+
 void GameViewWindow::Draw()
 {
 	with_Window("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
 		| ImGuiWindowFlags_MenuBar)
 	{
+		
 		with_MenuBar
 		{
 			if (ImGui::MenuItem("Play", "", bIsPlaying, !bIsPlaying))
@@ -56,10 +60,18 @@ void GameViewWindow::Draw()
 			}
 		}
 
-		with_Child("GameRender")
+		with_Child("GameRender", {}, false,  ImGuiWindowFlags_NoBackground)
 		{
-			ImGui::Image(Texture, ImGui::GetWindowSize(), ImVec2(0, 0), ImVec2(1, 1));
-
+			{
+				if (bIsPlaying) {
+					ImGui::GetWindowDrawList()->AddImage(Texture, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
+					editor_layer->GetApp()->DrawGameUI();
+				}
+				else {
+					ImGui::Image(Texture, ImGui::GetWindowSize());
+				}
+			}
+			
 			ImVec2 p0 = ImGui::GetItemRectMin();
 			const ImVec2 p1 = ImGui::GetItemRectMax();
 
@@ -73,6 +85,7 @@ void GameViewWindow::Draw()
 				p0.y += draw_list->_Data->FontSize;
 			}
 			ImGui::PopClipRect();
+
 
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 			{
@@ -96,6 +109,7 @@ void GameViewWindow::Draw()
 				draw_gizmos();
 			}
 			bInFocus = ImGui::IsWindowFocused();
+			
 		}
 
 
