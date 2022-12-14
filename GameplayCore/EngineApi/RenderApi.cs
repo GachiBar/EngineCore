@@ -6,13 +6,22 @@ namespace GameplayCore.EngineApi
     internal static class RenderApi
     {
         private static unsafe void* Renderer { get; set; }
-        private static ulong _lastCalculatedId = 1;
+        private static ulong _lastTextureId = 1;
+        private static ulong _lastMeshId = 1;
 
         public static void RegisterModel(ulong id, string path="")
         {
             unsafe
             {
                 Internal_RegisterModel(Renderer, id, path);
+            }           
+        }
+        
+        public static void RegisterTexture(ulong id, string path="")
+        {
+            unsafe
+            {
+                Internal_RegisterTexture(Renderer, id, path);
             }           
         }
 
@@ -59,16 +68,54 @@ namespace GameplayCore.EngineApi
             return value;
         }
 
+        public static bool IsMeshIdUsed(ulong id)
+        {
+            bool value;
+            unsafe
+            {
+                value = Internal_IsMeshIdUsed(Renderer, id);
+            }
+            return value;
+        }
+        
+        public static bool IsTextureIdUsed(ulong id)
+        {
+            bool value;
+            unsafe
+            {
+                value = Internal_IsTextureIdUsed(Renderer, id);
+            }
+            return value;
+        }
+
+        public static ulong CalculateFreeTextureId()
+        {
+            while (IsIdUsed(_lastTextureId))
+                _lastTextureId++;
+
+            return _lastTextureId;
+        }
+        
+        public static ulong CalculateFreeMeshId()
+        {
+            while (IsIdUsed(_lastMeshId))
+                _lastMeshId++;
+
+            return _lastMeshId;
+        }
+
         public static ulong CalculateFreeId()
         {
-            while (IsIdUsed(_lastCalculatedId))
-                _lastCalculatedId++;
+            CalculateFreeTextureId();
+            CalculateFreeMeshId();
 
-            return _lastCalculatedId;
+            return System.Math.Max(_lastTextureId, _lastMeshId);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_RegisterTexture(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, float metallic, float roughness, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -79,5 +126,9 @@ namespace GameplayCore.EngineApi
         extern private static unsafe void Internal_SetViewProjection(void* renderer, float ellapsed, Matrix view, Matrix projection);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe bool Internal_IsIdUsed(void* renderer, ulong id);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_IsMeshIdUsed(void* renderer, ulong id);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_IsTextureIdUsed(void* renderer, ulong id);
     }
 }

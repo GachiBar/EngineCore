@@ -98,7 +98,13 @@ private:
 
 	static void Internal_RegisterModel(
 		RenderDevice* renderer, 
-		size_t id);
+		size_t id,
+		MonoString* path);
+
+	static void Internal_RegisterTexture(
+		RenderDevice* renderer, 
+		size_t id,
+		MonoString* path);
 
 	static void Internal_DrawModel(
 		RenderDevice* renderer,
@@ -128,6 +134,14 @@ private:
 	static bool Internal_IsIdUsed(
 		RenderDevice* renderer,
 		size_t id);
+
+	static bool Internal_IsMeshIdUsed(
+			RenderDevice* renderer,
+			size_t id);
+
+	static bool Internal_IsTextureIdUsed(
+			RenderDevice* renderer,
+			size_t id);
 
 #pragma endregion Renderer
 
