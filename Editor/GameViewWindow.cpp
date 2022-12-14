@@ -47,13 +47,6 @@ void GameViewWindow::Draw()
 	with_Window("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
 		| ImGuiWindowFlags_MenuBar)
 	{
-
-		//ZDES VSEO UI
-
-		if (ImGui::Button("TeastButton", {200,100}))
-		{
-			std::cout<<"PressedTest"<<std::endl<<std::flush;
-		};
 		
 		with_MenuBar
 		{
@@ -70,9 +63,13 @@ void GameViewWindow::Draw()
 		with_Child("GameRender", {}, false,  ImGuiWindowFlags_NoBackground)
 		{
 			{
-				ImGui::GetWindowDrawList()->AddImage(Texture,ImGui::GetWindowPos(), ImGui::GetWindowPos()+ImGui::GetWindowSize());
-			
-				editor_layer->GetApp()->DrawGameUI();
+				if (bIsPlaying) {
+					ImGui::GetWindowDrawList()->AddImage(Texture, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
+					editor_layer->GetApp()->DrawGameUI();
+				}
+				else {
+					ImGui::Image(Texture, ImGui::GetWindowSize());
+				}
 			}
 			
 			ImVec2 p0 = ImGui::GetItemRectMin();
