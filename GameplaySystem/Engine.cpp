@@ -131,13 +131,15 @@ void Engine::DebugRender() {
 }
 
 void Engine::EndRender() {
-	while (!renderer_.Present()) {
-		renderer_.EndFrame();
+	while (!renderer_.EndFrame()) {
 		renderer_.ReloadShaders();
 		renderer_.BeginFrame();
 	};
+}
 
-	renderer_.EndFrame();
+void Engine::Present()
+{
+	renderer_.Present();
 }
 
 bool Engine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {

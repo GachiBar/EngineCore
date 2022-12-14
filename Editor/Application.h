@@ -33,6 +33,7 @@ public:
 
     /// Initialize the engine and run the main loop, then return the application exit code
     int Run(int argc, char* argv[]);
+    void DrawGameUI();
 
     void Close();
 

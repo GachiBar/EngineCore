@@ -10,7 +10,8 @@
 void EditorCamera::UpdateProjectionMatrix()
 {
 	auto out_texture = owner_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture");
-	Proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XMConvertToRadians(60.f), (float)out_texture.width/ (float)out_texture.height, 0.1f, 100000.f);
+	Proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XMConvertToRadians(60.f),
+		(float)out_texture.width/ (float)out_texture.height, .1f, 10000.f);
 }
 
 void EditorCamera::UpdateEditorViewProjectionMatrix(float dt) const

@@ -46,6 +46,7 @@ public:
 	void Render();
 	void DebugRender();
 	void EndRender();
+	void Present();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 private:
