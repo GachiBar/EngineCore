@@ -30,14 +30,24 @@ namespace GameplayCore.Components
                     axis.Y * Vector3.Up +
                     axis.Z * rotation.Forward;
 
+                direction.Normalize();
                 _transformComponent.LocalPosition += direction * Velocity * Time.DeltaTime;
                 _transformComponent.LocalRotation = Quaternion.RotationMatrix(rotation);
             }
+            else
+            {
+                Log.PrintWarning($"{nameof(SpectatorComponent)} requier {nameof(TransformComponent)}.");
+            }            
         }
 
         protected override void OnAttach(GameObject gameObject)
         {
             _transformComponent = gameObject.GetComponent<TransformComponent>();
+
+            if (_transformComponent == null)
+            {
+                Log.PrintWarning($"{nameof(SpectatorComponent)} requier {nameof(TransformComponent)}.");
+            }
 
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
@@ -62,6 +72,7 @@ namespace GameplayCore.Components
             if (component is TransformComponent)
             {
                 _transformComponent = null;
+                Log.PrintWarning($"{nameof(SpectatorComponent)} requier {nameof(TransformComponent)}.");
             }
         }
 

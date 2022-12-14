@@ -46,6 +46,7 @@ public:
 	void Render();
 	void DebugRender();
 	void EndRender();
+	void Present();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 private:
@@ -100,7 +101,13 @@ private:
 
 	static void Internal_RegisterModel(
 		RenderDevice* renderer, 
-		size_t id);
+		size_t id,
+		MonoString* path);
+
+	static void Internal_RegisterTexture(
+		RenderDevice* renderer, 
+		size_t id,
+		MonoString* path);
 
 	static void Internal_DrawModel(
 		RenderDevice* renderer,
@@ -131,28 +138,35 @@ private:
 		RenderDevice* renderer,
 		size_t id);
 
+	static bool Internal_IsMeshIdUsed(
+			RenderDevice* renderer,
+			size_t id);
+
+	static bool Internal_IsTextureIdUsed(
+			RenderDevice* renderer,
+			size_t id);
+
 #pragma endregion Renderer
 
 #pragma region Physics
 
-	static JPH::uint32 Internal_CreateSphereBody(
+	static JPH::uint32 Internal_CreateBody(
 		JPH::PhysicsSystem* physics_system,
-		float radius, 
-		JPH::Vec3 position, 
-		JPH::Quat rotation, 
-		JPH::EMotionType motion_type, 
-		JPH::uint8 layer);
-
-	static JPH::uint32 Internal_CreateBoxBody(
-		JPH::PhysicsSystem* physics_system,
-		JPH::Vec3 half_extent, 
-		JPH::Vec3 position, 
-		JPH::Quat rotation, 
-		JPH::EMotionType motion_type, 
-		JPH::uint8 layer);
+		JPH::Vec3 position,
+		JPH::Quat rotation,
+		JPH::EMotionType motion_type);
 
 	static void Internal_DestroyBody(
 		JPH::PhysicsSystem* physics_system, 
+		JPH::uint32 id);
+
+	static void Internal_SetCollisionLayer(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::uint8 layer);
+
+	static void Internal_SetEmptyShape(
+		JPH::PhysicsSystem* physics_system,
 		JPH::uint32 id);
 
 	static void Internal_SetSphereShape(
@@ -164,6 +178,12 @@ private:
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
 		JPH::Vec3 half_extent);
+
+	static void Internal_SetCapsuleShape(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		float half_height,
+		float radius);
 
 	static void Internal_SetMotionType(
 		JPH::PhysicsSystem* physics_system, 
@@ -201,6 +221,11 @@ private:
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
 		JPH::Vec3 force);
+
+	static void Internal_AddImpulse(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::Vec3 impulse);
 
 #pragma endregion Physics
 

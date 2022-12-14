@@ -222,9 +222,8 @@ namespace GameplayCore
                 if (IsInitialized)
                 {
                     _removedComponents.Add(component);
-                }
-                                
-                component.GameObject = null;                           
+                }                                
+                                        
                 _isUpdatableComponentsInvalid = true;
                 return component;
             }
@@ -254,6 +253,7 @@ namespace GameplayCore
                 foreach (var component in _removedComponents)
                 {                    
                     component.Terminate();
+                    component.GameObject = null;
                     ComponentRemoved?.Invoke(this, component);
                 }
 

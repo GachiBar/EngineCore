@@ -11,6 +11,7 @@
 #include "InputCoreSystem/InputEvent/Events.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "Interfaces/ILayer.h"
+#include "libs/imgui_sugar.hpp"
 #include "Resources/MetadataReader.h"
 #include "Resources/ResourceDrawer.h"
 
@@ -163,13 +164,15 @@ int Application::Run(int argc, char* argv[])
 			engine_->DebugRender();
 		}
 
-		for (const auto layer : m_LayerStack)
-			layer->OnGuiRender();
-
 		engine_->EndRender();
 		
 		for (const auto layer : m_LayerStack)
+			layer->OnGuiRender();
+		
+		for (const auto layer : m_LayerStack)
 			layer->OnPostRender();
+
+		engine_->Present();
 
 		InputManager::getInstance().Flush();
 	}
@@ -179,6 +182,20 @@ int Application::Run(int argc, char* argv[])
 	engine_->Terminate();
 
 	return exit_code_;
+}
+
+
+void Application::DrawGameUI()
+{
+	with_Child("GameRenderUI", {}, false)
+	{
+		//VSE UI ZDES
+		if (ImGui::Button("TeastButton", {200,100}))
+		{
+			std::cout<<"PressedTest"<<std::endl<<std::flush;
+		};
+	}
+	
 }
 
 void Application::Close()

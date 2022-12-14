@@ -8,9 +8,10 @@ JPH_SUPPRESS_WARNINGS
 namespace engine {
 
 struct BroadPhaseLayers {
-	static constexpr JPH::BroadPhaseLayer kNonMoving { 0 };
-	static constexpr JPH::BroadPhaseLayer kMoving { 1 };
-	static constexpr JPH::uint kLayersCount = 2;
+	static constexpr JPH::BroadPhaseLayer kNoCollision { 0 };
+	static constexpr JPH::BroadPhaseLayer kNonMoving { 1 };
+	static constexpr JPH::BroadPhaseLayer kMoving { 2 };
+	static constexpr JPH::uint kLayersCount = 3;
 
 	static bool IsCanCollide(JPH::ObjectLayer layer_1, JPH::BroadPhaseLayer layer_2);
 };
