@@ -31,7 +31,16 @@ GameLayer::GameLayer(LayerStack* owner)
 void GameLayer::OnAttach()
 {
 	Layer::OnAttach();
-	
+
+	auto method = scene->GetType().GetMethod("SetupImGui", 3);
+
+	void* params[3];
+	params[0] = ImGui::GetCurrentContext();
+	void* p;
+	ImGui::GetAllocatorFunctions(((ImGuiMemAllocFunc*)&params[1]), ((ImGuiMemFreeFunc*)&params[2]), &p);
+
+	method.Invoke(*scene, params);
+
 	auto game_object_1 = scene->CreateGameObject();
 	auto game_object_2 = scene->CreateGameObject();
 	auto game_object_3 = scene->CreateGameObject();

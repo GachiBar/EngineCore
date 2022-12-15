@@ -1,5 +1,6 @@
 ﻿using GameplayCore.Editor;
 using GameplayCore.Mathematics;
+using ImGuiNET;
 
 namespace GameplayCore.Components
 {
@@ -24,5 +25,12 @@ namespace GameplayCore.Components
         public Vector4 Vector4Value;
         public string StringValue = "TestString";
         public GameObject GameObjectValue;
+        
+        public override void Render()
+        {
+            ImGui.Begin("This is from C#");
+            ImGui.LabelText("Ochepyatka", "");
+            ImGui.End();
+        }
     }
 }
