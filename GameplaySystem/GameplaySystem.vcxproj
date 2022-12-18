@@ -170,6 +170,7 @@
   <ItemGroup>
     <ClInclude Include="BPLayerInterfaceImplementation.h" />
     <ClInclude Include="BroadPhaseLayers.h" />
+    <ClInclude Include="BroadPhaseMaskLayerFilter.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="framework.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Method.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="ObjectMaskLayerFilter.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="CollisionLayers.h" />
     <ClInclude Include="Property.h" />

@@ -81,6 +81,12 @@
     <ClInclude Include="Runtime.h">
       <Filter>Header Files\Wrappers</Filter>
     </ClInclude>
+    <ClInclude Include="BroadPhaseMaskLayerFilter.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectMaskLayerFilter.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameplaySystem.cpp">

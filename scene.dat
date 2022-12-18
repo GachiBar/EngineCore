@@ -200,9 +200,9 @@
           "Z": 1.0
         },
         "_localPosition": {
-          "X": -3.26140116E-06,
-          "Y": 0.9999988,
-          "Z": 8.177183E-06
+          "X": -2.638836E-06,
+          "Y": 2.010075,
+          "Z": 9.879904E-06
         },
         "_editorEuler": {
           "X": 9.65855652E-05,
@@ -219,10 +219,18 @@
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
         "_size": {
-          "X": 1.0,
-          "Y": 1.0,
-          "Z": 1.0
+          "X": 2.0,
+          "Y": 2.0,
+          "Z": 2.0
         },
+        "_gameObject": "b5731838-dcd1-4e05-a4dc-26dcad629b11"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 4,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
         "_gameObject": "b5731838-dcd1-4e05-a4dc-26dcad629b11"
       }
     ]

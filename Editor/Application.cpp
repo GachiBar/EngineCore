@@ -189,12 +189,11 @@ void Application::DrawGameUI()
 	with_Child("GameRenderUI", {}, false)
 	{
 		//VSE UI ZDES
-		if (ImGui::Button("TeastButton", {200,100}))
-		{
-			std::cout<<"PressedTest"<<std::endl<<std::flush;
-		};
-	}
-	
+		//if (ImGui::Button("TeastButton", {200,100}))
+		//{
+		//	std::cout<<"PressedTest"<<std::endl<<std::flush;
+		//};
+	}	
 }
 
 void Application::Close()

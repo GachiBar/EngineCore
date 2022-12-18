@@ -6,8 +6,8 @@
 
 namespace engine {
 
-bool BroadPhaseLayers::IsCanCollide(JPH::ObjectLayer layer_1, JPH::BroadPhaseLayer layer_2) {
-	switch (layer_1) {
+bool BroadPhaseLayers::IsCanCollide(JPH::ObjectLayer object_layer_1, JPH::BroadPhaseLayer layer_2) {
+	switch (object_layer_1) {
 		case CollisionLayers::kNoCollision: {
 			// No collision does not collide.
 			return false;

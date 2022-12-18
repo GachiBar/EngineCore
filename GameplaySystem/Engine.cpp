@@ -18,6 +18,9 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
+#include <Jolt/Physics/Collision/RayCast.h>
+#include <Jolt/Physics/Collision/CastResult.h>
 
 #include <fstream>
 #include <iostream>
@@ -241,6 +244,7 @@ void Engine::SetupPhysicsInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddImpulse", Internal_AddImpulse);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetLinearVelocity", Internal_GetLinearVelocity);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetLinearVelocity", Internal_SetLinearVelocity);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CastRay", Internal_CastRay);
 
 	physics_system_property_.SetValue(&physics_system_);
 }
@@ -591,6 +595,29 @@ void Engine::Internal_SetLinearVelocity(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.SetLinearVelocity(body_id, velocity);
+}
+
+bool Engine::Internal_CastRay(
+	JPH::PhysicsSystem* physics_system,
+	JPH::Vec3 origin,
+	JPH::Vec3 direction,
+	JPH::uint32& body_id)
+{
+	// TODO: return hit result;
+	const JPH::NarrowPhaseQuery& narrow_phase_query = physics_system->GetNarrowPhaseQuery();
+
+	JPH::RayCast ray{ origin, direction };
+	JPH::RayCastResult hit;
+	JPH::BroadPhaseLayerFilter bp_layer_filter;
+	JPH::ObjectLayerFilter object_layer_filter;
+	JPH::BodyFilter body_filter;
+
+	if (narrow_phase_query.CastRay(ray, hit, bp_layer_filter, object_layer_filter, body_filter)) {
+		body_id = hit.mBodyID.GetIndexAndSequenceNumber();
+		return true;
+	}
+
+	return false;
 }
 
 #pragma endregion Physics

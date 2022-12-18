@@ -1,4 +1,6 @@
-﻿using GameplayCore.Mathematics;
+﻿using GameplayCore.EngineApi;
+using GameplayCore.Mathematics;
+using System;
 
 namespace GameplayCore.Components
 {
@@ -38,16 +40,7 @@ namespace GameplayCore.Components
 
                 if (Input.WasJustPressed(Keys.LeftMouseButton))
                 {
-                    var bullet = GameObject.Scene.CreateGameObject();
-                    var bulletTransform = bullet.AddComponent<TransformComponent>();                    
-                    var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
-                    var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
-                    var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
-
-                    bulletTransform.Position = headTransform.Position + headTransform.Forward * 0.5f;
-                    bulletSphere.Radius = BulletRadius;
-                    bulletTimer.Timer = BulletLifeTime;
-                    bulletRigidbody.AddImpulse(headTransform.Forward * BulletImpulse);
+                    ThrowBullet(headTransform.Position + headTransform.Forward * 0.5f, headTransform.Forward);
                 }
             }            
         }
@@ -64,7 +57,18 @@ namespace GameplayCore.Components
                     var direction = Vector3.Transform(_axis, rotation);
                     direction.Normalize();
                     _rigidbodyComponent.Velocity = direction * Speed;
-                }                
+                }    
+                
+                var transform = GameObject.GetComponent<TransformComponent>();
+
+                if (PhysicsApi.CastRay(transform.Position + Vector3.Down * 1.5f, Vector3.Down * 10, out var other))
+                {
+                    Console.WriteLine($"Cast result: {other}");
+                }
+                else
+                {
+                    Console.WriteLine("Nope");
+                }
             }
         }
 
@@ -120,6 +124,20 @@ namespace GameplayCore.Components
             }
 
             return direction;
+        }
+
+        private void ThrowBullet(Vector3 position, Vector3 direction)
+        {
+            var bullet = GameObject.Scene.CreateGameObject();
+            var bulletTransform = bullet.AddComponent<TransformComponent>();
+            var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
+            var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
+            var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
+
+            bulletTransform.Position = position;
+            bulletSphere.Radius = BulletRadius;
+            bulletTimer.Timer = BulletLifeTime;
+            bulletRigidbody.AddImpulse(direction * BulletImpulse);
         }
     }
 }

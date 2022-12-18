@@ -162,6 +162,16 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static bool CastRay(Vector3 origin, Vector3 direction, out uint bodyId)
+        {
+            unsafe
+            {
+                var inOrigin = new Vector4(origin, origin.Z);
+                var inDirection = new Vector4(direction, direction.Z);
+                return Internal_CastRay(PhysicsSystem, inOrigin, inDirection, out bodyId);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe uint Internal_CreateBody(
             void* physicsSystem,
@@ -218,5 +228,8 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetLinearVelocity(void* physicsSystem, uint bodyId, Vector4 velocity);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_CastRay(void* physicsSystem, Vector4 origin, Vector4 direction, out uint bodyId);
     }
 }

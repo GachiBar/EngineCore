@@ -235,6 +235,12 @@ private:
 		JPH::uint32 id,
 		JPH::Vec3 velocity);
 
+	static bool Internal_CastRay(
+		JPH::PhysicsSystem* physics_system,
+		JPH::Vec3 origin,
+		JPH::Vec3 direction,
+		JPH::uint32& body_id);
+
 #pragma endregion Physics
 
 #pragma region Inputs
