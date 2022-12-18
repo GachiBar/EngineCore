@@ -34,10 +34,15 @@ void GameLayer::OnAttach()
 
 	auto method = scene->GetType().GetMethod("SetupImGui", 3);
 
+	ImGuiMemAllocFunc memAllocFunc[1];
+	ImGuiMemFreeFunc memFreeFunc[1];
+	void* userData;
+	ImGui::GetAllocatorFunctions(memAllocFunc, memFreeFunc, &userData);
+
 	void* params[3];
 	params[0] = ImGui::GetCurrentContext();
-	void* p;
-	ImGui::GetAllocatorFunctions(((ImGuiMemAllocFunc*)&params[1]), ((ImGuiMemFreeFunc*)&params[2]), &p);
+	params[1] = &memAllocFunc;
+	params[2] = &memFreeFunc;
 
 	method.Invoke(*scene, params);
 

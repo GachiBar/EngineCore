@@ -25,6 +25,7 @@ public:
 	void Update();
 	void Render();
 	void DebugRender();
+	void RenderGUI();
 	void Terminate();
 	void Invalidate();
 
@@ -45,12 +46,15 @@ private:
 	static Method* update_;
 	static Method* render_;
 	static Method* debug_render_;
+	static Method* render_gui_;
 	static Method* invalidate_;
 	static Method* serialize_;
 	static Method* deserialize_;
 
 	static Method* create_game_object_;
 	static Method* delete_game_object_;
+
+	static Method* setup_imgui_;
 };
 
 } // namespace engine

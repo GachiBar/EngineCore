@@ -36,6 +36,7 @@ namespace GameplayCore.Components
         public virtual void Update() { }
         public virtual void Render() { }
         public virtual void DebugRender() { }
+        public virtual void RenderGUI() { }
         public virtual void Terminate() { }
 
         /// <summary>

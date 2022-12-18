@@ -1,6 +1,7 @@
 ﻿using GameplayCore.Editor;
 using GameplayCore.Mathematics;
 using ImGuiNET;
+using System;
 
 namespace GameplayCore.Components
 {
@@ -26,8 +27,9 @@ namespace GameplayCore.Components
         public string StringValue = "TestString";
         public GameObject GameObjectValue;
         
-        public override void Render()
+        public override void RenderGUI()
         {
+            Console.WriteLine("Here!!");
             ImGui.Begin("This is from C#");
             ImGui.LabelText("Ochepyatka", "");
             ImGui.End();
