@@ -5,6 +5,7 @@ using GameplayCore.Mathematics;
 namespace GameplayCore.Resources
 {
     [Serializable]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public class Material
     {
         // DiffuseData   diffuseData;
@@ -96,7 +97,7 @@ namespace GameplayCore.Resources
     {
         [FieldOffset(0)] public bool isTextured;
         [FieldOffset(4)] public ulong id;
-        [FieldOffset(4)] public Color4 diffuseColor;
+        [FieldOffset(8)] public Color4 diffuseColor;
     }
 
     [StructLayout(LayoutKind.Explicit)] 
@@ -104,7 +105,7 @@ namespace GameplayCore.Resources
     {
         [FieldOffset(0)] public bool isTextured;
         [FieldOffset(4)] public ulong id;
-        [FieldOffset(4)] public Color3 normalsColor;
+        [FieldOffset(8)] public Color3 normalsColor;
     }
     
     [StructLayout(LayoutKind.Explicit)] 
@@ -112,7 +113,7 @@ namespace GameplayCore.Resources
     {
         [FieldOffset(0)] public bool isTextured;
         [FieldOffset(4)] public ulong id;
-        [FieldOffset(4)] public float roughnessValue;
+        [FieldOffset(8)] public float roughnessValue;
     }
     
     [StructLayout(LayoutKind.Explicit)] 
@@ -120,6 +121,6 @@ namespace GameplayCore.Resources
     {
         [FieldOffset(0)] public bool isTextured;
         [FieldOffset(4)] public ulong id;
-        [FieldOffset(4)] public float metallicValue;
+        [FieldOffset(8)] public float metallicValue;
     }
 }

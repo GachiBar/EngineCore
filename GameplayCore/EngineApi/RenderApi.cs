@@ -117,16 +117,7 @@ namespace GameplayCore.EngineApi
         public static Internal_Material PullMaterial()
         {
             Internal_Material material = new Internal_Material();
-            try
-            {
-                material = Internal_PullMaterial(0);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
-             
+            material = Internal_PullMaterial(0);
             material.DebugOutput();
             return material;
         }

@@ -29,7 +29,7 @@ namespace GameplayCore.Components
         {
             debug = false;
             Console.WriteLine("Pull material");
-            Internal_Material data = RenderApi.PullMaterial();
+            var data = RenderApi.PullMaterial();
             data.roughness.isTextured = true;
             data.roughness.id = 10;
             Console.WriteLine("Commit material");
