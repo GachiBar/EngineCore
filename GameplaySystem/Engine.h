@@ -216,6 +216,15 @@ private:
 		JPH::uint32 id, 
 		JPH::Quat rotation);
 
+	static void Internal_FreezeRotation(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id);
+
+	static void Internal_SetMass(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		float mass);
+
 	static void Internal_AddForce(
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 

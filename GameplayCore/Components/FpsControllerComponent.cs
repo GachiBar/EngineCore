@@ -17,9 +17,14 @@ namespace GameplayCore.Components
         
         public float Speed = 3.0f;
         public float Sensivity = 1.0f;
-        public float BulletImpulse = 10000.0f;
+        public float BulletImpulse = 1000.0f;
         public float BulletLifeTime = 2.0f;
         public GameObject Head;
+
+        public override void Initialize()
+        {
+            _rigidbodyComponent.FreezeRotation = true;
+        }
 
         public override void Update()
         {         
@@ -48,7 +53,7 @@ namespace GameplayCore.Components
         public override void FixedUpdate()
         {
             if (_rigidbodyComponent != null)
-            {
+            {               
                 var headTransform = Head.GetComponent<TransformComponent>();
 
                 if (headTransform != null)
@@ -56,18 +61,19 @@ namespace GameplayCore.Components
                     var rotation = Quaternion.RotationYawPitchRoll(_yaw, 0, 0);
                     var direction = Vector3.Transform(_axis, rotation);
                     direction.Normalize();
-                    _rigidbodyComponent.Velocity = direction * Speed;
+                    var yAxis = new Vector3(0.0f, _rigidbodyComponent.Velocity.Y, 0.0f);
+                    _rigidbodyComponent.Velocity = direction * Speed + yAxis;
                 }    
                 
                 var transform = GameObject.GetComponent<TransformComponent>();
 
                 if (PhysicsApi.CastRay(transform.Position + Vector3.Down * 1.5f, Vector3.Down * 10, out var other))
                 {
-                    Console.WriteLine($"Cast result: {other}");
+                    //Console.WriteLine($"Cast result: {other}");
                 }
                 else
                 {
-                    Console.WriteLine("Nope");
+                    //Console.WriteLine("Nope");
                 }
             }
         }
@@ -90,7 +96,7 @@ namespace GameplayCore.Components
         {
             if (component is RigidbodyComponent rigidbodyComponent)
             {
-                _rigidbodyComponent = rigidbodyComponent;
+                _rigidbodyComponent = rigidbodyComponent;                
             }
         }
 
@@ -137,6 +143,7 @@ namespace GameplayCore.Components
             bulletTransform.Position = position;
             bulletSphere.Radius = BulletRadius;
             bulletTimer.Timer = BulletLifeTime;
+            bulletRigidbody.Mass = 1.0f;
             bulletRigidbody.AddImpulse(direction * BulletImpulse);
         }
     }

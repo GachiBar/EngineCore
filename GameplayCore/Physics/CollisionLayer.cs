@@ -1,6 +1,9 @@
-﻿namespace GameplayCore.Physics
+﻿using System;
+
+namespace GameplayCore.Physics
 {
-    public enum CollisionLayer
+    [Flags]
+    public enum CollisionLayer : byte
     {
         NoCollision,
         NonMoving,

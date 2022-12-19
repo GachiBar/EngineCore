@@ -47,7 +47,9 @@
       },
       {
         "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
         "_isKinematic": true,
+        "_mass": 1.0,
         "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
       }
     ]
@@ -130,14 +132,16 @@
       },
       {
         "Type": "GameplayCore.Components.RigidbodyComponent",
-        "_isKinematic": true,
+        "_freezeRotation": true,
+        "_isKinematic": false,
+        "_mass": 1.0,
         "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
       },
       {
         "Type": "GameplayCore.Components.FpsControllerComponent",
         "Speed": 3.0,
         "Sensivity": 1.0,
-        "BulletImpulse": 10000.0,
+        "BulletImpulse": 50.0,
         "BulletLifeTime": 2.0,
         "Head": "4bbef915-bf19-4a4c-95bd-893de7c81afd",
         "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
@@ -213,7 +217,9 @@
       },
       {
         "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
         "_isKinematic": false,
+        "_mass": 5.0,
         "_gameObject": "b5731838-dcd1-4e05-a4dc-26dcad629b11"
       },
       {
@@ -227,7 +233,7 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "Id": 4,
+        "Id": 3,
         "Metallic": 0.0,
         "Roughness": 0.0,
         "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
@@ -271,12 +277,14 @@
       },
       {
         "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
         "_isKinematic": false,
+        "_mass": 5.0,
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "Id": 3,
+        "Id": 4,
         "Metallic": 0.0,
         "Roughness": 0.0,
         "_asset": "aec2bb73-3ee1-495c-a720-8e68b07207fd",
@@ -315,7 +323,9 @@
       },
       {
         "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
         "_isKinematic": false,
+        "_mass": 1.0,
         "_gameObject": "1a5c6365-dc48-4975-9de6-2c54a5cd3e39"
       },
       {

@@ -240,10 +240,12 @@ void Engine::SetupPhysicsInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPosition", Internal_SetBodyPosition);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyRotation", Internal_GetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_FreezeRotation", Internal_FreezeRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMass", Internal_SetMass);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddImpulse", Internal_AddImpulse);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetLinearVelocity", Internal_GetLinearVelocity);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetLinearVelocity", Internal_SetLinearVelocity);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetLinearVelocity", Internal_SetLinearVelocity);	
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CastRay", Internal_CastRay);
 
 	physics_system_property_.SetValue(&physics_system_);
@@ -449,18 +451,18 @@ void Engine::Internal_SetEmptyShape(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON);
-	body_interface.SetShape(body_id, sphere_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, sphere_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetSphereShape(
 	JPH::PhysicsSystem* physics_system, 
 	JPH::uint32 id, 
-	float radius) 
+	float radius)
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::SphereShape* sphere_shape = new JPH::SphereShape(radius);
-	body_interface.SetShape(body_id, sphere_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, sphere_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetBoxShape(
@@ -471,7 +473,7 @@ void Engine::Internal_SetBoxShape(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
-	body_interface.SetShape(body_id, box_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, box_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetCapsuleShape(
@@ -483,7 +485,7 @@ void Engine::Internal_SetCapsuleShape(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::CapsuleShape* capsule_shape = new JPH::CapsuleShape(half_height, radius);
-	body_interface.SetShape(body_id, capsule_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, capsule_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetMotionType(
@@ -558,6 +560,44 @@ void Engine::Internal_SetBodyRotation(
 	body_interface.SetRotation(body_id, rotation, JPH::EActivation::DontActivate);
 }
 
+void Engine::Internal_FreezeRotation(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id)
+{
+	JPH::BodyID body_id(id);
+	const JPH::BodyLockInterface& body_lock_interface = physics_system->GetBodyLockInterface();
+	JPH::BodyLockWrite lock(body_lock_interface, body_id);
+
+	if (!lock.Succeeded()) {
+		return;
+	}
+
+	JPH::Body& body = lock.GetBody();
+	JPH::MotionProperties* motion_properties = body.GetMotionProperties();
+	motion_properties->SetInverseInertia(JPH::Vec3::sZero(), JPH::Quat::sIdentity());
+}
+
+void Engine::Internal_SetMass(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id,
+	float mass)
+{
+	JPH::BodyID body_id(id);
+	const JPH::BodyLockInterface& body_lock_interface = physics_system->GetBodyLockInterface();
+	JPH::BodyLockWrite lock(body_lock_interface, body_id);
+
+	if (!lock.Succeeded()) {
+		return;
+	}
+
+	JPH::MassProperties mass_properties;
+	mass_properties.ScaleToMass(mass);
+
+	JPH::Body& body = lock.GetBody();
+	JPH::MotionProperties* motion_properties = body.GetMotionProperties();
+	motion_properties->SetMassProperties(mass_properties);
+}
+
 void Engine::Internal_AddForce(
 	JPH::PhysicsSystem* physics_system, 
 	JPH::uint32 id, 
@@ -604,6 +644,7 @@ bool Engine::Internal_CastRay(
 	JPH::uint32& body_id)
 {
 	// TODO: return hit result;
+	// TODO: what is broad phase and object layers?
 	const JPH::NarrowPhaseQuery& narrow_phase_query = physics_system->GetNarrowPhaseQuery();
 
 	JPH::RayCast ray{ origin, direction };
@@ -611,7 +652,7 @@ bool Engine::Internal_CastRay(
 	JPH::BroadPhaseLayerFilter bp_layer_filter;
 	JPH::ObjectLayerFilter object_layer_filter;
 	JPH::BodyFilter body_filter;
-
+		
 	if (narrow_phase_query.CastRay(ray, hit, bp_layer_filter, object_layer_filter, body_filter)) {
 		body_id = hit.mBodyID.GetIndexAndSequenceNumber();
 		return true;

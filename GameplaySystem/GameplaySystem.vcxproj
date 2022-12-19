@@ -192,6 +192,7 @@
   <ItemGroup>
     <ClCompile Include="BPLayerInterfaceImplementation.cpp" />
     <ClCompile Include="BroadPhaseLayers.cpp" />
+    <ClCompile Include="BroadPhaseMaskLayerFilter.cpp" />
     <ClCompile Include="CollisionLayers.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Engine.cpp" />
@@ -200,6 +201,7 @@
     <ClCompile Include="GameplaySystem.cpp" />
     <ClCompile Include="Method.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="ObjectMaskLayerFilter.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
