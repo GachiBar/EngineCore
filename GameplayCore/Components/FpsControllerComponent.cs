@@ -9,22 +9,20 @@ namespace GameplayCore.Components
         private const float Weight = 0.03f;
         private const float BulletRadius = 0.3f;
 
-        private RigidbodyComponent _rigidbodyComponent;        
+        private RigidbodyComponent _rigidbodyComponent;
+        private CapsuleCollisionComponent _capsuleCollisionComponent;
 
         private Vector3 _axis;
         private float _yaw = 0.0f;
         private float _pitch = 0.0f;
+        private bool _isJump;
         
         public float Speed = 3.0f;
+        public float JumpSpeed = 8.0f;
         public float Sensivity = 1.0f;
         public float BulletImpulse = 1000.0f;
         public float BulletLifeTime = 2.0f;
         public GameObject Head;
-
-        public override void Initialize()
-        {
-            _rigidbodyComponent.FreezeRotation = true;
-        }
 
         public override void Update()
         {         
@@ -47,6 +45,8 @@ namespace GameplayCore.Components
                 {
                     ThrowBullet(headTransform.Position + headTransform.Forward * 0.5f, headTransform.Forward);
                 }
+
+                _isJump |= Input.WasJustPressed(Keys.SpaceBar);
             }            
         }
 
@@ -67,20 +67,19 @@ namespace GameplayCore.Components
                 
                 var transform = GameObject.GetComponent<TransformComponent>();
 
-                if (PhysicsApi.CastRay(transform.Position + Vector3.Down * 1.5f, Vector3.Down * 10, out var other))
+                if (IsGrounded() && _isJump)
                 {
-                    //Console.WriteLine($"Cast result: {other}");
-                }
-                else
-                {
-                    //Console.WriteLine("Nope");
+                    _rigidbodyComponent.Velocity += Vector3.Up * JumpSpeed;
                 }
             }
+
+            _isJump = false;
         }
 
         protected override void OnAttach(GameObject gameObject)
         {
             _rigidbodyComponent = gameObject.GetComponent<RigidbodyComponent>();
+            _capsuleCollisionComponent = gameObject.GetComponent<CapsuleCollisionComponent>();
             
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
@@ -98,6 +97,10 @@ namespace GameplayCore.Components
             {
                 _rigidbodyComponent = rigidbodyComponent;                
             }
+            if (component is CapsuleCollisionComponent capsuleCollisionComponent)
+            {
+                _capsuleCollisionComponent = capsuleCollisionComponent;
+            }
         }
 
         private void OnComponentRemoved(GameObject gameObject, Component component)
@@ -105,6 +108,10 @@ namespace GameplayCore.Components
             if (component is RigidbodyComponent)
             {
                 _rigidbodyComponent = null;
+            }
+            if (component is CapsuleCollisionComponent)
+            {
+                _capsuleCollisionComponent = null;
             }
         }
 
@@ -145,6 +152,27 @@ namespace GameplayCore.Components
             bulletTimer.Timer = BulletLifeTime;
             bulletRigidbody.Mass = 1.0f;
             bulletRigidbody.AddImpulse(direction * BulletImpulse);
+        }
+
+        private bool IsGrounded()
+        {
+            if (_capsuleCollisionComponent != null)
+            {
+                var transform = GameObject.GetComponent<TransformComponent>();
+
+                if (transform != null)
+                {
+                    float capsuleHeight = _capsuleCollisionComponent.Height + _capsuleCollisionComponent.Radius;
+                    float epsilon = 0.01f;
+                    capsuleHeight += epsilon;
+
+                    var origin = transform.Position + Vector3.Down * (capsuleHeight);
+                    var direction = Vector3.Down * epsilon;
+                    return PhysicsApi.CastRay(origin, direction, out var other);
+                }
+            }
+
+            return false;
         }
     }
 }
