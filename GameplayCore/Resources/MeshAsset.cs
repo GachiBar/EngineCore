@@ -21,9 +21,9 @@ namespace GameplayCore.Resources
                 return;
             }
             
-            ulong id = RenderApi.CalculateFreeId();
+            ulong id = RenderApi.CalculateFreeMeshId();
             RenderApi.RegisterModel(id, FilePath);
-            RenderApi.RegisterTexture(id, FilePath.Split('.')[0] + ".jpg");
+            
             _id = id;
             
             Console.WriteLine($"Loaded new mesh with id {id} from {FilePath}");

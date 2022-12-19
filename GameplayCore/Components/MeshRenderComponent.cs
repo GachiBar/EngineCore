@@ -1,6 +1,7 @@
 ﻿using GameplayCore.Resources;
 using GameplayCore.Serialization;
 using System;
+using GameplayCore.EngineApi;
 
 namespace GameplayCore.Components
 {
@@ -21,6 +22,18 @@ namespace GameplayCore.Components
                 _asset.Load();
                 Id = _asset.Id;
             }
+        }
+
+        private static bool debug = true;
+        public void Debug()
+        {
+            debug = false;
+            Console.WriteLine("Pull material");
+            Internal_Material data = RenderApi.PullMaterial();
+            data.roughness.isTextured = true;
+            data.roughness.id = 10;
+            Console.WriteLine("Commit material");
+            RenderApi.CommitMaterial(data);
         }
 
         public override void Render()
@@ -72,6 +85,9 @@ namespace GameplayCore.Components
             {                
                 _transformComponent = transformComponent;
             }
+            
+            if(debug)
+                Debug();
         }
 
         private void OnComponentRemoved(GameObject gameObject, Component component)

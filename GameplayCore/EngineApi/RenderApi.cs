@@ -1,5 +1,7 @@
-﻿using GameplayCore.Mathematics;
+﻿using System;
+using GameplayCore.Mathematics;
 using System.Runtime.CompilerServices;
+using GameplayCore.Resources;
 
 namespace GameplayCore.EngineApi
 {
@@ -112,6 +114,36 @@ namespace GameplayCore.EngineApi
             return System.Math.Max(_lastTextureId, _lastMeshId);
         }
 
+        public static Internal_Material PullMaterial()
+        {
+            Internal_Material material = new Internal_Material();
+            try
+            {
+                material = Internal_PullMaterial(0);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+             
+            material.DebugOutput();
+            return material;
+        }
+
+        public static void CommitMaterial(Internal_Material material)
+        {
+            try
+            {
+                Internal_CommitMaterial(material);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -130,5 +162,9 @@ namespace GameplayCore.EngineApi
         extern private static unsafe bool Internal_IsMeshIdUsed(void* renderer, ulong id);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe bool Internal_IsTextureIdUsed(void* renderer, ulong id);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe Internal_Material Internal_PullMaterial(ulong id);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_CommitMaterial(Internal_Material material);
     }
 }

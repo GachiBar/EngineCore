@@ -145,6 +145,10 @@ private:
 			RenderDevice* renderer,
 			size_t id);
 
+	static MaterialData m_data;
+	static MaterialData Internal_PullMaterial(size_t id);
+	static void Internal_CommitMaterial(MaterialData data);
+
 #pragma endregion Renderer
 
 #pragma region Physics

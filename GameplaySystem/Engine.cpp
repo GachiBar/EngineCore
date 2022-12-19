@@ -218,6 +218,8 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsIdUsed", Internal_IsIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsMeshIdUsed", Internal_IsMeshIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsTextureIdUsed", Internal_IsTextureIdUsed);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_PullMaterial", Internal_PullMaterial);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_CommitMaterial", Internal_CommitMaterial);
 
 	renderer_property_.SetValue(&renderer_);
 }
@@ -396,6 +398,50 @@ bool Engine::Internal_IsMeshIdUsed(RenderDevice* renderer, size_t id)
 bool Engine::Internal_IsTextureIdUsed(RenderDevice* renderer, size_t id)
 {
 	return renderer->IsTextureIdUsed(id);
+}
+
+// Debug stuff
+MaterialData Engine::m_data = {DiffuseData(TextureData::Color(1,2,3,4)), NormalData(Float3Data::Color(1,1,1)), RoughnessData(0.25f), MetallicData(0.33f)};
+MaterialData Engine::Internal_PullMaterial(size_t id)
+{
+	MaterialData data = m_data;
+	return m_data;
+}
+	
+void Engine::Internal_CommitMaterial(MaterialData data)
+{
+	m_data = MaterialData(data);
+	printf("Received material from c# side!\n");
+
+	printf("Diffuse isTextured: %c\n", data.diffuseData.isTextured?'t':'f');
+	if (data.diffuseData.isTextured)
+		printf("Diffuse texture id: %llu\n", data.diffuseData.textureId);
+	else
+	{
+		TextureData::Color c = data.diffuseData.color;
+		printf("Diffuse color: %u %u %u %u\n", c.GetR(), c.GetG(), c.GetB(), c.GetA());
+	}
+		
+	printf("Normals isTextured: %c\n", data.normalData.isTextured?'t':'f');
+	if (data.normalData.isTextured)
+		printf("Normals texture id: %llu\n", data.normalData.textureId);
+	else
+	{
+		Float3Data::Color c = data.normalData.normal;
+		printf("Normals color: %f %f %f\n", c.x, c.y, c.z);
+	}
+
+	printf("Roughness isTextured: %c\n", data.roughnessData.isTextured?'t':'f');
+	if (data.roughnessData.isTextured)
+		printf("Roughness texture id: %llu\n", data.roughnessData.textureId);
+	else
+		printf("Roughness color: %f\n", data.roughnessData.roughness);
+
+	printf("Metallic isTextured: %c\n", data.metallicData.isTextured?'t':'f');
+	if (data.metallicData.isTextured)
+		printf("Metallic texture id: %llu\n", data.metallicData.textureId);
+	else
+		printf("Metallic color: %f\n", data.metallicData.metallic);
 }
 
 #pragma endregion Renderer
