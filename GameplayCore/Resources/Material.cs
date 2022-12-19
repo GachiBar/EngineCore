@@ -96,7 +96,7 @@ namespace GameplayCore.Resources
     public struct Internal_DiffuseData
     {
         [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(4)] public ulong id;
+        [FieldOffset(8)] public ulong id;
         [FieldOffset(8)] public Color4 diffuseColor;
     }
 
@@ -104,7 +104,7 @@ namespace GameplayCore.Resources
     public struct Internal_NormalData
     {
         [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(4)] public ulong id;
+        [FieldOffset(8)] public ulong id;
         [FieldOffset(8)] public Color3 normalsColor;
     }
     
@@ -112,7 +112,7 @@ namespace GameplayCore.Resources
     public struct Internal_RoughnessData
     {
         [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(4)] public ulong id;
+        [FieldOffset(8)] public ulong id;
         [FieldOffset(8)] public float roughnessValue;
     }
     
@@ -120,7 +120,7 @@ namespace GameplayCore.Resources
     public struct Internal_MetallicData
     {
         [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(4)] public ulong id;
+        [FieldOffset(8)] public ulong id;
         [FieldOffset(8)] public float metallicValue;
     }
 }
