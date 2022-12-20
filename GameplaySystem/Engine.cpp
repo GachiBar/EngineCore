@@ -31,6 +31,7 @@ namespace engine {
 
 const float Engine::kDt = 16.0f / 1000;
 const std::chrono::nanoseconds Engine::kTimestep = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
+Engine* Engine::engine_ = nullptr;
 
 bool Engine::IsRunning() {
 	return is_running_;
@@ -65,7 +66,9 @@ Engine::Engine(const Runtime& runtime)
 	, screen_height_property_(runtime_.GetType(Types::kScreen).GetProperty("Height"))
 	, mouse_position_property_(runtime_.GetType(Types::kInput).GetProperty("MousePosition"))
 	, is_running_(false)
-{}
+{
+	engine_ = this;
+}
 
 void Engine::Initialize(HWND handle, UINT width, UINT height) {
 	InitRenderer(handle, static_cast<size_t>(width), static_cast<size_t>(height));
@@ -215,11 +218,14 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawDirectionalLight", Internal_DrawDirectionalLight);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
+	
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsIdUsed", Internal_IsIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsMeshIdUsed", Internal_IsMeshIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsTextureIdUsed", Internal_IsTextureIdUsed);
+	
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_PullMaterial", Internal_PullMaterial);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_CommitMaterial", Internal_CommitMaterial);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_ContainsMaterialId", Internal_ContainsMaterialId);
 
 	renderer_property_.SetValue(&renderer_);
 }
@@ -322,15 +328,12 @@ void Engine::Internal_RegisterTexture(RenderDevice* renderer, size_t id, MonoStr
 void Engine::Internal_DrawModel(
 	RenderDevice* renderer, 
 	size_t id, 
-	float metallic,
-	float roughness,
+	size_t material_id, 
 	DirectX::SimpleMath::Matrix model_matrix) 
 {
-	MaterialData material_data{
-		{(uint64_t)id}, {{1, 0, 0}}, {{roughness}}, {{metallic}}
-	};
+	MaterialData material = Internal_PullMaterial(material_id);
 	OpaqueModelDrawData opaque_model_draw_data{
-		id, model_matrix, model_matrix, 1.0f, 1.0f, material_data, {}
+		id, model_matrix, model_matrix, 1.0f, 1.0f, material, {}
 	};
 	
 	renderer->DrawOpaqueModel(opaque_model_draw_data);
@@ -399,49 +402,24 @@ bool Engine::Internal_IsTextureIdUsed(RenderDevice* renderer, size_t id)
 {
 	return renderer->IsTextureIdUsed(id);
 }
-
-// Debug stuff
-MaterialData Engine::m_data = {DiffuseData(TextureData::Color(1,2,3,4)), NormalData(Float3Data::Color(1,1,1)), RoughnessData(0.25f), MetallicData(0.33f)};
+	
 MaterialData Engine::Internal_PullMaterial(size_t id)
 {
-	MaterialData data = m_data;
-	return m_data;
+	if(engine_->_materials.contains(id))
+		return engine_->_materials[id];
+
+	const MaterialData default_material = {DiffuseData(TextureData::Color(255,255,255,255)), NormalData(Float3Data::Color(1,0,0)), RoughnessData(0.0f), MetallicData(0.0f)};
+	return default_material;
 }
 	
-void Engine::Internal_CommitMaterial(MaterialData data)
+void Engine::Internal_CommitMaterial(size_t id, MaterialData data)
 {
-	m_data = MaterialData(data);
-	printf("Received material from c# side!\n");
+	engine_->_materials[id] = data;
+}
 
-	printf("Diffuse isTextured: %c\n", data.diffuseData.isTextured?'t':'f');
-	if (data.diffuseData.isTextured)
-		printf("Diffuse texture id: %llu\n", data.diffuseData.textureId);
-	else
-	{
-		TextureData::Color c = data.diffuseData.color;
-		printf("Diffuse color: %u %u %u %u\n", c.GetR(), c.GetG(), c.GetB(), c.GetA());
-	}
-		
-	printf("Normals isTextured: %c\n", data.normalData.isTextured?'t':'f');
-	if (data.normalData.isTextured)
-		printf("Normals texture id: %llu\n", data.normalData.textureId);
-	else
-	{
-		Float3Data::Color c = data.normalData.normal;
-		printf("Normals color: %f %f %f\n", c.x, c.y, c.z);
-	}
-
-	printf("Roughness isTextured: %c\n", data.roughnessData.isTextured?'t':'f');
-	if (data.roughnessData.isTextured)
-		printf("Roughness texture id: %llu\n", data.roughnessData.textureId);
-	else
-		printf("Roughness color: %f\n", data.roughnessData.roughness);
-
-	printf("Metallic isTextured: %c\n", data.metallicData.isTextured?'t':'f');
-	if (data.metallicData.isTextured)
-		printf("Metallic texture id: %llu\n", data.metallicData.textureId);
-	else
-		printf("Metallic color: %f\n", data.metallicData.metallic);
+bool Engine::Internal_ContainsMaterialId(size_t id)
+{
+	return engine_->_materials.contains(id);
 }
 
 #pragma endregion Renderer

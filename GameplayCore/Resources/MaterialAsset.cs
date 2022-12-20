@@ -1,4 +1,5 @@
-﻿using GameplayCore.Serialization;
+﻿using GameplayCore.EngineApi;
+using GameplayCore.Serialization;
 
 namespace GameplayCore.Resources
 {
@@ -7,22 +8,30 @@ namespace GameplayCore.Resources
         [SerializeField] private Material _material;
         private ulong _id;
         
+        public ulong Id => _id;
+        
         // Creates or changes material data by id to c++ side
         public void Commit()
         {
             // Set
+            RenderApi.CommitMaterial(_id, new Internal_Material(_material));
         }
 
         // Gets data from c++ side
         public void Pull()
         {
-            
+            RenderApi.PullMaterial(_id);
+            // Why would you pull material from c++ side
+            // TODO: Do something with dis or just remove method
         }
 
-        // Sets id for render
-        public void Set()
+        public void Load()
         {
-            // Just calls extern method
+            if(_id != 0) return;
+
+            ulong id = RenderApi.CalculateFreeMaterialId();
+            _id = id;
+            Commit();
         }
     }
 }

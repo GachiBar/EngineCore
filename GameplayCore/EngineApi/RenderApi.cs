@@ -10,6 +10,7 @@ namespace GameplayCore.EngineApi
         private static unsafe void* Renderer { get; set; }
         private static ulong _lastTextureId = 1;
         private static ulong _lastMeshId = 1;
+        private static ulong _lastMaterialId = 1;
 
         public static void RegisterModel(ulong id, string path="")
         {
@@ -27,11 +28,11 @@ namespace GameplayCore.EngineApi
             }           
         }
 
-        public static void DrawModel(ulong id, float metallic, float roughness, Matrix modelMatrix)
+        public static void DrawModel(ulong id, ulong material_id, Matrix modelMatrix)
         {
             unsafe
             {
-                Internal_DrawModel(Renderer, id, metallic, roughness, modelMatrix);
+                Internal_DrawModel(Renderer, id, material_id, modelMatrix);
             }            
         }
 
@@ -106,23 +107,15 @@ namespace GameplayCore.EngineApi
             return _lastMeshId;
         }
 
-        public static ulong CalculateFreeId()
-        {
-            CalculateFreeTextureId();
-            CalculateFreeMeshId();
-
-            return System.Math.Max(_lastTextureId, _lastMeshId);
-        }
-
-        public static Internal_Material PullMaterial()
+        public static Internal_Material PullMaterial(ulong id)
         {
             Internal_Material material = new Internal_Material();
-            material = Internal_PullMaterial(0);
+            material = Internal_PullMaterial(id);
             material.DebugOutput();
             return material;
         }
 
-        public static void CommitMaterial(Internal_Material material)
+        public static void CommitMaterial(ulong id, Internal_Material material)
         {
             try
             {
@@ -135,12 +128,20 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static ulong CalculateFreeMaterialId()
+        {
+            while (Internal_ContainsMaterialId(_lastMaterialId))
+                _lastMaterialId++;
+
+            return _lastMaterialId;
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterModel(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterTexture(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, float metallic, float roughness, Matrix modelMatrix);
+        extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, ulong material_id, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawDirectionalLight(void* renderer, Vector3 direction, float itencity, Vector4 color);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -157,5 +158,7 @@ namespace GameplayCore.EngineApi
         extern private static unsafe Internal_Material Internal_PullMaterial(ulong id);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_CommitMaterial(Internal_Material material);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_ContainsMaterialId(ulong id);
     }
 }

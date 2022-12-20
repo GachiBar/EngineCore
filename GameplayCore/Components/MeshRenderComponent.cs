@@ -9,11 +9,10 @@ namespace GameplayCore.Components
     {
         private TransformComponent _transformComponent = null;
         [SerializeField] private MeshAsset _asset;
-        //Material{Texture, Metalic, Raffness, Normal}
+        [SerializeField] private MaterialAsset _material;
 
         public ulong Id = 1;
-        public float Metallic = 0;
-        public float Roughness = 0;
+        private ulong _materialId = 0;
 
         public override void Initialize() 
         {
@@ -22,18 +21,26 @@ namespace GameplayCore.Components
                 _asset.Load();
                 Id = _asset.Id;
             }
+            
+            if (_material != null)
+            {
+                _material.Load();
+            }
+            
+            if(debug)
+                Debug();
         }
 
-        private static bool debug = true;
+        private static bool debug = false;
         public void Debug()
         {
             debug = false;
             Console.WriteLine("Pull material");
-            var data = RenderApi.PullMaterial();
+            var data = RenderApi.PullMaterial(0);
             data.roughness.isTextured = true;
             data.roughness.id = 10;
             Console.WriteLine("Commit material");
-            RenderApi.CommitMaterial(data);
+            RenderApi.CommitMaterial(0, data);
         }
 
         public override void Render()
@@ -41,9 +48,8 @@ namespace GameplayCore.Components
             if (_transformComponent != null)
             {
                 EngineApi.RenderApi.DrawModel(
-                    Id, 
-                    Metallic, 
-                    Roughness, 
+                    Id,
+                    _materialId, 
                     _transformComponent.ModelMatrix);
             }            
         }
@@ -51,17 +57,30 @@ namespace GameplayCore.Components
         internal override void Invalidate(string fieldName)
         {
             base.Invalidate(fieldName);
-            
-            if(fieldName != "_asset") return;
-            
-            if (_asset != null)
+
+            if (fieldName == "_asset")
             {
-                _asset.Load();
-                Id = _asset.Id;
+                if (_asset != null)
+                {
+                    _asset.Load();
+                    Id = _asset.Id;
+                }
+                else
+                {
+                    Id = 0;
+                }   
             }
-            else
+            else if (fieldName == "_material")
             {
-                Id = 0;
+                if (_material != null)
+                {
+                    _material.Load();
+                    _materialId = _material.Id;
+                }
+                else
+                {
+                    _materialId = 0;
+                }
             }
         }
 
@@ -85,9 +104,6 @@ namespace GameplayCore.Components
             {                
                 _transformComponent = transformComponent;
             }
-            
-            if(debug)
-                Debug();
         }
 
         private void OnComponentRemoved(GameObject gameObject, Component component)
