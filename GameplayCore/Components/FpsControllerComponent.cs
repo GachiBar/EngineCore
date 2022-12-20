@@ -168,7 +168,7 @@ namespace GameplayCore.Components
 
                     var origin = transform.Position + Vector3.Down * (capsuleHeight);
                     var direction = Vector3.Down * epsilon;
-                    return PhysicsApi.CastRay(origin, direction, out var other);
+                    return Physics.CastRay(origin, direction, out var other);
                 }
             }
 

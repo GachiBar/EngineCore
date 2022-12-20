@@ -38,6 +38,12 @@ namespace GameplayCore.Components
         public virtual void DebugRender() { }
         public virtual void Terminate() { }
 
+        public virtual void OnCollisionEnter(RigidbodyComponent rigidbody) { }
+
+        public virtual void OnCollisionStay(RigidbodyComponent rigidbody) { }
+
+        public virtual void OnCollisionExit(RigidbodyComponent rigidbody) { }
+
         /// <summary>
         /// This method called by editor when some field was changed.
         /// </summary>

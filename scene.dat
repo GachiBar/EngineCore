@@ -294,7 +294,7 @@
     ]
   },
   {
-    "Guid": "1a5c6365-dc48-4975-9de6-2c54a5cd3e39",
+    "Guid": "251a4b6b-9f31-4c66-b5c4-1d22126f8323",
     "Components": [
       {
         "Type": "GameplayCore.Components.TransformComponent",
@@ -311,33 +311,32 @@
           "Z": 1.0
         },
         "_localPosition": {
-          "X": 9.265936,
-          "Y": 1.2416544,
-          "Z": -1.96715152
+          "X": -5.98788071,
+          "Y": 4.59290361,
+          "Z": -5.617063
         },
         "_editorEuler": {
           "X": 0.0,
           "Y": 0.0,
           "Z": 0.0
         },
-        "_gameObject": "1a5c6365-dc48-4975-9de6-2c54a5cd3e39"
+        "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
+      },
+      {
+        "Type": "GameplayCore.Components.SphereCollisionComponent",
+        "_radius": 1.0,
+        "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
       },
       {
         "Type": "GameplayCore.Components.RigidbodyComponent",
         "_freezeRotation": false,
-        "_isKinematic": false,
+        "_isKinematic": true,
         "_mass": 1.0,
-        "_gameObject": "1a5c6365-dc48-4975-9de6-2c54a5cd3e39"
+        "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
       },
       {
-        "Type": "GameplayCore.Components.SphereCollisionComponent",
-        "_radius": 0.3,
-        "_gameObject": "1a5c6365-dc48-4975-9de6-2c54a5cd3e39"
-      },
-      {
-        "Type": "GameplayCore.Components.TimerDestroyerComponent",
-        "_timer": 1.88292956,
-        "_gameObject": "1a5c6365-dc48-4975-9de6-2c54a5cd3e39"
+        "Type": "GameplayCore.Components.TestCollisionComponent",
+        "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
       }
     ]
   }

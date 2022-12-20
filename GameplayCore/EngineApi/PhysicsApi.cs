@@ -1,14 +1,75 @@
-﻿using GameplayCore.Mathematics;
-using GameplayCore.Physics;
+﻿using GameplayCore.Components;
+using GameplayCore.Mathematics;
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace GameplayCore.EngineApi
 {
-    internal static class PhysicsApi
+    [Flags]
+    public enum CollisionLayer : byte
     {
+        NoCollision,
+        NonMoving,
+        Moving,
+    }
+
+    public enum MotionType
+    {
+        Static,
+        Kinematic,
+        Dynamic,
+    }
+
+    internal static class PhysicsApi
+    {        
+        private static Dictionary<uint, RigidbodyComponent> BodyIdToRigidbody = new Dictionary<uint, RigidbodyComponent>();
+        
         private static unsafe void* PhysicsSystem { get; set; }
 
+        public static RigidbodyComponent GetRigidbodyById(uint bodyId)
+        {
+            return BodyIdToRigidbody[bodyId];
+        }
+
+        public static void CollisionEnter(uint thisId, uint otherId)
+        {
+            if (!BodyIdToRigidbody.TryGetValue(thisId, out var thisBody) ||
+                !BodyIdToRigidbody.TryGetValue(otherId, out var otherBody))
+            {
+                return;
+            }
+
+            thisBody.GameObject.CollisionEnter(otherBody);
+            otherBody.GameObject.CollisionEnter(thisBody);
+        }
+
+        public static void CollisionStay(uint thisId, uint otherId)
+        {
+            if (!BodyIdToRigidbody.TryGetValue(thisId, out var thisBody) ||
+                !BodyIdToRigidbody.TryGetValue(otherId, out var otherBody))
+            {
+                return;
+            }
+
+            thisBody.GameObject.CollisionStay(otherBody);
+            otherBody.GameObject.CollisionStay(thisBody);
+        }
+
+        public static void CollisionExit(uint thisId, uint otherId)
+        {
+            if (!BodyIdToRigidbody.TryGetValue(thisId, out var thisBody) ||
+                !BodyIdToRigidbody.TryGetValue(otherId, out var otherBody))
+            {
+                return;
+            }
+
+            thisBody.GameObject.CollisionExit(otherBody);
+            otherBody.GameObject.CollisionExit(thisBody);
+        }
+
         public static uint CreateBody(
+            RigidbodyComponent rigidbodyComponent,
             Vector3 position,
             Quaternion rotation,
             MotionType motionType)
@@ -16,7 +77,9 @@ namespace GameplayCore.EngineApi
             unsafe
             {
                 var inPosition = new Vector4(position, position.Z);
-                return Internal_CreateBody(PhysicsSystem, inPosition, rotation, motionType);
+                var bodyId = Internal_CreateBody(PhysicsSystem, inPosition, rotation, motionType);
+                BodyIdToRigidbody[bodyId] = rigidbodyComponent;
+                return bodyId;
             }
         }
 
@@ -24,6 +87,7 @@ namespace GameplayCore.EngineApi
         {
             unsafe
             {
+                BodyIdToRigidbody.Remove(bodyId);
                 Internal_DestroyBody(PhysicsSystem, bodyId);
             }
         }

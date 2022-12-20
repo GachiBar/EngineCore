@@ -67,6 +67,9 @@ Engine::Engine(const Runtime& runtime)
 	, screen_width_property_(runtime_.GetType(Types::kScreen).GetProperty("Width"))
 	, screen_height_property_(runtime_.GetType(Types::kScreen).GetProperty("Height"))
 	, mouse_position_property_(runtime_.GetType(Types::kInput).GetProperty("MousePosition"))
+	, collision_enter_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionEnter", 2))
+	, collision_stay_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionStay", 2))
+	, collision_exit_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionExit", 2))
 	, is_running_(false)
 {}
 
@@ -116,6 +119,7 @@ void Engine::RunFrame() {
 		lag_ -= kTimestep;
 		scene_->FixedUpdate();
 		physics_system_.Update(kDt, kCollisionSteps, kIntegrationSubSteps, &temp_allocator_, &job_system_);
+		SendCollisions();
 	}
 
 	scene_->Update();
@@ -163,6 +167,8 @@ void Engine::InitPhysicsSystem()
 		layer_interface_,
 		BroadPhaseLayers::IsCanCollide,
 		CollisionLayers::IsCanCollide);
+
+	physics_system_.SetContactListener(&contact_listener_);
 }
 
 void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
@@ -290,6 +296,34 @@ void Engine::SendInputData() {
 	auto mouse_position = InputManager::getInstance().GetMousePosition();
 	DirectX::SimpleMath::Vector2 point(mouse_position.first, mouse_position.second);
 	mouse_position_property_.SetValue(&point);
+}
+
+void Engine::SendCollisions() {
+	void* params[2];
+
+	while (contact_listener_.IsAnyCollisionsEnter()) {
+		auto pair = contact_listener_.PopCollisionsEnter();
+		params[0] = &pair.body_id_1;
+		params[1] = &pair.body_id_2;
+
+		collision_enter_method_.Invoke(params);
+	}
+
+	while (contact_listener_.IsAnyCollisionsStay()) {
+		auto pair = contact_listener_.PopCollisionsStay();
+		params[0] = &pair.body_id_1;
+		params[1] = &pair.body_id_2;
+
+		collision_stay_method_.Invoke(params);
+	}
+
+	while (contact_listener_.IsAnyCollisionsExit()) {
+		auto pair = contact_listener_.PopCollisionsExit();
+		params[0] = &pair.body_id_1;
+		params[1] = &pair.body_id_2;
+
+		collision_exit_method_.Invoke(params);
+	}
 }
 
 #pragma region Renderer

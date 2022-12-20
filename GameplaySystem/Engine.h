@@ -4,6 +4,7 @@
 #include "Runtime.h"
 #include "Scene.h"
 #include "BPLayerInterfaceImplementation.h"
+#include "EngineContactListener.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 #include "../Core/libs/loguru/loguru.hpp"
 
@@ -63,6 +64,7 @@ private:
 	JPH::TempAllocatorImpl temp_allocator_;
 	JPH::JobSystemThreadPool job_system_;
 	BPLayerInterfaceImplementation layer_interface_;
+	EngineContactListener contact_listener_;
 	JPH::PhysicsSystem physics_system_;
 
 	std::shared_ptr<Scene> scene_;
@@ -82,6 +84,10 @@ private:
 	Property screen_height_property_;
 	Property mouse_position_property_;
 
+	Method collision_enter_method_;
+	Method collision_stay_method_;
+	Method collision_exit_method_;
+
 	bool is_running_;
 
 	void InitRenderer(HWND handle, size_t width, size_t height);	
@@ -95,6 +101,7 @@ private:
 	void SendTimeData();
 	void SendScreenData();
 	void SendInputData();
+	void SendCollisions();
 
 #pragma region Renderer
 

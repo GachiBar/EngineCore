@@ -172,6 +172,7 @@
     <ClInclude Include="BroadPhaseLayers.h" />
     <ClInclude Include="BroadPhaseMaskLayerFilter.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="EngineContactListener.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Engine.h" />

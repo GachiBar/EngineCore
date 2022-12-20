@@ -163,6 +163,30 @@ namespace GameplayCore
             IsInitialized = false;
         }
 
+        public void CollisionEnter(RigidbodyComponent rigidbody)
+        {
+            foreach(var component in _updatableComponents)
+            {
+                component.OnCollisionEnter(rigidbody);
+            }
+        }
+
+        public void CollisionStay(RigidbodyComponent rigidbody)
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.OnCollisionStay(rigidbody);
+            }
+        }
+
+        public void CollisionExit(RigidbodyComponent rigidbody)
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.OnCollisionExit(rigidbody);
+            }
+        }
+
         public T AddComponent<T>() where T : Component, new()
         {
             return (T)AddComponent(typeof(T));

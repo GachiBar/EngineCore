@@ -1,7 +1,6 @@
 ﻿using GameplayCore.Editor;
 using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
-using GameplayCore.Physics;
 using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
@@ -90,18 +89,29 @@ namespace GameplayCore.Components
         {
             if (_transformComponent != null)
             {
+                // We should do this because some bodies can be removed during the game.
+                // This can lead to strange behaviour.
+                PhysicsApi.SetActive(BodyId, true);
+
                 if (_position != _transformComponent.Position ||
                     _rotation != _transformComponent.Rotation)
                 {
                     PhysicsApi.SetBodyPosition(BodyId, _transformComponent.Position);
-                    PhysicsApi.SetBodyRotation(BodyId, _transformComponent.Rotation);
-                    PhysicsApi.SetActive(BodyId, true);
+                    PhysicsApi.SetBodyRotation(BodyId, _transformComponent.Rotation);                    
                 }
 
                 _position = PhysicsApi.GetBodyPosition(BodyId);
                 _rotation = PhysicsApi.GetBodyRotation(BodyId);
                 _transformComponent.Position = _position;
                 _transformComponent.Rotation = _rotation;
+            }
+        }
+
+        public override void Terminate()
+        {
+            if (_bodyId != 0)
+            {
+                PhysicsApi.DestroyBody(_bodyId);
             }
         }
 
@@ -138,6 +148,7 @@ namespace GameplayCore.Components
         {
             _transformComponent = GameObject.GetComponent<TransformComponent>();
             _bodyId = PhysicsApi.CreateBody(
+                this,
                 _position, 
                 _rotation,
                 _isKinematic ? MotionType.Kinematic : MotionType.Dynamic);
@@ -155,6 +166,7 @@ namespace GameplayCore.Components
         protected override void OnDetach(GameObject gameObject)
         {
             PhysicsApi.DestroyBody(_bodyId);
+            _bodyId = 0;
 
             gameObject.ComponentAdded -= OnComponentAdded;
             gameObject.ComponentRemoved -= OnComponentRemoved;            

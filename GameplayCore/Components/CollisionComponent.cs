@@ -1,6 +1,5 @@
 ﻿using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
-using GameplayCore.Physics;
 
 namespace GameplayCore.Components
 {
