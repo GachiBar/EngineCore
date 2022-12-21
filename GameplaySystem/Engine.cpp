@@ -407,9 +407,8 @@ MaterialData Engine::Internal_PullMaterial(size_t id)
 {
 	if(engine_->_materials.contains(id))
 		return engine_->_materials[id];
-
-	const MaterialData default_material = {DiffuseData(TextureData::Color(255,255,255,255)), NormalData(Float3Data::Color(1,0,0)), RoughnessData(0.0f), MetallicData(0.0f)};
-	return default_material;
+	
+	return MaterialData();
 }
 	
 void Engine::Internal_CommitMaterial(size_t id, MaterialData data)

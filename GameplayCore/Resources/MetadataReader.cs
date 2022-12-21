@@ -127,7 +127,40 @@ namespace GameplayCore.Resources
 
             return null;
         }
-        
+
+        public static void CreateMaterial(string basepath)
+        {
+            // Create new Material()
+            Material material = new Material();
+            
+            // Serialize -> string json
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {new ResourceJsonConverter()}
+            };
+            string json = JsonConvert.SerializeObject(material, options);
+            
+            // Generate material name
+            int number = 0;
+            Func<int, string> materialPath = (i) => Path.Combine(basepath, "material" + i.ToString() + ".material");
+            while (File.Exists(materialPath(number)))
+                number++;
+
+            string path = materialPath(number);
+            Console.WriteLine($"Material filename: {path}");
+
+            // Write json in file
+            FileStream file = File.OpenWrite(path);
+            StreamWriter writer = new StreamWriter(file);
+            writer.Write(json);
+            writer.Dispose();
+            file.Close();
+            
+            // Generate material metadata
+            Create(path);
+        }
+
         private static IEnumerable<(System.Guid, string)> IterateAllResourcesFast()
         {
             string path = Path.Combine(Path.GetFullPath("."), BasePath);
@@ -217,7 +250,7 @@ namespace GameplayCore.Resources
                 case FileType.Texture:
                     return typeof(TextureAsset);
                 case FileType.Material:
-                    break;
+                    return typeof(MaterialAsset);;
                 case FileType.Meta:
                     return null;
                 case FileType.Other:

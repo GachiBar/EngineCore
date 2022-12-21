@@ -17,6 +17,7 @@ class MetadataReader
 {
 public:
     static std::optional<engine::Object> read_internal(const std::filesystem::path& path);
+    static void create_material_internal(const std::filesystem::path& base_path);
     static FileType GetTypeByClassName(const std::string& classname);
     static void CacheMethods(engine::Runtime& runtime);
 
@@ -24,6 +25,7 @@ public:
 
 private:
     static engine::Method* read_;
+    static engine::Method* create_material;
 
 private:
     static FileType get_file_type(const std::filesystem::directory_entry& entry);
