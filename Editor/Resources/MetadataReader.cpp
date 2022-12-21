@@ -43,31 +43,7 @@ void MetadataReader::CacheMethods(engine::Runtime& runtime)
 
 FileType MetadataReader::get_file_type(const std::filesystem::directory_entry& entry)
 {
-    if (entry.is_directory())
-        return FileType::Directory;
-
-    // Actually there is should be .meta search, but let it be here for now
-    if (entry.is_regular_file())
-    {
-        std::string extension = entry.path().filename().extension().generic_string();
-        if(extension == ".scene")
-            return FileType::Scene;
-        else if (extension == ".prefab")
-            return FileType::Prefab;
-        else if (extension == ".mesh" || extension == ".fbx" || extension == ".obj")
-            return FileType::Mesh;
-        else if (extension == ".material")
-            return FileType::Material;
-        else if (extension == ".texture" || extension == ".jpg" || extension == ".png")
-            return FileType::Texture;
-        else if (extension == ".meta")
-            return FileType::Meta;
-        else if (extension == ".txt")
-            return FileType::PlainText;
-    }
-
-    // std::cout << "Can't handle non-directory and non-file!\n";
-    return FileType::Other;
+    return GetTypeByPath(entry.path());
 }
 
 FileType MetadataReader::GetTypeByClassName(const std::string& classname)
@@ -84,6 +60,34 @@ FileType MetadataReader::GetTypeByClassName(const std::string& classname)
         return FileType::Texture;
     else if (classname == "TextAsset")
         return FileType::PlainText;
+
+    return FileType::Other;
+}
+
+FileType MetadataReader::GetTypeByPath(const std::filesystem::path& path)
+{
+    if (std::filesystem::is_directory(path))
+        return FileType::Directory;
+
+    // Actually there is should be .meta search, but let it be here for now
+    if (std::filesystem::is_regular_file(path))
+    {
+        const std::string extension = path.filename().extension().generic_string();
+        if(extension == ".scene")
+            return FileType::Scene;
+        else if (extension == ".prefab")
+            return FileType::Prefab;
+        else if (extension == ".mesh" || extension == ".fbx" || extension == ".obj")
+            return FileType::Mesh;
+        else if (extension == ".material")
+            return FileType::Material;
+        else if (extension == ".texture" || extension == ".jpg" || extension == ".png")
+            return FileType::Texture;
+        else if (extension == ".meta")
+            return FileType::Meta;
+        else if (extension == ".txt")
+            return FileType::PlainText;
+    }
 
     return FileType::Other;
 }

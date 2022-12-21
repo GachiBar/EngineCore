@@ -1,4 +1,4 @@
-﻿#include "ResourceDrawer.h"
+﻿#include "MaterialsEditor.h"
 
 #include <format>
 #include "imgui/imgui.h"
@@ -6,9 +6,8 @@
 #include "MetadataReader.h"
 #include "../../GameplaySystem/Object.h"
 
-void ResourceDrawer::Draw()
+void MaterialsEditor::Draw()
 {
-    ImGui::Begin("Resource Drawer");
     if(_selectedInstance == nullptr)
     {
         ImGui::Text("Nothing selected");
@@ -20,10 +19,9 @@ void ResourceDrawer::Draw()
     ImGui::Text(std::format("{}{}", "Path: ", _selected.path.generic_string()).c_str());
     ImGui::Text(std::format("{}{}", "Guid: ", _selected.Guid).c_str());
     object_drawer.DrawObject(*_selectedInstance, modifiedFields);
-    ImGui::End();
 }
 
-void ResourceDrawer::TrySelect(const std::filesystem::path& path)
+void MaterialsEditor::TrySelect(const std::filesystem::path& path)
 {
     try
     {

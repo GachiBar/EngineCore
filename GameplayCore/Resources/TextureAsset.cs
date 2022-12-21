@@ -3,7 +3,7 @@ using GameplayCore.EngineApi;
 
 namespace GameplayCore.Resources
 {
-    public class TextureAsset : Resource
+    public class TextureAsset : Resource, ILoadable
     {
         private ulong _id = ulong.MaxValue;
         public ulong Id => _id;

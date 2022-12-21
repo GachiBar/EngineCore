@@ -4,7 +4,7 @@ using GameplayCore.EngineApi;
 
 namespace GameplayCore.Resources
 {
-    public class MeshAsset : Resource
+    public class MeshAsset : Resource, ILoadable
     {
         private ulong _id = ulong.MaxValue;
         public ulong Id => _id;

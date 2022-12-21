@@ -4,7 +4,7 @@ using GameplayCore.Serialization;
 
 namespace GameplayCore.Resources
 {
-    public class MaterialAsset : Resource
+    public class MaterialAsset : Resource, ILoadable
     {
         [SerializeField] private Material _material;
         private ulong _id;
@@ -30,13 +30,25 @@ namespace GameplayCore.Resources
             // Why would you pull material from c++ side
             // TODO: Do something with dis or just remove method
         }
+        
+        public void LoadData()
+        {
+        }
 
+        public void SaveData()
+        {
+        }
+        
         public void Load()
         {
             if(_id != 0) return;
 
             ulong id = RenderApi.CalculateFreeMaterialId();
             _id = id;
+
+            // TODO: If _material == null -> Load from dist
+            // TODO: Texture load if there is a texture
+
             Commit();
         }
     }

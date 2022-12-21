@@ -19,6 +19,7 @@ public:
     static std::optional<engine::Object> read_internal(const std::filesystem::path& path);
     static void create_material_internal(const std::filesystem::path& base_path);
     static FileType GetTypeByClassName(const std::string& classname);
+    static FileType GetTypeByPath(const std::filesystem::path& path);
     static void CacheMethods(engine::Runtime& runtime);
 
     static const std::filesystem::path AssetsPath;// = std::filesystem::current_path() / "Assets";

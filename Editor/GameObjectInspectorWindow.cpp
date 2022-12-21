@@ -49,7 +49,6 @@ GameObjectInspectorWindow::~GameObjectInspectorWindow()
 
 void GameObjectInspectorWindow::Draw()
 {
-	ImGui::Begin("Property Window");
 	if (!game_object.get())
 	{
 		ImGui::End();
@@ -66,7 +65,6 @@ void GameObjectInspectorWindow::Draw()
 
 	ImGui::Separator();
 	DrawAddComponentPanel();
-	ImGui::End();	
 }
 
 void GameObjectInspectorWindow::CacheComponentsData()
