@@ -206,6 +206,8 @@ namespace GameplayCore
 
         internal unsafe void SetupImGui(IntPtr context, IntPtr allocFunc, IntPtr freeFunc)
         {
+            Log.PrintMessage("Hello", Duration: 0);
+
             ImGui.SetCurrentContext(context);
             ImGui.SetAllocatorFunctions(allocFunc, freeFunc);
         }

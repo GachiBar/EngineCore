@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "imgui/imgui_internal.h"
+
 bool GameLayer::GetIsPlaying() const {
 	return is_playing;
 }
@@ -21,7 +23,7 @@ void GameLayer::SetIsPlaying(bool value) {
 }
 
 GameLayer::GameLayer(LayerStack* owner)
-	: Layer(owner, "EditorLayer")
+	: Layer(owner, "GameLayer")
 	, scene(new engine::Scene())
 	, is_playing(false)
 {
@@ -36,11 +38,12 @@ void GameLayer::OnAttach()
 
 	ImGuiMemAllocFunc memAllocFunc[1];
 	ImGuiMemFreeFunc memFreeFunc[1];
+
 	void* userData;
 	ImGui::GetAllocatorFunctions(memAllocFunc, memFreeFunc, &userData);
 
 	void* params[3];
-	params[0] = ImGui::GetCurrentContext();
+	params[0] = &GImGui;
 	params[1] = &memAllocFunc;
 	params[2] = &memFreeFunc;
 
