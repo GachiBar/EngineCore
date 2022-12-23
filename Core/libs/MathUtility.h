@@ -7,14 +7,14 @@ struct FMath
 	template <class T>
 	static constexpr inline T Abs(const T A)
 	{
-		return (A >= (T)0) ? A : -A;
+		return (A >= static_cast<T>(0)) ? A : -A;
 	}
 
 	/** Returns 1, 0, or -1 depending on relation of T to 0 */
 	template <class T>
 	static constexpr inline T Sign(const T A)
 	{
-		return (A > (T)0) ? (T)1 : ((A < (T)0) ? (T)-1 : (T)0);
+		return (A > static_cast<T>(0)) ? static_cast<T>(1) : ((A < static_cast<T>(0)) ? static_cast<T>(-1) : static_cast<T>(0));
 	}
 
 	/** Returns higher value in a generic way */
@@ -51,6 +51,13 @@ struct FMath
 	static constexpr inline T Clamp(const T X, const T Min, const T Max)
 	{
 		return (X < Min) ? Min : (X < Max) ? X : Max;
+	}
+
+	// Returns a random number [0..1)
+	static float Rand()
+	{
+		//	return ((float)(rand() & 0xffff)/(float)0xffff);
+		return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 	}
 
 };

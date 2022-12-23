@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include\spdlog</IncludePath>
+    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include\spdlog;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\Recast\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\DetourTileCache\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\DetourCrowd\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\Detour\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\DebugUtils\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include</IncludePath>
@@ -141,7 +141,28 @@
     <ClInclude Include="Interfaces\ILayer.h" />
     <ClInclude Include="Interfaces\IRender.h" />
     <ClInclude Include="Interfaces\IWindowsApplication.h" />
+    <ClInclude Include="libs\DebugUtils\Include\DebugDraw.h" />
+    <ClInclude Include="libs\DebugUtils\Include\DetourDebugDraw.h" />
+    <ClInclude Include="libs\DebugUtils\Include\RecastDebugDraw.h" />
+    <ClInclude Include="libs\DebugUtils\Include\RecastDump.h" />
     <ClInclude Include="libs\Delegates.h" />
+    <ClInclude Include="libs\DetourCrowd\Include\DetourCrowd.h" />
+    <ClInclude Include="libs\DetourCrowd\Include\DetourLocalBoundary.h" />
+    <ClInclude Include="libs\DetourCrowd\Include\DetourObstacleAvoidance.h" />
+    <ClInclude Include="libs\DetourCrowd\Include\DetourPathCorridor.h" />
+    <ClInclude Include="libs\DetourCrowd\Include\DetourPathQueue.h" />
+    <ClInclude Include="libs\DetourCrowd\Include\DetourProximityGrid.h" />
+    <ClInclude Include="libs\DetourTileCache\Include\DetourTileCache.h" />
+    <ClInclude Include="libs\DetourTileCache\Include\DetourTileCacheBuilder.h" />
+    <ClInclude Include="libs\Detour\Include\DetourAlloc.h" />
+    <ClInclude Include="libs\Detour\Include\DetourAssert.h" />
+    <ClInclude Include="libs\Detour\Include\DetourCommon.h" />
+    <ClInclude Include="libs\Detour\Include\DetourMath.h" />
+    <ClInclude Include="libs\Detour\Include\DetourNavMesh.h" />
+    <ClInclude Include="libs\Detour\Include\DetourNavMeshBuilder.h" />
+    <ClInclude Include="libs\Detour\Include\DetourNavMeshQuery.h" />
+    <ClInclude Include="libs\Detour\Include\DetourNode.h" />
+    <ClInclude Include="libs\Detour\Include\DetourStatus.h" />
     <ClInclude Include="libs\imgui_sugar.hpp" />
     <ClInclude Include="libs\ini\ini.h" />
     <ClInclude Include="libs\loguru\loguru.hpp" />
@@ -149,13 +170,46 @@
     <ClInclude Include="libs\MathUtility.h" />
     <ClInclude Include="libs\MemoryUtility.h" />
     <ClInclude Include="libs\nameof.hpp" />
+    <ClInclude Include="libs\Recast\Include\Recast.h" />
+    <ClInclude Include="libs\Recast\Include\RecastAlloc.h" />
+    <ClInclude Include="libs\Recast\Include\RecastAssert.h" />
     <ClInclude Include="Windows\GenericWindow.h" />
     <ClInclude Include="Windows\GenericWindowDefinition.h" />
     <ClInclude Include="Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="libs\DebugUtils\Source\DebugDraw.cpp" />
+    <ClCompile Include="libs\DebugUtils\Source\DetourDebugDraw.cpp" />
+    <ClCompile Include="libs\DebugUtils\Source\RecastDebugDraw.cpp" />
+    <ClCompile Include="libs\DebugUtils\Source\RecastDump.cpp" />
     <ClCompile Include="libs\Delegates.cpp" />
+    <ClCompile Include="libs\DetourCrowd\Source\DetourCrowd.cpp" />
+    <ClCompile Include="libs\DetourCrowd\Source\DetourLocalBoundary.cpp" />
+    <ClCompile Include="libs\DetourCrowd\Source\DetourObstacleAvoidance.cpp" />
+    <ClCompile Include="libs\DetourCrowd\Source\DetourPathCorridor.cpp" />
+    <ClCompile Include="libs\DetourCrowd\Source\DetourPathQueue.cpp" />
+    <ClCompile Include="libs\DetourCrowd\Source\DetourProximityGrid.cpp" />
+    <ClCompile Include="libs\DetourTileCache\Source\DetourTileCache.cpp" />
+    <ClCompile Include="libs\DetourTileCache\Source\DetourTileCacheBuilder.cpp" />
+    <ClCompile Include="libs\Detour\Source\DetourAlloc.cpp" />
+    <ClCompile Include="libs\Detour\Source\DetourAssert.cpp" />
+    <ClCompile Include="libs\Detour\Source\DetourCommon.cpp" />
+    <ClCompile Include="libs\Detour\Source\DetourNavMesh.cpp" />
+    <ClCompile Include="libs\Detour\Source\DetourNavMeshBuilder.cpp" />
+    <ClCompile Include="libs\Detour\Source\DetourNavMeshQuery.cpp" />
+    <ClCompile Include="libs\Detour\Source\DetourNode.cpp" />
     <ClCompile Include="libs\loguru\loguru.cpp" />
+    <ClCompile Include="libs\Recast\Source\Recast.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastAlloc.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastArea.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastAssert.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastContour.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastFilter.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastLayers.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastMesh.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastMeshDetail.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastRasterization.cpp" />
+    <ClCompile Include="libs\Recast\Source\RecastRegion.cpp" />
     <ClCompile Include="Windows\GenericWindow.cpp" />
     <ClCompile Include="Windows\WindowsWindow.cpp" />
   </ItemGroup>
