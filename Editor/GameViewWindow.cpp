@@ -17,7 +17,7 @@
 GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
                                                                              editor_layer(InEditorLayer)
 {
-	SelectedRenderTarget = *editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList().rbegin();
+	SelectedRenderTarget = "preAAcolor";
 
 	LogManager::getInstance().ViewportMessageAdded.AddRaw(this, &GameViewWindow::OnLogMessageAdded);
 	LogManager::getInstance().ViewportMessageRemoved.AddRaw(this, &GameViewWindow::OnLogMessageRemoved);
@@ -63,6 +63,10 @@ void GameViewWindow::Draw()
 		with_Child("GameRender", {}, false,  ImGuiWindowFlags_NoBackground)
 		{
 			{
+				if (Texture == nullptr)
+					Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
+						SelectedRenderTarget.c_str()).texture;
+
 				if (bIsPlaying) {
 					ImGui::GetWindowDrawList()->AddImage(Texture, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
 					editor_layer->GetApp()->DrawGameUI();

@@ -422,7 +422,7 @@ void Engine::Internal_SetViewProjection(
 	DirectX::SimpleMath::Matrix view,
 	DirectX::SimpleMath::Matrix projection)
 {
-	renderer->SetRenderData({ ellapsed, view, projection });
+	renderer->SetRenderData({ ellapsed, view, projection, {0,1,0,0} });
 }
 
 bool Engine::Internal_IsIdUsed(RenderDevice* renderer, size_t id)

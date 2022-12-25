@@ -4,10 +4,10 @@
     "Components": [
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "Id": 1,
+        "Id": 3,
         "Metallic": 0.0,
         "Roughness": 0.0,
-        "_asset": null,
+        "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
         "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
       },
       {
@@ -20,14 +20,14 @@
           "W": 1.0
         },
         "_localScale": {
-          "X": 1.0,
-          "Y": 1.0,
-          "Z": 1.0
+          "X": 5.0,
+          "Y": 0.5,
+          "Z": 5.0
         },
         "_localPosition": {
           "X": 0.0,
           "Y": 0.0,
-          "Z": -3.24132061
+          "Z": 0.0
         },
         "_editorEuler": {
           "X": 0.0,
@@ -113,9 +113,9 @@
           "Z": 1.0
         },
         "_localPosition": {
-          "X": 0.7084738,
-          "Y": 1.49999988,
-          "Z": -4.513403
+          "X": -1.56304312,
+          "Y": 1.47999978,
+          "Z": 0.750011563
         },
         "_editorEuler": {
           "X": 0.0,
@@ -156,10 +156,10 @@
         "Type": "GameplayCore.Components.TransformComponent",
         "_parent": "4bc85478-a2d3-419e-bb2d-d850b6f14421",
         "_localRotation": {
-          "X": -0.0268934444,
-          "Y": -0.8008089,
-          "Z": -0.0360607766,
-          "W": 0.5972281
+          "X": -0.176642984,
+          "Y": -0.690781653,
+          "Z": -0.180069253,
+          "W": 0.6776378
         },
         "_localScale": {
           "X": 1.0,
@@ -172,9 +172,9 @@
           "Z": 0.0
         },
         "_editorEuler": {
-          "X": -5.156624,
-          "Y": -106.570244,
-          "Z": 2.14310788E-07
+          "X": -29.220829,
+          "Y": -91.1006241,
+          "Z": 0.0
         },
         "_gameObject": "4bbef915-bf19-4a4c-95bd-893de7c81afd"
       },
@@ -194,9 +194,9 @@
         "Type": "GameplayCore.Components.TransformComponent",
         "_parent": null,
         "_localRotation": {
-          "X": 8.428679E-07,
-          "Y": 5.278572E-07,
-          "Z": -3.08176936E-07,
+          "X": 2.56941644E-06,
+          "Y": 4.158414E-06,
+          "Z": -2.47216576E-06,
           "W": 1.0
         },
         "_localScale": {
@@ -205,14 +205,14 @@
           "Z": 1.0
         },
         "_localPosition": {
-          "X": -2.638836E-06,
-          "Y": 2.010075,
-          "Z": 9.879904E-06
+          "X": 2.63423133,
+          "Y": 1.49998975,
+          "Z": 2.7958
         },
         "_editorEuler": {
-          "X": 9.65855652E-05,
-          "Y": 6.04879424E-05,
-          "Z": -3.531442E-05
+          "X": 0.0002944346,
+          "Y": 0.0004765184,
+          "Z": -0.0002832881
         },
         "_gameObject": "b5731838-dcd1-4e05-a4dc-26dcad629b11"
       },
@@ -260,9 +260,9 @@
           "Z": 1.0
         },
         "_localPosition": {
-          "X": -2.94654584,
-          "Y": 1.49999988,
-          "Z": -5.432906
+          "X": -1.97778738,
+          "Y": 1.49173319,
+          "Z": -3.4092176
         },
         "_editorEuler": {
           "X": 0.0,
@@ -288,7 +288,7 @@
         "Id": 4,
         "Metallic": 0.0,
         "Roughness": 0.0,
-        "_asset": "aec2bb73-3ee1-495c-a720-8e68b07207fd",
+        "_asset": "c32d78d3-cddc-4631-a165-5dd09f0e9ec1",
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       }
     ]
@@ -311,9 +311,9 @@
           "Z": 1.0
         },
         "_localPosition": {
-          "X": -5.98788071,
-          "Y": 4.59290361,
-          "Z": -5.617063
+          "X": -1.45236957,
+          "Y": 6.29647255,
+          "Z": -5.42174339
         },
         "_editorEuler": {
           "X": 0.0,
@@ -337,6 +337,289 @@
       {
         "Type": "GameplayCore.Components.TestCollisionComponent",
         "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 4,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": "c32d78d3-cddc-4631-a165-5dd09f0e9ec1",
+        "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
+      }
+    ]
+  },
+  {
+    "Guid": "828a6b37-c48f-4600-8d7c-1191d65c28d7",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 0.5,
+          "Y": 2.0,
+          "Z": 5.0
+        },
+        "_localPosition": {
+          "X": -5.5,
+          "Y": 1.5,
+          "Z": 0.0
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "828a6b37-c48f-4600-8d7c-1191d65c28d7"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 3,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_gameObject": "828a6b37-c48f-4600-8d7c-1191d65c28d7"
+      },
+      {
+        "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "_size": {
+          "X": 1.0,
+          "Y": 4.0,
+          "Z": 10.0
+        },
+        "_gameObject": "828a6b37-c48f-4600-8d7c-1191d65c28d7"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
+        "_isKinematic": true,
+        "_mass": 1.0,
+        "_gameObject": "828a6b37-c48f-4600-8d7c-1191d65c28d7"
+      }
+    ]
+  },
+  {
+    "Guid": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 0.5,
+          "Y": 2.0,
+          "Z": 5.0
+        },
+        "_localPosition": {
+          "X": 5.5,
+          "Y": 1.5,
+          "Z": 0.0
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 3,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_gameObject": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73"
+      },
+      {
+        "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "_size": {
+          "X": 1.0,
+          "Y": 4.0,
+          "Z": 10.0
+        },
+        "_gameObject": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
+        "_isKinematic": true,
+        "_mass": 1.0,
+        "_gameObject": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73"
+      }
+    ]
+  },
+  {
+    "Guid": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 5.0,
+          "Y": 2.0,
+          "Z": 0.5
+        },
+        "_localPosition": {
+          "X": 0.0,
+          "Y": 1.5,
+          "Z": 5.5
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 3,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_gameObject": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae"
+      },
+      {
+        "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "_size": {
+          "X": 10.0,
+          "Y": 4.0,
+          "Z": 1.0
+        },
+        "_gameObject": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
+        "_isKinematic": true,
+        "_mass": 1.0,
+        "_gameObject": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae"
+      }
+    ]
+  },
+  {
+    "Guid": "236e4589-3983-4422-86ea-399c3f2052ea",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 5.0,
+          "Y": 2.0,
+          "Z": 0.5
+        },
+        "_localPosition": {
+          "X": 0.0,
+          "Y": 1.5,
+          "Z": -5.5
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "236e4589-3983-4422-86ea-399c3f2052ea"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 3,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_gameObject": "236e4589-3983-4422-86ea-399c3f2052ea"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
+        "_isKinematic": true,
+        "_mass": 1.0,
+        "_gameObject": "236e4589-3983-4422-86ea-399c3f2052ea"
+      },
+      {
+        "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "_size": {
+          "X": 10.0,
+          "Y": 4.0,
+          "Z": 1.0
+        },
+        "_gameObject": "236e4589-3983-4422-86ea-399c3f2052ea"
+      }
+    ]
+  },
+  {
+    "Guid": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 1.90234852,
+          "Y": 1.23614669,
+          "Z": 0.0
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": false,
+        "_isKinematic": false,
+        "_mass": 1.0,
+        "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
+      },
+      {
+        "Type": "GameplayCore.Components.SphereCollisionComponent",
+        "_radius": 0.5,
+        "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
+      },
+      {
+        "Type": "GameplayCore.Components.RemoveOnTouchComponent",
+        "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "Id": 1,
+        "Metallic": 0.0,
+        "Roughness": 0.0,
+        "_asset": null,
+        "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
       }
     ]
   }
