@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\include\spdlog;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\Recast\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\DetourTileCache\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\DetourCrowd\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\Detour\Include;D:\VisualStudio\Repos\KtripEngine\EngineCore\Core\libs\DebugUtils\Include</IncludePath>
+    <IncludePath>$(IncludePath);$(SolutionDir)..\DX11RenderEngine\SimpleMath\include;$(SolutionDir)Core\libs\include;$(SolutionDir)Core\libs\include\spdlog;$(SolutionDir)Core\libs\Recast\Include;$(SolutionDir)Core\libs\DetourTileCache\Include;$(SolutionDir)Core\libs\DetourCrowd\Include;$(SolutionDir)Core\libs\Detour\Include;$(SolutionDir)Core\libs\DebugUtils\Include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include</IncludePath>
