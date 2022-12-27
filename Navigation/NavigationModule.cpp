@@ -9,6 +9,7 @@
 
 bool NavigationModule::Build()
 {
+	
 	if (m_geom)
 		m_geom->loadTest();
 	if (!m_geom || !m_geom->getMesh())
@@ -386,6 +387,6 @@ bool NavigationModule::Build()
 	//m_ctx->log(RC_LOG_PROGRESS, ">> Polymesh: %d vertices  %d polygons", m_pmesh->nverts, m_pmesh->npolys);
 
 	//m_totalBuildTimeMs = m_ctx->getAccumulatedTime(RC_TIMER_TOTAL) / 1000.0f;
-
+	
 	return true;
 }

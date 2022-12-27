@@ -200,5 +200,8 @@
     <ClInclude Include="ObjectDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="coroutine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

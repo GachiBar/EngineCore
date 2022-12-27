@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "Windows/GenericWindow.h"
+#include "../Navigation/NavigationModule.h"
 
 EditorApplication::EditorApplication()
 	: Application()
@@ -15,6 +16,9 @@ void EditorApplication::OnSetup()
 	Application::OnSetup();
 
 	InputManager::getInstance().input_settings->AddDefaultEditorExclusiveKeys();
+
+	NavigationModule nav_mod = {};
+	nav_mod.Build();
 }
 
 void EditorApplication::OnStart()
