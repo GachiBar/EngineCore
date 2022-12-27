@@ -1,0 +1,70 @@
+#pragma once
+#include "libs/Recast/Include/Recast.h"
+
+enum SamplePartitionType
+{
+	SAMPLE_PARTITION_WATERSHED,
+	SAMPLE_PARTITION_MONOTONE,
+	SAMPLE_PARTITION_LAYERS
+};
+
+enum SamplePolyAreas
+{
+	SAMPLE_POLYAREA_GROUND,
+	SAMPLE_POLYAREA_WATER,
+	SAMPLE_POLYAREA_ROAD,
+	SAMPLE_POLYAREA_DOOR,
+	SAMPLE_POLYAREA_GRASS,
+	SAMPLE_POLYAREA_JUMP
+};
+
+enum SamplePolyFlags
+{
+	SAMPLE_POLYFLAGS_WALK = 0x01,		// Ability to walk (ground, grass, road)
+	SAMPLE_POLYFLAGS_SWIM = 0x02,		// Ability to swim (water).
+	SAMPLE_POLYFLAGS_DOOR = 0x04,		// Ability to move through doors.
+	SAMPLE_POLYFLAGS_JUMP = 0x08,		// Ability to jump.
+	SAMPLE_POLYFLAGS_DISABLED = 0x10,		// Disabled polygon
+	SAMPLE_POLYFLAGS_ALL = 0xffff	// All abilities.
+};
+
+class NavigationModule
+{
+protected:
+	class InputGeom* m_geom;
+	unsigned char* m_triareas;
+	bool m_keepInterResults;
+
+	float m_cellSize;
+	float m_cellHeight;
+	float m_agentHeight;
+	float m_agentRadius;
+	float m_agentMaxClimb;
+	float m_agentMaxSlope;
+	float m_regionMinSize;
+	float m_regionMergeSize;
+	float m_edgeMaxLen;
+	float m_edgeMaxError;
+	float m_vertsPerPoly;
+	float m_detailSampleDist;
+	float m_detailSampleMaxError;
+
+	bool m_filterLowHangingObstacles;
+	bool m_filterLedgeSpans;
+	bool m_filterWalkableLowHeightSpans;
+
+	rcCompactHeightfield* m_chf;
+	int m_partitionType;
+
+	rcContourSet* m_cset;
+	rcPolyMesh* m_pmesh;
+	rcPolyMeshDetail* m_dmesh;
+	class dtNavMesh* m_navMesh;
+	class dtNavMeshQuery* m_navQuery;
+public:
+	bool Build();
+
+	rcConfig m_cfg;
+	rcHeightfield* m_solid;
+};
+
