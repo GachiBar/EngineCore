@@ -18,7 +18,13 @@ void MaterialsEditor::Draw()
     std::vector<std::string> modifiedFields;
     ImGui::Text(std::format("{}{}", "Path: ", _selected.path.generic_string()).c_str());
     ImGui::Text(std::format("{}{}", "Guid: ", _selected.Guid).c_str());
-    object_drawer.DrawObject(*_selectedInstance, modifiedFields);
+
+    // Draw material field
+    if(_material != nullptr && object_drawer.DrawObject(*_material, modifiedFields))
+    {
+        // If field has changed -> apply settings to file
+        _selectedInstance->GetType().GetMethod("SaveData").Invoke(*_selectedInstance);
+    }
 }
 
 void MaterialsEditor::TrySelect(const std::filesystem::path& path)
@@ -30,6 +36,17 @@ void MaterialsEditor::TrySelect(const std::filesystem::path& path)
         
         // Save resource in _selectedInstance
         _selectedInstance = std::make_shared<engine::Object>(std::move(resource.value()));
+
+        // Load Material from file
+        _selectedInstance->GetType().GetMethod("LoadData").Invoke(*_selectedInstance);
+
+        auto raw_pointer = _selectedInstance->GetType().GetField("_material").GetValue(*_selectedInstance);
+        if(raw_pointer.has_value())
+            _material = std::make_shared<engine::Object>(raw_pointer.value());
+        else
+        {
+            _material == nullptr;
+        }
     }
     catch (std::exception& e)
     {

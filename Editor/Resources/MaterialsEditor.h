@@ -18,6 +18,7 @@ public:
 private:
     ResourceData _selected;
     std::shared_ptr<engine::Object> _selectedInstance;
+    std::shared_ptr<engine::Object> _material;
 
     ObjectDrawer object_drawer;
 };

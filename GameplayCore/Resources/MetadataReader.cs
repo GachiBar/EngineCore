@@ -128,7 +128,7 @@ namespace GameplayCore.Resources
             return null;
         }
 
-        public static void CreateMaterial(string basepath)
+        public static string CreateMaterial(string basepath)
         {
             // Create new Material()
             Material material = new Material();
@@ -137,7 +137,7 @@ namespace GameplayCore.Resources
             JsonSerializerSettings options = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
-                Converters = {new ResourceJsonConverter()}
+                Converters = {new ResourceGuidJsonConverter()}
             };
             string json = JsonConvert.SerializeObject(material, options);
             
@@ -159,6 +159,8 @@ namespace GameplayCore.Resources
             
             // Generate material metadata
             Create(path);
+
+            return path;
         }
 
         private static IEnumerable<(System.Guid, string)> IterateAllResourcesFast()
