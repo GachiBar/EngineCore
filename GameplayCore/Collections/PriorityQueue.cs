@@ -32,7 +32,7 @@ namespace GameplayCore.Collections
 
             while (true)
             {
-                if (index == _items.Count || _items[index].Priority.CompareTo(priority) < 0)
+                if (index == _items.Count || _items[index].Priority.CompareTo(priority) >= 0)
                 {
                     _items.Insert(index, (item, priority));
                     break;

@@ -1,11 +1,12 @@
 ﻿using GameplayCore.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace GameplayCore.AI
 {
     public class Planner
     {
+        private const int IterationsTreshold = 100;
+
         private class Node
         {
             public int Cost;
@@ -16,6 +17,7 @@ namespace GameplayCore.AI
 
         public Plan MakePlan(State state, Goal goal, List<Action> actions)
         {
+            int iterations = 0;
             var queue = new PriorityQueue<Node, int>();
             var visited = new List<Node>();
 
@@ -30,6 +32,12 @@ namespace GameplayCore.AI
 
             while (queue.Count > 0)
             {
+                // If we reach the iterations treshold we consider that the goal is unattainable.
+                if (iterations >= IterationsTreshold)
+                {
+                    return null;
+                }
+
                 current = queue.Dequeue();
 
                 if (goal.DistanceTo(current.State) == 0)
@@ -58,23 +66,29 @@ namespace GameplayCore.AI
 
                                 if (node.Cost > neighbour.Cost)
                                 {
-                                    var priority = goal.DistanceTo(node.State);
+                                    var distance = goal.DistanceTo(node.State);
                                     node.Cost = neighbour.Cost;
                                     node.Parent = neighbour.Parent;
                                     node.Action = neighbour.Action;
-                                    queue.Enqueue(node, node.Cost + priority);
+                                    queue.Enqueue(node, node.Cost + distance);
                                 }
                             }
                         }
 
                         if (isShouldMarkAsVisited)
                         {
-                            var priority = goal.DistanceTo(neighbour.State);
+                            var distance = goal.DistanceTo(neighbour.State);
                             visited.Add(neighbour);
-                            queue.Enqueue(neighbour, neighbour.Cost + priority);
+                            queue.Enqueue(neighbour, neighbour.Cost + distance);
                         }
                     }
                 }
+            }
+
+            // We can't reach goal.
+            if (goal.DistanceTo(current.State) > 0)
+            {
+                return null;
             }
 
             var planActions = new List<Action>();
