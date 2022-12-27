@@ -3,6 +3,8 @@
 #include <imgui/imgui.h>
 #include <SimpleMath.h>
 
+#include "Float3Data.h"
+#include "TextureData.h"
 #include "Resources/MetadataReader.h"
 
 std::shared_ptr<engine::Scene> ObjectDrawer::GetScene() const
@@ -115,6 +117,16 @@ bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& 
 			else if (field.GetType().Is(engine::Types::kVector4))
 			{
 				isFieldChanged |= DrawVector4Field(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kColor3))
+			{
+				isFieldChanged |= DrawColor3Field(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
+			else if (field.GetType().Is(engine::Types::kColor4))
+			{
+				isFieldChanged |= DrawColor4Field(object, field);
 				modifiedFields.push_back(field.GetName());
 			}
 			else if (field.GetType().Is(engine::Types::kString))
@@ -646,6 +658,54 @@ bool ObjectDrawer::DrawResourceField(const engine::Object& object, engine::Field
 		return true;
 	}
 	
+	return false;
+}
+
+bool ObjectDrawer::DrawColor3Field(const engine::Object& object, engine::Field& field)
+{
+	auto attributes = field.GetAttributes();
+
+	if (!IsEditableField(field, attributes))
+	{
+		return false;
+	}
+
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue(object).value();
+	auto value = monoObject.Unbox<Float3Data::Color>();
+	float color_data[3] = { value.x, value.y, value.z };
+	
+	if (ImGui::ColorEdit3(fieldName.c_str(), color_data))
+	{
+		Float3Data::Color set_value[1] = {Float3Data::Color(color_data[0], color_data[1], color_data[2])};
+		field.SetValue(object, set_value);
+		return true;
+	}
+
+	return false;
+}
+
+bool ObjectDrawer::DrawColor4Field(const engine::Object& object, engine::Field& field)
+{
+	auto attributes = field.GetAttributes();
+
+	if (!IsEditableField(field, attributes))
+	{
+		return false;
+	}
+
+	auto fieldName = GetFieldName(field, attributes);
+	auto monoObject = field.GetValue(object).value();
+	auto value = monoObject.Unbox<float4>();
+	float color_data[4] = { value.x, value.y, value.z, value.w};
+	
+	if (ImGui::ColorEdit4(fieldName.c_str(), color_data))
+	{
+		float4 set_value[1] = {float4( color_data[0], color_data[1], color_data[2], color_data[3])};
+		field.SetValue(object, set_value);
+		return true;
+	}
+
 	return false;
 }
 

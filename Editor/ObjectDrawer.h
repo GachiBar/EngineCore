@@ -66,6 +66,8 @@ private:
 	bool DrawStringField(const engine::Object& object, engine::Field& field);
 	bool DrawGameObjectField(const engine::Object& object, engine::Field& field);
 	bool DrawResourceField(const engine::Object& object, engine::Field& field);
+	bool DrawColor3Field(const engine::Object& object, engine::Field& field);
+	bool DrawColor4Field(const engine::Object& object, engine::Field& field);
 
 	static std::string GetFieldName(
 		const engine::Field& field,
