@@ -119,7 +119,7 @@ namespace GameplayCore.EngineApi
         {
             try
             {
-                Internal_CommitMaterial(material);
+                Internal_CommitMaterial(id, material);
             }
             catch (Exception e)
             {
@@ -157,7 +157,7 @@ namespace GameplayCore.EngineApi
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe Internal_Material Internal_PullMaterial(ulong id);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe void Internal_CommitMaterial(Internal_Material material);
+        extern private static unsafe void Internal_CommitMaterial(ulong id, Internal_Material material);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe bool Internal_ContainsMaterialId(ulong id);
     }
