@@ -53,6 +53,10 @@ namespace GameplayCore.Resources
         {
             Console.WriteLine($"Saving material data of {FilePath}!");
             Save(_material);
+
+            // Invalidate meshes at scene
+            if(Id != 0)
+                Commit();
         }
 
         public void Create()
