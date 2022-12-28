@@ -231,13 +231,32 @@ bool MeshLoaderObj::load(const std::string& filename)
 bool MeshLoaderObj::loadTest()
 {
 	int vcap = 0, tcap = 0;
-	addVertex(1.0, 1.0, 1.0, vcap);
-	addVertex(1.0, 1.0, 1.0, vcap);
-	addVertex(1.0, 1.0, 1.0, vcap);
-	addVertex(1.0, 1.0, 1.0, vcap);
+	addVertex( - 3.0f, 3.0f, -3.0f,vcap);
+	addVertex(3.0f, 3.0f, -3.0f, vcap);
+	addVertex(-3.0f, -3.0f, -3.0f, vcap);
+	addVertex(3.0f, -3.0f, -3.0f, vcap);
+	addVertex(-3.0f, 3.0f, 3.0f, vcap);
+	addVertex(3.0f, 3.0f, 3.0f, vcap);
+	addVertex(-3.0f, -3.0f, 3.0f, vcap);
+	addVertex(3.0f, -3.0f, 3.0f, vcap);
 
 	addTriangle(0, 1, 2, tcap);
-	addTriangle(1, 2, 3, tcap);
+	addTriangle(2, 1, 3, tcap);
+
+	addTriangle(4, 0, 6, tcap);
+	addTriangle(6, 0, 2, tcap);
+
+	addTriangle(7, 5, 2, tcap);
+	addTriangle(6, 5, 4, tcap);
+
+	addTriangle(3, 1, 7, tcap);
+	addTriangle(7, 1, 5, tcap);
+
+	addTriangle(4, 5, 0, tcap);
+	addTriangle(0, 5, 1, tcap);
+
+	addTriangle(3, 7, 2, tcap);
+	addTriangle(2, 7, 6, tcap);
 
 	return true;
 }

@@ -316,6 +316,10 @@ bool InputGeom::load(rcContext* ctx, const std::string& filepath)
 
 bool InputGeom::loadTest()
 {
+	if (!m_mesh)
+		m_mesh = new MeshLoaderObj;
+	m_meshBMin[0] = m_meshBMin[1] = m_meshBMin[2] = -10.f;
+	m_meshBMax[0] = m_meshBMax[1] = m_meshBMax[2] = 10.f;
 	return m_mesh->loadTest();
 }
 

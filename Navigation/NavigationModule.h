@@ -33,28 +33,28 @@ class NavigationModule
 protected:
 	class InputGeom* m_geom;
 	unsigned char* m_triareas;
-	bool m_keepInterResults;
+	bool m_keepInterResults = true;
 
-	float m_cellSize;
-	float m_cellHeight;
-	float m_agentHeight;
-	float m_agentRadius;
-	float m_agentMaxClimb;
-	float m_agentMaxSlope;
-	float m_regionMinSize;
-	float m_regionMergeSize;
-	float m_edgeMaxLen;
-	float m_edgeMaxError;
-	float m_vertsPerPoly;
-	float m_detailSampleDist;
-	float m_detailSampleMaxError;
+	float m_cellSize = 0.3f;
+	float m_cellHeight= 0.2f;
+	float m_agentHeight = 2.f;
+	float m_agentRadius = 0.6f;
+	float m_agentMaxClimb = 0.9f;
+	float m_agentMaxSlope = 45;
+	float m_regionMinSize = 8;
+	float m_regionMergeSize = 20;
+	float m_edgeMaxLen = 12;
+	float m_edgeMaxError = 1.3f;
+	float m_vertsPerPoly = 6;
+	float m_detailSampleDist = 6;
+	float m_detailSampleMaxError = 1;
 
-	bool m_filterLowHangingObstacles;
-	bool m_filterLedgeSpans;
-	bool m_filterWalkableLowHeightSpans;
+	bool m_filterLowHangingObstacles = true;
+	bool m_filterLedgeSpans = true;
+	bool m_filterWalkableLowHeightSpans = true;
 
 	rcCompactHeightfield* m_chf;
-	int m_partitionType;
+	int m_partitionType = SAMPLE_PARTITION_WATERSHED;
 
 	rcContourSet* m_cset;
 	rcPolyMesh* m_pmesh;
