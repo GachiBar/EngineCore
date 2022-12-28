@@ -1,4 +1,5 @@
 #pragma once
+#include "Definitions.h"
 #include "libs/Recast/Include/Recast.h"
 
 enum SamplePartitionType
@@ -61,8 +62,15 @@ protected:
 	rcPolyMeshDetail* m_dmesh;
 	class dtNavMesh* m_navMesh;
 	class dtNavMeshQuery* m_navQuery;
+
+	static const int INVALID_NAVMESH_POLYREF;
+	static const int MAX_POLYS;
 public:
 	bool Build();
+
+	bool FindStraightPath(FVector const & InStartPos, FVector const & InEndPos, std::vector<FVector>& OutPath);
+	bool FindRandomPointAroundCircle(FVector const& InCenterPos, std::vector<FVector>& OutPoints, int InMaxPoints, float InMaxRadius);
+	bool Raycast(FVector const& InStart, FVector const& InEnd, std::vector<FVector>& OuthitPointVec);
 
 	rcConfig m_cfg;
 	rcHeightfield* m_solid;

@@ -3,9 +3,14 @@
 #include <cstring>
 
 #include "InputGeom.h"
+#include "libs/MathUtility.h"
+#include "libs/Detour/Include/DetourCommon.h"
 #include "libs/Detour/Include/DetourNavMesh.h"
 #include "libs/Detour/Include/DetourNavMeshBuilder.h"
 #include "libs/Detour/Include/DetourNavMeshQuery.h"
+
+int const NavigationModule::INVALID_NAVMESH_POLYREF = 0;
+int const NavigationModule::MAX_POLYS = 256;
 
 bool NavigationModule::Build()
 {
@@ -373,7 +378,9 @@ bool NavigationModule::Build()
 			//m_ctx->log(RC_LOG_ERROR, "Could not init Detour navmesh");
 			return false;
 		}
-		m_navQuery = dtAllocNavMeshQuery();
+
+		if(!m_navQuery)
+			m_navQuery = dtAllocNavMeshQuery();
 		status = m_navQuery->init(m_navMesh, 2048);
 		if (dtStatusFailed(status))
 		{
@@ -389,6 +396,198 @@ bool NavigationModule::Build()
 	//m_ctx->log(RC_LOG_PROGRESS, ">> Polymesh: %d vertices  %d polygons", m_pmesh->nverts, m_pmesh->npolys);
 
 	//m_totalBuildTimeMs = m_ctx->getAccumulatedTime(RC_TIMER_TOTAL) / 1000.0f;
+
 	
 	return true;
+}
+
+bool NavigationModule::FindRandomPointAroundCircle(FVector const& InCenterPos, std::vector<FVector>& OutPoints,
+	int InMaxPoints, float InMaxRadius)
+{
+	OutPoints.clear();
+	dtQueryFilter filter;
+	filter.setIncludeFlags(0xffff);
+	filter.setExcludeFlags(0);
+
+	if (InMaxRadius <= 0.0001f)
+	{
+		for (int i = 0; i < InMaxPoints; i++)
+		{
+			float pt[3];
+			dtPolyRef ref;
+			const dtStatus status = m_navQuery->findRandomPoint(&filter, FMath::Rand, &ref, pt);
+			if (dtStatusSucceed(status))
+				OutPoints.push_back(FVector{ pt[0],pt[1],pt[2]});
+			
+		}
+
+		return true;
+	}
+
+	const float extents[3] = { 2.f, 4.f, 2.f };
+
+	dtPolyRef startRef = INVALID_NAVMESH_POLYREF;
+
+	float spos[3] = { InCenterPos.x,InCenterPos.y,InCenterPos.z};
+
+	float startNearestPt[3];
+	m_navQuery->findNearestPoly(spos, extents, &filter, &startRef, startNearestPt);
+
+	if (!startRef)
+	{
+		//debuf_msg("NavMeshHandle::findRandomPointAroundCircle({%s}): Could not find any nearby poly's ({%d})\n", resPath, startRef);
+		return false;
+	}
+
+	bool done = false;
+	int itry = 0;
+
+	while (itry++ < 3 && OutPoints.size() == 0)
+	{
+		InMaxPoints -= (int)OutPoints.size();
+
+		for (int i = 0; i < InMaxPoints; i++)
+		{
+			float pt[3];
+			dtPolyRef ref;
+			dtStatus status = m_navQuery->findRandomPointAroundCircle(startRef, spos, InMaxRadius, &filter, FMath::Rand, &ref, pt);
+
+			if (dtStatusSucceed(status))
+			{
+				done = true;
+				FVector currpos = { pt[0],pt[1],pt[2] };
+
+				FVector v = InCenterPos - currpos;
+				float dist_len = v.Length();
+				if (dist_len > InMaxRadius)
+					continue;
+
+				OutPoints.push_back(currpos);
+			}
+		}
+
+		if (!done)
+			break;
+	}
+
+	return true;
+}
+
+bool NavigationModule::Raycast(FVector const& InStart, FVector const& InEnd, std::vector<FVector>& OuthitPointVec)
+{
+	float hitPoint[3];
+
+	float spos[3] = { InStart.x, InStart.y,InStart.z};
+
+	float epos[3] = { InEnd.x, InEnd.y,InEnd.z };
+
+	dtQueryFilter filter;
+	filter.setIncludeFlags(0xffff);
+	filter.setExcludeFlags(0);
+
+	const float extents[3] = { 2.f, 4.f, 2.f };
+
+	dtPolyRef startRef = INVALID_NAVMESH_POLYREF;
+
+	float nearestPt[3];
+	m_navQuery->findNearestPoly(spos, extents, &filter, &startRef, nearestPt);
+
+	if (!startRef)
+	{
+		return false;
+	}
+
+	float t = 0;
+	float hitNormal[3];
+	memset(hitNormal, 0, sizeof(hitNormal));
+
+	dtPolyRef polys[MAX_POLYS];
+	int npolys;
+
+	m_navQuery->raycast(startRef, spos, epos, &filter, &t, hitNormal, polys, &npolys, MAX_POLYS);
+
+	if (t > 1)
+	{
+		// no hit
+		return false;
+	}
+	else
+	{
+		// Hit
+		hitPoint[0] = spos[0] + (epos[0] - spos[0]) * t;
+		hitPoint[1] = spos[1] + (epos[1] - spos[1]) * t;
+		hitPoint[2] = spos[2] + (epos[2] - spos[2]) * t;
+		if (npolys)
+		{
+			float h = 0;
+			m_navQuery->getPolyHeight(polys[npolys - 1], hitPoint, &h);
+			hitPoint[1] = h;
+		}
+	}
+
+	OuthitPointVec.push_back(FVector{ hitPoint[0], hitPoint[1], hitPoint[2] });
+	return true;
+}
+
+bool NavigationModule::FindStraightPath(FVector const& InStartPos, FVector const& InEndPos, std::vector<FVector>& OutPath)
+{
+	OutPath.clear();
+
+	float spos[3] = { InStartPos.x,InStartPos.y,InStartPos.z};
+
+	float epos[3] = { InEndPos.x,InEndPos.y,InEndPos.z };
+
+	dtQueryFilter filter;
+	filter.setIncludeFlags(0xffff);
+	filter.setExcludeFlags(0);
+
+	const float extents[3] = { 2.f, 4.f, 2.f };
+
+	dtPolyRef startRef = INVALID_NAVMESH_POLYREF;
+	dtPolyRef endRef = INVALID_NAVMESH_POLYREF;
+
+	float startNearestPt[3];
+	float endNearestPt[3];
+	m_navQuery->findNearestPoly(spos, extents, &filter, &startRef, startNearestPt);
+	m_navQuery->findNearestPoly(epos, extents, &filter, &endRef, endNearestPt);
+
+	if (!startRef || !endRef)
+	{
+		//debuf_msg("NavMeshHandle::findStraightPath({%s}): Could not find any nearby poly's ({%d}, {%d})\n", resPath.c_str(), startRef, endRef);
+		return false;
+	}
+
+	dtPolyRef polys[MAX_POLYS];
+	int npolys;
+	float straightPath[MAX_POLYS * 3];
+	unsigned char straightPathFlags[MAX_POLYS];
+	dtPolyRef straightPathPolys[MAX_POLYS];
+	int nstraightPath;
+	int pos = 0;
+
+	m_navQuery->findPath(startRef, endRef, startNearestPt, endNearestPt, &filter, polys, &npolys, MAX_POLYS);
+	nstraightPath = 0;
+
+	if (npolys)
+	{
+		float epos1[3];
+		dtVcopy(epos1, endNearestPt);
+
+		if (polys[npolys - 1] != endRef)
+			m_navQuery->closestPointOnPoly(polys[npolys - 1], endNearestPt, epos1, 0);
+
+		m_navQuery->findStraightPath(startNearestPt, endNearestPt, polys, npolys, straightPath, straightPathFlags, straightPathPolys, &nstraightPath, MAX_POLYS);
+
+		for (int i = 0; i < nstraightPath * 3; )
+		{
+			float const X(straightPath[i++]);
+			float const Y(straightPath[i++]);
+			float const Z(straightPath[i++]);
+
+			OutPath.push_back(FVector{X,Y,Z});
+			pos++;
+		}
+	}
+
+	return pos;
 }
