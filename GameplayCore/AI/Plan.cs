@@ -14,14 +14,14 @@ namespace GameplayCore.AI
             _actions = new List<Action>(actions);
         }
 
-        public IEnumerable<ExecutionState> Execute(State state)
+        public IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
         {
             bool isInterrupted = false;
             ExecutionState = ExecutionState.InProgress;
 
             foreach (var action in _actions)
             {
-                foreach (var executionState in action.Execute(state))
+                foreach (var executionState in action.Execute(gameObject, state))
                 {
                     switch (executionState)
                     {

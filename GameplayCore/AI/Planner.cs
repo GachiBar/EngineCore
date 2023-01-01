@@ -15,7 +15,7 @@ namespace GameplayCore.AI
             public Action Action;
         }
 
-        public Plan MakePlan(State state, Goal goal, List<Action> actions)
+        public Plan MakePlan(GameObject gameObject, State state, Goal goal, List<Action> actions)
         {
             int iterations = 0;
             var queue = new PriorityQueue<Node, int>();
@@ -47,14 +47,14 @@ namespace GameplayCore.AI
 
                 foreach (var action in actions)
                 {
-                    if (action.CheckPreconditions(current.State))
+                    if (action.CheckPreconditions(gameObject, current.State))
                     {
                         var neighbour = new Node();                       
                         neighbour.Cost = current.Cost + 1;
                         neighbour.State = current.State.Copy();                        
                         neighbour.Parent = current;
                         neighbour.Action = action;
-                        action.PlanEffects(neighbour.State);
+                        action.PlanEffects(gameObject, neighbour.State);
 
                         bool isShouldMarkAsVisited = true;
 
