@@ -10,6 +10,7 @@ namespace GameplayCore.AI
         private Dictionary<string, float> _keyToFloatValues = new Dictionary<string, float>();
         private Dictionary<string, Vector2> _keyToVector2Values = new Dictionary<string, Vector2>();
         private Dictionary<string, Vector3> _keyToVector3Values = new Dictionary<string, Vector3>();
+        private Dictionary<string, GameObject> _keyToGameObjects = new Dictionary<string, GameObject>();
 
         public bool GetBoolValue(string key)
         {
@@ -56,12 +57,12 @@ namespace GameplayCore.AI
             return _keyToFloatValues.TryGetValue(key, out value);
         }
 
-        public Vector2 GetVector2(string key)
+        public Vector2 GetVector2Value(string key)
         {
             return _keyToVector2Values[key];
         }
 
-        public void SetVector2(string key, Vector2 value)
+        public void SetVector2Value(string key, Vector2 value)
         {
             _keyToVector2Values[key] = value;
         }
@@ -71,12 +72,12 @@ namespace GameplayCore.AI
             return _keyToVector2Values.TryGetValue(key, out value);
         }
 
-        public Vector3 GetVector3(string key)
+        public Vector3 GetVector3Value(string key)
         {
             return _keyToVector3Values[key];
         }
 
-        public void SetVector3(string key, Vector3 value)
+        public void SetVector3Value(string key, Vector3 value)
         {
             _keyToVector3Values[key] = value;
         }
@@ -86,13 +87,29 @@ namespace GameplayCore.AI
             return _keyToVector3Values.TryGetValue(key, out value);
         }
 
+        public GameObject GetGameObjectValue(string key)
+        {
+            return _keyToGameObjects[key];
+        }
+
+        public void SetGameObjectValue(string key, GameObject gameObject)
+        {
+            _keyToGameObjects[key] = gameObject;
+        }
+
+        public bool TryGetGameObjectValue(string key, out GameObject gameObject)
+        {
+            return _keyToGameObjects.TryGetValue(key, out gameObject);
+        }
+
         public bool IsSame(State other)
         {
             return IsValuesEqual(_keyToBoolValues, other._keyToBoolValues)
                 && IsValuesEqual(_keyToIntValues, other._keyToIntValues)
                 && IsValuesEqual(_keyToFloatValues, other._keyToFloatValues)
                 && IsValuesEqual(_keyToVector2Values, other._keyToVector2Values)
-                && IsValuesEqual(_keyToVector3Values, other._keyToVector3Values);
+                && IsValuesEqual(_keyToVector3Values, other._keyToVector3Values)
+                && IsValuesEqual(_keyToGameObjects, other._keyToGameObjects);
         }
 
         public State Copy()
@@ -103,6 +120,7 @@ namespace GameplayCore.AI
             copy._keyToFloatValues = new Dictionary<string, float>(_keyToFloatValues);
             copy._keyToVector2Values = new Dictionary<string, Vector2>(_keyToVector2Values);
             copy._keyToVector3Values = new Dictionary<string, Vector3>(_keyToVector3Values);
+            copy._keyToGameObjects = new Dictionary<string, GameObject>(_keyToGameObjects);
             return copy;
         }
 
@@ -114,6 +132,10 @@ namespace GameplayCore.AI
             {
                 if (otherValues.TryGetValue(kvp.Key, out var otherValue))
                 {
+                    if (kvp.Value == null || otherValue == null)
+                    {
+                        return kvp.Value == null && otherValue == null;
+                    }
                     if (!kvp.Value.Equals(otherValue))
                     {
                         return false;

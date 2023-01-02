@@ -26,7 +26,9 @@ class Engine
 {
 public:
 	static const float kDt;
-	static const std::chrono::nanoseconds kTimestep;
+	static const float kAiDt;
+	static const nanoseconds kTimestep;
+	static const nanoseconds kAiTimestep;
 
 	bool IsRunning();
 	std::shared_ptr<Scene> GetScene();
@@ -72,6 +74,7 @@ private:
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
 	nanoseconds dt_ = 0ns;
 	nanoseconds lag_ = 0ns;
+	nanoseconds ai_lag_ = 0ns;
 	nanoseconds ellapsed_ = 0ns;
 
 	const Runtime& runtime_;

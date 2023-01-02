@@ -1,6 +1,4 @@
-﻿using GameplayCore.EngineApi;
-using GameplayCore.Mathematics;
-using System;
+﻿using GameplayCore.Mathematics;
 
 namespace GameplayCore.Components
 {

@@ -129,6 +129,14 @@ namespace GameplayCore
             }
         }
 
+        public void UpdateAI()
+        {
+            foreach (var component in _updatableComponents)
+            {
+                component.UpdateAI();
+            }
+        }
+
         public void Update()
         {
             foreach (var component in _updatableComponents)

@@ -12,12 +12,13 @@ namespace GameplayCore.AI
         public Plan(IEnumerable<Action> actions)
         {
             _actions = new List<Action>(actions);
+            ExecutionState = ExecutionState.InProgress;
         }
 
         public IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
         {
             bool isInterrupted = false;
-            ExecutionState = ExecutionState.InProgress;
+            yield return ExecutionState.InProgress;
 
             foreach (var action in _actions)
             {

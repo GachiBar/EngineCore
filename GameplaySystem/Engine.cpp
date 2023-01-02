@@ -33,7 +33,9 @@ JPH_SUPPRESS_WARNINGS
 namespace engine {
 
 const float Engine::kDt = 16.0f / 1000;
-const std::chrono::nanoseconds Engine::kTimestep = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
+const float Engine::kAiDt = 16.0f * 20.0f / 1000;
+const nanoseconds Engine::kTimestep = duration_cast<nanoseconds>(milliseconds(16));
+const nanoseconds Engine::kAiTimestep = duration_cast<nanoseconds>(milliseconds(16 * 20));
 
 bool Engine::IsRunning() {
 	return is_running_;
@@ -95,7 +97,6 @@ void Engine::Stop() {
 }
 
 void Engine::Start() {
-	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
 	time_start_ = clock::now();
@@ -103,13 +104,13 @@ void Engine::Start() {
 }
 
 void Engine::RunFrame() {
-	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
 	dt_ = clock::now() - time_start_;
 	ellapsed_ += dt_;
 	time_start_ = clock::now();
 	lag_ += duration_cast<nanoseconds>(dt_);
+	ai_lag_ += duration_cast<nanoseconds>(dt_);
 
 	SendTimeData();
 	SendScreenData();
@@ -120,6 +121,11 @@ void Engine::RunFrame() {
 		scene_->FixedUpdate();
 		physics_system_.Update(kDt, kCollisionSteps, kIntegrationSubSteps, &temp_allocator_, &job_system_);
 		SendCollisions();
+	}
+
+	while (ai_lag_ >= kAiTimestep) {
+		ai_lag_ -= kAiTimestep;
+		scene_->UpdateAI();
 	}
 
 	scene_->Update();

@@ -36,11 +36,6 @@ namespace EngineDotnetUnitTests.AI
 
                 return distance;
             }
-
-            public override GoalPriority GetPriority()
-            {
-                throw new System.NotImplementedException();
-            }
         }
 
         public class GetEggsAction : Action

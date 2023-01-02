@@ -278,9 +278,9 @@
       },
       {
         "Type": "GameplayCore.Components.RigidbodyComponent",
-        "_freezeRotation": false,
+        "_freezeRotation": true,
         "_isKinematic": false,
-        "_mass": 5.0,
+        "_mass": 1.0,
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {
@@ -289,6 +289,14 @@
         "Metallic": 0.0,
         "Roughness": 0.0,
         "_asset": "c32d78d3-cddc-4631-a165-5dd09f0e9ec1",
+        "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
+      },
+      {
+        "Type": "GameplayCore.Components.RangeEnemyControllerComponent",
+        "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
+      },
+      {
+        "Type": "GameplayCore.Components.BrainComponent",
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       }
     ]

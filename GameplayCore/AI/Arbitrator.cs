@@ -2,6 +2,6 @@
 {
     public abstract class Arbitrator
     {
-        public abstract void ChooseGoal(GameObject gameObject, State state);
+        public abstract Goal ChooseGoal(GameObject gameObject, State state);
     }
 }

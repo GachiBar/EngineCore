@@ -33,6 +33,7 @@ namespace GameplayCore.Components
 
         public virtual void Initialize() { }
         public virtual void FixedUpdate() { }
+        public virtual void UpdateAI() { }
         public virtual void Update() { }
         public virtual void Render() { }
         public virtual void DebugRender() { }
