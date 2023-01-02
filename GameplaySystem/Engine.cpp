@@ -597,7 +597,7 @@ void Engine::Internal_SetBodyRotation(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.SetRotation(body_id, rotation, JPH::EActivation::DontActivate);
+	body_interface.SetRotation(body_id, rotation.Normalized(), JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_FreezeRotation(

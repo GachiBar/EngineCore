@@ -1,4 +1,5 @@
 ﻿using GameplayCore.Components;
+using GameplayCore.Mathematics;
 using System.Collections.Generic;
 
 namespace GameplayCore.AI.Enemy.Actions
@@ -13,20 +14,16 @@ namespace GameplayCore.AI.Enemy.Actions
         public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
         {
             var aim = state.GetGameObjectValue("Aim");
-            var range = state.GetFloatValue("Range");
-            var speed = state.GetFloatValue("Speed");
-
             var enemyTransform = gameObject.GetComponent<TransformComponent>();
-            var enemyRigidbody = gameObject.GetComponent<RigidbodyComponent>();
+            var enemyController = gameObject.GetComponent<RangeEnemyControllerComponent>();
             var aimTransform = aim.GetComponent<TransformComponent>();
 
-            while ((enemyTransform.Position - aimTransform.Position).Length() > range)
-            {
-                var direction = aimTransform.Position - enemyTransform.Position;
+            while ((enemyTransform.Position - aimTransform.Position).Length() > enemyController.Range)
+            {                
+                var axis = Vector3.UnitX + Vector3.UnitZ;
+                var direction = (aimTransform.Position - enemyTransform.Position) * axis;
                 direction.Normalize();
-
-                enemyRigidbody.Velocity = direction * speed;
-
+                enemyController.MoveInDirection(direction);
                 yield return ExecutionState.InProgress;
             }
 

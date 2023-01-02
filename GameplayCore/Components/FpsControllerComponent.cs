@@ -18,7 +18,7 @@ namespace GameplayCore.Components
         public float Speed = 3.0f;
         public float JumpSpeed = 8.0f;
         public float Sensivity = 1.0f;
-        public float BulletImpulse = 1000.0f;
+        public float BulletImpulse = 50.0f;
         public float BulletLifeTime = 2.0f;
         public GameObject Head;
 
@@ -62,8 +62,6 @@ namespace GameplayCore.Components
                     var yAxis = new Vector3(0.0f, _rigidbodyComponent.Velocity.Y, 0.0f);
                     _rigidbodyComponent.Velocity = direction * Speed + yAxis;
                 }    
-                
-                var transform = GameObject.GetComponent<TransformComponent>();
 
                 if (IsGrounded() && _isJump)
                 {

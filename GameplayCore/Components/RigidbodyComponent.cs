@@ -93,10 +93,12 @@ namespace GameplayCore.Components
                 // This can lead to strange behaviour.
                 PhysicsApi.SetActive(BodyId, true);
 
-                if (_position != _transformComponent.Position ||
-                    _rotation != _transformComponent.Rotation)
+                if (_position != _transformComponent.Position)
                 {
                     PhysicsApi.SetBodyPosition(BodyId, _transformComponent.Position);
+                }
+                if (_rotation != _transformComponent.Rotation)
+                {                    
                     PhysicsApi.SetBodyRotation(BodyId, _transformComponent.Rotation);                    
                 }
 

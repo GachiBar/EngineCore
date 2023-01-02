@@ -23,8 +23,6 @@ namespace GameplayCore.Components
             _state.SetBoolValue("HasAim", false);
             _state.SetBoolValue("CanShoot", false);
             _state.SetBoolValue("NeedReloading", false);
-            _state.SetFloatValue("Range", 2.0f);
-            _state.SetFloatValue("Speed", 2.0f);
             _state.SetFloatValue("ReloadingTime", 2.0f);
 
             _planner = new Planner();

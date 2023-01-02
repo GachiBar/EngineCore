@@ -293,6 +293,11 @@
       },
       {
         "Type": "GameplayCore.Components.RangeEnemyControllerComponent",
+        "Speed": 2.0,
+        "Range": 2.0,
+        "BulletInitialPoint": "652d1a06-9589-4519-ad92-ebd53d659029",
+        "BulletImpulse": 50.0,
+        "BulletLifeTime": 2.0,
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {
@@ -628,6 +633,37 @@
         "Roughness": 0.0,
         "_asset": null,
         "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
+      }
+    ]
+  },
+  {
+    "Guid": "652d1a06-9589-4519-ad92-ebd53d659029",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": "158e0f32-8ec6-455a-ac9a-6328cd8bd226",
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": -1.5
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "652d1a06-9589-4519-ad92-ebd53d659029"
       }
     ]
   }
