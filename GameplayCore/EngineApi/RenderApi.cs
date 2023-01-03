@@ -107,18 +107,18 @@ namespace GameplayCore.EngineApi
             return _lastMeshId;
         }
 
-        public static Internal_Material PullMaterial(ulong id)
+        public static TransferMaterial PullMaterial(ulong id)
         {
-            Internal_Material material = new Internal_Material();
+            TransferMaterial material = new TransferMaterial();
             material = Internal_PullMaterial(id);
-            material.DebugOutput();
             return material;
         }
 
-        public static void CommitMaterial(ulong id, Internal_Material material)
+        public static void CommitMaterial(ulong id, TransferMaterial material)
         {
             try
             {
+                Console.WriteLine($"Sending material");
                 Internal_CommitMaterial(id, material);
             }
             catch (Exception e)
@@ -155,9 +155,9 @@ namespace GameplayCore.EngineApi
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe bool Internal_IsTextureIdUsed(void* renderer, ulong id);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe Internal_Material Internal_PullMaterial(ulong id);
+        extern private static unsafe TransferMaterial Internal_PullMaterial(ulong id);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe void Internal_CommitMaterial(ulong id, Internal_Material material);
+        extern private static unsafe void Internal_CommitMaterial(ulong id, TransferMaterial material);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe bool Internal_ContainsMaterialId(ulong id);
     }

@@ -16,6 +16,7 @@
 #include <Windows.h>
 #include <SimpleMath.h>
 
+struct TransferMaterial;
 JPH_SUPPRESS_WARNINGS
 
 namespace engine {
@@ -147,9 +148,9 @@ private:
 			RenderDevice* renderer,
 			size_t id);
 
-	static MaterialData m_data;
-	static MaterialData Internal_PullMaterial(size_t id);
-	static void Internal_CommitMaterial(size_t id, MaterialData data);
+	static MaterialData GetMaterialData(size_t id);
+	static TransferMaterial Internal_PullMaterial(size_t id);
+	static void Internal_CommitMaterial(size_t id, TransferMaterial data);
 	static bool Internal_ContainsMaterialId(size_t id);
 
 #pragma endregion Renderer

@@ -26,21 +26,6 @@ namespace GameplayCore.Components
             {
                 _material.Load();
             }
-            
-            if(debug)
-                Debug();
-        }
-
-        private static bool debug = false;
-        public void Debug()
-        {
-            debug = false;
-            Console.WriteLine("Pull material");
-            var data = RenderApi.PullMaterial(0);
-            data.roughness.isTextured = true;
-            data.roughness.id = 10;
-            Console.WriteLine("Commit material");
-            RenderApi.CommitMaterial(0, data);
         }
 
         public override void Render()

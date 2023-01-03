@@ -9,7 +9,7 @@ namespace GameplayCore.Resources
     public class Material
     {
         // DiffuseData   diffuseData;
-        public Color4 diffuse_color;
+        public Color4 diffuseColor;
         public TextureAsset diffuseTexture;
 
         // NormalData    normalData;
@@ -26,101 +26,31 @@ namespace GameplayCore.Resources
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct Internal_Material
+    public struct TransferMaterial
     {
-        public Internal_DiffuseData diffuse;
-        public Internal_NormalData normals;
-        public Internal_RoughnessData roughness;
-        public Internal_MetallicData metallic;
+        public Color4 diffuseColor;
+        public ulong diffuseTextureId;
+        
+        public Color3 normalsValue;
+        public ulong normalsTextureId;
+        
+        public float roughnessValue;
+        public ulong roughnessTextureId;
+        
+        public float metallicValue;
+        public ulong metallicTextureId;
 
-        public Internal_Material(Material material)
+        public TransferMaterial(Material material)
         {
-            diffuse = new Internal_DiffuseData();
-            diffuse.isTextured = material.diffuseTexture != null && material.diffuseTexture.Id != ulong.MaxValue;
-            if (diffuse.isTextured)
-                diffuse.id = material.diffuseTexture.Id;
-            else
-                diffuse.diffuseColor = material.diffuse_color;
+            diffuseColor = material.diffuseColor;
+            normalsValue = material.normalsColor;
+            roughnessValue = material.roughnessValue;
+            metallicValue = material.metallicValue;
 
-            normals = new Internal_NormalData();
-            normals.isTextured = material.normalsTexture != null && material.normalsTexture.Id != ulong.MaxValue;
-            if (normals.isTextured)
-                normals.id = material.normalsTexture.Id;
-            else
-                normals.normalsColor = material.normalsColor;
-
-            roughness = new Internal_RoughnessData();
-            roughness.isTextured = material.roughnessTexture != null && material.roughnessTexture.Id != ulong.MaxValue;
-            if (roughness.isTextured)
-                roughness.id = material.roughnessTexture.Id;
-            else
-                roughness.roughnessValue = material.roughnessValue;
-
-            metallic = new Internal_MetallicData();
-            metallic.isTextured = material.metallicTexture != null && material.metallicTexture.Id != ulong.MaxValue;
-            if (metallic.isTextured)
-                metallic.id = material.metallicTexture.Id;
-            else
-                metallic.metallicValue = material.metallicValue;
+            diffuseTextureId = material.diffuseTexture?.Id ?? 0;
+            normalsTextureId = material.normalsTexture?.Id ?? 0;
+            roughnessTextureId = material.roughnessTexture?.Id ?? 0;
+            metallicTextureId = material.metallicTexture?.Id ?? 0;
         }
-
-        public void DebugOutput()
-        {
-            Console.WriteLine($"Diffuse isTextured: {diffuse.isTextured}");
-            if (diffuse.isTextured)
-                Console.WriteLine($"Diffuse texture id: {diffuse.id}");
-            else
-                Console.WriteLine($"Diffuse color: {diffuse.diffuseColor}");
-            
-            Console.WriteLine($"Normals isTextured: {normals.isTextured}");
-            if (normals.isTextured)
-                Console.WriteLine($"Normals texture id: {normals.id}");
-            else
-                Console.WriteLine($"Normals color: {normals.normalsColor}");
-            
-            Console.WriteLine($"Roughness isTextured: {roughness.isTextured}");
-            if (roughness.isTextured)
-                Console.WriteLine($"Diffuse texture id: {roughness.id}");
-            else
-                Console.WriteLine($"Diffuse color: {roughness.roughnessValue}");
-            
-            Console.WriteLine($"Metallic isTextured: {metallic.isTextured}");
-            if (metallic.isTextured)
-                Console.WriteLine($"Metallic texture id: {metallic.id}");
-            else
-                Console.WriteLine($"Metallic color: {metallic.metallicValue}");
-        }
-    }
-    
-    [StructLayout(LayoutKind.Explicit)] 
-    public struct Internal_DiffuseData
-    {
-        [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(8)] public ulong id;
-        [FieldOffset(8)] public Color4 diffuseColor;
-    }
-
-    [StructLayout(LayoutKind.Explicit)] 
-    public struct Internal_NormalData
-    {
-        [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(8)] public ulong id;
-        [FieldOffset(8)] public Color3 normalsColor;
-    }
-    
-    [StructLayout(LayoutKind.Explicit)] 
-    public struct Internal_RoughnessData
-    {
-        [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(8)] public ulong id;
-        [FieldOffset(8)] public float roughnessValue;
-    }
-    
-    [StructLayout(LayoutKind.Explicit)] 
-    public struct Internal_MetallicData
-    {
-        [FieldOffset(0)] public bool isTextured;
-        [FieldOffset(8)] public ulong id;
-        [FieldOffset(8)] public float metallicValue;
     }
 }

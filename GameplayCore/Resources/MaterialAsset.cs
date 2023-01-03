@@ -24,7 +24,7 @@ namespace GameplayCore.Resources
             if(_material == null)
                 LoadData();
             
-            RenderApi.CommitMaterial(_id, new Internal_Material(_material));
+            RenderApi.CommitMaterial(_id, new TransferMaterial(_material));
         }
 
         // Gets data from c++ side

@@ -176,6 +176,7 @@
     <ClInclude Include="PropertyWindow.h" />
     <ClInclude Include="Resources\ExplorerWindow.h" />
     <ClInclude Include="Resources\FileType.h" />
+    <ClInclude Include="Resources\TransferMaterial.h" />
     <ClInclude Include="Resources\ResourceData.h" />
     <ClInclude Include="Resources\MetadataReader.h" />
     <ClInclude Include="Resources\MaterialsEditor.h" />

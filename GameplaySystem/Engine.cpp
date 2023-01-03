@@ -25,6 +25,8 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
+#include "../Editor/Resources/TransferMaterial.h"
+
 JPH_SUPPRESS_WARNINGS
 
 namespace engine {
@@ -331,7 +333,7 @@ void Engine::Internal_DrawModel(
 	size_t material_id, 
 	DirectX::SimpleMath::Matrix model_matrix) 
 {
-	MaterialData material = Internal_PullMaterial(material_id);
+	MaterialData material =  GetMaterialData(material_id);
 	OpaqueModelDrawData opaque_model_draw_data{
 		id, model_matrix, model_matrix, 1.0f, 1.0f, material, {}
 	};
@@ -402,8 +404,8 @@ bool Engine::Internal_IsTextureIdUsed(RenderDevice* renderer, size_t id)
 {
 	return renderer->IsTextureIdUsed(id);
 }
-	
-MaterialData Engine::Internal_PullMaterial(size_t id)
+
+MaterialData Engine::GetMaterialData(size_t id)
 {
 	if(engine_->_materials.contains(id))
 		return engine_->_materials[id];
@@ -411,9 +413,17 @@ MaterialData Engine::Internal_PullMaterial(size_t id)
 	return MaterialData();
 }
 	
-void Engine::Internal_CommitMaterial(size_t id, MaterialData data)
+TransferMaterial Engine::Internal_PullMaterial(size_t id)
 {
-	engine_->_materials[id] = data;
+	if(engine_->_materials.contains(id))
+		return TransferMaterial(engine_->_materials[id]);
+	
+	return {};
+}
+	
+void Engine::Internal_CommitMaterial(size_t id, TransferMaterial data)
+{
+	engine_->_materials[id] = data.Convert();
 }
 
 bool Engine::Internal_ContainsMaterialId(size_t id)
