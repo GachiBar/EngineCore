@@ -31,12 +31,11 @@ namespace GameplayCore.AI.Enemy.Actions
                     enemyController.LoockInDirection(direction);
                 }
 
-                // TODO: some visual effect
-                Console.WriteLine("Still reloading...");
+                enemyController.Reload(timer, reloadingTime);
                 yield return ExecutionState.InProgress;
             }
 
-            Console.WriteLine("Reloading completed!");
+            enemyController.Reload(reloadingTime, reloadingTime);
             state.SetBoolValue("NeedReloading", false);
             yield return ExecutionState.Finished;
         }

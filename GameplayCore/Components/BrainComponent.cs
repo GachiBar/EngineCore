@@ -23,7 +23,7 @@ namespace GameplayCore.Components
             _state.SetBoolValue("HasAim", false);
             _state.SetBoolValue("CanShoot", false);
             _state.SetBoolValue("NeedReloading", false);
-            _state.SetFloatValue("ReloadingTime", 2.0f);
+            _state.SetFloatValue("ReloadingTime", 0.75f);
 
             _planner = new Planner();
             _arbitrator = new EnemyArbitrator();
@@ -32,7 +32,7 @@ namespace GameplayCore.Components
             _actions = new List<Action>
             {
                 new FindAimAction(),
-                new EnterRangeAction(),
+                new TakeShootPositionAction(),
                 new ShootAction(),
                 new ReloadingAction(),
             };            

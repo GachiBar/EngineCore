@@ -8,7 +8,9 @@ namespace GameplayCore.Components
         private const float BulletRadius = 0.3f;
 
         public float Speed = 2.0f;
-        public float Range = 2.0f;
+        public float AngularSpeed = 4.0f;
+        public float Range = 4.0f;
+        public float ViewSector = 20.0f;
         
         public GameObject BulletInitialPoint;
         public float BulletImpulse = 50.0f;
@@ -33,14 +35,35 @@ namespace GameplayCore.Components
             var velocity = rigidbody.Velocity * Vector3.UnitY;
             velocity += direction * Speed;
             rigidbody.Velocity = velocity;
-
-            transform.Rotation *= GetRotation(transform.Forward, direction);
         }
 
         public void LoockInDirection(Vector3 direction)
         {
             var transform = GameObject.GetComponent<TransformComponent>();
-            transform.Rotation *= GetRotation(transform.Forward, direction);
+
+            if (transform == null)
+            {
+                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                return;
+            }
+
+            LoockInDirection(transform, direction);
+        }
+
+        public void Reload(float progress, float max)
+        {
+            var transform = GameObject.GetComponent<TransformComponent>();
+
+            if (transform == null)
+            {
+                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                return;
+            }
+
+            float amount = (float)Math.Sin(progress / max * MathUtil.Pi);
+            amount = MathUtil.Clamp(amount, 0, 1);
+            float scale = MathUtil.Lerp(1.0f, 0.8f, amount);
+            transform.Scale = new Vector3(scale);
         }
 
         public void Shoot(GameObject aim)
@@ -64,6 +87,14 @@ namespace GameplayCore.Components
             var direction = destination - position;
             direction.Normalize();
             ThrowBullet(position, direction);
+        }
+
+        private void LoockInDirection(TransformComponent transform, Vector3 direction)
+        {
+            var from = transform.Rotation;
+            var to = from * GetRotation(transform.Forward, direction);
+            var rotation = Quaternion.Lerp(from, to, AngularSpeed * Time.FixedDeltaTime);
+            transform.Rotation = rotation;         
         }
 
         private void ThrowBullet(Vector3 position, Vector3 direction)

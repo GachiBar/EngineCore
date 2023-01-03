@@ -294,7 +294,9 @@
       {
         "Type": "GameplayCore.Components.RangeEnemyControllerComponent",
         "Speed": 2.0,
-        "Range": 2.0,
+        "AngularSpeed": 4.0,
+        "Range": 4.0,
+        "ViewSector": 20.0,
         "BulletInitialPoint": "652d1a06-9589-4519-ad92-ebd53d659029",
         "BulletImpulse": 50.0,
         "BulletLifeTime": 2.0,
