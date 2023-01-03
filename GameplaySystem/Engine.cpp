@@ -355,13 +355,27 @@ void Engine::Internal_DrawCurve(
 	DirectX::SimpleMath::Vector3 color,
 	DirectX::SimpleMath::Matrix model_matrix) 
 {
-	mono::mono_array raw_vertices(points);
-	MeshData<DebugVertex3D> mesh;
-	mesh.pt = PRIMITIVETYPE_LINESTRIP;
-	mesh.primitiveCount = raw_vertices.get_length() - 1;
+	const mono::mono_array raw_vertices(points);
+	
+	std::vector<DirectX::SimpleMath::Vector3> vertices;
 
 	for (size_t i = 0; i < raw_vertices.get_length(); ++i) {
-		auto vertex = raw_vertices.get<DebugVertex3D>(i);
+		auto vertex = raw_vertices.get<DirectX::SimpleMath::Vector3>(i);
+		vertices.push_back(vertex);
+	}
+
+	Cpp_DrawCurve(renderer, vertices, color, model_matrix);
+}
+
+void Engine::Cpp_DrawCurve(RenderDevice* renderer, std::vector<DirectX::SimpleMath::Vector3> const& points,
+	DirectX::SimpleMath::Vector3 color, DirectX::SimpleMath::Matrix model_matrix)
+{
+	MeshData<DebugVertex3D> mesh;
+	mesh.pt = PRIMITIVETYPE_LINESTRIP;
+	mesh.primitiveCount = points.size()-1;
+
+	for (size_t i = 0; i < points.size(); ++i) {
+		DebugVertex3D vertex = { points[i] };
 		mesh.vertices.push_back(vertex);
 		mesh.indexes.push_back(i);
 	}

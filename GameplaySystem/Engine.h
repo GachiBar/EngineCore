@@ -126,7 +126,12 @@ private:
 		MonoArray* points, 
 		DirectX::SimpleMath::Vector3 color,
 		DirectX::SimpleMath::Matrix model_matrix);
-
+public:
+	static void Cpp_DrawCurve(RenderDevice* renderer,
+		std::vector<DirectX::SimpleMath::Vector3> const& points,
+		DirectX::SimpleMath::Vector3 color,
+		DirectX::SimpleMath::Matrix model_matrix);
+private:
 	static void Internal_SetViewProjection(
 		RenderDevice* renderer, 
 		float ellapsed, 

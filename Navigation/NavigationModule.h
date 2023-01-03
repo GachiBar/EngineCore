@@ -2,6 +2,8 @@
 #include "Definitions.h"
 #include "libs/Recast/Include/Recast.h"
 
+struct dtMeshTile;
+
 enum SamplePartitionType
 {
 	SAMPLE_PARTITION_WATERSHED,
@@ -65,7 +67,14 @@ protected:
 
 	static const int INVALID_NAVMESH_POLYREF;
 	static const int MAX_POLYS;
+
+	std::vector<FVector> GetNavPolyMeshPoints(const dtNavMesh& mesh, const dtNavMeshQuery* query,
+		const dtMeshTile* tile, unsigned char flags) const;
+
 public:
+	dtNavMesh* GetNavMesh();
+	std::vector<std::vector<FVector>> GetNavMeshPoints() const;
+
 	bool Build();
 
 	bool FindStraightPath(FVector const & InStartPos, FVector const & InEndPos, std::vector<FVector>& OutPath);

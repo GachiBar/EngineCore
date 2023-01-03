@@ -12,6 +12,60 @@
 int const NavigationModule::INVALID_NAVMESH_POLYREF = 0;
 int const NavigationModule::MAX_POLYS = 256;
 
+std::vector<FVector> NavigationModule::GetNavPolyMeshPoints(const dtNavMesh& mesh, const dtNavMeshQuery* query,
+	const dtMeshTile* tile, unsigned char flags) const
+{
+	std::vector<FVector> result;
+
+	for (int i = 0; i < tile->header->polyCount; ++i)
+	{
+		const dtPoly* p = &tile->polys[i];
+		if (p->getType() == DT_POLYTYPE_OFFMESH_CONNECTION)	// Skip off-mesh links.
+			continue;
+
+		const dtPolyDetail* pd = &tile->detailMeshes[i];
+
+		for (int j = 0; j < pd->triCount; ++j)
+		{
+			const unsigned char* t = &tile->detailTris[(pd->triBase + j) * 4];
+			for (int k = 0; k < 3; ++k)
+			{
+				if (t[k] < p->vertCount)
+				{
+					float* vert = &tile->verts[p->verts[t[k]] * 3];
+					result.push_back(FVector(vert));
+				}
+				else
+				{
+					float* vert = &tile->detailVerts[(pd->vertBase + t[k] - p->vertCount) * 3];
+					result.push_back(FVector(vert));
+				}
+			}
+		}
+	}
+	return result;
+}
+
+dtNavMesh* NavigationModule::GetNavMesh()
+{
+	return m_navMesh;
+}
+
+std::vector<std::vector<FVector>> NavigationModule::GetNavMeshPoints() const
+{
+	std::vector<std::vector<FVector>> result;
+
+	auto const&  nav_mesh = *m_navMesh;
+	for (int i = 0; i < m_navMesh->getMaxTiles(); ++i)
+	{
+		const dtMeshTile* tile = nav_mesh.getTile(i);
+		if (!tile->header) continue;
+		
+		result.push_back(GetNavPolyMeshPoints(*m_navMesh, nullptr, tile, 0));
+	}
+	return result;
+}
+
 bool NavigationModule::Build()
 {
 	rcContext ctx;

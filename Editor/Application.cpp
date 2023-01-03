@@ -13,6 +13,8 @@
 #include "libs/imgui_sugar.hpp"
 #include "Resources/MetadataReader.h"
 #include "Resources/ResourceDrawer.h"
+#include "../Navigation/NavigationModule.h"
+#include <memory>
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";
@@ -135,6 +137,12 @@ int Application::Run(int argc, char* argv[])
 	MSG msg = {};
 	//bool is_exit_requested = false;
 
+	///TEST////
+	NavigationModule nav_mod = {};
+	nav_mod.Build();
+	auto test =  nav_mod.GetNavMeshPoints();
+	//////
+
 	while (!is_exit_requested)
 	{
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -158,6 +166,8 @@ int Application::Run(int argc, char* argv[])
 	
 		engine_->BeginRender();
 		engine_->Render();
+
+		engine::Engine::Cpp_DrawCurve(&engine_->GetRenderer(), test[0], { 1.f,1.f,1.f }, {});
 
 		if (!engine_->IsRunning()) {
 			engine_->DebugRender();

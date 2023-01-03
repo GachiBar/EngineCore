@@ -16,9 +16,6 @@ void EditorApplication::OnSetup()
 	Application::OnSetup();
 
 	InputManager::getInstance().input_settings->AddDefaultEditorExclusiveKeys();
-
-	NavigationModule nav_mod = {};
-	nav_mod.Build();
 }
 
 void EditorApplication::OnStart()
