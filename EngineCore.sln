@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameplaySystem", "GameplaySystem\GameplaySystem.vcxproj", "{7AFBD61B-FC45-42B8-9895-4A68CDCB3359}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FBA51F18-63C2-43DC-A891-517C02DF5D34} = {FBA51F18-63C2-43DC-A891-517C02DF5D34}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderEngine", "RenderEngine", "{87B80035-1F11-41A5-998B-41AB86537758}"
 EndProject

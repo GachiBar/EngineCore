@@ -31,7 +31,7 @@ enum SamplePolyFlags
 	SAMPLE_POLYFLAGS_ALL = 0xffff	// All abilities.
 };
 
-class NavigationModule
+class NavigationModule final
 {
 protected:
 	class InputGeom* m_geom;
@@ -72,6 +72,8 @@ protected:
 		const dtMeshTile* tile, unsigned char flags) const;
 
 public:
+	static NavigationModule& getInstance();
+
 	dtNavMesh* GetNavMesh();
 	std::vector<std::vector<FVector>> GetNavMeshPoints() const;
 
@@ -83,5 +85,7 @@ public:
 
 	rcConfig m_cfg;
 	rcHeightfield* m_solid;
+
+	~NavigationModule();
 };
 

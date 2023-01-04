@@ -128,6 +128,13 @@ int Application::Run(int argc, char* argv[])
 	if (exit_code_)
 		return exit_code_;
 
+	///TEST////
+	NavigationModule::getInstance().Build();
+	auto test = NavigationModule::getInstance().GetNavMeshPoints();
+
+	std::vector<FVector> out;
+	NavigationModule::getInstance().FindStraightPath(test[0][0] + FVector{ 0.f,0.f,0.0f }, test[0][5] + FVector{ 0.f,1.0f,0.0f }, out);
+
 	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(),  wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
 
 	OnStart();
@@ -137,11 +144,7 @@ int Application::Run(int argc, char* argv[])
 	MSG msg = {};
 	//bool is_exit_requested = false;
 
-	///TEST////
-	NavigationModule nav_mod = {};
-	nav_mod.Build();
-	auto test =  nav_mod.GetNavMeshPoints();
-	//////
+
 
 	while (!is_exit_requested)
 	{
@@ -168,7 +171,7 @@ int Application::Run(int argc, char* argv[])
 		engine_->Render();
 
 		engine::Engine::Cpp_DrawCurve(&engine_->GetRenderer(), test[0], { 1.f,1.f,1.f }, {});
-
+		//engine::Engine::Cpp_DrawCurve(&engine_->GetRenderer(), out, { 1.f,0.f,0.f }, {});
 		if (!engine_->IsRunning()) {
 			engine_->DebugRender();
 		}

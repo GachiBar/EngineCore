@@ -46,6 +46,14 @@ std::vector<FVector> NavigationModule::GetNavPolyMeshPoints(const dtNavMesh& mes
 	return result;
 }
 
+NavigationModule& NavigationModule::getInstance()
+{
+	static NavigationModule instance;
+
+	// Instantiated on first use.
+	return instance;
+}
+
 dtNavMesh* NavigationModule::GetNavMesh()
 {
 	return m_navMesh;
@@ -581,6 +589,19 @@ bool NavigationModule::Raycast(FVector const& InStart, FVector const& InEnd, std
 
 	OuthitPointVec.push_back(FVector{ hitPoint[0], hitPoint[1], hitPoint[2] });
 	return true;
+}
+
+NavigationModule::~NavigationModule()
+{
+	delete m_geom;
+	delete m_triareas;
+
+	delete m_cset;
+	delete m_pmesh;
+	delete m_dmesh;
+	delete m_navMesh;
+	delete m_navQuery;
+	delete m_solid;
 }
 
 bool NavigationModule::FindStraightPath(FVector const& InStartPos, FVector const& InEndPos, std::vector<FVector>& OutPath)
