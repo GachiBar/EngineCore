@@ -24,6 +24,7 @@
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 #include <algorithm>
+#include "../Navigation/NavigationModule.h"
 
 JPH_SUPPRESS_WARNINGS
 
@@ -74,6 +75,7 @@ void Engine::Initialize(HWND handle, UINT width, UINT height) {
 	SetupPhysicsInternalCalls();
 	SetupInputInternalCalls();
 	SetupLogInternalCalls();
+	SetupNavigationInternalCalls();
 }
 
 void Engine::Terminate() {
@@ -259,6 +261,14 @@ void Engine::SetupLogInternalCalls() {
 	mono_add_internal_call("GameplayCore.Log::Internal_LogWarning", Internal_LogWarning);
 	mono_add_internal_call("GameplayCore.Log::Internal_LogError", Internal_LogError);
 	mono_add_internal_call("GameplayCore.Log::Internal_RemoveLogMessage", Internal_RemoveLogMessage);
+}
+
+void Engine::SetupNavigationInternalCalls()
+{
+	mono_add_internal_call("GameplayCore.Navigation::Internal_FindStraightPath", Internal_FindStraightPath);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_FindRandomPointAroundCircle", Internal_FindRandomPointAroundCircle);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_Raycast", Internal_Raycast);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_Build", Internal_NavBuild);
 }
 
 void Engine::SendTimeData() {
@@ -701,4 +711,30 @@ void Engine::Internal_Log_Implementation(
 	}		
 }
 
+bool Engine::Internal_NavBuild()
+{
+	return NavigationModule::getInstance().Build();
+}
+
+MonoArray* Engine::Internal_FindStraightPath(Vector3 start_pos, Vector3 end_pos)
+{
+	std::vector<Vector3> path;
+	NavigationModule::getInstance().FindStraightPath(start_pos, end_pos, path);
+
+	return ConvertVectorToMonoArray(path, "GameplayCore.Mathematics", "Vector3");
+}
+
+MonoArray* Engine::Internal_FindRandomPointAroundCircle(Vector3 InCenterPos, int InMaxPoints, float InMaxRadius)
+{
+	std::vector<Vector3> points;
+	NavigationModule::getInstance().FindRandomPointAroundCircle(InCenterPos,points, InMaxPoints, InMaxRadius);
+	return ConvertVectorToMonoArray(points, "GameplayCore.Mathematics", "Vector3");
+}
+
+MonoArray* Engine::Internal_Raycast(Vector3 InStartPos, Vector3 InEndPos)
+{
+	std::vector<Vector3> points;
+	NavigationModule::getInstance().Raycast(InStartPos, InEndPos,points);
+	return ConvertVectorToMonoArray(points, "GameplayCore.Mathematics", "Vector3");
+}
 } // namespace engine

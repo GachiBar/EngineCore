@@ -91,6 +91,7 @@ private:
 	void SetupPhysicsInternalCalls();
 	void SetupInputInternalCalls();
 	void SetupLogInternalCalls();
+	void SetupNavigationInternalCalls();
 
 	void SendTimeData();
 	void SendScreenData();
@@ -279,7 +280,30 @@ private:
 		bool should_print_to_screen, 
 		bool should_print_to_log, 
 		MonoString* guid);
+
+#pragma region Navigation
+	template<class T>
+	static MonoArray* ConvertVectorToMonoArray(std::vector<T> const& InVector, std::string const& InNamespaceName, std::string const& InClassName);
+
+	static bool Internal_NavBuild();
+	static MonoArray* Internal_FindStraightPath(Vector3 start_pos, Vector3 end_pos);
+	static MonoArray* Internal_FindRandomPointAroundCircle(Vector3 InCenterPos, int InMaxPoints, float InMaxRadius);
+	static MonoArray* Internal_Raycast(Vector3 InStartPos, Vector3 InEndPos);
+#pragma endregion Navigation
 };
 
+template <class T>
+MonoArray* Engine::ConvertVectorToMonoArray(std::vector<T> const& InVector, std::string const& InNamespaceName, std::string const& InClassName)
+{
+	auto& domain = mono::mono_domain::get_current_domain();
+
+	const auto vector3_type = Runtime::GetCurrentRuntime().GetType(InNamespaceName, InClassName);
+	MonoArray* result_mono_array = mono_array_new(domain.get_internal_ptr(), vector3_type.GetInternal().get_internal_ptr(), InVector.size());
+	for (int i = 0; i < InVector.size(); ++i)
+	{
+		mono_array_set(result_mono_array, T, i, InVector[i]);
+	}
+	return result_mono_array;
+}
 } // namespace engine
 
