@@ -13,9 +13,11 @@
 #include <Jolt/Core/JobSystemThreadPool.h>
 
 #include <chrono>
+#include <map>
 #include <Windows.h>
 #include <SimpleMath.h>
 
+struct TransferMaterial;
 JPH_SUPPRESS_WARNINGS
 
 namespace engine {
@@ -61,6 +63,7 @@ private:
 	static const int kCollisionSteps = 1;
 	static const int kIntegrationSubSteps = 1;
 
+	static Engine* engine_;
 	RenderDevice renderer_;
 
 	JPH::TempAllocatorImpl temp_allocator_;
@@ -70,6 +73,7 @@ private:
 	JPH::PhysicsSystem physics_system_;
 
 	std::shared_ptr<Scene> scene_;
+	std::map<size_t, MaterialData> _materials;
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
 	nanoseconds dt_ = 0ns;
@@ -121,8 +125,7 @@ private:
 	static void Internal_DrawModel(
 		RenderDevice* renderer,
 		size_t id,
-		float metallic, 
-		float roughness,
+		size_t material_id,
 		DirectX::SimpleMath::Matrix model_matrix);
 
 	static void Internal_DrawDirectionalLight(
@@ -154,6 +157,11 @@ private:
 	static bool Internal_IsTextureIdUsed(
 			RenderDevice* renderer,
 			size_t id);
+
+	static MaterialData GetMaterialData(size_t id);
+	static TransferMaterial Internal_PullMaterial(size_t id);
+	static void Internal_CommitMaterial(size_t id, TransferMaterial data);
+	static bool Internal_ContainsMaterialId(size_t id);
 
 #pragma endregion Renderer
 

@@ -28,6 +28,8 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
+#include "../Editor/Resources/TransferMaterial.h"
+
 JPH_SUPPRESS_WARNINGS
 
 namespace engine {
@@ -36,6 +38,7 @@ const float Engine::kDt = 16.0f / 1000;
 const float Engine::kAiDt = 16.0f * 20.0f / 1000;
 const nanoseconds Engine::kTimestep = duration_cast<nanoseconds>(milliseconds(16));
 const nanoseconds Engine::kAiTimestep = duration_cast<nanoseconds>(milliseconds(16 * 20));
+Engine* Engine::engine_ = nullptr;
 
 bool Engine::IsRunning() {
 	return is_running_;
@@ -73,7 +76,9 @@ Engine::Engine(const Runtime& runtime)
 	, collision_stay_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionStay", 2))
 	, collision_exit_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionExit", 2))
 	, is_running_(false)
-{}
+{
+	engine_ = this;
+}
 
 void Engine::Initialize(HWND handle, UINT width, UINT height) {
 	InitRenderer(handle, static_cast<size_t>(width), static_cast<size_t>(height));
@@ -230,9 +235,14 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawDirectionalLight", Internal_DrawDirectionalLight);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
+	
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsIdUsed", Internal_IsIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsMeshIdUsed", Internal_IsMeshIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsTextureIdUsed", Internal_IsTextureIdUsed);
+	
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_PullMaterial", Internal_PullMaterial);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_CommitMaterial", Internal_CommitMaterial);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_ContainsMaterialId", Internal_ContainsMaterialId);
 
 	renderer_property_.SetValue(&renderer_);
 }
@@ -368,15 +378,12 @@ void Engine::Internal_RegisterTexture(RenderDevice* renderer, size_t id, MonoStr
 void Engine::Internal_DrawModel(
 	RenderDevice* renderer, 
 	size_t id, 
-	float metallic,
-	float roughness,
+	size_t material_id, 
 	DirectX::SimpleMath::Matrix model_matrix) 
 {
-	MaterialData material_data{
-		{(uint64_t)id}, {{1, 0, 0}}, {{roughness}}, {{metallic}}
-	};
+	MaterialData material =  GetMaterialData(material_id);
 	OpaqueModelDrawData opaque_model_draw_data{
-		id, model_matrix, model_matrix, 1.0f, 1.0f, material_data, {}
+		id, model_matrix, model_matrix, 1.0f, 1.0f, material, {}
 	};
 	
 	renderer->DrawOpaqueModel(opaque_model_draw_data);
@@ -444,6 +451,32 @@ bool Engine::Internal_IsMeshIdUsed(RenderDevice* renderer, size_t id)
 bool Engine::Internal_IsTextureIdUsed(RenderDevice* renderer, size_t id)
 {
 	return renderer->IsTextureIdUsed(id);
+}
+
+MaterialData Engine::GetMaterialData(size_t id)
+{
+	if(engine_->_materials.contains(id))
+		return engine_->_materials[id];
+	
+	return MaterialData();
+}
+	
+TransferMaterial Engine::Internal_PullMaterial(size_t id)
+{
+	if(engine_->_materials.contains(id))
+		return TransferMaterial(engine_->_materials[id]);
+	
+	return {};
+}
+	
+void Engine::Internal_CommitMaterial(size_t id, TransferMaterial data)
+{
+	engine_->_materials[id] = data.Convert();
+}
+
+bool Engine::Internal_ContainsMaterialId(size_t id)
+{
+	return engine_->_materials.contains(id);
 }
 
 #pragma endregion Renderer

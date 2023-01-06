@@ -4,14 +4,18 @@
 #include "LayerStack.h"
 #include <fstream>
 
+#include "AIEditorWindow.h"
 #include "Resources/ExplorerWindow.h"
 #include "EditorApplication.h"
 #include "InputManager.h"
+#include "PropertyWindow.h"
+#include "AIEditorWindow.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
 #include "imgui/imgui.h"
-#include "Resources/ResourceDrawer.h"
+#include "Resources/MaterialsEditor.h"
+
 
 namespace Renderer
 {
@@ -29,8 +33,10 @@ void EditorLayer::OnAttach()
     gvm->editor_layer = this;
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
-    properties = std::make_shared<GameObjectInspectorWindow>();
-    resourceDrawer = std::make_shared<ResourceDrawer>();
+    game_object_inspector = std::make_shared<GameObjectInspectorWindow>();
+    resourceDrawer = std::make_shared<MaterialsEditor>();
+    ai_editor = std::make_shared<AIEditorWindow>();
+    property_window = std::make_shared<PropertyWindow>(game_object_inspector, resourceDrawer, ai_editor);
     SettingsWindow = std::make_shared<ProjectSettingsWindow>();
     explorer = std::make_shared<ExplorerWindow>(GetApp());
     log = std::make_shared<LogWindow>();
@@ -38,16 +44,16 @@ void EditorLayer::OnAttach()
 	hierarchy.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)
 	{
 		selected_go = go;
-        properties->SetGameObject(go);
+	    property_window->SelectGameObject(go);
 	});
 
     explorer.get()->FileSelected.AddLambda([&](const std::filesystem::path& path)
     {
-        resourceDrawer.get()->TrySelect(path);
+        property_window->SelectResource(path);
     });
 
     hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
-    properties->SetScene(GetApp()->GetEngine()->GetScene());
+    game_object_inspector->SetScene(GetApp()->GetEngine()->GetScene());
 
 	auto& io = ImGui::GetIO();
 
@@ -249,10 +255,9 @@ void EditorLayer::OnGuiRender()
 
     ImGui::BeginDisabled(gvm->IsPlaying());
     hierarchy->Draw();
-    properties->Draw();
+    property_window->Draw();
     SettingsWindow->Draw();
     explorer->Draw();
-    resourceDrawer->Draw();
     ImGui::EndDisabled();
 
     if(log->bIsOpen)

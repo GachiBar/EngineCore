@@ -1,6 +1,7 @@
 ﻿using GameplayCore.Resources;
 using GameplayCore.Serialization;
 using System;
+using GameplayCore.EngineApi;
 
 namespace GameplayCore.Components
 {
@@ -8,11 +9,10 @@ namespace GameplayCore.Components
     {
         private TransformComponent _transformComponent = null;
         [SerializeField] private MeshAsset _asset;
-        //Material{Texture, Metalic, Raffness, Normal}
+        [SerializeField] private MaterialAsset _material;
 
         public ulong Id = 1;
-        public float Metallic = 0;
-        public float Roughness = 0;
+        private ulong _materialId = 0;
 
         public override void Initialize() 
         {
@@ -21,6 +21,11 @@ namespace GameplayCore.Components
                 _asset.Load();
                 Id = _asset.Id;
             }
+            
+            if (_material != null)
+            {
+                _material.Load();
+            }
         }
 
         public override void Render()
@@ -28,9 +33,8 @@ namespace GameplayCore.Components
             if (_transformComponent != null)
             {
                 EngineApi.RenderApi.DrawModel(
-                    Id, 
-                    Metallic, 
-                    Roughness, 
+                    Id,
+                    _materialId, 
                     _transformComponent.ModelMatrix);
             }            
         }
@@ -38,17 +42,30 @@ namespace GameplayCore.Components
         internal override void Invalidate(string fieldName)
         {
             base.Invalidate(fieldName);
-            
-            if(fieldName != "_asset") return;
-            
-            if (_asset != null)
+
+            if (fieldName == "_asset")
             {
-                _asset.Load();
-                Id = _asset.Id;
+                if (_asset != null)
+                {
+                    _asset.Load();
+                    Id = _asset.Id;
+                }
+                else
+                {
+                    Id = 0;
+                }   
             }
-            else
+            else if (fieldName == "_material")
             {
-                Id = 0;
+                if (_material != null)
+                {
+                    _material.Load();
+                    _materialId = _material.Id;
+                }
+                else
+                {
+                    _materialId = 0;
+                }
             }
         }
 

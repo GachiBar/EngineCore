@@ -12,7 +12,7 @@
 #include "Interfaces/ILayer.h"
 #include "libs/imgui_sugar.hpp"
 #include "Resources/MetadataReader.h"
-#include "Resources/ResourceDrawer.h"
+#include "Resources/MaterialsEditor.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";

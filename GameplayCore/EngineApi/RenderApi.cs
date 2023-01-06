@@ -1,5 +1,7 @@
-﻿using GameplayCore.Mathematics;
+﻿using System;
+using GameplayCore.Mathematics;
 using System.Runtime.CompilerServices;
+using GameplayCore.Resources;
 
 namespace GameplayCore.EngineApi
 {
@@ -8,6 +10,7 @@ namespace GameplayCore.EngineApi
         private static unsafe void* Renderer { get; set; }
         private static ulong _lastTextureId = 1;
         private static ulong _lastMeshId = 1;
+        private static ulong _lastMaterialId = 1;
 
         public static void RegisterModel(ulong id, string path="")
         {
@@ -25,11 +28,11 @@ namespace GameplayCore.EngineApi
             }           
         }
 
-        public static void DrawModel(ulong id, float metallic, float roughness, Matrix modelMatrix)
+        public static void DrawModel(ulong id, ulong material_id, Matrix modelMatrix)
         {
             unsafe
             {
-                Internal_DrawModel(Renderer, id, metallic, roughness, modelMatrix);
+                Internal_DrawModel(Renderer, id, material_id, modelMatrix);
             }            
         }
 
@@ -104,12 +107,33 @@ namespace GameplayCore.EngineApi
             return _lastMeshId;
         }
 
-        public static ulong CalculateFreeId()
+        public static TransferMaterial PullMaterial(ulong id)
         {
-            CalculateFreeTextureId();
-            CalculateFreeMeshId();
+            TransferMaterial material = new TransferMaterial();
+            material = Internal_PullMaterial(id);
+            return material;
+        }
 
-            return System.Math.Max(_lastTextureId, _lastMeshId);
+        public static void CommitMaterial(ulong id, TransferMaterial material)
+        {
+            try
+            {
+                Console.WriteLine($"Sending material");
+                Internal_CommitMaterial(id, material);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        public static ulong CalculateFreeMaterialId()
+        {
+            while (Internal_ContainsMaterialId(_lastMaterialId))
+                _lastMaterialId++;
+
+            return _lastMaterialId;
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -117,7 +141,7 @@ namespace GameplayCore.EngineApi
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterTexture(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, float metallic, float roughness, Matrix modelMatrix);
+        extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, ulong material_id, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawDirectionalLight(void* renderer, Vector3 direction, float itencity, Vector4 color);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -130,5 +154,11 @@ namespace GameplayCore.EngineApi
         extern private static unsafe bool Internal_IsMeshIdUsed(void* renderer, ulong id);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe bool Internal_IsTextureIdUsed(void* renderer, ulong id);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe TransferMaterial Internal_PullMaterial(ulong id);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_CommitMaterial(ulong id, TransferMaterial material);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_ContainsMaterialId(ulong id);
     }
 }
