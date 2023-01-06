@@ -55,19 +55,7 @@ protected:
 	unsigned char* m_triareas;
 	bool m_keepInterResults = true;
 
-	float m_cellSize = 0.3f;
-	float m_cellHeight= 0.2f;
-	float m_agentHeight = 2.f;
-	float m_agentRadius = 0.6f;
-	float m_agentMaxClimb = 0.9f;
-	float m_agentMaxSlope = 45;
-	float m_regionMinSize = 8;
-	float m_regionMergeSize = 20;
-	float m_edgeMaxLen = 12;
-	float m_edgeMaxError = 1.3f;
-	float m_vertsPerPoly = 6;
-	float m_detailSampleDist = 6;
-	float m_detailSampleMaxError = 1;
+
 
 	bool m_filterLowHangingObstacles = true;
 	bool m_filterLedgeSpans = true;
@@ -90,6 +78,20 @@ protected:
 
 	std::string m_nav_mesh_file_path = "navmesh.bin";
 public:
+	float m_cellSize = 0.3f;
+	float m_cellHeight = 0.2f;
+	float m_agentHeight = 2.f;
+	float m_agentRadius = 0.6f;
+	float m_agentMaxClimb = 0.9f;
+	float m_agentMaxSlope = 45;
+	float m_regionMinSize = 8;
+	float m_regionMergeSize = 20;
+	float m_edgeMaxLen = 12;
+	float m_edgeMaxError = 1.3f;
+	float m_vertsPerPoly = 6;
+	float m_detailSampleDist = 6;
+	float m_detailSampleMaxError = 1;
+
 	static NavigationModule& getInstance();
 
 	dtNavMesh* GetNavMesh();

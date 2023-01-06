@@ -286,6 +286,32 @@ private:
 	static MonoArray* ConvertVectorToMonoArray(std::vector<T> const& InVector, std::string const& InNamespaceName, std::string const& InClassName);
 
 	static bool Internal_NavBuild();
+
+	static void Internal_SetCellSize(float val);
+	static float Internal_GetCellSize();
+	static void Internal_SetCellHeight(float val);
+	static float Internal_GetCellHeight();
+	static void Internal_SetAgentHeight(float val);
+	static float Internal_GetAgentHeight();
+	static void Internal_SetAgentRadius(float val);
+	static float Internal_GetAgentRadius();
+	static void Internal_SetAgentMaxClimb(float val);
+	static float Internal_GetAgentMaxClimb();
+	static void Internal_SetAgentMaxSlope(float val);
+	static float Internal_GetAgentMaxSlope();
+	static void Internal_SetRegionMinSize(float val);
+	static float Internal_GetRegionMinSize();
+	static void Internal_SetEdgeMaxLen(float val);
+	static float Internal_GetEdgeMaxLen();
+	static void Internal_SetEdgeMaxError(float val);
+	static float Internal_GetEdgeMaxError();
+	static void Internal_SetVertsPerPoly(float val);
+	static float Internal_GetVertsPerPoly();
+	static void Internal_SetDetailSampleDist(float val);
+	static float Internal_GetDetailSampleDist();
+	static void Internal_SetDetailSampleMaxError(float val);
+	static float Internal_GetDetailSampleMaxError();
+
 	static void Internal_SaveNavMesh(MonoString* message);
 	static void Internal_LoadNavMesh(MonoString* message);
 	static MonoArray* Internal_FindStraightPath(Vector3 start_pos, Vector3 end_pos);

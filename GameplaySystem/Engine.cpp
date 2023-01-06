@@ -271,6 +271,31 @@ void Engine::SetupNavigationInternalCalls()
 	mono_add_internal_call("GameplayCore.Navigation::Internal_Build", Internal_NavBuild);
 	mono_add_internal_call("GameplayCore.Navigation::Internal_SaveNavMesh", Internal_SaveNavMesh);
 	mono_add_internal_call("GameplayCore.Navigation::Internal_LoadNavMesh", Internal_LoadNavMesh);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_LoadNavMesh", Internal_LoadNavMesh);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetCellSize", Internal_SetCellSize);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetCellSize", Internal_GetCellSize);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetCellHeight", Internal_SetCellHeight);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetCellHeight", Internal_GetCellHeight);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetAgentHeight", Internal_SetAgentHeight);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetAgentHeight", Internal_GetAgentHeight);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetAgentRadius", Internal_SetAgentRadius);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetAgentRadius", Internal_GetAgentRadius);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetAgentMaxClimb", Internal_SetAgentMaxClimb);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetAgentMaxClimb", Internal_GetAgentMaxClimb);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetAgentMaxSlope", Internal_SetAgentMaxSlope);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetAgentMaxSlope", Internal_GetAgentMaxSlope);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetRegionMinSize", Internal_SetRegionMinSize);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetRegionMinSize", Internal_GetRegionMinSize);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetEdgeMaxLen", Internal_SetEdgeMaxLen);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetEdgeMaxLen", Internal_GetEdgeMaxLen);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetEdgeMaxError", Internal_SetEdgeMaxError);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetEdgeMaxError", Internal_GetEdgeMaxError);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetVertsPerPoly", Internal_SetVertsPerPoly);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetVertsPerPoly", Internal_GetVertsPerPoly);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetDetailSampleDist", Internal_SetDetailSampleDist);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetDetailSampleDist", Internal_GetDetailSampleDist);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SetDetailSampleMaxError", Internal_SetDetailSampleMaxError);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_GetDetailSampleMaxError", Internal_GetDetailSampleMaxError);
 }
 
 void Engine::SendTimeData() {
@@ -716,6 +741,126 @@ void Engine::Internal_Log_Implementation(
 bool Engine::Internal_NavBuild()
 {
 	return NavigationModule::getInstance().Build();
+}
+
+void Engine::Internal_SetCellSize(float val)
+{
+	NavigationModule::getInstance().m_cellSize = val;
+}
+
+float Engine::Internal_GetCellSize()
+{
+	return NavigationModule::getInstance().m_cellSize;
+}
+
+void Engine::Internal_SetCellHeight(float val)
+{
+	NavigationModule::getInstance().m_cellHeight = val;
+}
+
+float Engine::Internal_GetCellHeight()
+{
+	return NavigationModule::getInstance().m_cellHeight;
+}
+
+void Engine::Internal_SetAgentHeight(float val)
+{
+	NavigationModule::getInstance().m_agentHeight = val;
+}
+
+float Engine::Internal_GetAgentHeight()
+{
+	return NavigationModule::getInstance().m_agentHeight;
+}
+
+void Engine::Internal_SetAgentRadius(float val)
+{
+	NavigationModule::getInstance().m_agentRadius = val;
+}
+
+float Engine::Internal_GetAgentRadius()
+{
+	return NavigationModule::getInstance().m_agentRadius;
+}
+
+void Engine::Internal_SetAgentMaxClimb(float val)
+{
+	NavigationModule::getInstance().m_agentMaxClimb = val;
+}
+
+float Engine::Internal_GetAgentMaxClimb()
+{
+	return NavigationModule::getInstance().m_agentMaxClimb;
+}
+
+void Engine::Internal_SetAgentMaxSlope(float val)
+{
+	NavigationModule::getInstance().m_agentMaxSlope = val;
+}
+
+float Engine::Internal_GetAgentMaxSlope()
+{
+	return NavigationModule::getInstance().m_agentMaxSlope;
+}
+
+void Engine::Internal_SetRegionMinSize(float val)
+{
+	NavigationModule::getInstance().m_regionMinSize = val;
+}
+
+float Engine::Internal_GetRegionMinSize()
+{
+	return NavigationModule::getInstance().m_regionMinSize;
+}
+
+void Engine::Internal_SetEdgeMaxLen(float val)
+{
+	NavigationModule::getInstance().m_edgeMaxLen = val;
+}
+
+float Engine::Internal_GetEdgeMaxLen()
+{
+	return NavigationModule::getInstance().m_edgeMaxLen;
+}
+
+void Engine::Internal_SetEdgeMaxError(float val)
+{
+	NavigationModule::getInstance().m_edgeMaxError = val;
+}
+
+float Engine::Internal_GetEdgeMaxError()
+{
+	return NavigationModule::getInstance().m_edgeMaxError;
+}
+
+void Engine::Internal_SetVertsPerPoly(float val)
+{
+	NavigationModule::getInstance().m_vertsPerPoly = val;
+}
+
+float Engine::Internal_GetVertsPerPoly()
+{
+	return NavigationModule::getInstance().m_vertsPerPoly;
+}
+
+void Engine::Internal_SetDetailSampleDist(float val)
+{
+	NavigationModule::getInstance().m_detailSampleDist = val;
+}
+
+float Engine::Internal_GetDetailSampleDist()
+{
+	return NavigationModule::getInstance().m_detailSampleDist;
+}
+
+void Engine::Internal_SetDetailSampleMaxError(float val)
+{
+	NavigationModule::getInstance().m_detailSampleMaxError = val;
+}
+
+float Engine::Internal_GetDetailSampleMaxError()
+{
+	return NavigationModule::getInstance().m_detailSampleMaxError;
 }
 
 void Engine::Internal_SaveNavMesh(MonoString* message)
