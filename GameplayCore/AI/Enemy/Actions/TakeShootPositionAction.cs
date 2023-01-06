@@ -22,7 +22,7 @@ namespace GameplayCore.AI.Enemy.Actions
             while (true)
             {
                 bool isReadyToShoot = true;
-                var viewDirection = GetViewDirection(enemyTransform, aimTransform);
+                var viewDirection = GetViewDirection(enemyTransform.Position, aimTransform.Position);
 
                 if (IsAimInRange(enemyTransform.Position, aimTransform.Position, enemyController.Range))
                 {
@@ -53,10 +53,10 @@ namespace GameplayCore.AI.Enemy.Actions
             state.SetBoolValue("CanShoot", true);
         }
 
-        private Vector3 GetViewDirection(TransformComponent enemyTransform, TransformComponent aimTransform)
+        private Vector3 GetViewDirection(Vector3 from, Vector3 to)
         {
             var axis = Vector3.UnitX + Vector3.UnitZ;
-            var direction = aimTransform.Position - enemyTransform.Position;
+            var direction = to - from;
             var viewDirection = direction * axis;
             viewDirection.Normalize();
             return viewDirection;

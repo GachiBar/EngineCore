@@ -142,6 +142,7 @@ namespace GameplayCore.Components
             var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
             var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
             var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
+            var projectile = bullet.AddComponent<ProjectileComponent>();
 
             bulletTransform.Position = position;
             bulletSphere.Radius = BulletRadius;

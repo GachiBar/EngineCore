@@ -1,6 +1,7 @@
 ﻿using GameplayCore.AI;
 using GameplayCore.AI.Enemy;
 using GameplayCore.AI.Enemy.Actions;
+using System;
 using System.Collections.Generic;
 using Action = GameplayCore.AI.Action;
 
@@ -23,6 +24,7 @@ namespace GameplayCore.Components
             _state.SetBoolValue("HasAim", false);
             _state.SetBoolValue("CanShoot", false);
             _state.SetBoolValue("NeedReloading", false);
+            _state.SetBoolValue("NeedFlee", false);
             _state.SetFloatValue("ReloadingTime", 0.75f);
 
             _planner = new Planner();
@@ -35,6 +37,7 @@ namespace GameplayCore.Components
                 new TakeShootPositionAction(),
                 new ShootAction(),
                 new ReloadingAction(),
+                new FleeAction(),
             };            
         }
 

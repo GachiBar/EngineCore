@@ -4,8 +4,10 @@ using System;
 namespace GameplayCore.Components
 {
     public class RangeEnemyControllerComponent : Component
-    {
+    {        
         private const float BulletRadius = 0.3f;
+
+        private HealthComponent _healthComponent;
 
         public float Speed = 2.0f;
         public float AngularSpeed = 4.0f;
@@ -89,6 +91,43 @@ namespace GameplayCore.Components
             ThrowBullet(position, direction);
         }
 
+        protected override void OnAttach(GameObject gameObject)
+        {
+            _healthComponent = gameObject.GetComponent<HealthComponent>();
+
+            if (_healthComponent != null)
+            {
+                _healthComponent.Died += OnDied;
+            }
+
+            gameObject.ComponentAdded += OnComponentAdded;
+            gameObject.ComponentRemoved += OnComponentRemoved;
+        }
+
+        protected override void OnDetach(GameObject gameObject)
+        {
+            gameObject.ComponentAdded -= OnComponentAdded;
+            gameObject.ComponentRemoved -= OnComponentRemoved;
+        }
+
+        private void OnComponentAdded(GameObject gameObject, Component component)
+        {
+            if (component is HealthComponent healthComponent)
+            {
+                _healthComponent = healthComponent;
+                _healthComponent.Died += OnDied;
+            }
+        }
+
+        private void OnComponentRemoved(GameObject gameObject, Component component)
+        {
+            if (component is HealthComponent)
+            {
+                _healthComponent.Died -= OnDied;
+                _healthComponent = null;
+            }
+        }
+
         private void LoockInDirection(TransformComponent transform, Vector3 direction)
         {
             var from = transform.Rotation;
@@ -110,6 +149,12 @@ namespace GameplayCore.Components
             bulletTimer.Timer = BulletLifeTime;
             bulletRigidbody.Mass = 1.0f;
             bulletRigidbody.AddImpulse(direction * BulletImpulse);
+        }
+
+        private void OnDied(HealthComponent health)
+        {
+            // Now i just remove game object
+            GameObject.Scene.DeleteGameObject(GameObject);
         }
 
         private static Quaternion GetRotation(Vector3 from, Vector3 to)

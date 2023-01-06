@@ -63,5 +63,10 @@ namespace GameplayCore.Components
 
         protected virtual void OnAttach(GameObject gameObject) { }
         protected virtual void OnDetach(GameObject gameObject) { }
+
+        protected void DeleteGameObject(GameObject gameObject)
+        {
+            GameObject.Scene.DeleteGameObject(gameObject);
+        }
     }
 }

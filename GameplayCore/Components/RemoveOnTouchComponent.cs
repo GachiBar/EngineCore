@@ -10,7 +10,7 @@
             }
 
             Log.PrintMessage("Pickuped!", Duration: 0.0f);
-            GameObject.Scene.DeleteGameObject(GameObject);
+            DeleteGameObject(GameObject);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace GameplayCore.AI.Enemy.Goals
 {
-    public class ReloadGoal : Goal
+    public class ReloadingGoal : Goal
     {
         public override int DistanceTo(State state)
         {

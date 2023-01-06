@@ -19,7 +19,6 @@ namespace GameplayCore.AI.Enemy.Actions
             rigidbody.Velocity = Vector3.Zero;
             rangeController.Shoot(aim);
 
-            state.SetBoolValue("HasAim", false);
             state.SetBoolValue("CanShoot", false);
             state.SetBoolValue("NeedReloading", true);
             yield return ExecutionState.Finished;
@@ -27,7 +26,6 @@ namespace GameplayCore.AI.Enemy.Actions
 
         public override void PlanEffects(GameObject gameObject, State state)
         {
-            state.SetBoolValue("HasAim", false);
             state.SetBoolValue("CanShoot", false);
             state.SetBoolValue("NeedReloading", true);
         }

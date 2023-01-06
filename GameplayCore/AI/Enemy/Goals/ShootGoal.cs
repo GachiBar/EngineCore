@@ -4,17 +4,17 @@
     {
         public override int DistanceTo(State state)
         {
-            if (state.GetBoolValue("HasAim") == true)
+            if (state.GetBoolValue("NeedReloading") == true)
             {
-                return 2;
+                return 0;
             }
             if (state.GetBoolValue("CanShoot") == true)
             {
                 return 1;
             }
-            if (state.GetBoolValue("NeedReloading") == true)
+            if (state.GetBoolValue("HasAim") == true)
             {
-                return 0;
+                return 2;
             }
 
             return 3;
