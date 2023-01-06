@@ -1,5 +1,8 @@
 #pragma once
+#include <string>
+
 #include "Definitions.h"
+#include "libs/Detour/Include/DetourNavMesh.h"
 #include "libs/Recast/Include/Recast.h"
 
 struct dtMeshTile;
@@ -29,6 +32,20 @@ enum SamplePolyFlags
 	SAMPLE_POLYFLAGS_JUMP = 0x08,		// Ability to jump.
 	SAMPLE_POLYFLAGS_DISABLED = 0x10,		// Disabled polygon
 	SAMPLE_POLYFLAGS_ALL = 0xffff	// All abilities.
+};
+
+struct NavMeshSetHeader
+{
+	int magic;
+	int version;
+	int numTiles;
+	dtNavMeshParams params;
+};
+
+struct NavMeshTileHeader
+{
+	dtTileRef tileRef;
+	int dataSize;
 };
 
 class NavigationModule final
@@ -71,6 +88,7 @@ protected:
 	std::vector<FVector> GetNavPolyMeshPoints(const dtNavMesh& mesh, const dtNavMeshQuery* query,
 		const dtMeshTile* tile, unsigned char flags) const;
 
+	std::string m_nav_mesh_file_path = "solo_navmesh.bin";
 public:
 	static NavigationModule& getInstance();
 
@@ -82,6 +100,9 @@ public:
 	bool FindStraightPath(FVector const & InStartPos, FVector const & InEndPos, std::vector<FVector>& OutPath);
 	bool FindRandomPointAroundCircle(FVector const& InCenterPos, std::vector<FVector>& OutPoints, int InMaxPoints, float InMaxRadius);
 	bool Raycast(FVector const& InStart, FVector const& InEnd, std::vector<FVector>& OuthitPointVec);
+
+	void SaveNavMesh();
+	void ReadNavMesh();
 
 	rcConfig m_cfg;
 	rcHeightfield* m_solid;
