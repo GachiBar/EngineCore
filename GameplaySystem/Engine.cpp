@@ -269,6 +269,8 @@ void Engine::SetupNavigationInternalCalls()
 	mono_add_internal_call("GameplayCore.Navigation::Internal_FindRandomPointAroundCircle", Internal_FindRandomPointAroundCircle);
 	mono_add_internal_call("GameplayCore.Navigation::Internal_Raycast", Internal_Raycast);
 	mono_add_internal_call("GameplayCore.Navigation::Internal_Build", Internal_NavBuild);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_SaveNavMesh", Internal_SaveNavMesh);
+	mono_add_internal_call("GameplayCore.Navigation::Internal_LoadNavMesh", Internal_LoadNavMesh);
 }
 
 void Engine::SendTimeData() {
@@ -714,6 +716,22 @@ void Engine::Internal_Log_Implementation(
 bool Engine::Internal_NavBuild()
 {
 	return NavigationModule::getInstance().Build();
+}
+
+void Engine::Internal_SaveNavMesh(MonoString* message)
+{
+	auto raw_message = mono_string_to_utf8(message);
+	const std::string message_string(raw_message);
+	mono_free(raw_message);
+	NavigationModule::getInstance().SaveNavMesh(message_string);
+}
+
+void Engine::Internal_LoadNavMesh(MonoString* message)
+{
+	auto raw_message = mono_string_to_utf8(message);
+	const std::string message_string(raw_message);
+	mono_free(raw_message);
+	NavigationModule::getInstance().LoadNavMesh(message_string);
 }
 
 MonoArray* Engine::Internal_FindStraightPath(Vector3 start_pos, Vector3 end_pos)

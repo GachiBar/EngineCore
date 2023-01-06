@@ -594,13 +594,13 @@ bool NavigationModule::Raycast(FVector const& InStart, FVector const& InEnd, std
 	return true;
 }
 
-void NavigationModule::SaveNavMesh()
+void NavigationModule::SaveNavMesh(std::string const& InNavMeshFilePath)
 {
 	const dtNavMesh* nav_mesh = m_navMesh;
 	if (!nav_mesh) return;
 
 	FILE* fp;
-	fopen_s(&fp, m_nav_mesh_file_path.c_str(), "wb");
+	fopen_s(&fp, InNavMeshFilePath.c_str(), "wb");
 	if (!fp)
 		return;
 
@@ -639,7 +639,7 @@ void NavigationModule::SaveNavMesh()
 	fclose(fp);
 }
 
-void NavigationModule::ReadNavMesh()
+void NavigationModule::LoadNavMesh(std::string const& InNavMeshFilePath)
 {
 	dtFreeNavMesh(m_navMesh);
 	auto load = [](const char* path) -> dtNavMesh*
@@ -713,7 +713,7 @@ void NavigationModule::ReadNavMesh()
 		return mesh;
 	};
 
-	m_navMesh = load(m_nav_mesh_file_path.c_str());
+	m_navMesh = load(InNavMeshFilePath.c_str());
 	m_navQuery->init(m_navMesh, 2048);
 }
 

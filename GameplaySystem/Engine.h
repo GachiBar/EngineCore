@@ -286,6 +286,8 @@ private:
 	static MonoArray* ConvertVectorToMonoArray(std::vector<T> const& InVector, std::string const& InNamespaceName, std::string const& InClassName);
 
 	static bool Internal_NavBuild();
+	static void Internal_SaveNavMesh(MonoString* message);
+	static void Internal_LoadNavMesh(MonoString* message);
 	static MonoArray* Internal_FindStraightPath(Vector3 start_pos, Vector3 end_pos);
 	static MonoArray* Internal_FindRandomPointAroundCircle(Vector3 InCenterPos, int InMaxPoints, float InMaxRadius);
 	static MonoArray* Internal_Raycast(Vector3 InStartPos, Vector3 InEndPos);

@@ -88,7 +88,7 @@ protected:
 	std::vector<FVector> GetNavPolyMeshPoints(const dtNavMesh& mesh, const dtNavMeshQuery* query,
 		const dtMeshTile* tile, unsigned char flags) const;
 
-	std::string m_nav_mesh_file_path = "solo_navmesh.bin";
+	std::string m_nav_mesh_file_path = "navmesh.bin";
 public:
 	static NavigationModule& getInstance();
 
@@ -101,8 +101,8 @@ public:
 	bool FindRandomPointAroundCircle(FVector const& InCenterPos, std::vector<FVector>& OutPoints, int InMaxPoints, float InMaxRadius);
 	bool Raycast(FVector const& InStart, FVector const& InEnd, std::vector<FVector>& OuthitPointVec);
 
-	void SaveNavMesh();
-	void ReadNavMesh();
+	void SaveNavMesh(std::string const& InNavMeshFilePath);
+	void LoadNavMesh(std::string const& InNavMeshFilePath);
 
 	rcConfig m_cfg;
 	rcHeightfield* m_solid;

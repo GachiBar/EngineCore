@@ -14,6 +14,16 @@ namespace GameplayCore
 			return Internal_Build();
 		}
 
+		public static void SaveNavMesh(string NavMeshFilePath = "navmesh.bin")
+		{
+			Internal_SaveNavMesh(NavMeshFilePath);
+		}
+
+		public static void LoadNavMesh(string NavMeshFilePath = "navmesh.bin")
+		{
+			Internal_LoadNavMesh(NavMeshFilePath);
+		}
+
 		public static GameplayCore.Mathematics.Vector3[] FindStraightPath(GameplayCore.Mathematics.Vector3 InStartPos, GameplayCore.Mathematics.Vector3 InEndPos)
 		{
 			return Internal_FindStraightPath(InStartPos, InEndPos); ;
@@ -31,6 +41,12 @@ namespace GameplayCore
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern private static bool Internal_Build();
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern private static void Internal_SaveNavMesh(string NavMeshFilePath);
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		extern private static void Internal_LoadNavMesh(string NavMeshFilePath);
 
 		[MethodImpl(MethodImplOptions.InternalCall)]
 		extern private static GameplayCore.Mathematics.Vector3[] Internal_FindStraightPath(GameplayCore.Mathematics.Vector3 InStartPos, GameplayCore.Mathematics.Vector3 InEndPos);
