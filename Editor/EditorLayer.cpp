@@ -41,6 +41,11 @@ void EditorLayer::OnAttach()
     explorer = std::make_shared<ExplorerWindow>(GetApp());
     log = std::make_shared<LogWindow>();
 
+    gvm.get()->ExitGameMode.AddLambda([&]()
+    {
+        OpenScene();
+    });
+
 	hierarchy.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)
 	{
 		selected_go = go;
@@ -58,6 +63,10 @@ void EditorLayer::OnAttach()
 	auto& io = ImGui::GetIO();
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    // Now I just open our default scene. 
+    // When we will add explorer file selection we nead delete this code.
+    OpenScene(); 
 }
 
 void EditorLayer::OnDetach()
@@ -157,9 +166,6 @@ void EditorLayer::OnGuiRender()
     {
         if (ImGui::BeginMenu("File"))
         {
-            // Disabling fullscreen would allow the window to be moved to the front of other windows, 
-            // which we can't undo at the moment without finer window depth/z control.
-            //ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);1
             if (ImGui::MenuItem("New", "Ctrl+N"))
             {
                 //NewScene();
@@ -167,31 +173,12 @@ void EditorLayer::OnGuiRender()
 
             if (ImGui::MenuItem("Open...", "Ctrl+O"))
             {
-                std::fstream file;
-                std::string content;
-                
-                file.open("scene.dat", std::fstream::in);
-                getline(file, content, '\0');
-                
-                GetApp()->GetEngine()->GetScene()->Terminate();
-                GetApp()->GetEngine()->GetScene()->Deserialize(content);
-                GetApp()->GetEngine()->GetScene()->Initialize();
-                file.close();
+                OpenScene();
             }
 
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
-                std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
-
-                std::ofstream file_handler;
-                // File Open
-                file_handler.open("scene.dat", std::ios::out | std::ios::trunc );
-
-                // Write to the file
-                file_handler << json;
-
-                // File Close
-                file_handler.close();
+                SaveScene();
             }
 
             if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
@@ -203,6 +190,7 @@ void EditorLayer::OnGuiRender()
             {
                 GetApp()->Close();
             }
+
             ImGui::EndMenu();
         }
 
@@ -239,8 +227,6 @@ void EditorLayer::OnGuiRender()
             if (ImGui::MenuItem("Close", NULL, false, &p_open != NULL))
                 p_open = false;
 
-
-
             ImGui::EndMenu();
         }
 
@@ -274,3 +260,19 @@ engine::GameObject* EditorLayer::GetSelectedGo()
 {
     return selected_go.get();
 }
+
+void EditorLayer::OpenScene()
+{
+    std::fstream file("scene.dat", std::fstream::in);
+    std::string content;
+    getline(file, content, '\0');
+    GetApp()->GetEngine()->GetScene()->Deserialize(content);
+}
+
+void EditorLayer::SaveScene()
+{
+    std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
+    std::ofstream file_handler("scene.dat", std::ios::out | std::ios::trunc);
+    file_handler << json;
+}
+

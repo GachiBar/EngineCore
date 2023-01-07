@@ -25,12 +25,12 @@ namespace GameplayCore.Components
             
             if (transform == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(TransformComponent)}");
                 return;
             }
             if (rigidbody == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(RigidbodyComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(RigidbodyComponent)}");
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace GameplayCore.Components
 
             if (rigidbody == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(RigidbodyComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(RigidbodyComponent)}");
                 return;
             }
 
@@ -58,7 +58,7 @@ namespace GameplayCore.Components
 
             if (transform == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(TransformComponent)}");
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace GameplayCore.Components
 
             if (transform == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(TransformComponent)}");
                 return;
             }
 
@@ -166,7 +166,7 @@ namespace GameplayCore.Components
 
         private void OnDied(HealthComponent health)
         {
-            // Now i just remove game object
+            // Now I just remove game object
             GameObject.Scene.DeleteGameObject(GameObject);
         }
 

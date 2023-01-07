@@ -7,9 +7,9 @@ namespace GameplayCore.AI.Enemy
     {
         public override AIGoal ChooseGoal(GameObject gameObject, AIState state)
         {
-            UpdateStete(gameObject, state);
+            UpdateState(gameObject, state);
 
-            if (state.GetBoolValue("NeedFlee"))
+            if (state.GetBoolValue("NeedFlee") == true)
             {
                 return new FleeGoal();
             }
@@ -21,7 +21,7 @@ namespace GameplayCore.AI.Enemy
             return new ShootGoal();
         }
 
-        private void UpdateStete(GameObject gameObject, AIState state)
+        private void UpdateState(GameObject gameObject, AIState state)
         {
             var health = gameObject.GetComponent<HealthComponent>();
             var needFlee = (health.Health / health.MaxHealth) < 0.5f;

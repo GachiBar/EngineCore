@@ -1,4 +1,5 @@
-﻿using GameplayCore.Resources;
+﻿using GameplayCore.Editor;
+using GameplayCore.Resources;
 using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
@@ -6,70 +7,50 @@ namespace GameplayCore.Components
     public class MeshRenderComponent : Component
     {
         private TransformComponent _transformComponent = null;
-        [SerializeField] private MeshAsset _asset;
-        [SerializeField] private MaterialAsset _material;
 
-        public ulong Id = 1;
+        [SerializeField]
+        [InspectorName("MeshAsset")]
+        private MeshAsset _meshAsset;
+
+        [SerializeField]
+        [InspectorName("MaterialAsset")]
+        private MaterialAsset _materialAsset;
+
+        private ulong _meshId = 1;
         private ulong _materialId = 0;
-
-        public override void Initialize() 
-        {
-            if (_asset != null)
-            {
-                _asset.Load();
-                Id = _asset.Id;
-            }
-            
-            if (_material != null)
-            {
-                _material.Load();
-                _materialId = _material.Id;
-            }
-        }
 
         public override void Render()
         {
-            if (_transformComponent != null)
+            if (_transformComponent == null)
             {
-                EngineApi.RenderApi.DrawModel(
-                    Id,
-                    _materialId, 
-                    _transformComponent.ModelMatrix);
-            }            
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(TransformComponent)}");
+                return;
+            }
+
+            EngineApi.RenderApi.DrawModel(
+                _meshId,
+                _materialId,
+                _transformComponent.ModelMatrix);
         }
 
         internal override void Invalidate(string fieldName)
         {
-            base.Invalidate(fieldName);
-
-            if (fieldName == "_asset")
+            switch (fieldName)
             {
-                if (_asset != null)
-                {
-                    _asset.Load();
-                    Id = _asset.Id;
-                }
-                else
-                {
-                    Id = 0;
-                }   
-            }
-            else if (fieldName == "_material")
-            {
-                if (_material != null)
-                {
-                    _material.Load();
-                    _materialId = _material.Id;
-                }
-                else
-                {
-                    _materialId = 0;
-                }
+                case nameof(_meshAsset):
+                    TryReloadMesh();
+                    break;
+                case nameof(_materialAsset):
+                    TryReloadMaterial();
+                    break;
             }
         }
 
         protected override void OnAttach(GameObject gameObject)
         {
+            TryReloadMesh();
+            TryReloadMaterial();
+
             _transformComponent = GameObject.GetComponent<TransformComponent>();
 
             gameObject.ComponentAdded += OnComponentAdded;
@@ -96,6 +77,32 @@ namespace GameplayCore.Components
             {
                 _transformComponent = null;
             }
+        }
+
+        private bool TryReloadMesh()
+        {
+            if (_meshAsset != null)
+            {
+                _meshAsset.Load();
+                _meshId = _meshAsset.Id;
+                return true;
+            }
+
+            _meshId = 0;
+            return false;
+        }
+
+        private bool TryReloadMaterial()
+        {
+            if (_materialAsset != null)
+            {
+                _materialAsset.Load();
+                _materialId = _materialAsset.Id;
+                return true;
+            }
+
+            _materialId = 0;
+            return false;
         }
     }
 }

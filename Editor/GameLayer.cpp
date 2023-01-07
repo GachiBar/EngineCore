@@ -48,34 +48,7 @@ void GameLayer::OnAttach()
 	params[2] = &memFreeFunc;
 
 	method.Invoke(*scene, params);
-
-	auto game_object_1 = scene->CreateGameObject();
-	auto game_object_2 = scene->CreateGameObject();
-	auto game_object_3 = scene->CreateGameObject();
-	scene->Invalidate();
-
-	game_object_1->AddComponent("GameplayCore.Components", "MeshRenderComponent");
-	auto transform = game_object_1->AddComponent("GameplayCore.Components", "TransformComponent");
-	game_object_1->AddComponent("GameplayCore.Components", "TestEditorFieldsComponent");
-	game_object_1->Invalidate();
-
-	game_object_2->AddComponent("GameplayCore.Components", "CameraComponent");
-	game_object_2->AddComponent("GameplayCore.Components", "TransformComponent");
-	game_object_2->AddComponent("GameplayCore.Components", "SpectatorComponent");
-	game_object_2->Invalidate();
-
-	for (size_t i = 0; i < scene->Count(); ++i) {
-		std::cout << "go:" << i << "\n";
-		auto go = (*scene)[i];
-
-		for (size_t j = 0; j < go->Count(); ++j) {
-			std::cout << "\t" << "component" << j << "\n";
-			auto component = (*go)[j];
-		}
-	}
-
 	GetApp()->GetEngine()->SetScene(scene);
-	scene->Initialize();
 }
 
 void GameLayer::OnUpdate(float const dt)

@@ -2,7 +2,7 @@
 {
     public class ProjectileComponent : Component
     {
-        float Damage = 30.0f;
+        public float Damage = 30.0f;
 
         public override void OnCollisionEnter(RigidbodyComponent rigidbody) 
         {
