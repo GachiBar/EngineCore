@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GameplayCore.Components;
 using GameplayCore.Serialization;
+using ImGuiNET;
 using Newtonsoft.Json;
 
 namespace GameplayCore
@@ -99,6 +100,16 @@ namespace GameplayCore
             foreach (var gameObject in _gameObjects)
             {
                 gameObject.DebugRender();
+            }
+
+            Invalidate();
+        }
+
+        public void RenderGUI()
+        {
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.RenderGUI();
             }
 
             Invalidate();
@@ -201,6 +212,14 @@ namespace GameplayCore
             }
 
             _createdGameObjects.Clear();
+        }
+
+        internal unsafe void SetupImGui(IntPtr context, IntPtr allocFunc, IntPtr freeFunc)
+        {
+            Log.PrintMessage("Hello", Duration: 0);
+
+            ImGui.SetCurrentContext(context);
+            ImGui.SetAllocatorFunctions(allocFunc, freeFunc);
         }
     }
 }

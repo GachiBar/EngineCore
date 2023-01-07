@@ -24,6 +24,6 @@ public:
 private:
 	EEditorInputMode::Type editor_input_mode;
 
-	std::shared_ptr<GameLayer> game_layer;
-	std::shared_ptr<EditorLayer> editor_layer;
+	GameLayer* game_layer;
+	EditorLayer* editor_layer;
 };

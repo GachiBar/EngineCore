@@ -20,12 +20,12 @@ void EditorApplication::OnSetup()
 void EditorApplication::OnStart()
 {
 	Application::OnStart();
-	game_layer = std::make_shared<GameLayer>(&m_LayerStack);
-	PushLayer(game_layer.get());
+	game_layer = new GameLayer(&m_LayerStack);
+	PushLayer(game_layer);
 
-	editor_layer = std::make_shared<EditorLayer>(&m_LayerStack);
-	Camera->owner_layer = editor_layer.get();
-	PushLayer(editor_layer.get());
+	editor_layer =new EditorLayer (&m_LayerStack);
+	Camera->owner_layer = editor_layer;
+	PushLayer(editor_layer);
 	editor_layer->gvm->EnterGameMode.AddRaw(this, &EditorApplication::OnEnterGameMode);
 	editor_layer->gvm->ExitGameMode.AddRaw(this, &EditorApplication::OnExitGameMode);
 

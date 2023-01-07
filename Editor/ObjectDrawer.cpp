@@ -891,8 +891,10 @@ ObjectDrawer::resources_cache::resources_cache()
 }
 
 ObjectDrawer::resources_cache::~resources_cache() {
-	for (auto it : resource_names) {
-		delete it;
+
+	for (int i = 1; i < resource_names.size(); ++i)
+	{
+		delete resource_names[i];
 	}
 }
 
