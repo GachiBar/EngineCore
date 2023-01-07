@@ -90,7 +90,7 @@ void GameLayer::OnUpdate(float const dt)
 
 void GameLayer::OnGuiRender()
 {
-	Layer::OnGuiRender();
+	GetApp()->DrawGameUI();
 }
 
 void GameLayer::OnPostRender()

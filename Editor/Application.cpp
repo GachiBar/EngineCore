@@ -189,15 +189,7 @@ int Application::Run(int argc, char* argv[])
 
 void Application::DrawGameUI()
 {
-	//with_Child("GameRenderUI", {}, false)
-	//{
-		//VSE UI ZDES
-		//if (ImGui::Button("TeastButton", {200,100}))
-		//{
-		//	std::cout<<"PressedTest"<<std::endl<<std::flush;
-		//};
-	//}
-	
+	engine_->GetScene()->RenderGUI();
 }
 
 void Application::Close()

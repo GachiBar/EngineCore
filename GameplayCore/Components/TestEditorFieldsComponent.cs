@@ -36,8 +36,8 @@ namespace GameplayCore.Components
 
 			Log.PrintMessage("Here!!1", Duration: 0.0f);
 			ImGui.LabelText("Ochepyatka", "");
-			ImGui.LabelText("Ochepyatka", "");
-			ImGui.LabelText("Ochepyatka", "");
+			//ImGui.LabelText("Ochepyatka", "");
+			//ImGui.LabelText("Ochepyatka", "");
 			Log.PrintMessage("Here!!2", Duration: 0.0f);
 			ImGui.EndChild();
 			Log.PrintMessage("Here!!3", Duration: 0.0f);
