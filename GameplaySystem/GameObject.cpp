@@ -18,7 +18,7 @@ Method* GameObject::terminate_ = nullptr;
 Method* GameObject::fixed_update_ = nullptr;
 Method* GameObject::update_ = nullptr;
 Method* GameObject::render_ = nullptr;
-Method* GameObject::debug_render_ = nullptr;
+Method* GameObject::editor_render_ = nullptr;
 Method* GameObject::invalidate_ = nullptr;
 
 const char kIsNotCachedErrorMessage[] = "GameObject methods are not cached.";
@@ -145,10 +145,10 @@ void GameObject::Render() {
     render_->Invoke(*this);
 }
 
-void GameObject::DebugRender() {
-    assert(debug_render_ != nullptr && kIsNotCachedErrorMessage);
+void GameObject::EditorRender() {
+    assert(editor_render_ != nullptr && kIsNotCachedErrorMessage);
 
-    debug_render_->Invoke(*this);
+    editor_render_->Invoke(*this);
 }
 
 void GameObject::Terminate() {
@@ -189,7 +189,7 @@ void GameObject::CacheMethods(const Runtime& runtime) {
     fixed_update_ = new Method(type, "FixedUpdate", 0);
     update_ = new Method(type, "Update", 0);
     render_ = new Method(type, "Render", 0);
-    debug_render_ = new Method(type, "DebugRender", 0);
+    editor_render_ = new Method(type, "EditorRender", 0);
     invalidate_ = new Method(type, "Invalidate", 0);
 }
 

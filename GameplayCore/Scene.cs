@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GameplayCore.Components;
 using GameplayCore.Serialization;
 using ImGuiNET;
@@ -95,11 +96,11 @@ namespace GameplayCore
             Invalidate();
         }
 
-        public void DebugRender()
+        public void EditorRender()
         {
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.DebugRender();
+                gameObject.EditorRender();
             }
 
             Invalidate();
@@ -138,12 +139,24 @@ namespace GameplayCore
             };
 
             string data = JsonConvert.SerializeObject(_gameObjects, options);
-            //System.Console.WriteLine(data);
             return data;
         }
 
         public void Deserialize(string data)
         {
+            // Remove all components from all game objects to trigger OnDetach method.
+            foreach (var gameObject in _gameObjects)
+            {
+                var componentsTypes = gameObject.Select(c => c.GetType()).ToList();
+
+                foreach (var componentType in componentsTypes)
+                {
+                    gameObject.RemoveComponent(componentType);
+                }
+
+                gameObject.Invalidate();
+            }
+
             GameObjectDefaultJsonConverter gameObjectConverter = new GameObjectDefaultJsonConverter(this);
             
             JsonSerializerSettings options = new JsonSerializerSettings()

@@ -2,6 +2,7 @@
 using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
 using GameplayCore.Serialization;
+using System;
 
 namespace GameplayCore.Components
 {
@@ -114,6 +115,7 @@ namespace GameplayCore.Components
             if (_bodyId != 0)
             {
                 PhysicsApi.DestroyBody(_bodyId);
+                _bodyId = 0;
             }
         }
 
@@ -167,8 +169,11 @@ namespace GameplayCore.Components
 
         protected override void OnDetach(GameObject gameObject)
         {
-            PhysicsApi.DestroyBody(_bodyId);
-            _bodyId = 0;
+            if (_bodyId != 0)
+            {
+                PhysicsApi.DestroyBody(_bodyId);
+                _bodyId = 0;
+            }
 
             gameObject.ComponentAdded -= OnComponentAdded;
             gameObject.ComponentRemoved -= OnComponentRemoved;            

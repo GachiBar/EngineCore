@@ -13,7 +13,7 @@ Method* Scene::fixed_update_ = nullptr;
 Method* Scene::update_ai_ = nullptr;
 Method* Scene::update_ = nullptr;
 Method* Scene::render_ = nullptr;
-Method* Scene::debug_render_ = nullptr;
+Method* Scene::editor_render_ = nullptr;
 Method* Scene::render_gui_ = nullptr;
 Method* Scene::invalidate_ = nullptr;
 Method* Scene::serialize_ = nullptr;
@@ -92,10 +92,10 @@ void Scene::Render() {
     render_->Invoke(*this);
 }
 
-void Scene::DebugRender() {
-    assert(debug_render_ != nullptr && kIsNotCachedErrorMessage);
+void Scene::EditorRender() {
+    assert(editor_render_ != nullptr && kIsNotCachedErrorMessage);
 
-    debug_render_->Invoke(*this);
+    editor_render_->Invoke(*this);
 }
 
 void Scene::RenderGUI() {
@@ -162,7 +162,7 @@ void Scene::CacheMethods(const Runtime& runtime) {
     update_ai_ = new Method(type, "UpdateAI", 0);
     update_ = new Method(type, "Update", 0);
     render_ = new Method(type, "Render", 0);
-    debug_render_ = new Method(type, "DebugRender", 0);
+    editor_render_ = new Method(type, "EditorRender", 0);
     render_gui_ = new Method(type, "RenderGUI", 0);
     invalidate_ = new Method(type, "Invalidate", 0);
     create_game_object_ = new Method(type, "CreateGameObject", 0);

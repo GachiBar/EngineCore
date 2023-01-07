@@ -144,8 +144,8 @@ void Engine::Render() {
 	scene_->Render();
 }
 
-void Engine::DebugRender() {
-	scene_->DebugRender();
+void Engine::EditorRender() {
+	scene_->EditorRender();
 }
 
 void Engine::EndRender() {

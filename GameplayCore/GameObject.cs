@@ -153,11 +153,11 @@ namespace GameplayCore
             }
         }
 
-        public void DebugRender()
+        public void EditorRender()
         {
             foreach (var component in _updatableComponents)
             {
-                component.DebugRender();
+                component.EditorRender();
             }
         }
 
@@ -258,12 +258,7 @@ namespace GameplayCore
             if (_componentsMap.TryGetValue(componentType, out var component))
             {
                 _componentsMap.Remove(componentType);
-
-                if (IsInitialized)
-                {
-                    _removedComponents.Add(component);
-                }                                
-                                        
+                _removedComponents.Add(component);                                       
                 _isUpdatableComponentsInvalid = true;
                 return component;
             }
@@ -287,12 +282,16 @@ namespace GameplayCore
         }
 
         internal void Invalidate()
-        {
+        {          
             if (_isUpdatableComponentsInvalid)
             {
                 foreach (var component in _removedComponents)
-                {                    
-                    component.Terminate();
+                {
+                    if (IsInitialized)
+                    {
+                        component.Terminate();
+                    }
+                                       
                     component.GameObject = null;
                     ComponentRemoved?.Invoke(this, component);
                 }

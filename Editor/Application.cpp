@@ -161,7 +161,7 @@ int Application::Run(int argc, char* argv[])
 			engine_->Render();
 
 			if (!engine_->IsRunning()) {
-				engine_->DebugRender();
+				engine_->EditorRender();
 			}
 
 			engine_->EndRender();
