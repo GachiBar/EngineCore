@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using GameplayCore.Components;
+using GameplayCore.Mathematics;
 using GameplayCore.Serialization;
 using Newtonsoft.Json;
 
@@ -151,7 +153,35 @@ namespace GameplayCore
             Invalidate();
         }
 
-        public GameObject CreateGameObject()
+        public struct NavData
+        {
+            public ulong Id;
+            public Matrix transorm;
+
+			public NavData(ulong in_id, Matrix in_transorm) : this()
+			{
+				Id = in_id;
+				this.transorm = in_transorm;
+			}
+		}
+
+        public NavData[] GetNavmeshData()
+        {
+            List<NavData> navDatas = new List<NavData>();
+            foreach(var go in _gameObjects)
+            {
+                var transform = go.GetComponent<TransformComponent>();
+				var mesh = go.GetComponent<MeshRenderComponent>();
+				if (transform !=null && mesh != null)
+                {
+					navDatas.Add(new NavData ( mesh.Id, transform.ModelMatrix ));
+                }
+
+			}
+			return navDatas.ToArray();
+        }
+
+		public GameObject CreateGameObject()
         {            
             var go = new GameObject(this, System.Guid.NewGuid());
             _createdGameObjects.Add(go);

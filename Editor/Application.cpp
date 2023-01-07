@@ -129,7 +129,8 @@ int Application::Run(int argc, char* argv[])
 		return exit_code_;
 
 	///TEST////
-	NavigationModule::getInstance().Build();
+	auto temp = engine::Engine::scene_->GetSceneNavData();
+	NavigationModule::getInstance().Build(temp);
 	auto test = NavigationModule::getInstance().GetNavMeshPoints();
 
 	std::vector<FVector> out;

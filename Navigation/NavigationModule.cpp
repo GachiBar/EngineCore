@@ -9,6 +9,7 @@
 #include "libs/Detour/Include/DetourNavMeshBuilder.h"
 #include "libs/Detour/Include/DetourNavMeshQuery.h"
 
+
 static constexpr int NAVMESHSET_MAGIC = 'M' << 24 | 'S' << 16 | 'E' << 8 | 'T'; //'MSET';
 static constexpr int NAVMESHSET_VERSION = 1;
 
@@ -77,13 +78,13 @@ std::vector<std::vector<FVector>> NavigationModule::GetNavMeshPoints() const
 	return result;
 }
 
-bool NavigationModule::Build()
+bool NavigationModule::Build(std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>> & InNavMeshData)
 {
 	rcContext ctx;
-
+	
 	m_geom = new InputGeom;
 	if (m_geom)
-		m_geom->loadTest();
+		m_geom->loadAllMeshes(id_pathmodel_map, InNavMeshData);
 	if (!m_geom || !m_geom->getMesh())
 	{
 		//m_ctx->log(RC_LOG_ERROR, "buildNavigation: Input mesh is not specified.");

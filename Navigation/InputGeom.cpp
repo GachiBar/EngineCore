@@ -119,6 +119,27 @@ InputGeom::~InputGeom()
 	delete m_mesh;
 }
 
+void InputGeom::loadAllMeshes(std::unordered_map<size_t, std::pair<std::vector<DirectX::SimpleMath::Vector3>, std::vector<uint32_t>>> & in_id_paths_map,
+	std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>> & id_transforms)
+{
+	std::vector<DirectX::SimpleMath::Vector3> verts;
+	std::vector<uint32_t> indexes;
+
+	uint32_t last_count = 0;
+
+	for (auto const & model_in_scene : id_transforms)
+	{
+		auto& model = in_id_paths_map[model_in_scene.first];
+		for (auto const& vert : model.first)
+			verts.push_back((DirectX::SimpleMath::Matrix::CreateTranslation(vert) * model_in_scene.second).Translation());
+		for (auto const index : model.second)
+			indexes.push_back(index + last_count);
+		last_count += model.first.size();
+	}
+
+	m_mesh->load(verts, indexes);
+}
+
 bool InputGeom::loadMesh(rcContext* ctx, const std::string& filepath)
 {
 	if (m_mesh)

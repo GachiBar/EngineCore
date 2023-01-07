@@ -56,7 +56,6 @@ JPH::PhysicsSystem& Engine::GetPhysicsSystem() {
 Engine::Engine(const Runtime& runtime)
 	: temp_allocator_(10 * 1024 * 1024)
 	, job_system_(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, std::thread::hardware_concurrency() - 1)
-	, scene_(nullptr)
 	, runtime_(runtime)
 	, renderer_property_(runtime_.GetType(Types::kRenderApi).GetProperty("Renderer"))
 	, physics_system_property_(runtime_.GetType(Types::kPhysicsApi).GetProperty("PhysicsSystem"))
@@ -334,6 +333,11 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id, MonoStrin
 	OpaqueMesh model{ EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes };
 	
 	ModelLoader::LoadObj(path_string, model);
+
+	std::vector<DirectX::SimpleMath::Vector3> verts;
+	verts.reserve(verticies.size());
+	std::transform(verticies.begin(), verticies.end(), std::back_inserter(verts), [](OpaqueModelVertex const& RenderMeshDataElem) { return RenderMeshDataElem.position; });
+	NavigationModule::getInstance().id_pathmodel_map[id]= std::make_pair(verts, model.indexes);
 	renderer->RegisterModel(id, model);
 }
 
@@ -740,7 +744,8 @@ void Engine::Internal_Log_Implementation(
 
 bool Engine::Internal_NavBuild()
 {
-	return NavigationModule::getInstance().Build();
+	auto nav_mesh_data = engine::Engine::scene_->GetSceneNavData();
+	return NavigationModule::getInstance().Build(nav_mesh_data);
 }
 
 void Engine::Internal_SetCellSize(float val)

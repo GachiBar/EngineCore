@@ -16,6 +16,7 @@ Method* Scene::debug_render_ = nullptr;
 Method* Scene::invalidate_ = nullptr;
 Method* Scene::serialize_ = nullptr;
 Method* Scene::deserialize_ = nullptr;
+Method* Scene::getnavmeshdata_ = nullptr;
 
 Method* Scene::create_game_object_ = nullptr;
 Method* Scene::delete_game_object_ = nullptr;
@@ -102,6 +103,25 @@ void Scene::Invalidate() {
     invalidate_->Invoke(*this);
 }
 
+std::vector<std::pair<size_t,DirectX::SimpleMath::Matrix>> Scene::GetSceneNavData()
+{
+    assert(getnavmeshdata_ != nullptr && kIsNotCachedErrorMessage);
+    auto temp = getnavmeshdata_->Invoke(*this);
+    auto temp2 = reinterpret_cast<MonoArray*>(temp.value().GetInternal().get_internal_ptr());
+    size_t array_len =  mono_array_length(temp2);
+    NavData* nav_data = new NavData[array_len];
+    mono_value_copy_array(temp2, 0, nav_data, array_len);
+    
+    
+    std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>> res;
+    for (size_t i = 0; i< array_len; ++i)
+    {
+        res.push_back({ nav_data[i].Id,nav_data[i].transform });
+    }
+    delete[] nav_data;
+    return res;
+}
+
 std::string Scene::Serialize()
 {
     assert(serialize_ != nullptr && kIsNotCachedErrorMessage);
@@ -153,6 +173,7 @@ void Scene::CacheMethods(const Runtime& runtime) {
     delete_game_object_ = new Method(type, "DeleteGameObject", 1);
     serialize_ = new Method(type, "Serialize", 0);
     deserialize_ = new Method(type, "Deserialize", 1);
+    getnavmeshdata_ = new Method(type, "GetNavmeshData", 0);
 }
 
 } // namespace engine

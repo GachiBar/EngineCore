@@ -49,6 +49,7 @@ public:
 	void Present();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
+	inline static std::shared_ptr<Scene> scene_ = nullptr;
 private:
 	static const JPH::uint kMaxBodies = 65536;
 	static const JPH::uint kNumBodyMutex = 0;
@@ -65,7 +66,7 @@ private:
 	BPLayerInterfaceImplementation layer_interface_;
 	JPH::PhysicsSystem physics_system_;
 
-	std::shared_ptr<Scene> scene_;
+	
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
 	nanoseconds dt_ = 0ns;

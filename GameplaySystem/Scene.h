@@ -2,8 +2,15 @@
 
 #include "Object.h"
 #include "Runtime.h"
+#include "SimpleMath.h"
 
 namespace engine {
+
+	struct NavData
+	{
+		size_t Id;
+		DirectX::SimpleMath::Matrix transform;
+	};
 
 class GameObject;
 
@@ -27,6 +34,7 @@ public:
 	void DebugRender();
 	void Terminate();
 	void Invalidate();
+	std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>> GetSceneNavData();
 
 	std::string Serialize();
 	void Deserialize(const std::string& data);
@@ -48,6 +56,8 @@ private:
 	static Method* invalidate_;
 	static Method* serialize_;
 	static Method* deserialize_;
+
+	static Method* getnavmeshdata_;
 
 	static Method* create_game_object_;
 	static Method* delete_game_object_;

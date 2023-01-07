@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 
 #include "Definitions.h"
@@ -92,12 +93,16 @@ public:
 	float m_detailSampleDist = 6;
 	float m_detailSampleMaxError = 1;
 
+	std::unordered_map<size_t, std::pair<std::vector<DirectX::SimpleMath::Vector3>, std::vector<uint32_t>>> id_pathmodel_map;
+
 	static NavigationModule& getInstance();
 
 	dtNavMesh* GetNavMesh();
 	std::vector<std::vector<FVector>> GetNavMeshPoints() const;
 
-	bool Build();
+	
+
+	bool Build(std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>>  & InNavMeshData);
 
 	bool FindStraightPath(FVector const & InStartPos, FVector const & InEndPos, std::vector<FVector>& OutPath);
 	bool FindRandomPointAroundCircle(FVector const& InCenterPos, std::vector<FVector>& OutPoints, int InMaxPoints, float InMaxRadius);

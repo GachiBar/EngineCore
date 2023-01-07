@@ -23,6 +23,11 @@ MeshLoaderObj::~MeshLoaderObj()
 	delete[] m_tris;
 }
 
+void MeshLoaderObj::addVertex(FVector vert, int& cap)
+{
+	addVertex(vert.x, vert.y, vert.z, cap);
+}
+
 void MeshLoaderObj::addVertex(float x, float y, float z, int& cap)
 {
 	if (m_vertCount + 1 > cap)
@@ -225,6 +230,28 @@ bool MeshLoaderObj::load(const std::string& filename)
 
 	m_filename = filename;
 	*/
+	return true;
+}
+
+bool MeshLoaderObj::load(std::vector<FVector> const& InVerts, std::vector<uint32_t> const& InIndexes)
+{
+	delete[] m_verts;
+	delete[] m_tris;
+	m_vertCount = m_triCount= 0;
+
+	if (InIndexes.size() % 3 != 0)
+		return false;
+
+	int vcap = 0, tcap = 0;
+	for (const auto& element : InVerts)
+	{
+		addVertex(element, vcap);
+	}
+
+	for(int i =0; i< InIndexes.size()/3; ++i)
+	{
+		addTriangle(InIndexes[i], InIndexes[i+1], InIndexes[i+2], tcap);
+	}
 	return true;
 }
 

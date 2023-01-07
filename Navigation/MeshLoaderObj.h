@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+#include "Definitions.h"
 
 
 class MeshLoaderObj
@@ -10,6 +13,7 @@ public:
 	~MeshLoaderObj();
 
 	bool load(const std::string& fileName);
+	bool load(std::vector<FVector> const & InVerts, std::vector<uint32_t> const& InIndexes);
 
 	bool loadTest();
 
@@ -25,6 +29,8 @@ public:
 	MeshLoaderObj& operator=(const MeshLoaderObj&) = delete;
 
 private:
+	void addVertex(FVector vert, int& cap);
+
 	void addVertex(float x, float y, float z, int& cap);
 	void addTriangle(int a, int b, int c, int& cap);
 

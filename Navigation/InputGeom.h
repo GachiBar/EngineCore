@@ -1,7 +1,10 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "ChunkyTriMesh.h"
 #include "MeshLoaderObj.h"
+
 
 static const int MAX_CONVEXVOL_PTS = 12;
 struct ConvexVolume
@@ -77,12 +80,16 @@ class InputGeom
 	int m_volumeCount;
 	///@}
 
+	
+
+
 	bool loadMesh(class rcContext* ctx, const std::string& filepath);
 	bool loadGeomSet(class rcContext* ctx, const std::string& filepath);
 public:
 	InputGeom();
 	~InputGeom();
 
+	void loadAllMeshes(std::unordered_map<size_t, std::pair<std::vector<DirectX::SimpleMath::Vector3>, std::vector<uint32_t>>> & in_id_paths_map, std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>>  & id_transforms);
 
 	bool load(class rcContext* ctx, const std::string& filepath);
 	bool loadTest();
