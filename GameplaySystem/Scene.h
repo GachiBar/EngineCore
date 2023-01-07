@@ -8,8 +8,10 @@ namespace engine {
 
 	struct NavData
 	{
-		size_t Id;
-		DirectX::SimpleMath::Matrix transform;
+		size_t ids_size;
+		int* Ids;
+		size_t transforms_size;
+		float* transforms;
 	};
 
 class GameObject;

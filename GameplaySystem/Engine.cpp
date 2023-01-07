@@ -180,9 +180,10 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 
 	// Stool
 	std::string path = "Content\\Stool.obj";
-	ModelLoader::LoadObj(path, model);
+	//ModelLoader::LoadObj(path, model);
 
-	renderer_.RegisterModel(1, model);
+	//renderer_.RegisterModel(1, model);
+	engine::Engine::CPP_RegisterModel(&renderer_, 1, path);
 
 	DirectX::ScratchImage stool_image;
 	TextureLoader::LoadWic(L"Content\\Stool.jpg", stool_image);
@@ -195,9 +196,10 @@ void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
 
 	// Cube
 	std::string cube_path = "Content\\Cube.obj";
-	ModelLoader::LoadObj(cube_path, model);
+	//ModelLoader::LoadObj(cube_path, model);
+	engine::Engine::CPP_RegisterModel(&renderer_, 2, cube_path);
 
-	renderer_.RegisterModel(2, model);
+	//renderer_.RegisterModel(2, model);
 
 	DirectX::ScratchImage cube_image;
 	TextureLoader::LoadWic(L"Content\\Breaks.jpg", cube_image);
@@ -328,16 +330,22 @@ void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id, MonoStrin
 	const std::string path_string(raw_string);
 	mono_free(raw_string);
 
+	CPP_RegisterModel(renderer, id, path_string);
+}
+
+void Engine::CPP_RegisterModel(RenderDevice* renderer, size_t id, std::string path_string)
+{
 	std::vector<OpaqueModelVertex> verticies;
 	std::vector<uint32_t> indexes;
 	OpaqueMesh model{ EPrimitiveType::PRIMITIVETYPE_TRIANGLELIST, 0, verticies, indexes };
-	
+
 	ModelLoader::LoadObj(path_string, model);
 
 	std::vector<DirectX::SimpleMath::Vector3> verts;
 	verts.reserve(verticies.size());
-	std::transform(verticies.begin(), verticies.end(), std::back_inserter(verts), [](OpaqueModelVertex const& RenderMeshDataElem) { return RenderMeshDataElem.position; });
-	NavigationModule::getInstance().id_pathmodel_map[id]= std::make_pair(verts, model.indexes);
+	std::transform(model.vertices.begin(), model.vertices.end(), std::back_inserter(verts), [](OpaqueModelVertex const& RenderMeshDataElem) { return RenderMeshDataElem.position; });
+	NavigationModule::getInstance().id_pathmodel_map[id] = std::make_pair(verts, model.indexes);
+
 	renderer->RegisterModel(id, model);
 }
 

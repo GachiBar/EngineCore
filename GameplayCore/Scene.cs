@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using GameplayCore.Components;
 using GameplayCore.Mathematics;
 using GameplayCore.Serialization;
@@ -155,31 +157,52 @@ namespace GameplayCore
 
         public struct NavData
         {
-            public ulong Id;
-            public Matrix transorm;
+			public int ids_size;
+			public IntPtr Ids;
+			public int transforms_size;
+			public IntPtr transforms;
 
-			public NavData(ulong in_id, Matrix in_transorm) : this()
+			public NavData(int count1, IntPtr pnt1, int count2, IntPtr pnt2) : this()
 			{
-				Id = in_id;
-				this.transorm = in_transorm;
+				ids_size = count1;
+                Ids = pnt1;
+                transforms_size = count2;
+                transforms = pnt2;
 			}
 		}
 
-        public NavData[] GetNavmeshData()
+        public unsafe NavData GetNavmeshData()
         {
-            List<NavData> navDatas = new List<NavData>();
+            List<int> ids = new List<int>();
+            List<float> transforms= new List<float>();
+
             foreach(var go in _gameObjects)
             {
                 var transform = go.GetComponent<TransformComponent>();
 				var mesh = go.GetComponent<MeshRenderComponent>();
 				if (transform !=null && mesh != null)
                 {
-					navDatas.Add(new NavData ( mesh.Id, transform.ModelMatrix ));
-                }
+					ids.Add((int)mesh.Id);
 
+                    transforms.AddRange(transform.ModelMatrix.ToArray());
+                }
 			}
-			return navDatas.ToArray();
-        }
+
+			// Initialize unmanaged memory to hold the array.
+			var ManagedArray1 = ids.ToArray();
+			int size1 = Marshal.SizeOf(ManagedArray1[0]) * ManagedArray1.Length;
+			IntPtr pnt1 = Marshal.AllocHGlobal(size1);
+			Marshal.Copy(ManagedArray1, 0, pnt1, ManagedArray1.Length);
+
+			// Initialize unmanaged memory to hold the array.
+			var ManagedArray2 = transforms.ToArray();
+			int size2 = Marshal.SizeOf(ManagedArray2[0]) * ManagedArray2.Length;
+			IntPtr pnt2 = Marshal.AllocHGlobal(size2);
+			Marshal.Copy(ManagedArray2, 0, pnt2, ManagedArray2.Length);
+
+            Log.PrintMessage(sizeof(NavData).ToString(), false);
+			return new NavData(ids.Count, pnt1, transforms.Count, pnt2);
+		}
 
 		public GameObject CreateGameObject()
         {            

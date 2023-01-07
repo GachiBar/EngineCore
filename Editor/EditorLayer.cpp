@@ -12,6 +12,7 @@
 #include "libs/imgui_sugar.hpp"
 #include "imgui/imgui.h"
 #include "Resources/ResourceDrawer.h"
+#include "../Navigation/NavigationModule.h"
 
 namespace Renderer
 {
@@ -157,6 +158,11 @@ void EditorLayer::OnGuiRender()
             if (ImGui::MenuItem("New", "Ctrl+N"))
             {
                 //NewScene();
+            }
+            if (ImGui::MenuItem("Build"))
+            {
+                auto nav_mesh_data = engine::Engine::scene_->GetSceneNavData();
+                NavigationModule::getInstance().Build(nav_mesh_data);
             }
 
             if (ImGui::MenuItem("Open...", "Ctrl+O"))

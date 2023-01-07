@@ -105,6 +105,8 @@ private:
 		size_t id,
 		MonoString* path);
 
+	static void CPP_RegisterModel(RenderDevice* renderer, size_t id, std::string path_string);
+	
 	static void Internal_RegisterTexture(
 		RenderDevice* renderer, 
 		size_t id,

@@ -122,6 +122,11 @@ InputGeom::~InputGeom()
 void InputGeom::loadAllMeshes(std::unordered_map<size_t, std::pair<std::vector<DirectX::SimpleMath::Vector3>, std::vector<uint32_t>>> & in_id_paths_map,
 	std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>> & id_transforms)
 {
+	if (!m_mesh)
+		m_mesh = new MeshLoaderObj;
+	m_meshBMin[0] = m_meshBMin[1] = m_meshBMin[2] = -10.f;
+	m_meshBMax[0] = m_meshBMax[1] = m_meshBMax[2] = 10.f;
+
 	std::vector<DirectX::SimpleMath::Vector3> verts;
 	std::vector<uint32_t> indexes;
 

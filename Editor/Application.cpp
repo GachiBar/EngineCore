@@ -129,12 +129,12 @@ int Application::Run(int argc, char* argv[])
 		return exit_code_;
 
 	///TEST////
-	auto temp = engine::Engine::scene_->GetSceneNavData();
-	NavigationModule::getInstance().Build(temp);
-	auto test = NavigationModule::getInstance().GetNavMeshPoints();
+	//auto temp = engine::Engine::scene_->GetSceneNavData();
+	//NavigationModule::getInstance().Build(temp);
+	//auto test = NavigationModule::getInstance().GetNavMeshPoints();
 
 	std::vector<FVector> out;
-	NavigationModule::getInstance().FindStraightPath(test[0][0] + FVector{ 0.f,0.f,0.0f }, test[0][5] + FVector{ 0.f,1.0f,0.0f }, out);
+	//NavigationModule::getInstance().FindStraightPath(test[0][0] + FVector{ 0.f,0.f,0.0f }, test[0][5] + FVector{ 0.f,1.0f,0.0f }, out);
 
 	engine_->Initialize(static_cast<FWindowsWindow*>(wnds[0].get())->GetHWnd(),  wnds[0]->GetDefinition().WidthDesiredOnScreen, wnds[0]->GetDefinition().HeightDesiredOnScreen);
 
@@ -171,7 +171,8 @@ int Application::Run(int argc, char* argv[])
 		engine_->BeginRender();
 		engine_->Render();
 
-		engine::Engine::Cpp_DrawCurve(&engine_->GetRenderer(), test[0], { 1.f,1.f,1.f }, {});
+		//engine::Engine::Cpp_DrawCurve(&engine_->GetRenderer(), test[0], { 1.f,1.f,1.f }, {});
+
 		//engine::Engine::Cpp_DrawCurve(&engine_->GetRenderer(), out, { 1.f,0.f,0.f }, {});
 		if (!engine_->IsRunning()) {
 			engine_->DebugRender();

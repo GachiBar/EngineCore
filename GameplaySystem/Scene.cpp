@@ -106,19 +106,19 @@ void Scene::Invalidate() {
 std::vector<std::pair<size_t,DirectX::SimpleMath::Matrix>> Scene::GetSceneNavData()
 {
     assert(getnavmeshdata_ != nullptr && kIsNotCachedErrorMessage);
-    auto temp = getnavmeshdata_->Invoke(*this);
-    auto temp2 = reinterpret_cast<MonoArray*>(temp.value().GetInternal().get_internal_ptr());
-    size_t array_len =  mono_array_length(temp2);
-    NavData* nav_data = new NavData[array_len];
-    mono_value_copy_array(temp2, 0, nav_data, array_len);
-    
+    auto temp = getnavmeshdata_->Invoke(*this).value().GetInternal().get_internal_ptr();
+    NavData* temp2 = reinterpret_cast<NavData*>(mono_object_unbox(temp));
+
+
+    auto st = sizeof(NavData);
     
     std::vector<std::pair<size_t, DirectX::SimpleMath::Matrix>> res;
-    for (size_t i = 0; i< array_len; ++i)
+    for (size_t i = 0; i< temp2->ids_size; ++i)
     {
-        res.push_back({ nav_data[i].Id,nav_data[i].transform });
+        
+        auto p = std::make_pair(temp2->Ids[i], DirectX::SimpleMath::Matrix(&temp2->transforms[16*i]));
+        res.push_back(p);
     }
-    delete[] nav_data;
     return res;
 }
 
