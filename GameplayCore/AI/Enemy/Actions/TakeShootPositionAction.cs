@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace GameplayCore.AI.Enemy.Actions
 {
-    public class TakeShootPositionAction : Action
+    public class TakeShootPositionAction : AIAction
     {
-        public override bool CheckPreconditions(GameObject gameObject, State state)
+        public override bool CheckPreconditions(GameObject gameObject, AIState state)
         {
             return state.GetBoolValue("HasAim") == true;
         }
 
-        public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+        public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
         {
             var aim = state.GetGameObjectValue("Aim");
             var enemyTransform = gameObject.GetComponent<TransformComponent>();
@@ -41,14 +41,14 @@ namespace GameplayCore.AI.Enemy.Actions
                     break;
                 }
 
-                yield return ExecutionState.InProgress;
+                yield return AIExecutionState.InProgress;
             }
 
             state.SetBoolValue("CanShoot", true);
-            yield return ExecutionState.Finished;
+            yield return AIExecutionState.Finished;
         }
 
-        public override void PlanEffects(GameObject gameObject, State state)
+        public override void PlanEffects(GameObject gameObject, AIState state)
         {
             state.SetBoolValue("CanShoot", true);
         }

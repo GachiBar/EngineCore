@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameplayCore.AI
 {
-    public class State
+    public class AIState
     {
         private Dictionary<string, bool> _keyToBoolValues = new Dictionary<string, bool>();
         private Dictionary<string, int> _keyToIntValues = new Dictionary<string, int>();
@@ -102,7 +102,7 @@ namespace GameplayCore.AI
             return _keyToGameObjects.TryGetValue(key, out gameObject);
         }
 
-        public bool IsSame(State other)
+        public bool IsSame(AIState other)
         {
             return IsValuesEqual(_keyToBoolValues, other._keyToBoolValues)
                 && IsValuesEqual(_keyToIntValues, other._keyToIntValues)
@@ -112,9 +112,9 @@ namespace GameplayCore.AI
                 && IsValuesEqual(_keyToGameObjects, other._keyToGameObjects);
         }
 
-        public State Copy()
+        public AIState Copy()
         {
-            var copy = new State();
+            var copy = new AIState();
             copy._keyToBoolValues = new Dictionary<string, bool>(_keyToBoolValues);
             copy._keyToIntValues = new Dictionary<string, int>(_keyToIntValues);
             copy._keyToFloatValues = new Dictionary<string, float>(_keyToFloatValues);

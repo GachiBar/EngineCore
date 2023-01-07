@@ -40,12 +40,12 @@ namespace GameplayCore.Resources
         {
             Console.WriteLine($"Loading material data of {FilePath}!");
             string data = String.Empty;
-            
-            FileStream file = File.OpenRead(FilePath);
-            StreamReader reader = new StreamReader(file);
-            data = reader.ReadToEnd();
-            file.Close();
-            
+
+            using (StreamReader reader = new StreamReader(FilePath))
+            {
+                data = reader.ReadToEnd();
+            }
+
             _material = JsonConvert.DeserializeObject<Material>(data, CreateSerializeOptions());
         }
 

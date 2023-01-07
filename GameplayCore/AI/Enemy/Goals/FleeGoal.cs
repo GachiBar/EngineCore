@@ -1,8 +1,8 @@
 ﻿namespace GameplayCore.AI.Enemy.Goals
 {
-    public class FleeGoal : Goal
+    public class FleeGoal : AIGoal
     {
-        public override int DistanceTo(State state)
+        public override int DistanceTo(AIState state)
         {
             if (state.GetBoolValue("NeedFlee") == false)
             {

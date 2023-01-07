@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace EngineDotnetUnitTests.AI
 {
-    public class PlanTests
+    public class AIPlanTests
     {
-        public class DummyAction : Action
+        public class DummyAction : AIAction
         {
             public readonly int ProcessingTime;
 
@@ -16,40 +16,40 @@ namespace EngineDotnetUnitTests.AI
                 ProcessingTime = processingTime;
             }
 
-            public override bool CheckPreconditions(GameObject gameObject, State state)
+            public override bool CheckPreconditions(GameObject gameObject, AIState state)
             {
                 return true;
             }
 
-            public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+            public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
             {
                 for (int i = 0; i < ProcessingTime; i++)
                 {
-                    yield return ExecutionState.InProgress;
+                    yield return AIExecutionState.InProgress;
                 }
 
-                yield return ExecutionState.Finished;
+                yield return AIExecutionState.Finished;
             }
 
-            public override void PlanEffects(GameObject gameObject, State state)
+            public override void PlanEffects(GameObject gameObject, AIState state)
             {
                 return;
             }
         }
 
-        public class InterrutAction : Action
+        public class InterrutAction : AIAction
         {
-            public override bool CheckPreconditions(GameObject gameObject, State state)
+            public override bool CheckPreconditions(GameObject gameObject, AIState state)
             {
                 return true;
             }
 
-            public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+            public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
             {
-                yield return ExecutionState.Interrupted;
+                yield return AIExecutionState.Interrupted;
             }
 
-            public override void PlanEffects(GameObject gameObject, State state)
+            public override void PlanEffects(GameObject gameObject, AIState state)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace EngineDotnetUnitTests.AI
         [Test]
         public void Execute_UninterruptibleActions_PlanFinished()
         {
-            var actions = new List<Action>
+            var actions = new List<AIAction>
             {
                 new DummyAction(0),
                 new DummyAction(1),
@@ -66,17 +66,17 @@ namespace EngineDotnetUnitTests.AI
                 new DummyAction(3),
             };
 
-            var plan = new Plan(actions);
+            var plan = new AIPlan(actions);
 
             foreach (var _ in plan.Execute(null, null));
 
-            Assert.IsTrue(plan.ExecutionState == ExecutionState.Finished);
+            Assert.IsTrue(plan.ExecutionState == AIExecutionState.Finished);
         }
 
         [Test]
         public void Execute_InterruptedActions_PlanInterrupted()
         {
-            var actions = new List<Action>
+            var actions = new List<AIAction>
             {
                 new DummyAction(0),
                 new DummyAction(1),
@@ -85,11 +85,11 @@ namespace EngineDotnetUnitTests.AI
                 new DummyAction(3),
             };
 
-            var plan = new Plan(actions);
+            var plan = new AIPlan(actions);
 
             foreach (var _ in plan.Execute(null, null));
 
-            Assert.IsTrue(plan.ExecutionState == ExecutionState.Interrupted);
+            Assert.IsTrue(plan.ExecutionState == AIExecutionState.Interrupted);
         }
     }
 }

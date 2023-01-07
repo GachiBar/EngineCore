@@ -30,6 +30,10 @@ void ExplorerWindow::Draw()
                 // Create material at current_path by calling MetadataReader::CreateMaterial(object) perhaps
                 MetadataReader::create_material_internal(current_path);
             }
+            if (ImGui::MenuItem("AIActions")) 
+            {
+                MetadataReader::create_ai_actions_internal(current_path);
+            }
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();

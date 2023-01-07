@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace GameplayCore.AI.Enemy.Actions
 {
-    public class ReloadingAction : Action
+    public class ReloadingAction : AIAction
     {
-        public override bool CheckPreconditions(GameObject gameObject, State state)
+        public override bool CheckPreconditions(GameObject gameObject, AIState state)
         {
             return state.GetBoolValue("NeedReloading");
         }
 
-        public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+        public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
         {
             var reloadingTime = state.GetFloatValue("ReloadingTime");
             var aim = state.GetGameObjectValue("Aim");
@@ -32,15 +32,15 @@ namespace GameplayCore.AI.Enemy.Actions
                 }
 
                 enemyController.Reload(timer, reloadingTime);
-                yield return ExecutionState.InProgress;
+                yield return AIExecutionState.InProgress;
             }
 
             enemyController.Reload(reloadingTime, reloadingTime);
             state.SetBoolValue("NeedReloading", false);
-            yield return ExecutionState.Finished;
+            yield return AIExecutionState.Finished;
         }
 
-        public override void PlanEffects(GameObject gameObject, State state)
+        public override void PlanEffects(GameObject gameObject, AIState state)
         {
             state.SetBoolValue("NeedReloading", false);
         }

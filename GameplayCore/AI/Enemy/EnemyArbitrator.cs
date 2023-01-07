@@ -3,9 +3,9 @@ using GameplayCore.Components;
 
 namespace GameplayCore.AI.Enemy
 {
-    public class EnemyArbitrator : Arbitrator
+    public class EnemyArbitrator : AIArbitrator
     {
-        public override Goal ChooseGoal(GameObject gameObject, State state)
+        public override AIGoal ChooseGoal(GameObject gameObject, AIState state)
         {
             UpdateStete(gameObject, state);
 
@@ -21,7 +21,7 @@ namespace GameplayCore.AI.Enemy
             return new ShootGoal();
         }
 
-        private void UpdateStete(GameObject gameObject, State state)
+        private void UpdateStete(GameObject gameObject, AIState state)
         {
             var health = gameObject.GetComponent<HealthComponent>();
             var needFlee = (health.Health / health.MaxHealth) < 0.5f;

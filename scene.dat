@@ -5,9 +5,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 3,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_material": null,
         "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
       },
       {
@@ -235,9 +234,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 3,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_material": null,
         "_gameObject": "b5731838-dcd1-4e05-a4dc-26dcad629b11"
       }
     ]
@@ -286,9 +284,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 4,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "c32d78d3-cddc-4631-a165-5dd09f0e9ec1",
+        "_material": "d9ef8880-3738-4c8c-901e-d9d43f81b9ab",
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {
@@ -363,9 +360,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 4,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "c32d78d3-cddc-4631-a165-5dd09f0e9ec1",
+        "_material": "d9ef8880-3738-4c8c-901e-d9d43f81b9ab",
         "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
       }
     ]
@@ -402,9 +398,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 3,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_material": null,
         "_gameObject": "828a6b37-c48f-4600-8d7c-1191d65c28d7"
       },
       {
@@ -457,9 +452,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 3,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_material": null,
         "_gameObject": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73"
       },
       {
@@ -512,9 +506,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 3,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_material": null,
         "_gameObject": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae"
       },
       {
@@ -567,9 +560,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 3,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": "ed679958-a75a-4fbe-acb7-5b24a46ac91c",
+        "_material": null,
         "_gameObject": "236e4589-3983-4422-86ea-399c3f2052ea"
       },
       {
@@ -638,9 +630,8 @@
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
         "Id": 1,
-        "Metallic": 0.0,
-        "Roughness": 0.0,
         "_asset": null,
+        "_material": null,
         "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
       }
     ]

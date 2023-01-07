@@ -1,25 +1,26 @@
 ﻿using GameplayCore.AI;
 using GameplayCore.AI.Enemy;
 using GameplayCore.AI.Enemy.Actions;
-using System;
+using GameplayCore.Resources;
 using System.Collections.Generic;
-using Action = GameplayCore.AI.Action;
 
 namespace GameplayCore.Components
 {
     public class BrainComponent : Component
     {
-        private State _state;
-        private Planner _planner;
-        private Arbitrator _arbitrator;
-        private List<Action> _actions;
-        private Goal _goal;
-        private Plan _plan;
-        private IEnumerator<ExecutionState> _executionState;
+        private AIState _state;
+        private AIPlanner _planner;
+        private AIArbitrator _arbitrator;
+        private List<AIAction> _actions;
+        private AIGoal _goal;
+        private AIPlan _plan;
+        private IEnumerator<AIExecutionState> _executionState;
+
+        public AIActionsAsset Actions;
 
         public BrainComponent()
         {
-            _state = new State();
+            _state = new AIState();
             _state.SetGameObjectValue("Aim", null);
             _state.SetBoolValue("HasAim", false);
             _state.SetBoolValue("CanShoot", false);
@@ -27,11 +28,11 @@ namespace GameplayCore.Components
             _state.SetBoolValue("NeedFlee", false);
             _state.SetFloatValue("ReloadingTime", 0.75f);
 
-            _planner = new Planner();
+            _planner = new AIPlanner();
             _arbitrator = new EnemyArbitrator();
 
             // Now we just hard code all actions.
-            _actions = new List<Action>
+            _actions = new List<AIAction>
             {
                 new FindAimAction(),
                 new TakeShootPositionAction(),
@@ -50,7 +51,7 @@ namespace GameplayCore.Components
 
         public override void UpdateAI()
         {
-            if (_plan.ExecutionState != ExecutionState.InProgress)
+            if (_plan.ExecutionState != AIExecutionState.InProgress)
             {
                 _goal = _arbitrator.ChooseGoal(GameObject, _state);
                 _plan = _planner.MakePlan(GameObject, _state, _goal, _actions);

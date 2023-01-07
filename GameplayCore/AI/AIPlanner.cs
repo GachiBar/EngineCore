@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace GameplayCore.AI
 {
-    public class Planner
+    public class AIPlanner
     {
         private const int IterationsTreshold = 100;
 
         private class Node
         {
             public int Cost;
-            public State State;
+            public AIState State;
             public Node Parent;
-            public Action Action;
+            public AIAction Action;
         }
 
-        public Plan MakePlan(GameObject gameObject, State state, Goal goal, List<Action> actions)
+        public AIPlan MakePlan(GameObject gameObject, AIState state, AIGoal goal, List<AIAction> actions)
         {
             int iterations = 0;
             var queue = new PriorityQueue<Node, int>();
@@ -91,14 +91,14 @@ namespace GameplayCore.AI
                 return null;
             }
 
-            var planActions = new List<Action>();
+            var planActions = new List<AIAction>();
 
             for (var temp = current; temp.Parent != null; temp = temp.Parent)
             {
                 planActions.Insert(0, temp.Action);
             }
             
-            return new Plan(planActions);
+            return new AIPlan(planActions);
         }
     }
 }

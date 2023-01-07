@@ -1,6 +1,6 @@
 ﻿namespace GameplayCore.AI
 {
-    public enum ExecutionState
+    public enum AIExecutionState
     {
         InProgress,
         Interrupted,

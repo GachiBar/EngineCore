@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace GameplayCore.AI.Enemy.Actions
 {
-    public class ShootAction : Action
+    public class ShootAction : AIAction
     {
-        public override bool CheckPreconditions(GameObject gameObject, State state)
+        public override bool CheckPreconditions(GameObject gameObject, AIState state)
         {
             return state.GetBoolValue("CanShoot") == true;
         }
 
-        public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+        public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
         {
             var aim = state.GetGameObjectValue("Aim");
             var rigidbody = gameObject.GetComponent<RigidbodyComponent>();
@@ -21,10 +21,10 @@ namespace GameplayCore.AI.Enemy.Actions
 
             state.SetBoolValue("CanShoot", false);
             state.SetBoolValue("NeedReloading", true);
-            yield return ExecutionState.Finished;
+            yield return AIExecutionState.Finished;
         }
 
-        public override void PlanEffects(GameObject gameObject, State state)
+        public override void PlanEffects(GameObject gameObject, AIState state)
         {
             state.SetBoolValue("CanShoot", false);
             state.SetBoolValue("NeedReloading", true);

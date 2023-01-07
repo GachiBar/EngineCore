@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 namespace GameplayCore.AI.Enemy.Actions
 {
-    public class FleeAction : Action
+    public class FleeAction : AIAction
     {
-        public override bool CheckPreconditions(GameObject gameObject, State state)
+        public override bool CheckPreconditions(GameObject gameObject, AIState state)
         {
             return state.GetBoolValue("HasAim") == true;
         }
 
-        public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+        public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
         {
             var enemyHealth = gameObject.GetComponent<HealthComponent>();
             var enemyTransform = gameObject.GetComponent<TransformComponent>();
@@ -25,14 +25,14 @@ namespace GameplayCore.AI.Enemy.Actions
                 var viewDirection = GetViewDirection(aimTransform.Position, enemyTransform.Position);
                 enemyController.MoveInDirection(viewDirection);
                 enemyController.LoockInDirection(viewDirection);
-                yield return ExecutionState.InProgress;
+                yield return AIExecutionState.InProgress;
             }
 
             state.SetBoolValue("NeedFlee", false);
-            yield return ExecutionState.Finished;
+            yield return AIExecutionState.Finished;
         }
 
-        public override void PlanEffects(GameObject gameObject, State state)
+        public override void PlanEffects(GameObject gameObject, AIState state)
         {
             state.SetBoolValue("NeedFlee", false);
         }

@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace EngineDotnetUnitTests.AI
 {
-    public class PlannerTests
+    public class AIPlannerTests
     {
-        public class OmeletteGoal : Goal
+        public class OmeletteGoal : AIGoal
         {
-            public override int DistanceTo(State state)
+            public override int DistanceTo(AIState state)
             {
                 int distance = 5;
 
@@ -38,80 +38,80 @@ namespace EngineDotnetUnitTests.AI
             }
         }
 
-        public class GetEggsAction : Action
+        public class GetEggsAction : AIAction
         {
-            public override bool CheckPreconditions(GameObject gameObject, State state)
+            public override bool CheckPreconditions(GameObject gameObject, AIState state)
             {
                 return true;
             }
 
-            public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+            public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasEggs", true);
-                yield return ExecutionState.Finished;
+                yield return AIExecutionState.Finished;
             }
 
-            public override void PlanEffects(GameObject gameObject, State state)
+            public override void PlanEffects(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasEggs", true);
             }
         }
 
-        public class GetMilkAction : Action
+        public class GetMilkAction : AIAction
         {
-            public override bool CheckPreconditions(GameObject gameObject, State state)
+            public override bool CheckPreconditions(GameObject gameObject, AIState state)
             {
                 return true;
             }
 
-            public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+            public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasMilk", true);
-                yield return ExecutionState.Finished;
+                yield return AIExecutionState.Finished;
             }
 
-            public override void PlanEffects(GameObject gameObject, State state)
+            public override void PlanEffects(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasMilk", true);
             }
         }
 
-        public class GetOilAction : Action
+        public class GetOilAction : AIAction
         {
-            public override bool CheckPreconditions(GameObject gameObject, State state)
+            public override bool CheckPreconditions(GameObject gameObject, AIState state)
             {
                 return true;
             }
 
-            public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+            public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasOil", true);
-                yield return ExecutionState.Finished;
+                yield return AIExecutionState.Finished;
             }
 
-            public override void PlanEffects(GameObject gameObject, State state)
+            public override void PlanEffects(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasOil", true);
             }
         }
 
-        public class ShakeEggsAction : Action
+        public class ShakeEggsAction : AIAction
         {
-            public override bool CheckPreconditions(GameObject gameObject, State state)
+            public override bool CheckPreconditions(GameObject gameObject, AIState state)
             {
                 return state.GetBoolValue("HasEggs")
                     && state.GetBoolValue("HasMilk");
             }
 
-            public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+            public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasEggs", false);
                 state.SetBoolValue("HasMilk", false);
                 state.SetBoolValue("HasBeatenEggs", true);
-                yield return ExecutionState.Finished;
+                yield return AIExecutionState.Finished;
             }
 
-            public override void PlanEffects(GameObject gameObject, State state)
+            public override void PlanEffects(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasEggs", false);
                 state.SetBoolValue("HasMilk", false);
@@ -119,27 +119,27 @@ namespace EngineDotnetUnitTests.AI
             }
         }
 
-        public class FryOmeletteAction : Action
+        public class FryOmeletteAction : AIAction
         {
-            public override bool CheckPreconditions(GameObject gameObject, State state)
+            public override bool CheckPreconditions(GameObject gameObject, AIState state)
             {
                 return state.GetBoolValue("HasOil")
                     && state.GetBoolValue("HasBeatenEggs");
             }
 
-            public override IEnumerable<ExecutionState> Execute(GameObject gameObject, State state)
+            public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasOil", false);
-                yield return ExecutionState.InProgress;
+                yield return AIExecutionState.InProgress;
 
                 state.SetBoolValue("HasBeatenEggs", false);
-                yield return ExecutionState.InProgress;
+                yield return AIExecutionState.InProgress;
 
                 state.SetBoolValue("HasOmelette", true);
-                yield return ExecutionState.Finished;
+                yield return AIExecutionState.Finished;
             }
 
-            public override void PlanEffects(GameObject gameObject, State state)
+            public override void PlanEffects(GameObject gameObject, AIState state)
             {
                 state.SetBoolValue("HasOil", false);
                 state.SetBoolValue("HasBeatenEggs", false);
@@ -150,7 +150,7 @@ namespace EngineDotnetUnitTests.AI
         [Test]
         public void MakePlan_ActionsCanReachTheGoal_PlanIsMaked()
         {
-            var state = new State();
+            var state = new AIState();
             state.SetBoolValue("HasEggs", false);
             state.SetBoolValue("HasMilk", false);
             state.SetBoolValue("HasOil", false);
@@ -159,7 +159,7 @@ namespace EngineDotnetUnitTests.AI
 
             var goal = new OmeletteGoal();
 
-            var actions = new List<Action>()
+            var actions = new List<AIAction>()
             {
                 new GetEggsAction(),
                 new GetMilkAction(),
@@ -168,20 +168,20 @@ namespace EngineDotnetUnitTests.AI
                 new FryOmeletteAction(),
             };
 
-            var planner = new Planner();
+            var planner = new AIPlanner();
 
             var plan = planner.MakePlan(null, state, goal, actions);
 
             foreach (var _ in plan.Execute(null, state));
 
-            Assert.IsTrue(plan.ExecutionState == ExecutionState.Finished);
+            Assert.IsTrue(plan.ExecutionState == AIExecutionState.Finished);
             Assert.IsTrue(state.GetBoolValue("HasOmelette"));
         }
 
         [Test]
         public void MakePlan_ActionsCanNotReachTheGoal_PlanIsNull()
         {
-            var state = new State();
+            var state = new AIState();
             state.SetBoolValue("HasEggs", false);
             state.SetBoolValue("HasMilk", false);
             state.SetBoolValue("HasOil", false);
@@ -190,7 +190,7 @@ namespace EngineDotnetUnitTests.AI
 
             var goal = new OmeletteGoal();
 
-            var actions = new List<Action>()
+            var actions = new List<AIAction>()
             {
                 new GetEggsAction(),
                 new GetMilkAction(),
@@ -199,7 +199,7 @@ namespace EngineDotnetUnitTests.AI
                 new FryOmeletteAction(),
             };
 
-            var planner = new Planner();
+            var planner = new AIPlanner();
 
             var plan = planner.MakePlan(null, state, goal, actions);
 

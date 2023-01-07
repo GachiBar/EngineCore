@@ -1,8 +1,8 @@
 ﻿namespace GameplayCore.AI.Enemy.Goals
 {
-    public class ReloadingGoal : Goal
+    public class ReloadingGoal : AIGoal
     {
-        public override int DistanceTo(State state)
+        public override int DistanceTo(AIState state)
         {
             if (state.GetBoolValue("NeedReloading") == false)
             {
