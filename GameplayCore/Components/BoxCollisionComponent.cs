@@ -26,13 +26,13 @@ namespace GameplayCore.Components
 
         protected override void SetShape()
         {
-            Vector3 halfExtent = _size / 2;
+            Vector3 halfExtent = _size;
             PhysicsApi.SetBoxShape(BodyId, halfExtent);            
         }
 
         protected override void RenderCollider(Vector3 position, Quaternion rotation, Vector3 scale, Vector3 color)
         {
-            Gizmos.DrawCube(position, rotation, scale, _size, color);            
+            Gizmos.DrawCube(position, rotation, scale, _size * 2, color);            
         }
     }
 }

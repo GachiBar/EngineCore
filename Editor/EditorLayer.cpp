@@ -44,6 +44,7 @@ void EditorLayer::OnAttach()
     gvm.get()->ExitGameMode.AddLambda([&]()
     {
         OpenScene();
+        game_object_inspector->SetGameObject(nullptr);
     });
 
 	hierarchy.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)

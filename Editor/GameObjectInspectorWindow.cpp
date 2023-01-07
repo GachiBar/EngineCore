@@ -51,7 +51,6 @@ void GameObjectInspectorWindow::Draw()
 {
 	if (!game_object.get())
 	{
-		ImGui::End();
 		return;
 	}
 
