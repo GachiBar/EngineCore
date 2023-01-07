@@ -54,6 +54,8 @@ const TypeData Types::kInput = Types::RegisterType("GameplayCore", "Input");
 // Resource
 const TypeData Types::kResource = Types::RegisterType("GameplayCore.Resources", "Resource");
 	
+// AI
+const TypeData Types::kAIAction = Types::RegisterType("GameplayCore.AI", "AIAction");
 
 TypeDeclaration::TypeDeclaration(std::string name_space, std::string name)
 	: name_space(std::move(name_space))

@@ -14,6 +14,6 @@
   "normalsTexture": null,
   "roughnessValue": 0.0,
   "roughnessTexture": null,
-  "metallicValue": 0.0,
+  "metallicValue": 1.0,
   "metallicTexture": null
 }

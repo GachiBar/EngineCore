@@ -11,12 +11,11 @@ namespace GameplayCore.Components
         private AIState _state;
         private AIPlanner _planner;
         private AIArbitrator _arbitrator;
-        private List<AIAction> _actions;
         private AIGoal _goal;
         private AIPlan _plan;
         private IEnumerator<AIExecutionState> _executionState;
 
-        public AIActionsAsset Actions;
+        public AIActionsAsset ActionsAsset;
 
         public BrainComponent()
         {
@@ -29,39 +28,51 @@ namespace GameplayCore.Components
             _state.SetFloatValue("ReloadingTime", 0.75f);
 
             _planner = new AIPlanner();
-            _arbitrator = new EnemyArbitrator();
-
-            // Now we just hard code all actions.
-            _actions = new List<AIAction>
-            {
-                new FindAimAction(),
-                new TakeShootPositionAction(),
-                new ShootAction(),
-                new ReloadingAction(),
-                new FleeAction(),
-            };            
+            _arbitrator = new EnemyArbitrator();      
         }
 
         public override void Initialize()
         {
+            if (ActionsAsset == null)
+            {
+                return;
+            }
+
+            ActionsAsset.Load();
+
+            if (ActionsAsset.Actions.Count == 0)
+            {
+                return;
+            }
+
             _goal = _arbitrator.ChooseGoal(GameObject, _state);
-            _plan = _planner.MakePlan(GameObject, _state, _goal, _actions);
+            _plan = _planner.MakePlan(GameObject, _state, _goal, ActionsAsset.Actions);
             _executionState = _plan.Execute(GameObject, _state).GetEnumerator();
         }
 
         public override void UpdateAI()
         {
-            if (_plan.ExecutionState != AIExecutionState.InProgress)
+            if (ActionsAsset == null || ActionsAsset.Actions.Count == 0)
             {
-                _goal = _arbitrator.ChooseGoal(GameObject, _state);
-                _plan = _planner.MakePlan(GameObject, _state, _goal, _actions);
-                _executionState = _plan.Execute(GameObject, _state).GetEnumerator();
+                return;
             }
+
+            if (_plan != null && _plan.ExecutionState == AIExecutionState.InProgress)
+            {
+                return;
+            }
+
+            _goal = _arbitrator.ChooseGoal(GameObject, _state);
+            _plan = _planner.MakePlan(GameObject, _state, _goal, ActionsAsset.Actions);
+            _executionState = _plan.Execute(GameObject, _state).GetEnumerator();
         }
 
         public override void FixedUpdate()
         {
-            _executionState.MoveNext();
+            if (_plan != null)
+            {
+                _executionState.MoveNext();
+            }            
         }
     }
 }

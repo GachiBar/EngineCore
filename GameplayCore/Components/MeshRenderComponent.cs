@@ -1,7 +1,5 @@
 ﻿using GameplayCore.Resources;
 using GameplayCore.Serialization;
-using System;
-using GameplayCore.EngineApi;
 
 namespace GameplayCore.Components
 {
@@ -25,6 +23,7 @@ namespace GameplayCore.Components
             if (_material != null)
             {
                 _material.Load();
+                _materialId = _material.Id;
             }
         }
 
