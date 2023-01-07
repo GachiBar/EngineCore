@@ -9,7 +9,7 @@ namespace GameplayCore.Resources
     public class MaterialAsset : Resource, ILoadable
     {
         private Material _material;
-        private ulong _id;
+        private ulong _id = 0;
         
         public ulong Id => _id;
 
@@ -80,8 +80,13 @@ namespace GameplayCore.Resources
         
         public void Load()
         {
-            if(_id != 0) return;
+            if (_id != 0)
+            {
+                Console.WriteLine($"Avoid loading material with id {_id}");
+                return;
+            }
 
+            Console.WriteLine($"Loading new material with id {_id}");
             ulong id = RenderApi.CalculateFreeMaterialId();
             _id = id;
 
