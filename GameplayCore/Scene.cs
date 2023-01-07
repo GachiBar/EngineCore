@@ -64,6 +64,16 @@ namespace GameplayCore
             Invalidate();
         }
 
+        public void UpdateAI()
+        {
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.UpdateAI();
+            }
+
+            Invalidate();
+        }
+
         public void Update()
         {
             foreach (var gameObject in _gameObjects)

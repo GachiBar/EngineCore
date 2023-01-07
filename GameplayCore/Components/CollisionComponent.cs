@@ -1,6 +1,5 @@
 ﻿using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
-using GameplayCore.Physics;
 
 namespace GameplayCore.Components
 {
@@ -62,6 +61,11 @@ namespace GameplayCore.Components
             if (component is TransformComponent transformComponent)
             {
                 _transformComponent = transformComponent;
+
+                if (_rigidbodyComponent != null)
+                {
+                    PhysicsApi.SetCollisionLayer(BodyId, CollisionLayer.Moving);
+                }
             }
         }
 

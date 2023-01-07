@@ -9,6 +9,7 @@
         Mesh,
         Texture,
         Material,
+        AIActions,
         Meta,
         Other
     }

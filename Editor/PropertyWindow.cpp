@@ -35,15 +35,22 @@ void PropertyWindow::Draw()
 void PropertyWindow::SelectGameObject(std::shared_ptr<engine::GameObject> game_object)
 {
     game_object_drawer_->SetGameObject(game_object);
-    current_drawer = dynamic_cast<IEditorWindow*>(game_object_drawer_.get());
+    current_drawer = game_object_drawer_.get();
 }
 
 void PropertyWindow::SelectResource(const std::filesystem::path& path)
 {
     // TODO: Add Ai
-    if(MetadataReader::GetTypeByPath(path) == Material)
+    
+    switch (MetadataReader::GetTypeByPath(path))
     {
+    case Material:
         materials_drawer_->TrySelect(path);
-        current_drawer = dynamic_cast<IEditorWindow*>(materials_drawer_.get());    
+        current_drawer = materials_drawer_.get();
+        break;
+    case AIActions:
+        ai_editor_drawer_->TrySelect(path);
+        current_drawer = ai_editor_drawer_.get();
+        break;
     }
 }

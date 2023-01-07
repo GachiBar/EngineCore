@@ -4,6 +4,7 @@
 #include "Runtime.h"
 #include "Scene.h"
 #include "BPLayerInterfaceImplementation.h"
+#include "EngineContactListener.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 #include "../Core/libs/loguru/loguru.hpp"
 
@@ -27,7 +28,9 @@ class Engine
 {
 public:
 	static const float kDt;
-	static const std::chrono::nanoseconds kTimestep;
+	static const float kAiDt;
+	static const nanoseconds kTimestep;
+	static const nanoseconds kAiTimestep;
 
 	bool IsRunning();
 	std::shared_ptr<Scene> GetScene();
@@ -66,6 +69,7 @@ private:
 	JPH::TempAllocatorImpl temp_allocator_;
 	JPH::JobSystemThreadPool job_system_;
 	BPLayerInterfaceImplementation layer_interface_;
+	EngineContactListener contact_listener_;
 	JPH::PhysicsSystem physics_system_;
 
 	std::shared_ptr<Scene> scene_;
@@ -74,6 +78,7 @@ private:
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
 	nanoseconds dt_ = 0ns;
 	nanoseconds lag_ = 0ns;
+	nanoseconds ai_lag_ = 0ns;
 	nanoseconds ellapsed_ = 0ns;
 
 	const Runtime& runtime_;
@@ -85,6 +90,10 @@ private:
 	Property screen_width_property_;
 	Property screen_height_property_;
 	Property mouse_position_property_;
+
+	Method collision_enter_method_;
+	Method collision_stay_method_;
+	Method collision_exit_method_;
 
 	bool is_running_;
 
@@ -99,6 +108,7 @@ private:
 	void SendTimeData();
 	void SendScreenData();
 	void SendInputData();
+	void SendCollisions();
 
 #pragma region Renderer
 
@@ -224,6 +234,15 @@ private:
 		JPH::uint32 id, 
 		JPH::Quat rotation);
 
+	static void Internal_FreezeRotation(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id);
+
+	static void Internal_SetMass(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		float mass);
+
 	static void Internal_AddForce(
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
@@ -233,6 +252,21 @@ private:
 		JPH::PhysicsSystem* physics_system,
 		JPH::uint32 id,
 		JPH::Vec3 impulse);
+
+	static JPH::Vec3 Internal_GetLinearVelocity(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id);
+
+	static void Internal_SetLinearVelocity(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		JPH::Vec3 velocity);
+
+	static bool Internal_CastRay(
+		JPH::PhysicsSystem* physics_system,
+		JPH::Vec3 origin,
+		JPH::Vec3 direction,
+		JPH::uint32& body_id);
 
 #pragma endregion Physics
 

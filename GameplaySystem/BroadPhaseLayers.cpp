@@ -6,22 +6,18 @@
 
 namespace engine {
 
-bool BroadPhaseLayers::IsCanCollide(JPH::ObjectLayer layer_1, JPH::BroadPhaseLayer layer_2) {
-	switch (layer_1) {
+bool BroadPhaseLayers::IsCanCollide(JPH::ObjectLayer object_layer_1, JPH::BroadPhaseLayer layer_2) {
+	switch (object_layer_1) {
 		case CollisionLayers::kNoCollision: {
-			// No collision does not collide.
 			return false;
 		}
 		case CollisionLayers::kNonMoving: {
-			// Non moving only collides with moving.
 			return layer_2 == BroadPhaseLayers::kMoving;
 		}
 		case CollisionLayers::kMoving: {
-			// Moving collides with everything.
-			return true;
+			return layer_2 != BroadPhaseLayers::kNoCollision;
 		}
 		default: {
-			// TODO: our own assertion.
 			assert(false);
 			return false;
 		}
