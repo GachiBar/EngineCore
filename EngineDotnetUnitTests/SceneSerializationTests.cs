@@ -23,6 +23,10 @@ namespace EngineDotnetUnitTests
 
             GameObject first = scene.CreateGameObject();
             GameObject second = scene.CreateGameObject();
+
+            first.Name = "Amogus 1";
+            second.Name = "Amogus 2";
+            
             objects = new List<GameObject>()
             {
                 first, second
