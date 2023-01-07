@@ -14,10 +14,9 @@ namespace GameplayCore.AI.Enemy.Actions
         public override IEnumerable<AIExecutionState> Execute(GameObject gameObject, AIState state)
         {
             var aim = state.GetGameObjectValue("Aim");
-            var rigidbody = gameObject.GetComponent<RigidbodyComponent>();
-            var rangeController = gameObject.GetComponent<RangeEnemyControllerComponent>();
-            rigidbody.Velocity = Vector3.Zero;
-            rangeController.Shoot(aim);
+            var enemyController = gameObject.GetComponent<RangeEnemyControllerComponent>();
+            enemyController.Stay();
+            enemyController.Shoot(aim);
 
             state.SetBoolValue("CanShoot", false);
             state.SetBoolValue("NeedReloading", true);

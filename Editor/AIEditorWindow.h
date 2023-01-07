@@ -29,8 +29,7 @@ private:
     engine::Object GetAction(size_t index);
     void AddAction(engine::Object action);
     void RemoveAction(engine::Object action);
-    
-    void DrawSaveButton();
+
     void DrawExistingActions();
     void DrawAddActionPanel();
 

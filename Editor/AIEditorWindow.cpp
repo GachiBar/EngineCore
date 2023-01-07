@@ -23,7 +23,6 @@ void AIEditorWindow::Draw()
 		ImGui::Text("Nothing selected");
 	}
 
-	DrawSaveButton();
 	DrawExistingActions();
 	DrawAddActionPanel();
 }
@@ -98,14 +97,6 @@ void AIEditorWindow::RemoveAction(engine::Object action)
 	removeMethod.Invoke(*actions_list, params);
 }
 
-void AIEditorWindow::DrawSaveButton()
-{
-	if (ImGui::Button("Save")) 
-	{
-		SaveAsset();
-	}
-}
-
 void AIEditorWindow::DrawExistingActions()
 {
 	for (size_t i = 0; i < GetCount(); ++i)
@@ -121,6 +112,7 @@ void AIEditorWindow::DrawExistingActions()
 		{
 			i -= 1;
 			RemoveAction(action);
+			SaveAsset();
 			FindAvaliableActions();
 			auto temp = 0;
 		}
@@ -137,6 +129,7 @@ void AIEditorWindow::DrawAddActionPanel()
 		auto type = engine::Runtime::GetCurrentRuntime().GetType(fullName);
 		auto action = type.Instantiate();
 		AddAction(action);
+		SaveAsset();
 		FindAvaliableActions();
 	}
 }

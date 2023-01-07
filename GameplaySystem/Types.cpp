@@ -55,6 +55,7 @@ const TypeData Types::kInput = Types::RegisterType("GameplayCore", "Input");
 const TypeData Types::kResource = Types::RegisterType("GameplayCore.Resources", "Resource");
 	
 // AI
+const TypeData Types::kAIArbitrator = Types::RegisterType("GameplayCore.AI", "AIArbitrator");
 const TypeData Types::kAIAction = Types::RegisterType("GameplayCore.AI", "AIAction");
 
 TypeDeclaration::TypeDeclaration(std::string name_space, std::string name)

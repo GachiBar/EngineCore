@@ -11,7 +11,7 @@ namespace GameplayCore
     [Serializable]
     public class GameObject : IReadOnlyList<Component>
     {        
-        private const int MaxNameSize = 15;
+        private const int MaxNameSize = 16;
 
         /// <summary>
         /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.

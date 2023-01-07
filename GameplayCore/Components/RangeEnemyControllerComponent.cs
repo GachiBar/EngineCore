@@ -39,6 +39,19 @@ namespace GameplayCore.Components
             rigidbody.Velocity = velocity;
         }
 
+        public void Stay()
+        {
+            var rigidbody = GameObject.GetComponent<RigidbodyComponent>();
+
+            if (rigidbody == null)
+            {
+                Log.PrintError($"GameObject does not contains {nameof(RigidbodyComponent)}");
+                return;
+            }
+
+            rigidbody.Velocity *= Vector3.Up;
+        }
+
         public void LoockInDirection(Vector3 direction)
         {
             var transform = GameObject.GetComponent<TransformComponent>();

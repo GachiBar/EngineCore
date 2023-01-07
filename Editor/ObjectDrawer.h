@@ -39,13 +39,16 @@ public:
 	bool DrawObject(engine::Object& object, std::vector<std::string>& modifiedFields);
 
 private:
-	static const size_t kGameObjectNameMaxSize = 15;
+	static const size_t kGameObjectNameMaxSize = 16;
 
 	std::shared_ptr<engine::Scene> scene;
 
 	void** game_objects_pointers;
 	char** game_objects_names;
 	size_t game_objects_capacity;
+
+	char** arbitrators_names;
+	size_t arbitrators_names_count;
 
 	resources_cache cache_;
 
@@ -68,6 +71,7 @@ private:
 	bool DrawResourceField(const engine::Object& object, engine::Field& field);
 	bool DrawColor3Field(const engine::Object& object, engine::Field& field);
 	bool DrawColor4Field(const engine::Object& object, engine::Field& field);
+	bool DrawArbitratorField(const engine::Object& object, engine::Field& field);
 
 	static std::string GetFieldName(
 		const engine::Field& field,
@@ -82,6 +86,7 @@ private:
 		float& min_out,
 		float& max_out);
 
+	void CacheArbitratorsNames();
 	void ChangeGameObjectResourcesCapacity(size_t size);
 	static void CopyAsNullTerminated(char* destination, const std::string& source);	
 };

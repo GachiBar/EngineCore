@@ -28,7 +28,7 @@ const mono::mono_assembly& Runtime::GetAssembly() const {
 	return assembly_;
 }
 
-const std::vector<std::string> Runtime::DumpTypeNames() const {
+std::vector<std::string> Runtime::DumpTypeNames() const {
 	return assembly_.dump_type_names();
 }
 
