@@ -15,14 +15,37 @@ namespace GameplayCore.Components
         [InspectorName("Radius")]
         private float _radius = 1.0f;
 
+        public float Height
+        {
+            get => _height;
+            set
+            {
+                _height = value;
+                SetShape();
+                PhysicsApi.SetActive(BodyId, true);
+            }
+        }
+
+        public float Radius
+        {
+            get => _radius;
+            set
+            {
+                _radius = value;
+                SetShape();
+                PhysicsApi.SetActive(BodyId, true);
+            }
+        }
+
         internal override void Invalidate(string fieldName)
         {
             switch (fieldName)
             {
                 case nameof(_height):
+                    Height = _height;
+                    break;
                 case nameof(_radius):
-                    SetShape();
-                    PhysicsApi.SetActive(BodyId, true);
+                    Radius = _radius;
                     break;
             }
         }

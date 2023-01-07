@@ -9,35 +9,34 @@ namespace GameplayCore.Components
         private float _yaw = 0.0f;
         private float _pitch = 0.0f;
 
-        public float Velocity { get; set; } = 2.0f;
-        public float Sensivity { get; set; } = 1.0f;
+        public float Velocity = 2.0f;
+        public float Sensivity = 1.0f;
 
         public override void Update()
         {
-            if (_transformComponent != null)
-            {
-                var dx = Input.GetKeyValue(Keys.MouseX);
-                var dy = Input.GetKeyValue(Keys.MouseY);
-
-                _yaw -= dx * _weight * Sensivity;
-                _pitch -= dy * _weight * Sensivity;
-                _pitch = MathUtil.Clamp(_pitch, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
-
-                var rotation = Matrix.RotationYawPitchRoll(_yaw, _pitch, 0);
-                var axis = GetAxis();
-                var direction =
-                    axis.X * rotation.Right +
-                    axis.Y * Vector3.Up +
-                    axis.Z * rotation.Forward;
-
-                direction.Normalize();
-                _transformComponent.LocalPosition += direction * Velocity * Time.DeltaTime;
-                _transformComponent.LocalRotation = Quaternion.RotationMatrix(rotation);
-            }
-            else
+            if (_transformComponent == null)
             {
                 Log.PrintWarning($"{nameof(SpectatorComponent)} requier {nameof(TransformComponent)}.");
-            }            
+                return;
+            }
+
+            var dx = Input.GetKeyValue(Keys.MouseX);
+            var dy = Input.GetKeyValue(Keys.MouseY);
+
+            _yaw -= dx * _weight * Sensivity;
+            _pitch -= dy * _weight * Sensivity;
+            _pitch = MathUtil.Clamp(_pitch, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
+
+            var rotation = Matrix.RotationYawPitchRoll(_yaw, _pitch, 0);
+            var axis = GetAxis();
+            var direction =
+                axis.X * rotation.Right +
+                axis.Y * Vector3.Up +
+                axis.Z * rotation.Forward;
+
+            direction.Normalize();
+            _transformComponent.LocalPosition += direction * Velocity * Time.DeltaTime;
+            _transformComponent.LocalRotation = Quaternion.RotationMatrix(rotation);
         }
 
         protected override void OnAttach(GameObject gameObject)

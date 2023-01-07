@@ -1,14 +1,75 @@
-﻿using GameplayCore.Mathematics;
-using GameplayCore.Physics;
+﻿using GameplayCore.Components;
+using GameplayCore.Mathematics;
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace GameplayCore.EngineApi
 {
-    internal static class PhysicsApi
+    [Flags]
+    public enum CollisionLayer : byte
     {
+        NoCollision,
+        NonMoving,
+        Moving,
+    }
+
+    public enum MotionType
+    {
+        Static,
+        Kinematic,
+        Dynamic,
+    }
+
+    internal static class PhysicsApi
+    {        
+        private static Dictionary<uint, RigidbodyComponent> BodyIdToRigidbody = new Dictionary<uint, RigidbodyComponent>();
+        
         private static unsafe void* PhysicsSystem { get; set; }
 
+        public static RigidbodyComponent GetRigidbodyById(uint bodyId)
+        {
+            return BodyIdToRigidbody[bodyId];
+        }
+
+        public static void CollisionEnter(uint thisId, uint otherId)
+        {
+            if (!BodyIdToRigidbody.TryGetValue(thisId, out var thisBody) ||
+                !BodyIdToRigidbody.TryGetValue(otherId, out var otherBody))
+            {
+                return;
+            }
+
+            thisBody.GameObject.CollisionEnter(otherBody);
+            otherBody.GameObject.CollisionEnter(thisBody);
+        }
+
+        public static void CollisionStay(uint thisId, uint otherId)
+        {
+            if (!BodyIdToRigidbody.TryGetValue(thisId, out var thisBody) ||
+                !BodyIdToRigidbody.TryGetValue(otherId, out var otherBody))
+            {
+                return;
+            }
+
+            thisBody.GameObject.CollisionStay(otherBody);
+            otherBody.GameObject.CollisionStay(thisBody);
+        }
+
+        public static void CollisionExit(uint thisId, uint otherId)
+        {
+            if (!BodyIdToRigidbody.TryGetValue(thisId, out var thisBody) ||
+                !BodyIdToRigidbody.TryGetValue(otherId, out var otherBody))
+            {
+                return;
+            }
+
+            thisBody.GameObject.CollisionExit(otherBody);
+            otherBody.GameObject.CollisionExit(thisBody);
+        }
+
         public static uint CreateBody(
+            RigidbodyComponent rigidbodyComponent,
             Vector3 position,
             Quaternion rotation,
             MotionType motionType)
@@ -16,7 +77,9 @@ namespace GameplayCore.EngineApi
             unsafe
             {
                 var inPosition = new Vector4(position, position.Z);
-                return Internal_CreateBody(PhysicsSystem, inPosition, rotation, motionType);
+                var bodyId = Internal_CreateBody(PhysicsSystem, inPosition, rotation, motionType);
+                BodyIdToRigidbody[bodyId] = rigidbodyComponent;
+                return bodyId;
             }
         }
 
@@ -24,6 +87,7 @@ namespace GameplayCore.EngineApi
         {
             unsafe
             {
+                BodyIdToRigidbody.Remove(bodyId);
                 Internal_DestroyBody(PhysicsSystem, bodyId);
             }
         }
@@ -126,6 +190,22 @@ namespace GameplayCore.EngineApi
             }
         }
 
+        public static void FreezeRotation(uint bodyId)
+        {
+            unsafe
+            {
+                Internal_FreezeRotation(PhysicsSystem, bodyId);
+            }
+        }
+
+        public static void SetMass(uint bodyId, float mass)
+        {
+            unsafe
+            {
+                Internal_SetMass(PhysicsSystem, bodyId, mass);
+            }
+        }
+
         public static void AddForce(uint bodyId, Vector3 force)
         {
             unsafe
@@ -141,6 +221,34 @@ namespace GameplayCore.EngineApi
             {
                 var inImpulse = new Vector4(impulse, impulse.Z);
                 Internal_AddImpulse(PhysicsSystem, bodyId, inImpulse);
+            }
+        }
+
+        public static Vector3 GetLinearVelocity(uint bodyId)
+        {
+            unsafe
+            {
+                var velocity = Internal_GetLinearVelocity(PhysicsSystem, bodyId);
+                return new Vector3(velocity.X, velocity.Y, velocity.Z);
+            }
+        }
+
+        public static void SetLinearVelocity(uint bodyId, Vector3 velocity)
+        {
+            unsafe
+            {
+                var inVelocity = new Vector4(velocity, velocity.Z);
+                Internal_SetLinearVelocity(PhysicsSystem, bodyId, inVelocity);
+            }
+        }
+
+        public static bool CastRay(Vector3 origin, Vector3 direction, out uint bodyId)
+        {
+            unsafe
+            {
+                var inOrigin = new Vector4(origin, origin.Z);
+                var inDirection = new Vector4(direction, direction.Z);
+                return Internal_CastRay(PhysicsSystem, inOrigin, inDirection, out bodyId);
             }
         }
 
@@ -165,6 +273,7 @@ namespace GameplayCore.EngineApi
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetBoxShape(void* physicsSystem, uint bodyId, Vector4 halfExtent);
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_SetCapsuleShape(void* physicsSystem, uint bodyId, float halfHeight, float radius);
 
@@ -190,8 +299,24 @@ namespace GameplayCore.EngineApi
         extern private static unsafe void Internal_SetBodyRotation(void* physicsSystem, uint bodyId, Quaternion rotation);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_FreezeRotation(void* physicsSystem, uint bodyId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetMass(void* physicsSystem, uint bodyId, float mass);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_AddForce(void* physicsSystem, uint bodyId, Vector4 force);
+        
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_AddImpulse(void* physicsSystem, uint bodyId, Vector4 impulse);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe Vector4 Internal_GetLinearVelocity(void* physicsSystem, uint bodyId);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe void Internal_SetLinearVelocity(void* physicsSystem, uint bodyId, Vector4 velocity);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        extern private static unsafe bool Internal_CastRay(void* physicsSystem, Vector4 origin, Vector4 direction, out uint bodyId);
     }
 }

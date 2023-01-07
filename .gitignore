@@ -374,8 +374,6 @@ GameplayCore.dll
 
 Newtonsoft.Json.dll
 
-scene.dat
-
 MonoPosixHelper.dll
 
 mono-2.0-sgen.dll

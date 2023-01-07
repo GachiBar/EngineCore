@@ -11,7 +11,6 @@ void MaterialsEditor::Draw()
     if(_selectedInstance == nullptr)
     {
         ImGui::Text("Nothing selected");
-        ImGui::End();
         return;
     }
     
