@@ -19,7 +19,26 @@ ExplorerWindow::ExplorerWindow(const Application* app)
 
 void ExplorerWindow::Draw()
 {
-    ImGui::Begin("Explorer");
+    bool p_open = true;
+    ImGui::Begin("Explorer", &p_open, ImGuiWindowFlags_MenuBar);
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("Create"))
+        {
+            if (ImGui::MenuItem("Material"))
+            {
+                // Create material at current_path by calling MetadataReader::CreateMaterial(object) perhaps
+                MetadataReader::create_material_internal(current_path);
+            }
+            if (ImGui::MenuItem("AIActions")) 
+            {
+                MetadataReader::create_ai_actions_internal(current_path);
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+    
     std::string path = "Current path : ";
     path += current_path.relative_path().generic_string();
     ImGui::Text(path.c_str());

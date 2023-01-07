@@ -22,6 +22,7 @@ public:
 
 	void Initialize();
 	void FixedUpdate();
+	void UpdateAI();
 	void Update();
 	void Render();
 	void DebugRender();
@@ -43,6 +44,7 @@ private:
 	static Method* initialize_;
 	static Method* terminate_;
 	static Method* fixed_update_;
+	static Method* update_ai_;
 	static Method* update_;
 	static Method* render_;
 	static Method* debug_render_;

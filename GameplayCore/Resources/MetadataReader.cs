@@ -127,7 +127,73 @@ namespace GameplayCore.Resources
 
             return null;
         }
-        
+
+        public static string CreateMaterial(string basepath)
+        {
+            // Create new Material()
+            Material material = new Material();
+            
+            // Serialize -> string json
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = {new ResourceGuidJsonConverter()}
+            };
+            string json = JsonConvert.SerializeObject(material, options);
+
+            string path = GeneratePath(basepath, "material", ".material");
+            Console.WriteLine($"Material filename: {path}");
+
+            // Write json in file
+            FileStream file = File.OpenWrite(path);
+            StreamWriter writer = new StreamWriter(file);
+            writer.Write(json);
+            writer.Dispose();
+            file.Close();
+            
+            // Generate material metadata
+            Create(path);
+
+            return path;
+        }
+
+        public static string CreateAIActions(string basepath)
+        {
+            var actions = new AIActionsList();
+
+            JsonSerializerSettings options = new JsonSerializerSettings()
+            {
+                Formatting = Formatting.Indented,
+                Converters = { new AIActionsListJsonConverter() }
+            };
+
+            var json = JsonConvert.SerializeObject(actions, options);
+            var path = GeneratePath(basepath, "ai", ".ai");
+
+            using (var writer = new StreamWriter(path))
+            {
+                writer.Write(json);
+            }
+
+            Create(path);
+            return path;
+        }
+
+        private static string GeneratePath(string basepath, string name, string extension)
+        {
+            int number = 0;
+            string path;
+
+            do
+            {
+                path = Path.Combine(basepath, $"{name}{number}{extension}");
+                number += 1;
+            } 
+            while (File.Exists(path));
+
+            return path;
+        }
+
         private static IEnumerable<(System.Guid, string)> IterateAllResourcesFast()
         {
             string path = Path.Combine(Path.GetFullPath("."), BasePath);
@@ -217,7 +283,9 @@ namespace GameplayCore.Resources
                 case FileType.Texture:
                     return typeof(TextureAsset);
                 case FileType.Material:
-                    break;
+                    return typeof(MaterialAsset);
+                case FileType.AIActions:
+                    return typeof(AIActionsAsset);
                 case FileType.Meta:
                     return null;
                 case FileType.Other:
@@ -248,6 +316,8 @@ namespace GameplayCore.Resources
                     return FileType.Mesh;
                 case ".material":
                     return FileType.Material;
+                case ".ai":
+                    return FileType.AIActions;
                 case ".texture":
                 case ".jpg":
                 case ".png":

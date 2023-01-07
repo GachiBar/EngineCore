@@ -7,15 +7,18 @@ namespace GameplayCore.Components
         private const float Weight = 0.03f;
         private const float BulletRadius = 0.3f;
 
-        private RigidbodyComponent _rigidbodyComponent;        
+        private RigidbodyComponent _rigidbodyComponent;
+        private CapsuleCollisionComponent _capsuleCollisionComponent;
 
         private Vector3 _axis;
         private float _yaw = 0.0f;
         private float _pitch = 0.0f;
+        private bool _isJump;
         
         public float Speed = 3.0f;
+        public float JumpSpeed = 8.0f;
         public float Sensivity = 1.0f;
-        public float BulletImpulse = 10000.0f;
+        public float BulletImpulse = 50.0f;
         public float BulletLifeTime = 2.0f;
         public GameObject Head;
 
@@ -38,24 +41,17 @@ namespace GameplayCore.Components
 
                 if (Input.WasJustPressed(Keys.LeftMouseButton))
                 {
-                    var bullet = GameObject.Scene.CreateGameObject();
-                    var bulletTransform = bullet.AddComponent<TransformComponent>();                    
-                    var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
-                    var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
-                    var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
-
-                    bulletTransform.Position = headTransform.Position + headTransform.Forward * 0.5f;
-                    bulletSphere.Radius = BulletRadius;
-                    bulletTimer.Timer = BulletLifeTime;
-                    bulletRigidbody.AddImpulse(headTransform.Forward * BulletImpulse);
+                    ThrowBullet(headTransform.Position + headTransform.Forward * 0.5f, headTransform.Forward);
                 }
+
+                _isJump |= Input.WasJustPressed(Keys.SpaceBar);
             }            
         }
 
         public override void FixedUpdate()
         {
             if (_rigidbodyComponent != null)
-            {
+            {               
                 var headTransform = Head.GetComponent<TransformComponent>();
 
                 if (headTransform != null)
@@ -63,14 +59,23 @@ namespace GameplayCore.Components
                     var rotation = Quaternion.RotationYawPitchRoll(_yaw, 0, 0);
                     var direction = Vector3.Transform(_axis, rotation);
                     direction.Normalize();
-                    _rigidbodyComponent.Velocity = direction * Speed;
-                }                
+                    var yAxis = new Vector3(0.0f, _rigidbodyComponent.Velocity.Y, 0.0f);
+                    _rigidbodyComponent.Velocity = direction * Speed + yAxis;
+                }    
+
+                if (IsGrounded() && _isJump)
+                {
+                    _rigidbodyComponent.Velocity += Vector3.Up * JumpSpeed;
+                }
             }
+
+            _isJump = false;
         }
 
         protected override void OnAttach(GameObject gameObject)
         {
             _rigidbodyComponent = gameObject.GetComponent<RigidbodyComponent>();
+            _capsuleCollisionComponent = gameObject.GetComponent<CapsuleCollisionComponent>();
             
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
@@ -86,7 +91,11 @@ namespace GameplayCore.Components
         {
             if (component is RigidbodyComponent rigidbodyComponent)
             {
-                _rigidbodyComponent = rigidbodyComponent;
+                _rigidbodyComponent = rigidbodyComponent;                
+            }
+            if (component is CapsuleCollisionComponent capsuleCollisionComponent)
+            {
+                _capsuleCollisionComponent = capsuleCollisionComponent;
             }
         }
 
@@ -95,6 +104,10 @@ namespace GameplayCore.Components
             if (component is RigidbodyComponent)
             {
                 _rigidbodyComponent = null;
+            }
+            if (component is CapsuleCollisionComponent)
+            {
+                _capsuleCollisionComponent = null;
             }
         }
 
@@ -120,6 +133,43 @@ namespace GameplayCore.Components
             }
 
             return direction;
+        }
+
+        private void ThrowBullet(Vector3 position, Vector3 direction)
+        {
+            var bullet = GameObject.Scene.CreateGameObject();
+            var bulletTransform = bullet.AddComponent<TransformComponent>();
+            var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
+            var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
+            var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
+            var projectile = bullet.AddComponent<ProjectileComponent>();
+
+            bulletTransform.Position = position;
+            bulletSphere.Radius = BulletRadius;
+            bulletTimer.Timer = BulletLifeTime;
+            bulletRigidbody.Mass = 1.0f;
+            bulletRigidbody.AddImpulse(direction * BulletImpulse);
+        }
+
+        private bool IsGrounded()
+        {
+            if (_capsuleCollisionComponent != null)
+            {
+                var transform = GameObject.GetComponent<TransformComponent>();
+
+                if (transform != null)
+                {
+                    float capsuleHeight = _capsuleCollisionComponent.Height + _capsuleCollisionComponent.Radius;
+                    float epsilon = 0.01f;
+                    capsuleHeight += epsilon;
+
+                    var origin = transform.Position + Vector3.Down * (capsuleHeight);
+                    var direction = Vector3.Down * epsilon;
+                    return Physics.CastRay(origin, direction, out var other);
+                }
+            }
+
+            return false;
         }
     }
 }

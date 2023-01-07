@@ -9,6 +9,7 @@ enum FileType
     Mesh,
     Texture,
     Material,
+    AIActions,
     Meta,
     Other
 };

@@ -18,6 +18,9 @@
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Collision/Shape/CapsuleShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Collision/NarrowPhaseQuery.h>
+#include <Jolt/Physics/Collision/RayCast.h>
+#include <Jolt/Physics/Collision/CastResult.h>
 
 #include <fstream>
 #include <iostream>
@@ -25,12 +28,17 @@
 #include <mono/metadata/assembly.h>
 #include <algorithm>
 
+#include "../Editor/Resources/TransferMaterial.h"
+
 JPH_SUPPRESS_WARNINGS
 
 namespace engine {
 
 const float Engine::kDt = 16.0f / 1000;
-const std::chrono::nanoseconds Engine::kTimestep = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
+const float Engine::kAiDt = 16.0f * 20.0f / 1000;
+const nanoseconds Engine::kTimestep = duration_cast<nanoseconds>(milliseconds(16));
+const nanoseconds Engine::kAiTimestep = duration_cast<nanoseconds>(milliseconds(16 * 20));
+Engine* Engine::engine_ = nullptr;
 
 bool Engine::IsRunning() {
 	return is_running_;
@@ -64,8 +72,13 @@ Engine::Engine(const Runtime& runtime)
 	, screen_width_property_(runtime_.GetType(Types::kScreen).GetProperty("Width"))
 	, screen_height_property_(runtime_.GetType(Types::kScreen).GetProperty("Height"))
 	, mouse_position_property_(runtime_.GetType(Types::kInput).GetProperty("MousePosition"))
+	, collision_enter_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionEnter", 2))
+	, collision_stay_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionStay", 2))
+	, collision_exit_method_(runtime_.GetType(Types::kPhysicsApi).GetMethod("CollisionExit", 2))
 	, is_running_(false)
-{}
+{
+	engine_ = this;
+}
 
 void Engine::Initialize(HWND handle, UINT width, UINT height) {
 	InitRenderer(handle, static_cast<size_t>(width), static_cast<size_t>(height));
@@ -89,7 +102,6 @@ void Engine::Stop() {
 }
 
 void Engine::Start() {
-	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
 	time_start_ = clock::now();
@@ -97,13 +109,13 @@ void Engine::Start() {
 }
 
 void Engine::RunFrame() {
-	using namespace std::chrono;
 	using clock = high_resolution_clock;
 
 	dt_ = clock::now() - time_start_;
 	ellapsed_ += dt_;
 	time_start_ = clock::now();
 	lag_ += duration_cast<nanoseconds>(dt_);
+	ai_lag_ += duration_cast<nanoseconds>(dt_);
 
 	SendTimeData();
 	SendScreenData();
@@ -113,6 +125,12 @@ void Engine::RunFrame() {
 		lag_ -= kTimestep;
 		scene_->FixedUpdate();
 		physics_system_.Update(kDt, kCollisionSteps, kIntegrationSubSteps, &temp_allocator_, &job_system_);
+		SendCollisions();
+	}
+
+	while (ai_lag_ >= kAiTimestep) {
+		ai_lag_ -= kAiTimestep;
+		scene_->UpdateAI();
 	}
 
 	scene_->Update();
@@ -160,6 +178,8 @@ void Engine::InitPhysicsSystem()
 		layer_interface_,
 		BroadPhaseLayers::IsCanCollide,
 		CollisionLayers::IsCanCollide);
+
+	physics_system_.SetContactListener(&contact_listener_);
 }
 
 void Engine::InitRenderer(HWND handle, size_t width, size_t height) {
@@ -215,9 +235,14 @@ void Engine::SetupRendererInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawDirectionalLight", Internal_DrawDirectionalLight);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_DrawCurve", Internal_DrawCurve);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_SetViewProjection", Internal_SetViewProjection);
+	
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsIdUsed", Internal_IsIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsMeshIdUsed", Internal_IsMeshIdUsed);
 	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_IsTextureIdUsed", Internal_IsTextureIdUsed);
+	
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_PullMaterial", Internal_PullMaterial);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_CommitMaterial", Internal_CommitMaterial);
+	mono_add_internal_call("GameplayCore.EngineApi.RenderApi::Internal_ContainsMaterialId", Internal_ContainsMaterialId);
 
 	renderer_property_.SetValue(&renderer_);
 }
@@ -237,10 +262,13 @@ void Engine::SetupPhysicsInternalCalls() {
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyPosition", Internal_SetBodyPosition);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetBodyRotation", Internal_GetBodyRotation);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetBodyRotation", Internal_SetBodyRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_FreezeRotation", Internal_FreezeRotation);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetMass", Internal_SetMass);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddForce", Internal_AddForce);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_AddImpulse", Internal_AddImpulse);
 	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_GetLinearVelocity", Internal_GetLinearVelocity);
-	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetLinearVelocity", Internal_SetLinearVelocity);
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_SetLinearVelocity", Internal_SetLinearVelocity);	
+	mono_add_internal_call("GameplayCore.EngineApi.PhysicsApi::Internal_CastRay", Internal_CastRay);
 
 	physics_system_property_.SetValue(&physics_system_);
 }
@@ -286,6 +314,34 @@ void Engine::SendInputData() {
 	mouse_position_property_.SetValue(&point);
 }
 
+void Engine::SendCollisions() {
+	void* params[2];
+
+	while (contact_listener_.IsAnyCollisionsEnter()) {
+		auto pair = contact_listener_.PopCollisionsEnter();
+		params[0] = &pair.body_id_1;
+		params[1] = &pair.body_id_2;
+
+		collision_enter_method_.Invoke(params);
+	}
+
+	while (contact_listener_.IsAnyCollisionsStay()) {
+		auto pair = contact_listener_.PopCollisionsStay();
+		params[0] = &pair.body_id_1;
+		params[1] = &pair.body_id_2;
+
+		collision_stay_method_.Invoke(params);
+	}
+
+	while (contact_listener_.IsAnyCollisionsExit()) {
+		auto pair = contact_listener_.PopCollisionsExit();
+		params[0] = &pair.body_id_1;
+		params[1] = &pair.body_id_2;
+
+		collision_exit_method_.Invoke(params);
+	}
+}
+
 #pragma region Renderer
 
 void Engine::Internal_RegisterModel(RenderDevice* renderer, size_t id, MonoString* path)
@@ -322,15 +378,12 @@ void Engine::Internal_RegisterTexture(RenderDevice* renderer, size_t id, MonoStr
 void Engine::Internal_DrawModel(
 	RenderDevice* renderer, 
 	size_t id, 
-	float metallic,
-	float roughness,
+	size_t material_id, 
 	DirectX::SimpleMath::Matrix model_matrix) 
 {
-	MaterialData material_data{
-		{(uint64_t)id}, {{1, 0, 0}}, {{roughness}}, {{metallic}}
-	};
+	MaterialData material =  GetMaterialData(material_id);
 	OpaqueModelDrawData opaque_model_draw_data{
-		id, model_matrix, model_matrix, 1.0f, 1.0f, material_data, {}
+		id, model_matrix, model_matrix, 1.0f, 1.0f, material, {}
 	};
 	
 	renderer->DrawOpaqueModel(opaque_model_draw_data);
@@ -382,7 +435,7 @@ void Engine::Internal_SetViewProjection(
 	DirectX::SimpleMath::Matrix view,
 	DirectX::SimpleMath::Matrix projection)
 {
-	renderer->SetRenderData({ ellapsed, view, projection });
+	renderer->SetRenderData({ ellapsed, view, projection, {0,1,0,0} });
 }
 
 bool Engine::Internal_IsIdUsed(RenderDevice* renderer, size_t id)
@@ -398,6 +451,32 @@ bool Engine::Internal_IsMeshIdUsed(RenderDevice* renderer, size_t id)
 bool Engine::Internal_IsTextureIdUsed(RenderDevice* renderer, size_t id)
 {
 	return renderer->IsTextureIdUsed(id);
+}
+
+MaterialData Engine::GetMaterialData(size_t id)
+{
+	if(engine_->_materials.contains(id))
+		return engine_->_materials[id];
+	
+	return MaterialData();
+}
+	
+TransferMaterial Engine::Internal_PullMaterial(size_t id)
+{
+	if(engine_->_materials.contains(id))
+		return TransferMaterial(engine_->_materials[id]);
+	
+	return {};
+}
+	
+void Engine::Internal_CommitMaterial(size_t id, TransferMaterial data)
+{
+	engine_->_materials[id] = data.Convert();
+}
+
+bool Engine::Internal_ContainsMaterialId(size_t id)
+{
+	return engine_->_materials.contains(id);
 }
 
 #pragma endregion Renderer
@@ -445,18 +524,18 @@ void Engine::Internal_SetEmptyShape(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON);
-	body_interface.SetShape(body_id, sphere_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, sphere_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetSphereShape(
 	JPH::PhysicsSystem* physics_system, 
 	JPH::uint32 id, 
-	float radius) 
+	float radius)
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::SphereShape* sphere_shape = new JPH::SphereShape(radius);
-	body_interface.SetShape(body_id, sphere_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, sphere_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetBoxShape(
@@ -467,7 +546,7 @@ void Engine::Internal_SetBoxShape(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
-	body_interface.SetShape(body_id, box_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, box_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetCapsuleShape(
@@ -479,7 +558,7 @@ void Engine::Internal_SetCapsuleShape(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::CapsuleShape* capsule_shape = new JPH::CapsuleShape(half_height, radius);
-	body_interface.SetShape(body_id, capsule_shape, true, JPH::EActivation::DontActivate);
+	body_interface.SetShape(body_id, capsule_shape, false, JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_SetMotionType(
@@ -551,7 +630,45 @@ void Engine::Internal_SetBodyRotation(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.SetRotation(body_id, rotation, JPH::EActivation::DontActivate);
+	body_interface.SetRotation(body_id, rotation.Normalized(), JPH::EActivation::DontActivate);
+}
+
+void Engine::Internal_FreezeRotation(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id)
+{
+	JPH::BodyID body_id(id);
+	const JPH::BodyLockInterface& body_lock_interface = physics_system->GetBodyLockInterface();
+	JPH::BodyLockWrite lock(body_lock_interface, body_id);
+
+	if (!lock.Succeeded()) {
+		return;
+	}
+
+	JPH::Body& body = lock.GetBody();
+	JPH::MotionProperties* motion_properties = body.GetMotionProperties();
+	motion_properties->SetInverseInertia(JPH::Vec3::sZero(), JPH::Quat::sIdentity());
+}
+
+void Engine::Internal_SetMass(
+	JPH::PhysicsSystem* physics_system,
+	JPH::uint32 id,
+	float mass)
+{
+	JPH::BodyID body_id(id);
+	const JPH::BodyLockInterface& body_lock_interface = physics_system->GetBodyLockInterface();
+	JPH::BodyLockWrite lock(body_lock_interface, body_id);
+
+	if (!lock.Succeeded()) {
+		return;
+	}
+
+	JPH::MassProperties mass_properties;
+	mass_properties.ScaleToMass(mass);
+
+	JPH::Body& body = lock.GetBody();
+	JPH::MotionProperties* motion_properties = body.GetMotionProperties();
+	motion_properties->SetMassProperties(mass_properties);
 }
 
 void Engine::Internal_AddForce(
@@ -591,6 +708,30 @@ void Engine::Internal_SetLinearVelocity(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	body_interface.SetLinearVelocity(body_id, velocity);
+}
+
+bool Engine::Internal_CastRay(
+	JPH::PhysicsSystem* physics_system,
+	JPH::Vec3 origin,
+	JPH::Vec3 direction,
+	JPH::uint32& body_id)
+{
+	// TODO: return hit result;
+	// TODO: what is broad phase and object layers?
+	const JPH::NarrowPhaseQuery& narrow_phase_query = physics_system->GetNarrowPhaseQuery();
+
+	JPH::RayCast ray{ origin, direction };
+	JPH::RayCastResult hit;
+	JPH::BroadPhaseLayerFilter bp_layer_filter;
+	JPH::ObjectLayerFilter object_layer_filter;
+	JPH::BodyFilter body_filter;
+		
+	if (narrow_phase_query.CastRay(ray, hit, bp_layer_filter, object_layer_filter, body_filter)) {
+		body_id = hit.mBodyID.GetIndexAndSequenceNumber();
+		return true;
+	}
+
+	return false;
 }
 
 #pragma endregion Physics

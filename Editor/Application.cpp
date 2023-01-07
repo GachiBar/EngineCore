@@ -12,7 +12,7 @@
 #include "Interfaces/ILayer.h"
 #include "libs/imgui_sugar.hpp"
 #include "Resources/MetadataReader.h"
-#include "Resources/ResourceDrawer.h"
+#include "Resources/MaterialsEditor.h"
 
 const char* Application::kMonoLibPath = "vendor\\mono\\lib\\4.5";
 const char* Application::kDllPath = "GameplayCore.dll";
@@ -144,36 +144,39 @@ int Application::Run(int argc, char* argv[])
 
 			if (msg.message == WM_QUIT)
 			{
-				is_exit_requested = true;
+				Close();
 			}
 		}
-
-		ApplyInput();
-
-		for (const auto layer : m_LayerStack)
+		if(!is_exit_requested)
 		{
-			current_layer_on_update = layer;
-			layer->OnUpdate(engine_->kDt);
+			ApplyInput();
+
+			for (const auto layer : m_LayerStack)
+			{
+				current_layer_on_update = layer;
+				layer->OnUpdate(engine_->kDt);
+			}
+
+			engine_->BeginRender();
+			engine_->Render();
+
+			if (!engine_->IsRunning()) {
+				engine_->DebugRender();
+			}
+
+			engine_->EndRender();
+
+			for (const auto layer : m_LayerStack)
+				layer->OnGuiRender();
+
+			for (const auto layer : m_LayerStack)
+				layer->OnPostRender();
+
+
+			engine_->Present();
+
+			InputManager::getInstance().Flush();
 		}
-	
-		engine_->BeginRender();
-		engine_->Render();
-
-		if (!engine_->IsRunning()) {
-			engine_->DebugRender();
-		}
-
-		engine_->EndRender();
-		
-		for (const auto layer : m_LayerStack)
-			layer->OnGuiRender();
-		
-		for (const auto layer : m_LayerStack)
-			layer->OnPostRender();
-
-		engine_->Present();
-
-		InputManager::getInstance().Flush();
 	}
 
 	OnStop();
@@ -188,13 +191,13 @@ void Application::DrawGameUI()
 {
 	//with_Child("GameRenderUI", {}, false)
 	//{
-	//	//VSE UI ZDES
-	//	if (ImGui::Button("TeastButton", {200,100}))
-	//	{
-	//		std::cout<<"PressedTest"<<std::endl<<std::flush;
-	//	};
+		//VSE UI ZDES
+		//if (ImGui::Button("TeastButton", {200,100}))
+		//{
+		//	std::cout<<"PressedTest"<<std::endl<<std::flush;
+		//};
 	//}
-	engine_->GetScene()->RenderGUI();
+	
 }
 
 void Application::Close()

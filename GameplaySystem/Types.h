@@ -69,6 +69,8 @@ public:
 	static const TypeData kVector3;
 	static const TypeData kVector4;
 	static const TypeData kString;
+	static const TypeData kColor3;
+	static const TypeData kColor4;
 
 	// GameplayCore
 	static const TypeData kScene;

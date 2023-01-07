@@ -4,7 +4,7 @@ using GameplayCore.EngineApi;
 
 namespace GameplayCore.Resources
 {
-    public class MeshAsset : Resource
+    public class MeshAsset : Resource, ILoadable
     {
         private ulong _id = ulong.MaxValue;
         public ulong Id => _id;
@@ -21,9 +21,9 @@ namespace GameplayCore.Resources
                 return;
             }
             
-            ulong id = RenderApi.CalculateFreeId();
+            ulong id = RenderApi.CalculateFreeMeshId();
             RenderApi.RegisterModel(id, FilePath);
-            RenderApi.RegisterTexture(id, FilePath.Split('.')[0] + ".jpg");
+            
             _id = id;
             
             Console.WriteLine($"Loaded new mesh with id {id} from {FilePath}");

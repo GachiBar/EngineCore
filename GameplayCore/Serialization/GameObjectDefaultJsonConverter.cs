@@ -22,6 +22,7 @@ namespace GameplayCore.Serialization
             writer.WriteStartObject();
             
             JsonExtensions.WriteStringProperty(writer, "Guid", gameObject.Guid.ToString());
+            JsonExtensions.WriteStringProperty(writer, "Name", gameObject.Name);
 
             writer.WritePropertyName("Components");
             writer.WriteStartArray();
@@ -75,7 +76,8 @@ namespace GameplayCore.Serialization
 
             // First stage without reference set
             string guid = JsonExtensions.ReadString(reader, "Guid");
-            
+            string name = JsonExtensions.ReadString(reader, "Name");
+
             JsonExtensions.ReadCheckPropertyName(reader, "Components");
             if (!JsonExtensions.CheckToken(reader, JsonToken.StartArray))
                 return null;
@@ -170,6 +172,7 @@ namespace GameplayCore.Serialization
 
             // Create gameObject and return it
             GameObject gameObject = new GameObject(_scene, System.Guid.Parse(guid));
+            gameObject.Name = name;
 
             MethodInfo addComponent = gameObject.GetType()
                 .GetMethod("AddComponentSilent", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -212,6 +215,10 @@ namespace GameplayCore.Serialization
             JsonExtensions.ReadCheckPropertyName(reader, "Guid");
             string guid = JsonExtensions.ReadString(reader);
             GameObject actual = _scene.First(x => x.Guid.Equals(Guid.Parse(guid)));
+            
+            // Skip name
+            JsonExtensions.ReadString(reader, "Name");
+
 
             if (actual == null)
                 throw new JsonException("Can't find serialized GameObject");

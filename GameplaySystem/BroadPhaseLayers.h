@@ -13,7 +13,7 @@ struct BroadPhaseLayers {
 	static constexpr JPH::BroadPhaseLayer kMoving { 2 };
 	static constexpr JPH::uint kLayersCount = 3;
 
-	static bool IsCanCollide(JPH::ObjectLayer layer_1, JPH::BroadPhaseLayer layer_2);
+	static bool IsCanCollide(JPH::ObjectLayer object_layer_1, JPH::BroadPhaseLayer layer_2);
 };
 
 } // namespace engine

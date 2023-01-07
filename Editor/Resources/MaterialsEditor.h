@@ -9,7 +9,7 @@
 template<class T, class U>
 concept Derived = std::is_base_of_v<U, T>;
 
-class ResourceDrawer : IEditorWindow
+class MaterialsEditor : public IEditorWindow
 {
 public:
     void Draw() override;
@@ -18,6 +18,7 @@ public:
 private:
     ResourceData _selected;
     std::shared_ptr<engine::Object> _selectedInstance;
+    std::shared_ptr<engine::Object> _material;
 
     ObjectDrawer object_drawer;
 };

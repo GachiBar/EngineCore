@@ -26,6 +26,8 @@ const TypeData Types::kUInt64 = Types::RegisterType("System", "UInt64");
 const TypeData Types::kVector2 = Types::RegisterType("GameplayCore.Mathematics", "Vector2");
 const TypeData Types::kVector3 = Types::RegisterType("GameplayCore.Mathematics", "Vector3");
 const TypeData Types::kVector4 = Types::RegisterType("GameplayCore.Mathematics", "Vector4");
+const TypeData Types::kColor3 = Types::RegisterType("GameplayCore.Mathematics", "Color3");
+const TypeData Types::kColor4 = Types::RegisterType("GameplayCore.Mathematics", "Color4");
 const TypeData Types::kString = Types::RegisterType("System", "String");
 
 // GameplayCore

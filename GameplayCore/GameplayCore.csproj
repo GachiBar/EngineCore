@@ -6,7 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ImGui.NET" Version="1.88.0" />
+    <Compile Remove="Physics\**" />
+    <EmbeddedResource Remove="Physics\**" />
+    <None Remove="Physics\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="ImGui.NET" Version="1.88.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

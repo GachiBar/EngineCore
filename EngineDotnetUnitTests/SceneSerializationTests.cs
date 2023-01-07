@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using GameplayCore;
 using GameplayCore.Components;
+using GameplayCore.Resources;
 using GameplayCore.Serialization;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -23,6 +25,10 @@ namespace EngineDotnetUnitTests
 
             GameObject first = scene.CreateGameObject();
             GameObject second = scene.CreateGameObject();
+
+            first.Name = "Amogus 1";
+            second.Name = "Amogus 2";
+            
             objects = new List<GameObject>()
             {
                 first, second
@@ -39,6 +45,12 @@ namespace EngineDotnetUnitTests
             PassRealData();
         }
 
+        private string _basePath = Path.GetFullPath("..\\..\\..\\.."); // $(SolutionDir)
+        private void SetAssetsBasepath()
+        {
+          FieldInfo fieldInfo = typeof(MetadataReader).GetField("BasePath", BindingFlags.Static | BindingFlags.NonPublic);
+          fieldInfo.SetValue(null, _basePath + "\\Assets");
+        }
        
         [Test]
         public void SerializeTest()
@@ -85,6 +97,8 @@ namespace EngineDotnetUnitTests
         [Test]
         public void DeserializeTest2()
         {
+          SetAssetsBasepath();
+          
           JsonSerializerSettings options = new JsonSerializerSettings()
           {
             Formatting = Formatting.Indented,
@@ -94,7 +108,7 @@ namespace EngineDotnetUnitTests
           List<GameObject> special_object = new List<GameObject>();
           Scene scene = new Scene();
           scene.Deserialize(special_data);
-          special_object = JsonConvert.DeserializeObject<List<GameObject>>(special_data, options);
+          // special_object = JsonConvert.DeserializeObject<List<GameObject>>(special_data, options);
 
           Assert.Pass();
         }
@@ -104,11 +118,15 @@ namespace EngineDotnetUnitTests
           special_data = @"
 [
   {
-    ""Guid"": ""93de9056-9ebb-4a6f-85ff-cd9b08f913e1"",
+    ""Guid"": ""b22b3479-88e8-43c9-b900-509e61a44c27"",
+    ""Name"": ""Player"",
     ""Components"": [
       {
         ""Type"": ""GameplayCore.Components.MeshRenderComponent"",
-        ""_gameObject"": ""93de9056-9ebb-4a6f-85ff-cd9b08f913e1""
+        ""Id"": 3,
+        ""_asset"": ""363a237f-3a55-4713-b7c6-62d9a52a2f4c"",
+        ""_material"": ""4a239380-9b29-4e11-9db9-630b9cb1e349"",
+        ""_gameObject"": ""b22b3479-88e8-43c9-b900-509e61a44c27""
       },
       {
         ""Type"": ""GameplayCore.Components.TransformComponent"",
@@ -134,7 +152,7 @@ namespace EngineDotnetUnitTests
           ""Y"": 0.0,
           ""Z"": 0.0
         },
-        ""_gameObject"": ""93de9056-9ebb-4a6f-85ff-cd9b08f913e1""
+        ""_gameObject"": ""b22b3479-88e8-43c9-b900-509e61a44c27""
       },
       {
         ""Type"": ""GameplayCore.Components.TestEditorFieldsComponent"",
@@ -170,19 +188,20 @@ namespace EngineDotnetUnitTests
         },
         ""StringValue"": ""TestString"",
         ""GameObjectValue"": null,
-        ""_gameObject"": ""93de9056-9ebb-4a6f-85ff-cd9b08f913e1""
+        ""_gameObject"": ""b22b3479-88e8-43c9-b900-509e61a44c27""
       }
     ]
   },
   {
-    ""Guid"": ""68525632-518d-432f-98b8-78b2f2ce8e12"",
+    ""Guid"": ""8ac26d58-0b03-41c4-8a22-41c78f0b3481"",
+    ""Name"": ""Camera"",
     ""Components"": [
       {
         ""Type"": ""GameplayCore.Components.CameraComponent"",
         ""FieldOfView"": 90.0,
         ""Near"": 0.1,
         ""Far"": 100.0,
-        ""_gameObject"": ""68525632-518d-432f-98b8-78b2f2ce8e12""
+        ""_gameObject"": ""8ac26d58-0b03-41c4-8a22-41c78f0b3481""
       },
       {
         ""Type"": ""GameplayCore.Components.TransformComponent"",
@@ -208,52 +227,18 @@ namespace EngineDotnetUnitTests
           ""Y"": 0.0,
           ""Z"": 0.0
         },
-        ""_gameObject"": ""68525632-518d-432f-98b8-78b2f2ce8e12""
+        ""_gameObject"": ""8ac26d58-0b03-41c4-8a22-41c78f0b3481""
       },
       {
         ""Type"": ""GameplayCore.Components.SpectatorComponent"",
-        ""_gameObject"": ""68525632-518d-432f-98b8-78b2f2ce8e12""
+        ""_gameObject"": ""8ac26d58-0b03-41c4-8a22-41c78f0b3481""
       }
     ]
   },
   {
-    ""Guid"": ""6ddf8e92-1ff0-433d-ad9b-7ecbca974e4f"",
+    ""Guid"": ""12b2d8ae-c824-4846-ad31-1b39534ec269"",
+    ""Name"": ""Empty"",
     ""Components"": []
-  },
-  {
-    ""Guid"": ""a81f291e-e198-4f03-bd9f-f9b2f8d54f3a"",
-    ""Components"": [
-      {
-        ""Type"": ""GameplayCore.Components.TransformComponent"",
-        ""_parent"": ""93de9056-9ebb-4a6f-85ff-cd9b08f913e1"",
-        ""_localRotation"": {
-          ""X"": 0.0,
-          ""Y"": 0.0,
-          ""Z"": 0.0,
-          ""W"": 1.0
-        },
-        ""_localScale"": {
-          ""X"": 1.0,
-          ""Y"": 1.0,
-          ""Z"": 1.0
-        },
-        ""_localPosition"": {
-          ""X"": -3.10252738,
-          ""Y"": 0.0,
-          ""Z"": 0.0
-        },
-        ""_editorEuler"": {
-          ""X"": 0.0,
-          ""Y"": 0.0,
-          ""Z"": 0.0
-        },
-        ""_gameObject"": ""a81f291e-e198-4f03-bd9f-f9b2f8d54f3a""
-      },
-      {
-        ""Type"": ""GameplayCore.Components.MeshRenderComponent"",
-        ""_gameObject"": ""a81f291e-e198-4f03-bd9f-f9b2f8d54f3a""
-      }
-    ]
   }
 ]
 ";

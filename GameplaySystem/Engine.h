@@ -4,6 +4,7 @@
 #include "Runtime.h"
 #include "Scene.h"
 #include "BPLayerInterfaceImplementation.h"
+#include "EngineContactListener.h"
 #include "../monowrapper/monopp/mono_assembly.h"
 #include "../Core/libs/loguru/loguru.hpp"
 
@@ -12,9 +13,11 @@
 #include <Jolt/Core/JobSystemThreadPool.h>
 
 #include <chrono>
+#include <map>
 #include <Windows.h>
 #include <SimpleMath.h>
 
+struct TransferMaterial;
 JPH_SUPPRESS_WARNINGS
 
 namespace engine {
@@ -25,7 +28,9 @@ class Engine
 {
 public:
 	static const float kDt;
-	static const std::chrono::nanoseconds kTimestep;
+	static const float kAiDt;
+	static const nanoseconds kTimestep;
+	static const nanoseconds kAiTimestep;
 
 	bool IsRunning();
 	std::shared_ptr<Scene> GetScene();
@@ -58,18 +63,22 @@ private:
 	static const int kCollisionSteps = 1;
 	static const int kIntegrationSubSteps = 1;
 
+	static Engine* engine_;
 	RenderDevice renderer_;
 
 	JPH::TempAllocatorImpl temp_allocator_;
 	JPH::JobSystemThreadPool job_system_;
 	BPLayerInterfaceImplementation layer_interface_;
+	EngineContactListener contact_listener_;
 	JPH::PhysicsSystem physics_system_;
 
 	std::shared_ptr<Scene> scene_;
+	std::map<size_t, MaterialData> _materials;
 
 	time_point<steady_clock> time_start_ = high_resolution_clock::now();
 	nanoseconds dt_ = 0ns;
 	nanoseconds lag_ = 0ns;
+	nanoseconds ai_lag_ = 0ns;
 	nanoseconds ellapsed_ = 0ns;
 
 	const Runtime& runtime_;
@@ -81,6 +90,10 @@ private:
 	Property screen_width_property_;
 	Property screen_height_property_;
 	Property mouse_position_property_;
+
+	Method collision_enter_method_;
+	Method collision_stay_method_;
+	Method collision_exit_method_;
 
 	bool is_running_;
 
@@ -95,6 +108,7 @@ private:
 	void SendTimeData();
 	void SendScreenData();
 	void SendInputData();
+	void SendCollisions();
 
 #pragma region Renderer
 
@@ -111,8 +125,7 @@ private:
 	static void Internal_DrawModel(
 		RenderDevice* renderer,
 		size_t id,
-		float metallic, 
-		float roughness,
+		size_t material_id,
 		DirectX::SimpleMath::Matrix model_matrix);
 
 	static void Internal_DrawDirectionalLight(
@@ -144,6 +157,11 @@ private:
 	static bool Internal_IsTextureIdUsed(
 			RenderDevice* renderer,
 			size_t id);
+
+	static MaterialData GetMaterialData(size_t id);
+	static TransferMaterial Internal_PullMaterial(size_t id);
+	static void Internal_CommitMaterial(size_t id, TransferMaterial data);
+	static bool Internal_ContainsMaterialId(size_t id);
 
 #pragma endregion Renderer
 
@@ -216,6 +234,15 @@ private:
 		JPH::uint32 id, 
 		JPH::Quat rotation);
 
+	static void Internal_FreezeRotation(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id);
+
+	static void Internal_SetMass(
+		JPH::PhysicsSystem* physics_system,
+		JPH::uint32 id,
+		float mass);
+
 	static void Internal_AddForce(
 		JPH::PhysicsSystem* physics_system, 
 		JPH::uint32 id, 
@@ -234,6 +261,12 @@ private:
 		JPH::PhysicsSystem* physics_system,
 		JPH::uint32 id,
 		JPH::Vec3 velocity);
+
+	static bool Internal_CastRay(
+		JPH::PhysicsSystem* physics_system,
+		JPH::Vec3 origin,
+		JPH::Vec3 direction,
+		JPH::uint32& body_id);
 
 #pragma endregion Physics
 

@@ -33,11 +33,18 @@ namespace GameplayCore.Components
 
         public virtual void Initialize() { }
         public virtual void FixedUpdate() { }
+        public virtual void UpdateAI() { }
         public virtual void Update() { }
         public virtual void Render() { }
         public virtual void DebugRender() { }
         public virtual void RenderGUI() { }
         public virtual void Terminate() { }
+
+        public virtual void OnCollisionEnter(RigidbodyComponent rigidbody) { }
+
+        public virtual void OnCollisionStay(RigidbodyComponent rigidbody) { }
+
+        public virtual void OnCollisionExit(RigidbodyComponent rigidbody) { }
 
         /// <summary>
         /// This method called by editor when some field was changed.
@@ -57,5 +64,10 @@ namespace GameplayCore.Components
 
         protected virtual void OnAttach(GameObject gameObject) { }
         protected virtual void OnDetach(GameObject gameObject) { }
+
+        protected void DeleteGameObject(GameObject gameObject)
+        {
+            GameObject.Scene.DeleteGameObject(gameObject);
+        }
     }
 }

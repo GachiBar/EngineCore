@@ -9,6 +9,8 @@
 #include "../../GameplaySystem/Runtime.h"
 
 engine::Method* MetadataReader::read_ = nullptr;
+engine::Method* MetadataReader::create_material = nullptr;
+engine::Method* MetadataReader::create_ai_actions = nullptr;
 const std::filesystem::path MetadataReader::AssetsPath = std::filesystem::current_path() / "Assets";
 
 std::optional<engine::Object> MetadataReader::read_internal(const std::filesystem::path& path)
@@ -22,22 +24,71 @@ std::optional<engine::Object> MetadataReader::read_internal(const std::filesyste
     return read_->Invoke(params);
 }
 
+void MetadataReader::create_material_internal(const std::filesystem::path& base_path)
+{
+    auto& domain = engine::Runtime::GetCurrentRuntime().GetDomain();
+    mono::mono_string path_string(domain, absolute(base_path).generic_string());
+
+    void* params[1];
+    params[0] = path_string.get_internal_ptr();
+
+    create_material->Invoke(params);
+}
+
+void MetadataReader::create_ai_actions_internal(const std::filesystem::path& base_path)
+{
+    auto& domain = engine::Runtime::GetCurrentRuntime().GetDomain();
+    mono::mono_string path_string(domain, absolute(base_path).generic_string());
+
+    void* params[1];
+    params[0] = path_string.get_internal_ptr();
+
+    create_ai_actions->Invoke(params);
+}
+
 void MetadataReader::CacheMethods(engine::Runtime& runtime)
 {
     auto type = runtime.GetType("GameplayCore.Resources", "MetadataReader");
     read_ = new engine::Method(type, "Read", 1);
+    create_material = new engine::Method(type, "CreateMaterial", 1);
+    create_ai_actions = new engine::Method(type, "CreateAIActions", 1);
 }
 
 FileType MetadataReader::get_file_type(const std::filesystem::directory_entry& entry)
 {
-    if (entry.is_directory())
+    return GetTypeByPath(entry.path());
+}
+
+FileType MetadataReader::GetTypeByClassName(const std::string& classname)
+{
+    if (classname == "SceneAsset")
+        return FileType::Scene;
+    else if (classname == "Prefab")
+        return FileType::Prefab;
+    else if (classname == "MeshAsset")
+        return FileType::Mesh;
+    else if (classname == "MaterialAsset")
+        return FileType::Material;
+    else if (classname == "TextureAsset")
+        return FileType::Texture;
+    else if (classname == "TextAsset")
+        return FileType::PlainText;
+    else if (classname == "AIActionsAsset")
+        return FileType::AIActions;
+
+    return FileType::Other;
+}
+
+FileType MetadataReader::GetTypeByPath(const std::filesystem::path& path)
+{
+    if (std::filesystem::is_directory(path))
         return FileType::Directory;
 
     // Actually there is should be .meta search, but let it be here for now
-    if (entry.is_regular_file())
+    if (std::filesystem::is_regular_file(path))
     {
-        std::string extension = entry.path().filename().extension().generic_string();
-        if(extension == ".scene")
+        const std::string extension = path.filename().extension().generic_string();
+        if (extension == ".scene")
             return FileType::Scene;
         else if (extension == ".prefab")
             return FileType::Prefab;
@@ -51,26 +102,9 @@ FileType MetadataReader::get_file_type(const std::filesystem::directory_entry& e
             return FileType::Meta;
         else if (extension == ".txt")
             return FileType::PlainText;
+        else if (extension == ".ai")
+            return FileType::AIActions;
     }
-
-    // std::cout << "Can't handle non-directory and non-file!\n";
-    return FileType::Other;
-}
-
-FileType MetadataReader::GetTypeByClassName(const std::string& classname)
-{
-    if(classname == "SceneAsset")
-        return FileType::Scene;
-    else if (classname == "Prefab")
-        return FileType::Prefab;
-    else if (classname == "MeshAsset")
-        return FileType::Mesh;
-    else if (classname == "MaterialAsset")
-        return FileType::Material;
-    else if (classname == "TextureAsset")
-        return FileType::Texture;
-    else if (classname == "TextAsset")
-        return FileType::PlainText;
 
     return FileType::Other;
 }

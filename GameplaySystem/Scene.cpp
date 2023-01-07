@@ -10,6 +10,7 @@ Method* Scene::get_item_ = nullptr;
 Method* Scene::initialize_ = nullptr;
 Method* Scene::terminate_ = nullptr;
 Method* Scene::fixed_update_ = nullptr;
+Method* Scene::update_ai_ = nullptr;
 Method* Scene::update_ = nullptr;
 Method* Scene::render_ = nullptr;
 Method* Scene::debug_render_ = nullptr;
@@ -71,6 +72,12 @@ void Scene::FixedUpdate() {
     assert(fixed_update_ != nullptr && kIsNotCachedErrorMessage);
 
     fixed_update_->Invoke(*this);
+}
+
+void Scene::UpdateAI() {
+    assert(update_ai_ != nullptr && kIsNotCachedErrorMessage);
+
+    update_ai_->Invoke(*this);
 }
 
 void Scene::Update() {
@@ -152,6 +159,7 @@ void Scene::CacheMethods(const Runtime& runtime) {
     initialize_ = new Method(type, "Initialize", 0);
     terminate_ = new Method(type, "Terminate", 0);
     fixed_update_ = new Method(type, "FixedUpdate", 0);
+    update_ai_ = new Method(type, "UpdateAI", 0);
     update_ = new Method(type, "Update", 0);
     render_ = new Method(type, "Render", 0);
     debug_render_ = new Method(type, "DebugRender", 0);

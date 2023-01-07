@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+
 #include "GameViewWindow.h"
 #include "Layer.h"
 #include "LogWindow.h"
@@ -6,9 +8,11 @@
 #include "GameObjectInspectorWindow.h"
 #include "SceneHierarchyWindow.h"
 #include "ProjectSettingsWindow.h"
-#include "Resources/ResourceDrawer.h"
+#include "Resources/MaterialsEditor.h"
 
+class PropertyWindow;
 class ExplorerWindow;
+class AIEditorWindow;
 
 class EditorLayer final : public Layer
 {
@@ -27,12 +31,14 @@ public:
 
 	std::shared_ptr<GameViewWindow> gvm;
 	std::shared_ptr<SceneHierarchyWindow> hierarchy;
-	std::shared_ptr<GameObjectInspectorWindow> properties;
+	std::shared_ptr<PropertyWindow> property_window;
+	std::shared_ptr<GameObjectInspectorWindow> game_object_inspector;
 	std::shared_ptr<MenuBar> menu_bar;
 	std::shared_ptr<ProjectSettingsWindow> SettingsWindow;
 	std::shared_ptr<ExplorerWindow> explorer;
 	std::shared_ptr<LogWindow> log;
-	std::shared_ptr<ResourceDrawer> resourceDrawer;
+	std::shared_ptr<MaterialsEditor> resourceDrawer;
+	std::shared_ptr<AIEditorWindow> ai_editor;
 
 	engine::GameObject* GetSelectedGo();
 
