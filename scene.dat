@@ -38,9 +38,9 @@
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
         "_size": {
-          "X": 5.0,
-          "Y": 0.5,
-          "Z": 5.0
+          "X": 10.0,
+          "Y": 1.0,
+          "Z": 10.0
         },
         "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
       },
@@ -229,9 +229,9 @@
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
         "_size": {
-          "X": 1.0,
-          "Y": 1.0,
-          "Z": 1.0
+          "X": 2.0,
+          "Y": 2.0,
+          "Z": 2.0
         },
         "_gameObject": "b5731838-dcd1-4e05-a4dc-26dcad629b11"
       },
@@ -409,9 +409,9 @@
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
         "_size": {
-          "X": 0.5,
-          "Y": 2.0,
-          "Z": 5.0
+          "X": 1.0,
+          "Y": 4.0,
+          "Z": 10.0
         },
         "_gameObject": "828a6b37-c48f-4600-8d7c-1191d65c28d7"
       },
@@ -463,9 +463,9 @@
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
         "_size": {
-          "X": 0.5,
-          "Y": 2.0,
-          "Z": 5.0
+          "X": 1.0,
+          "Y": 4.0,
+          "Z": 10.0
         },
         "_gameObject": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73"
       },
@@ -517,9 +517,9 @@
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
         "_size": {
-          "X": 5.0,
-          "Y": 2.0,
-          "Z": 0.5
+          "X": 10.0,
+          "Y": 4.0,
+          "Z": 1.0
         },
         "_gameObject": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae"
       },
@@ -578,9 +578,9 @@
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
         "_size": {
-          "X": 5.0,
-          "Y": 2.0,
-          "Z": 0.5
+          "X": 10.0,
+          "Y": 4.0,
+          "Z": 1.0
         },
         "_gameObject": "236e4589-3983-4422-86ea-399c3f2052ea"
       }
