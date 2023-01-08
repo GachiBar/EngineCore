@@ -45,7 +45,7 @@ namespace GameplayCore.Components
             }
         }
 
-        public override void DebugRender()
+        public override void EditorRender()
         {
             if (_transformComponent != null)
             {

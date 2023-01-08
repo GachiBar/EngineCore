@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using GameplayCore.AI;
 using GameplayCore.Serialization;
 using Newtonsoft.Json;
 
@@ -159,7 +160,7 @@ namespace GameplayCore.Resources
 
         public static string CreateAIActions(string basepath)
         {
-            var actions = new AIActionsList();
+            var actions = new List<AIAction>();
 
             JsonSerializerSettings options = new JsonSerializerSettings()
             {

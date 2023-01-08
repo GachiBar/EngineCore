@@ -25,7 +25,7 @@ public:
 	void UpdateAI();
 	void Update();
 	void Render();
-	void DebugRender();
+	void EditorRender();
 	void RenderGUI();
 	void Terminate();
 	void Invalidate();
@@ -47,7 +47,7 @@ private:
 	static Method* update_ai_;
 	static Method* update_;
 	static Method* render_;
-	static Method* debug_render_;
+	static Method* editor_render_;
 	static Method* render_gui_;
 	static Method* invalidate_;
 	static Method* serialize_;

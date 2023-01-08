@@ -21,7 +21,9 @@ ObjectDrawer::ObjectDrawer()
     : game_objects_pointers(nullptr)
     , game_objects_names(nullptr)
     , game_objects_capacity(0)
-{}
+{
+	//CacheArbitratorsNames();
+}
 
 ObjectDrawer::~ObjectDrawer()
 {
@@ -145,6 +147,12 @@ bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& 
 				isFieldChanged |= DrawResourceField(object, field);
 				modifiedFields.push_back(field.GetName());
 			}
+			//else if (field.GetType().IsDerivedFrom(engine::Types::kAIArbitrator) &&
+			//	!field.GetType().IsAbstract()) 
+			//{
+			//	isFieldChanged |= DrawArbitratorField(object, field);
+			//	modifiedFields.push_back(field.GetName());
+			//}
 		}
 
 		type = type.GetBaseType();
@@ -709,6 +717,26 @@ bool ObjectDrawer::DrawColor4Field(const engine::Object& object, engine::Field& 
 	return false;
 }
 
+bool ObjectDrawer::DrawArbitratorField(const engine::Object& object, engine::Field& field)
+{
+	auto attributes = field.GetAttributes();
+
+	if (!IsEditableField(field, attributes))
+	{
+		return false;
+	}
+
+	int selected = 0;
+	auto currentArbitrator = field.GetValue(object);
+
+	if (ImGui::Combo("Arbitrator", &selected, arbitrators_names, arbitrators_names_count)) 
+	{
+
+	}
+	
+	return false;
+}
+
 std::string ObjectDrawer::GetFieldName(
 	const engine::Field& field,
 	const std::vector<engine::Object>& attributes)
@@ -782,6 +810,49 @@ bool ObjectDrawer::TryGetSliderConstraints(
 	return true;
 }
 
+
+void ObjectDrawer::CacheArbitratorsNames()
+{
+	std::vector<std::string> arbitrators;
+	arbitrators.push_back("None");
+	auto& runtime = engine::Runtime::GetCurrentRuntime();
+	auto baseComponentType = runtime.GetType(engine::Types::kAIArbitrator);
+	auto typeNames = runtime.DumpTypeNames();
+
+	for (auto typeName : typeNames)
+	{
+		try
+		{
+			auto typeDeclarartion = engine::Types::ParseFullName(typeName);
+			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);
+
+			while (type.HasBaseType() && !type.IsAbstract())
+			{
+				if (type.IsDerivedFrom(baseComponentType))
+				{
+					arbitrators.push_back(typeName);
+					break;
+				}
+
+				type = type.GetBaseType();
+			}
+		}
+		catch (mono::mono_exception& ex)
+		{
+			continue;
+		}
+	}
+
+	arbitrators_names_count = arbitrators.size();
+	arbitrators_names = new char* [arbitrators_names_count];
+	char** temp = arbitrators_names;
+
+	for (auto arbitrator : arbitrators) 
+	{
+		CopyAsNullTerminated(*temp, arbitrator);
+		std::advance(temp, 1);
+	}
+}
 
 void ObjectDrawer::ChangeGameObjectResourcesCapacity(size_t size)
 {

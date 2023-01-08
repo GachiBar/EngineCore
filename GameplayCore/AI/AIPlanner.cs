@@ -15,7 +15,7 @@ namespace GameplayCore.AI
             public AIAction Action;
         }
 
-        public AIPlan MakePlan(GameObject gameObject, AIState state, AIGoal goal, List<AIAction> actions)
+        public AIPlan MakePlan(GameObject gameObject, AIState state, AIGoal goal, IReadOnlyList<AIAction> actions)
         {
             int iterations = 0;
             var queue = new PriorityQueue<Node, int>();

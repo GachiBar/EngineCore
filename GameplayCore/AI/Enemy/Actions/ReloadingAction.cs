@@ -32,6 +32,7 @@ namespace GameplayCore.AI.Enemy.Actions
                 }
 
                 enemyController.Reload(timer, reloadingTime);
+                enemyController.Stay();
                 yield return AIExecutionState.InProgress;
             }
 

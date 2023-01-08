@@ -23,7 +23,6 @@ public:
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;
 	void OnUpdate(float const dt) override;
-	//virtual void OnInputEvent(InputEvent* e) override;
 	virtual void OnGuiRender() override;
 	virtual void OnPostRender() override;
 
@@ -52,5 +51,8 @@ private:
 	bool m_ViewportFocused = false, m_ViewportHovered = false;
 	DirectX::SimpleMath::Vector2 m_ViewportSize = { 0.0f, 0.0f };
 	std::pair<DirectX::SimpleMath::Vector2, DirectX::SimpleMath::Vector2> m_ViewportBounds;
+
+	void OpenScene();
+	void SaveScene();
 };
 

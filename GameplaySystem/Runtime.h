@@ -18,8 +18,8 @@ public:
 	const mono::mono_domain& GetDomain() const;
 	const mono::mono_assembly& GetAssembly() const;
 
-	const std::vector<std::string> DumpTypeNames() const;
-	
+	std::vector<std::string> DumpTypeNames() const;
+
 	Type GetType(const std::string& name_space, const std::string& name) const;
 	Type GetType(const std::string& full_name) const;
 	Type GetType(const TypeDeclaration& declaration) const;

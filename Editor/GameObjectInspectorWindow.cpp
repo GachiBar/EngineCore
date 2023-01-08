@@ -51,7 +51,6 @@ void GameObjectInspectorWindow::Draw()
 {
 	if (!game_object.get())
 	{
-		ImGui::End();
 		return;
 	}
 
@@ -155,8 +154,7 @@ void GameObjectInspectorWindow::FindAvaliableComponents()
 	for (size_t i = 0; i < game_object->Count(); ++i)
 	{
 		auto component = (*game_object)[i];
-		auto componentType = component->GetInternal().get_type();
-		addedComponents.insert(componentType.get_fullname());
+		addedComponents.insert(component->GetType().GetFullName());
 	}
 
 	avaliable_components_count = components_names.size() - addedComponents.size();

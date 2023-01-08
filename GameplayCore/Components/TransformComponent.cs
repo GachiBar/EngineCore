@@ -39,7 +39,7 @@ namespace GameplayCore.Components
             {
                 if (value == null)
                 {
-                    _parent ?._children.Remove(this);
+                    _parent?._children.Remove(this);
                     _parent = null;
                     return;
                 }

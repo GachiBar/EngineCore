@@ -96,6 +96,10 @@ public:
 	// Resources
 	static const TypeData kResource;
 
+	// AI
+	static const TypeData kAIArbitrator;
+	static const TypeData kAIAction;
+
 	static const TypeData RegisterType(std::string name_space, std::string name);
 	static const TypeData GetTypeData(std::string name_space, std::string name);
 	static const TypeData GetTypeData(std::string full_name);

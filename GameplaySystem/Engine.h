@@ -49,7 +49,7 @@ public:
 	void RunFrame();
 	void BeginRender();
 	void Render();
-	void DebugRender();
+	void EditorRender();
 	void EndRender();
 	void Present();
 	bool ProcessMessages(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);

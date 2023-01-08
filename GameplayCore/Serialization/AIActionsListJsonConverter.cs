@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace GameplayCore.Serialization
 {
-    public class AIActionsListJsonConverter : JsonConverter<AIActionsList>
+    public class AIActionsListJsonConverter : JsonConverter<List<AIAction>>
     {
-        public override AIActionsList ReadJson(JsonReader reader, Type objectType, AIActionsList existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override List<AIAction> ReadJson(JsonReader reader, Type objectType, List<AIAction> existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            var result = new AIActionsList();
+            var result = new List<AIAction>();
 
             if (reader.TokenType != JsonToken.StartObject)
             {
@@ -26,7 +26,7 @@ namespace GameplayCore.Serialization
             {
                 return null;
             }
-            if (reader.Value as string != nameof(result.Actions))
+            if (reader.Value as string != "Actions")
             {
                 return null;
             }
@@ -43,7 +43,7 @@ namespace GameplayCore.Serialization
                 var typeName = reader.Value as string;
                 var type = Type.GetType(typeName);
                 var action = (AIAction)Activator.CreateInstance(type);
-                result.Actions.Add(action);
+                result.Add(action);
                 reader.Read();
             }
             reader.Read();
@@ -56,13 +56,13 @@ namespace GameplayCore.Serialization
             return result;
         }
 
-        public override void WriteJson(JsonWriter writer, AIActionsList value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, List<AIAction> value, JsonSerializer serializer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName(nameof(value.Actions));
+            writer.WritePropertyName("Actions");
             writer.WriteStartArray();
 
-            foreach (var action in value.Actions)
+            foreach (var action in value)
             {
                 var type = action.GetType();
                 writer.WriteValue(type.ToString());

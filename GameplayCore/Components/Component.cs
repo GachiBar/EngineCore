@@ -16,7 +16,7 @@ namespace GameplayCore.Components
             internal set
             {
                 if (_gameObject != null)
-                {
+                {                    
                     OnDetach(_gameObject);
                 }
 
@@ -36,7 +36,7 @@ namespace GameplayCore.Components
         public virtual void UpdateAI() { }
         public virtual void Update() { }
         public virtual void Render() { }
-        public virtual void DebugRender() { }
+        public virtual void EditorRender() { }
         public virtual void RenderGUI() { }
         public virtual void Terminate() { }
 

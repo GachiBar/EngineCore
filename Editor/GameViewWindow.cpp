@@ -52,10 +52,12 @@ void GameViewWindow::Draw()
 		{
 			if (ImGui::MenuItem("Play", "", bIsPlaying, !bIsPlaying))
 			{
+				editor_layer->GetApp()->GetEngine()->GetScene()->Initialize();
 				StartPlay();
 			}
 			if (ImGui::MenuItem("Stop", "", !bIsPlaying, bIsPlaying))
 			{
+				editor_layer->GetApp()->GetEngine()->GetScene()->Terminate();
 				StopPlay();
 			}
 		}

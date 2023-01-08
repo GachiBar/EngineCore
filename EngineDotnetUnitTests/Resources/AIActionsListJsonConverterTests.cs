@@ -1,6 +1,5 @@
 ﻿using GameplayCore.AI;
 using GameplayCore.AI.Enemy.Actions;
-using GameplayCore.Resources;
 using GameplayCore.Serialization;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -15,19 +14,16 @@ namespace EngineDotnetUnitTests.Resources
         [TestCaseSource(nameof(ActionsGenerator))]
         public void ReadJson_CorrectJson_JsonReaded(List<AIAction> actions)
         {
-            var actionsList = new AIActionsList();
-            actionsList.Actions.AddRange(actions);
-
             JsonSerializerSettings options = new JsonSerializerSettings()
             {
                 Formatting = Formatting.Indented,
                 Converters = { new AIActionsListJsonConverter() }
             };
 
-            string data = JsonConvert.SerializeObject(actionsList, options);
-            var deserialized = JsonConvert.DeserializeObject<AIActionsList>(data, options);
+            string data = JsonConvert.SerializeObject(actions, options);
+            var deserialized = JsonConvert.DeserializeObject<List<AIAction>>(data, options);
 
-            Assert.IsTrue(IsActionsSame(actionsList, deserialized));
+            Assert.IsTrue(IsActionsSame(actions, deserialized));
         }
 
         private static IEnumerable<TestCaseData> ActionsGenerator()
@@ -37,15 +33,15 @@ namespace EngineDotnetUnitTests.Resources
             yield return new TestCaseData(new List<AIAction> { new FleeAction(), new FindAimAction() });
         }
 
-        private static bool IsActionsSame(AIActionsList lhs, AIActionsList rhs)
+        private static bool IsActionsSame(List<AIAction> lhs, List<AIAction> rhs)
         {
-            if (lhs.Actions.Count != rhs.Actions.Count)
+            if (lhs.Count != rhs.Count)
             {
                 return false;
             }
 
-            var leftTypes = lhs.Actions.Select(a => a.GetType());
-            var rightTypes = rhs.Actions.Select(a => a.GetType());
+            var leftTypes = lhs.Select(a => a.GetType());
+            var rightTypes = rhs.Select(a => a.GetType());
             return !leftTypes.Except(rightTypes).Any();
         }
     }

@@ -25,12 +25,12 @@ namespace GameplayCore.Components
             
             if (transform == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(TransformComponent)}");
                 return;
             }
             if (rigidbody == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(RigidbodyComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(RigidbodyComponent)}");
                 return;
             }
 
@@ -39,13 +39,26 @@ namespace GameplayCore.Components
             rigidbody.Velocity = velocity;
         }
 
+        public void Stay()
+        {
+            var rigidbody = GameObject.GetComponent<RigidbodyComponent>();
+
+            if (rigidbody == null)
+            {
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(RigidbodyComponent)}");
+                return;
+            }
+
+            rigidbody.Velocity *= Vector3.Up;
+        }
+
         public void LoockInDirection(Vector3 direction)
         {
             var transform = GameObject.GetComponent<TransformComponent>();
 
             if (transform == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(TransformComponent)}");
                 return;
             }
 
@@ -58,7 +71,7 @@ namespace GameplayCore.Components
 
             if (transform == null)
             {
-                Log.PrintError($"GameObject does not contains {nameof(TransformComponent)}");
+                Log.PrintError($"GameObject: {GameObject.Name} does not contains {nameof(TransformComponent)}");
                 return;
             }
 
@@ -153,7 +166,7 @@ namespace GameplayCore.Components
 
         private void OnDied(HealthComponent health)
         {
-            // Now i just remove game object
+            // Now I just remove game object
             GameObject.Scene.DeleteGameObject(GameObject);
         }
 
