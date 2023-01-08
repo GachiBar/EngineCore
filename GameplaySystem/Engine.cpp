@@ -97,7 +97,6 @@ void Engine::Terminate() {
 }
 
 void Engine::Stop() {
-	RunFrame();
 	is_running_ = false;
 }
 
@@ -114,8 +113,8 @@ void Engine::RunFrame() {
 	dt_ = clock::now() - time_start_;
 	ellapsed_ += dt_;
 	time_start_ = clock::now();
-	lag_ += duration_cast<nanoseconds>(dt_);
-	ai_lag_ += duration_cast<nanoseconds>(dt_);
+	lag_ += dt_;
+	ai_lag_ += dt_;
 
 	SendTimeData();
 	SendScreenData();

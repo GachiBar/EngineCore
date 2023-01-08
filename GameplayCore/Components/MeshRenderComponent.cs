@@ -16,8 +16,28 @@ namespace GameplayCore.Components
         [InspectorName("MaterialAsset")]
         private MaterialAsset _materialAsset;
 
-        private ulong _meshId = 1;
+        private ulong _meshId = 0;
         private ulong _materialId = 0;
+
+        public MeshAsset MeshAsset
+        {
+            get => _meshAsset;
+            set
+            {
+                _meshAsset = value;
+                TryReloadMesh();
+            }
+        }
+
+        public MaterialAsset MaterialAsset
+        {
+            get => _materialAsset;
+            set
+            {
+                _materialAsset = value;
+                TryReloadMaterial();
+            }
+        }
 
         public override void Render()
         {

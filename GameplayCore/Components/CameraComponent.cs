@@ -11,6 +11,8 @@ namespace GameplayCore.Components
         public float FieldOfView = 90;
         public float Near = 0.1f;
         public float Far = 100.0f;
+        public float Zoom = 10.0f;
+        public bool Orthographic;
 
         private static readonly Vector3[] NearPlain;
         private static readonly Vector3[] FarPlain;
@@ -46,9 +48,18 @@ namespace GameplayCore.Components
                 var target = _transformComponent.Position + _transformComponent.Forward;
                 var up = _transformComponent.Up;
                 var view = Matrix.LookAtRH(eye, target, up);
-                float aspect = (float)Screen.Width / Screen.Height;
-                var projection = Matrix.PerspectiveFovRH(fow, aspect, Near, Far);
-                EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection);
+
+                if (Orthographic)
+                {
+                    var projection = Matrix.OrthoRH(Screen.Width / Zoom, Screen.Height / Zoom, Near, Far);
+                    EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection);
+                }
+                else
+                {
+                    float aspect = (float)Screen.Width / Screen.Height;
+                    var projection = Matrix.PerspectiveFovRH(fow, aspect, Near, Far);
+                    EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection);
+                }                
             }
         }
 
