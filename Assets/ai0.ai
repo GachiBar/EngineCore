@@ -1,9 +1,0 @@
-{
-  "Actions": [
-    "GameplayCore.AI.Enemy.Actions.FindAimAction",
-    "GameplayCore.AI.Enemy.Actions.ShootAction",
-    "GameplayCore.AI.Enemy.Actions.FleeAction",
-    "GameplayCore.AI.Enemy.Actions.ReloadingAction",
-    "GameplayCore.AI.Enemy.Actions.TakeShootPositionAction"
-  ]
-}

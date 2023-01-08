@@ -5,15 +5,15 @@
     "Blue": 0.0,
     "Alpha": 0.0
   },
-  "diffuseTexture": "404015bb-3c7c-4aab-b254-2791e1f8bea4",
+  "diffuseTexture": "b8078ded-e41f-4717-a0cd-d98ecacaa5ee",
   "normalsColor": {
     "Red": 0.0,
     "Green": 0.0,
     "Blue": 0.0
   },
   "normalsTexture": null,
-  "roughnessValue": 1.0,
+  "roughnessValue": 0.0,
   "roughnessTexture": null,
-  "metallicValue": 1.0,
+  "metallicValue": 0.0,
   "metallicTexture": null
 }

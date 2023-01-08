@@ -222,7 +222,7 @@ namespace GameplayCore
             }
 
             _componentsMap[instance.GetType()] = instance;
-            instance.GameObject = this;
+            instance.GameObject = this; // OnAttach
 
             if (IsInitialized)
             {
