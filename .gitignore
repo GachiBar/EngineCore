@@ -375,3 +375,5 @@ Newtonsoft.Json.dll
 MonoPosixHelper.dll
 
 mono-2.0-sgen.dll
+
+imgui.ini
