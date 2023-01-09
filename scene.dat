@@ -5,7 +5,7 @@
     "Components": [
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "a9b0103d-bd4f-4772-81cd-3ccdfadcc9bc",
+        "_meshAsset": "bae0c63a-fffc-452f-b50b-91ade81f1f1c",
         "_materialAsset": null,
         "_gameObject": "66150b09-e8b6-4881-a7e0-d1bfcf89fb59"
       },
@@ -239,7 +239,7 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "a9b0103d-bd4f-4772-81cd-3ccdfadcc9bc",
+        "_meshAsset": "bae0c63a-fffc-452f-b50b-91ade81f1f1c",
         "_materialAsset": null,
         "_gameObject": "b5731838-dcd1-4e05-a4dc-26dcad629b11"
       }
@@ -289,8 +289,8 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "c62799e1-f5f4-43ff-a6d3-d37bd3928839",
-        "_materialAsset": "e52dc212-034a-4a2b-a22e-ff193fab139a",
+        "_meshAsset": "e37573e4-1f6c-4698-8348-bb72df9faf98",
+        "_materialAsset": "30872d3d-cc41-4bad-9fe3-0e9cd86833de",
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {
@@ -306,7 +306,7 @@
       },
       {
         "Type": "GameplayCore.Components.BrainComponent",
-        "ActionsAsset": "8daa1798-e4ef-4503-8ad9-98a3a5bff564",
+        "ActionsAsset": null,
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {
@@ -366,8 +366,8 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": null,
-        "_materialAsset": null,
+        "_meshAsset": "e37573e4-1f6c-4698-8348-bb72df9faf98",
+        "_materialAsset": "30872d3d-cc41-4bad-9fe3-0e9cd86833de",
         "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
       }
     ]
@@ -404,7 +404,7 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "a9b0103d-bd4f-4772-81cd-3ccdfadcc9bc",
+        "_meshAsset": "bae0c63a-fffc-452f-b50b-91ade81f1f1c",
         "_materialAsset": null,
         "_gameObject": "828a6b37-c48f-4600-8d7c-1191d65c28d7"
       },
@@ -458,7 +458,7 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "a9b0103d-bd4f-4772-81cd-3ccdfadcc9bc",
+        "_meshAsset": "bae0c63a-fffc-452f-b50b-91ade81f1f1c",
         "_materialAsset": null,
         "_gameObject": "3053a485-f5c6-4a63-bdbd-d8b3b01b5d73"
       },
@@ -512,7 +512,7 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "a9b0103d-bd4f-4772-81cd-3ccdfadcc9bc",
+        "_meshAsset": "bae0c63a-fffc-452f-b50b-91ade81f1f1c",
         "_materialAsset": null,
         "_gameObject": "48811ffb-4a5a-4e30-a6a1-92a6eaaceaae"
       },
@@ -566,7 +566,7 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "a9b0103d-bd4f-4772-81cd-3ccdfadcc9bc",
+        "_meshAsset": "bae0c63a-fffc-452f-b50b-91ade81f1f1c",
         "_materialAsset": null,
         "_gameObject": "236e4589-3983-4422-86ea-399c3f2052ea"
       },
@@ -636,7 +636,7 @@
       },
       {
         "Type": "GameplayCore.Components.MeshRenderComponent",
-        "_meshAsset": "c62799e1-f5f4-43ff-a6d3-d37bd3928839",
+        "_meshAsset": null,
         "_materialAsset": null,
         "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
       }
