@@ -10,11 +10,11 @@ namespace GameplayCore.Components
     {
         private AIState _state;
         private AIPlanner _planner;
-        private AIArbitrator _arbitrator;
         private AIGoal _goal;
         private AIPlan _plan;
         private IEnumerator<AIExecutionState> _executionState;
 
+        public AIArbitrator Arbitrator;
         public AIActionsAsset ActionsAsset;
 
         public BrainComponent()
@@ -28,7 +28,6 @@ namespace GameplayCore.Components
             _state.SetFloatValue("ReloadingTime", 0.75f);
 
             _planner = new AIPlanner();
-            _arbitrator = new EnemyArbitrator();      
         }
 
         public override void Initialize()
@@ -45,7 +44,7 @@ namespace GameplayCore.Components
                 return;
             }
 
-            _goal = _arbitrator.ChooseGoal(GameObject, _state);
+            _goal = Arbitrator.ChooseGoal(GameObject, _state);
             _plan = _planner.MakePlan(GameObject, _state, _goal, ActionsAsset.Actions);
             _executionState = _plan.Execute(GameObject, _state).GetEnumerator();
         }
@@ -62,7 +61,7 @@ namespace GameplayCore.Components
                 return;
             }
 
-            _goal = _arbitrator.ChooseGoal(GameObject, _state);
+            _goal = Arbitrator.ChooseGoal(GameObject, _state);
             _plan = _planner.MakePlan(GameObject, _state, _goal, ActionsAsset.Actions);
             _executionState = _plan.Execute(GameObject, _state).GetEnumerator();
         }

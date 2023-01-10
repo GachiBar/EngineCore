@@ -38,7 +38,8 @@ void GameObjectInspectorWindow::SetGameObject(std::shared_ptr<engine::GameObject
 
 GameObjectInspectorWindow::GameObjectInspectorWindow()
 {
-	CacheComponentsData();
+	auto& runtime = engine::Runtime::GetCurrentRuntime();
+	components_names = runtime.DumpNonAbstractSubclassesOf(engine::Types::kComponent);
 	available_components_items = new const char* [components_names.size()];
 }
 
@@ -64,37 +65,6 @@ void GameObjectInspectorWindow::Draw()
 
 	ImGui::Separator();
 	DrawAddComponentPanel();
-}
-
-void GameObjectInspectorWindow::CacheComponentsData()
-{
-	auto& runtime = engine::Runtime::GetCurrentRuntime();
-	auto baseComponentType = runtime.GetType(engine::Types::kComponent);
-	auto typeNames = runtime.DumpTypeNames();
-
-	for (auto typeName : typeNames)
-	{
-		try
-		{
-			auto typeDeclarartion = engine::Types::ParseFullName(typeName);
-			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);			
-
-			while (type.HasBaseType() && !type.IsAbstract())
-			{
-				if (type.IsDerivedFrom(baseComponentType))
-				{
-					components_names.push_back(typeName);
-					break;
-				}
-
-				type = type.GetBaseType();
-			}
-		}
-		catch (mono::mono_exception& ex)
-		{
-			continue;
-		}
-	}
 }
 
 void GameObjectInspectorWindow::DrawGameObjectFields()

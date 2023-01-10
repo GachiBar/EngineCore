@@ -33,6 +33,5 @@ private:
     void DrawExistingActions();
     void DrawAddActionPanel();
 
-    void CacheActionsData();
     void FindAvaliableActions();
 };

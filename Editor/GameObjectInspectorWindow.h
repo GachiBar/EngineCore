@@ -35,8 +35,6 @@ private:
 
 	std::vector<std::string> components_names;
 
-	void CacheComponentsData();
-
 	void DrawGameObjectFields();
 	void DrawComponentFields(std::shared_ptr<engine::Component> component);
 	void DrawAddComponentPanel();

@@ -32,6 +32,33 @@ std::vector<std::string> Runtime::DumpTypeNames() const {
 	return assembly_.dump_type_names();
 }
 
+std::vector<std::string> Runtime::DumpNonAbstractSubclassesOf(const TypeData& type_data) const {
+	std::vector<std::string> names;
+	auto typeNames = DumpTypeNames();
+
+	for (auto typeName : typeNames)
+	{
+		try
+		{
+			auto typeDeclarartion = engine::Types::ParseFullName(typeName);
+			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);
+
+			if (!type.IsAbstract() &&
+				type.HasBaseType() &&
+				type.IsDerivedFrom(type_data))
+			{
+				names.push_back(typeName);
+			}
+		}
+		catch (mono::mono_exception& ex)
+		{
+			continue;
+		}
+	}
+
+	return names;
+}
+
 Type Runtime::GetType(const std::string& name_space, const std::string& name) const {
 	return { assembly_.get_type(name_space, name) };
 }
