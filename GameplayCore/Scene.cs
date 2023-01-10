@@ -134,7 +134,8 @@ namespace GameplayCore
                 Converters = 
                 {
                     new GameObjectDefaultJsonConverter(),
-                    new ResourceGuidJsonConverter()
+                    new ResourceGuidJsonConverter(),
+                    new AIArbitratorConverter(),
                 }
             };
 
@@ -165,7 +166,8 @@ namespace GameplayCore
                 Converters =
                 {
                     gameObjectConverter,
-                    new ResourceGuidJsonConverter()
+                    new ResourceGuidJsonConverter(),
+                    new AIArbitratorConverter()
                 }
             };
 

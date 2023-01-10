@@ -1,6 +1,4 @@
 ﻿using GameplayCore.AI;
-using GameplayCore.AI.Enemy;
-using GameplayCore.AI.Enemy.Actions;
 using GameplayCore.Resources;
 using System.Collections.Generic;
 
@@ -32,7 +30,7 @@ namespace GameplayCore.Components
 
         public override void Initialize()
         {
-            if (ActionsAsset == null)
+            if (ActionsAsset == null || Arbitrator == null)
             {
                 return;
             }
@@ -51,7 +49,7 @@ namespace GameplayCore.Components
 
         public override void UpdateAI()
         {
-            if (ActionsAsset == null || ActionsAsset.Actions.Count == 0)
+            if (ActionsAsset == null || Arbitrator == null || ActionsAsset.Actions.Count == 0)
             {
                 return;
             }

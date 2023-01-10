@@ -1,5 +1,7 @@
-﻿using GameplayCore.EngineApi;
+﻿using GameplayCore.Editor;
+using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
+using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
 {
@@ -10,14 +12,33 @@ namespace GameplayCore.Components
 
         protected uint BodyId => _rigidbodyComponent.BodyId;
 
+        public bool RenderInGame;
+
+        public CollisionComponent()
+        {
+            RenderInGame = false;
+        }
+
         public override void Render()
         {
-            if (_transformComponent != null)
+            if (_transformComponent != null && RenderInGame)
             {
                 RenderCollider(
                     _transformComponent.Position, 
                     _transformComponent.Rotation, 
                     Vector3.One, 
+                    new Vector3(0.0f, 255.0f, 0.0f));
+            }
+        }
+
+        public override void EditorRender()
+        {
+            if (_transformComponent != null && !RenderInGame)
+            {
+                RenderCollider(
+                    _transformComponent.Position,
+                    _transformComponent.Rotation,
+                    Vector3.One,
                     new Vector3(0.0f, 255.0f, 0.0f));
             }
         }

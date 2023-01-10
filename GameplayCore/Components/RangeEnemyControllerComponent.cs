@@ -159,6 +159,7 @@ namespace GameplayCore.Components
 
             bulletTransform.Position = position;
             bulletSphere.Radius = BulletRadius;
+            bulletSphere.RenderInGame = true;
             bulletTimer.Timer = BulletLifeTime;
             bulletRigidbody.Mass = 1.0f;
             bulletRigidbody.AddImpulse(direction * BulletImpulse);
