@@ -1,17 +1,15 @@
 #pragma once
 
-#include <optional>
-#include <string>
-#include <tuple>
-
-#include "imgui/imgui.h"
-#include <Windows.h>
-
 #include "IEditorWindow.h"
+#include "EditorCamera.h"
+#include "imgui/imgui.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "../Core/Definitions.h"
 #include "../Core/libs/Delegates.h"
 #include "../Core/libs/loguru/loguru.hpp"
+
+#include <string>
+#include <Windows.h>
 
 class EditorLayer;
 
@@ -19,15 +17,13 @@ class GameViewWindow : public IEditorWindow
 {
 public:
 	
-    GameViewWindow(void* InTexture, EditorLayer* InEditorLayer);
+    GameViewWindow(EditorLayer* editorLayer, EditorCamera& editorCamera);
 
-    void update();
-
+    void Update();
     void Draw() override;
 
     void on_resize_viewport(int32 InWidth,int32 InHeight);
-    void resize();
-    EditorLayer* editor_layer;
+    void resize();    
 
     bool IsInCameraEditorInputMode() const;
 
@@ -41,26 +37,22 @@ public:
 
     bool IsPlaying() const;
 
+private:
     void StartPlay();
     void StopPlay();
+    void DrawGizmo();
 
-private:
-    void OnLogMessageAdded(std::string const& message, loguru::Verbosity verbosity, std::string const& guid);
-    void OnLogMessageRemoved(std::string const& guid);
-private:
-    std::vector<std::tuple<std::string, loguru::Verbosity, std::string>> guid_verbosity_messages;
+    EditorLayer* editor_layer;
+    EditorCamera& editor_camera;
+    std::string selected_render_target;
+    void* texture;
+    bool is_playing;
+    bool is_in_focus;
+    ImVec2 wsize;    
 
-    void* Texture;
-    bool bIsPlaying = false;
-    ImVec2 wsize;
-
-    bool bInFocus = false;
-
-    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::LOCAL;
-    ImGuizmo::OPERATION CurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-
-    void draw_gizmos() const;
-    std::string SelectedRenderTarget;
+    ImGuizmo::MODE current_operation_mode = ImGuizmo::LOCAL;
+    ImGuizmo::OPERATION current_gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;   
+    
     POINT  LastCursorPos{};
 
     bool bIsEditorInputMode = false;

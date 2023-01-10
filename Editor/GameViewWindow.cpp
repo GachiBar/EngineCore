@@ -14,48 +14,59 @@
 
 #include "imgui/imgui_internal.h"
 
-GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
-                                                                             editor_layer(InEditorLayer)
-{
-	SelectedRenderTarget = "outTexture";
+GameViewWindow::GameViewWindow(EditorLayer* editorLayer, EditorCamera& editorCamera)
+	: editor_camera(editorCamera)
+	, selected_render_target("outTexture")
+	, texture(nullptr)
+	, is_playing(false)
+	, is_in_focus(false)
+	, editor_layer(editorLayer)
+{}
 
-	LogManager::getInstance().ViewportMessageAdded.AddRaw(this, &GameViewWindow::OnLogMessageAdded);
-	LogManager::getInstance().ViewportMessageRemoved.AddRaw(this, &GameViewWindow::OnLogMessageRemoved);
-}
-
-void GameViewWindow::update()
+void GameViewWindow::Update()
 {
-	if(bInFocus && !IsInCameraEditorInputMode())
+	if(is_in_focus && !IsInCameraEditorInputMode())
 	{
 		const auto input = InputManager::getInstance().player_input;
-		if (input->WasJustPressed(EKeys::W))
-			CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+
+		if (input->WasJustPressed(EKeys::W)) 
+		{
+			current_gizmo_operation = ImGuizmo::TRANSLATE;
+		}			
 		if (input->WasJustPressed(EKeys::E))
-			CurrentGizmoOperation = ImGuizmo::ROTATE;
-		if (input->WasJustPressed(EKeys::R))
-			CurrentGizmoOperation = ImGuizmo::SCALE;
-		if (input->WasJustPressed(EKeys::C))
+		{
+			current_gizmo_operation = ImGuizmo::ROTATE;
+		}			
+		if (input->WasJustPressed(EKeys::R)) 
+		{
+			current_gizmo_operation = ImGuizmo::SCALE;
+		}			
+		if (input->WasJustPressed(EKeys::C)) 
+		{
 			SwitchOperationMode();
+		}			
 	}
 }
 
-
-static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs)            { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
+static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs)            
+{ 
+	return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); 
+}
 
 void GameViewWindow::Draw()
 {
 	with_Window("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
 		| ImGuiWindowFlags_MenuBar)
 	{
-		wsize = ImGui::GetWindowSize() ;
+		wsize = ImGui::GetWindowSize();
 		with_MenuBar
 		{
-			if (ImGui::MenuItem("Play", "", bIsPlaying, !bIsPlaying))
+			if (ImGui::MenuItem("Play", "", is_playing, !is_playing))
 			{
 				editor_layer->GetApp()->GetEngine()->GetScene()->Initialize();
 				StartPlay();
 			}
-			if (ImGui::MenuItem("Stop", "", !bIsPlaying, bIsPlaying))
+			if (ImGui::MenuItem("Stop", "", !is_playing, is_playing))
 			{
 				editor_layer->GetApp()->GetEngine()->GetScene()->Terminate();
 				StopPlay();
@@ -65,33 +76,18 @@ void GameViewWindow::Draw()
 		with_Child("GameRender", {}, false,  ImGuiWindowFlags_NoBackground)
 		{
 			{
-				if (Texture == nullptr)
-					Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
-						SelectedRenderTarget.c_str()).texture;
+				if (texture == nullptr)
+					texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
+						selected_render_target.c_str()).texture;
 
-				if (bIsPlaying) {
-					ImGui::GetWindowDrawList()->AddImage(Texture, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
+				if (is_playing) {
+					ImGui::GetWindowDrawList()->AddImage(texture, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
 					editor_layer->GetApp()->DrawGameUI();
 				}
 				else {
-					ImGui::Image(Texture, ImGui::GetWindowSize());
+					ImGui::Image(texture, ImGui::GetWindowSize());
 				}
 			}
-			
-			ImVec2 p0 = ImGui::GetItemRectMin();
-			const ImVec2 p1 = ImGui::GetItemRectMax();
-
-			ImDrawList* draw_list = ImGui::GetWindowDrawList();
-			ImGui::PushClipRect(p0, p1, true);
-
-			for (int i = 0; i < guid_verbosity_messages.size(); ++i)
-			{
-				auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(guid_verbosity_messages[i]));
-				draw_list->AddText(p0, IM_COL32(Color.x*255, Color.y * 255, Color.z * 255, Color.w * 255), std::get<2>(guid_verbosity_messages[i]).c_str());
-				p0.y += draw_list->_Data->FontSize;
-			}
-			ImGui::PopClipRect();
-
 
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 			{
@@ -110,24 +106,15 @@ void GameViewWindow::Draw()
 				bIsEditorInputMode = false;
 			}
 
-			if (!bIsPlaying && editor_layer->GetSelectedGo() && editor_layer->GetSelectedGo()->GetComponent(engine::Types::kTransformComponent))
+			if (!is_playing && editor_layer->GetSelectedGo() && editor_layer->GetSelectedGo()->GetComponent(engine::Types::kTransformComponent))
 			{
-				draw_gizmos();
+				DrawGizmo();
 			}
-			bInFocus = ImGui::IsWindowFocused();
+			is_in_focus = ImGui::IsWindowFocused();
 			
 		}
 
-
-		/*
-		for (auto& Message : guid_verbosity_messages)
-		{
-			auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(Message));
-
-			ImGui::TextColored({ Color.x,Color.y, Color.z, Color.w }, std::get<2>(Message).c_str());
-		}
-		*/
-		if(!bIsPlaying)
+		if(!is_playing)
 		{
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
 				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
@@ -140,21 +127,21 @@ void GameViewWindow::Draw()
 			window_flags |= ImGuiWindowFlags_NoMove;
 			ImGui::SetNextWindowBgAlpha(0.35f);
 
-			with_Window("Overlay", &bIsPlaying, window_flags)
+			with_Window("Overlay", &is_playing, window_flags)
 			{
 				const auto RenderTargets = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList();
-				if (ImGui::BeginCombo("###RenderTargetList", SelectedRenderTarget.c_str(),
+				if (ImGui::BeginCombo("###RenderTargetList", selected_render_target.c_str(),
 				                      ImGuiComboFlags_NoArrowButton))
 				{
 					for (const auto render_target : RenderTargets)
 					{
-						const bool is_selected = std::strcmp(render_target, SelectedRenderTarget.c_str()) == 0;
+						const bool is_selected = std::strcmp(render_target, selected_render_target.c_str()) == 0;
 
 						if (ImGui::Selectable(render_target, is_selected))
 						{
-							SelectedRenderTarget = render_target;
-							Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
-								SelectedRenderTarget.c_str()).texture;
+							selected_render_target = render_target;
+							texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
+								selected_render_target.c_str()).texture;
 						}
 
 						if (is_selected)
@@ -169,8 +156,8 @@ void GameViewWindow::Draw()
 
 void GameViewWindow::on_resize_viewport(int32 InWidth, int32 InHeight)
 {
-	Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(SelectedRenderTarget.c_str()).
-	                        texture;
+	auto& renderer = editor_layer->GetApp()->GetEngine()->GetRenderer();
+	texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
 }
 
 void GameViewWindow::resize()
@@ -179,32 +166,32 @@ void GameViewWindow::resize()
 	{
 		last_window_size = wsize;
 		editor_layer->GetApp()->GetEngine()->GetRenderer().ResizeViewport(last_window_size.x, last_window_size.y);
-		Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
-			SelectedRenderTarget.c_str()).texture;
+		texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
+			selected_render_target.c_str()).texture;
 	}
 }
 
 bool GameViewWindow::IsInCameraEditorInputMode() const
 {
-	return bIsEditorInputMode && !bIsPlaying;
+	return bIsEditorInputMode && !is_playing;
 }
 
 void GameViewWindow::SwitchOperationMode()
 {
-	CurrentOperationMode = CurrentOperationMode == ImGuizmo::WORLD ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
+	current_operation_mode = current_operation_mode == ImGuizmo::WORLD ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
 }
 
 bool GameViewWindow::IsPlaying() const
 {
-	return bIsPlaying;
+	return is_playing;
 }
 
 void GameViewWindow::StartPlay()
 {
-	if (!bIsPlaying)
+	if (!is_playing)
 	{
 		EnterGameMode.Broadcast();
-		bIsPlaying = true;
+		is_playing = true;
 		auto& io = ImGui::GetIO();
 		io.WantCaptureKeyboard = io.WantCaptureMouse = false;
 	}
@@ -212,34 +199,17 @@ void GameViewWindow::StartPlay()
 
 void GameViewWindow::StopPlay()
 {
-	if (bIsPlaying)
+	if (is_playing)
 	{
 		ExitGameMode.Broadcast();
-		bIsPlaying = false;
+		is_playing = false;
 		auto& io = ImGui::GetIO();
 		io.WantCaptureKeyboard = io.WantCaptureMouse = true;
 	}
 }
 
-void GameViewWindow::OnLogMessageAdded(std::string const& message,loguru::Verbosity verbosity, std::string const& guid)
+void GameViewWindow::DrawGizmo()
 {
-	guid_verbosity_messages.push_back({ guid,verbosity,message });
-}
-
-void GameViewWindow::OnLogMessageRemoved(std::string const& guid)
-{
-	static std::mutex remove_mutex;
-	const std::lock_guard<std::mutex> lock(remove_mutex);
-	std::erase_if(guid_verbosity_messages, [&guid](std::tuple<std::string, loguru::Verbosity, std::string> const& Value)
-		{
-			return std::get<0>(Value) == guid;
-		});
-}
-
-void GameViewWindow::draw_gizmos() const
-{
-	const auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
-
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
@@ -261,10 +231,10 @@ void GameViewWindow::draw_gizmos() const
 	model *= Matrix::CreateTranslation(position);
 
 	auto isManipulated = Manipulate(
-		*Editor->Camera->View.m, 
-		*Editor->Camera->Proj.m, 
-		CurrentGizmoOperation,	           
-		CurrentOperationMode, 
+		*editor_camera.View.m,
+		*editor_camera.Proj.m,
+		current_gizmo_operation,
+		current_operation_mode,
 		*model.m);
 
 	if (isManipulated && ImGuizmo::IsUsing())
@@ -275,15 +245,15 @@ void GameViewWindow::draw_gizmos() const
 
 		model.Decompose(new_scale, new_rotation, new_position);
 
-		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
+		if (current_gizmo_operation & ImGuizmo::TRANSLATE)
 		{
 			position_property.SetValue(*transform_component, &new_position);
 		}			
-		else if (CurrentGizmoOperation & ImGuizmo::ROTATE)
+		else if (current_gizmo_operation & ImGuizmo::ROTATE)
 		{
 			rotation_property.SetValue(*transform_component, &new_rotation);
 		}			
-		else if (CurrentGizmoOperation & ImGuizmo::SCALE)
+		else if (current_gizmo_operation & ImGuizmo::SCALE)
 		{			
 			scale_property.SetValue(*transform_component, &new_scale);
 		}			

@@ -22,15 +22,17 @@ namespace Renderer
 	class D3D11Renderer;
 }
 
-EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selected_go(nullptr)
+EditorLayer::EditorLayer(LayerStack* owner, EditorCamera& editor—amera)
+    : Layer(owner, "EditorLayer")
+    , editor_camera(editor—amera)
+    , selected_go(nullptr)
 {
     CurrentInputMode = EEditorInputMode::Type::EditorOnlyMode;
 }
 
 void EditorLayer::OnAttach()
 {
-	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture,this);
-    gvm->editor_layer = this;
+	gvm = std::make_shared<GameViewWindow>(this, editor_camera);
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     game_object_inspector = std::make_shared<GameObjectInspectorWindow>();
@@ -79,23 +81,17 @@ void EditorLayer::OnUpdate(float const dt)
 {
 	Layer::OnUpdate(dt);
 
-	if(const auto EditorApp = static_cast<EditorApplication*>(GetApp()))
+    if (gvm->IsInCameraEditorInputMode()) 
     {
-        if(gvm->IsInCameraEditorInputMode())
-			EditorApp->Camera->Tick(dt);
-        if(!gvm->IsPlaying())
-        {
-            EditorApp->Camera->UpdateProjectionMatrix();
-            EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
-        }
+        editor_camera.Tick(dt);
+    }        
+    if (!gvm->IsPlaying())
+    {
+        editor_camera.UpdateProjectionMatrix();
+        editor_camera.UpdateEditorViewProjectionMatrix(dt);
     }
 
-    if(InputManager::getInstance().player_input->WasJustPressed(EKeys::F11))
-    {
-        gvm->StopPlay();
-    }
-
-    gvm->update();
+    gvm->Update();
 }
 
 void EditorLayer::OnGuiRender()

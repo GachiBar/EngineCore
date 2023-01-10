@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 
+#include "EditorCamera.h"
 #include "GameViewWindow.h"
 #include "Layer.h"
 #include "LogWindow.h"
@@ -17,7 +18,7 @@ class AIEditorWindow;
 class EditorLayer final : public Layer
 {
 public:
-	EditorLayer(LayerStack* owner);
+	EditorLayer(LayerStack* owner, EditorCamera& editor—amera);
 	~EditorLayer() override = default;
 
 	virtual void OnAttach() override;
@@ -43,7 +44,7 @@ public:
 
 private:
 
-	std::shared_ptr<engine::GameObject> editor_camera;
+	EditorCamera& editor_camera;
 	std::shared_ptr<engine::GameObject> selected_go;
 
 	bool m_BlockEvents = true;

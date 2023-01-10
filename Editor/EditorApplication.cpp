@@ -6,7 +6,8 @@
 
 EditorApplication::EditorApplication()
 	: Application()
-	  , Camera(new EditorCamera()), editor_input_mode(EEditorInputMode::Type::EditorOnlyMode)
+	, Camera(new EditorCamera())
+	, editor_input_mode(EEditorInputMode::Type::EditorOnlyMode)
 {
 }
 
@@ -23,7 +24,7 @@ void EditorApplication::OnStart()
 	game_layer = new GameLayer(&m_LayerStack);
 	PushLayer(game_layer);
 
-	editor_layer =new EditorLayer (&m_LayerStack);
+	editor_layer =new EditorLayer (&m_LayerStack, *Camera);
 	Camera->owner_layer = editor_layer;
 	PushLayer(editor_layer);
 	editor_layer->gvm->EnterGameMode.AddRaw(this, &EditorApplication::OnEnterGameMode);
@@ -46,5 +47,5 @@ void EditorApplication::OnEnterGameMode()
 void EditorApplication::OnExitGameMode()
 {
 	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
-	game_layer->SetIsPlaying(false);
+	game_layer->SetIsPlaying(false);	
 }
