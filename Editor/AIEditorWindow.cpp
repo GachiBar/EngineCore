@@ -7,7 +7,8 @@
 
 AIEditorWindow::AIEditorWindow() 
 {
-	CacheActionsData();
+	auto& runtime = engine::Runtime::GetCurrentRuntime();
+	actions_names = runtime.DumpNonAbstractSubclassesOf(engine::Types::kAIAction);
 	available_actions_items = new const char* [actions_names.size()];
 }
 
@@ -134,53 +135,22 @@ void AIEditorWindow::DrawAddActionPanel()
 	}
 }
 
-void AIEditorWindow::CacheActionsData() 
-{
-	auto& runtime = engine::Runtime::GetCurrentRuntime();
-	auto baseComponentType = runtime.GetType(engine::Types::kAIAction);
-	auto typeNames = runtime.DumpTypeNames();
-
-	for (auto typeName : typeNames)
-	{
-		try
-		{
-			auto typeDeclarartion = engine::Types::ParseFullName(typeName);
-			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);
-
-			while (type.HasBaseType() && !type.IsAbstract())
-			{
-				if (type.IsDerivedFrom(baseComponentType))
-				{
-					actions_names.push_back(typeName);
-					break;
-				}
-
-				type = type.GetBaseType();
-			}
-		}
-		catch (mono::mono_exception& ex)
-		{
-			continue;
-		}
-	}
-}
-
 void AIEditorWindow::FindAvaliableActions()
 {
-	std::unordered_set<std::string> addedComponents;
+	std::unordered_set<std::string> addedActions;
 
 	for (size_t i = 0; i < GetCount(); ++i)
 	{
 		auto action = GetAction(i);
-		addedComponents.insert(action.GetType().GetFullName());
+		addedActions.insert(action.GetType().GetFullName());
 	}
 
-	avaliable_actions_count = actions_names.size() - addedComponents.size();
+	avaliable_actions_count = actions_names.size() - addedActions.size();
 	auto temp = actions_names.begin();
 
 	for (size_t i = 0; i < avaliable_actions_count; ++i)
 	{
-		while (addedComponents.contains(*temp))
+		while (addedActions.contains(*temp))
 		{
 			std::advance(temp, 1);
 		}

@@ -22,7 +22,7 @@ ObjectDrawer::ObjectDrawer()
     , game_objects_names(nullptr)
     , game_objects_capacity(0)
 {
-	//CacheArbitratorsNames();
+	CacheArbitratorsNames();
 }
 
 ObjectDrawer::~ObjectDrawer()
@@ -147,12 +147,11 @@ bool ObjectDrawer::DrawObject(engine::Object& object, std::vector<std::string>& 
 				isFieldChanged |= DrawResourceField(object, field);
 				modifiedFields.push_back(field.GetName());
 			}
-			//else if (field.GetType().IsDerivedFrom(engine::Types::kAIArbitrator) &&
-			//	!field.GetType().IsAbstract()) 
-			//{
-			//	isFieldChanged |= DrawArbitratorField(object, field);
-			//	modifiedFields.push_back(field.GetName());
-			//}
+			else if (field.GetType().Is(engine::Types::kAIArbitrator)) 
+			{
+				isFieldChanged |= DrawArbitratorField(object, field);
+				modifiedFields.push_back(field.GetName());
+			}
 		}
 
 		type = type.GetBaseType();
@@ -550,11 +549,11 @@ bool ObjectDrawer::DrawStringField(const engine::Object& object, engine::Field& 
 	buffer[0] = '\0';
 
 	auto fieldName = GetFieldName(field, attributes);
-	auto mono_object = field.GetValue(object);
+	auto monoObject = field.GetValue(object);
 
-	if (mono_object.has_value())
+	if (monoObject.has_value())
 	{
-		mono::mono_string value(mono_object.value().GetInternal());
+		mono::mono_string value(monoObject.value().GetInternal());
 		std::string content = value.as_utf8();
 		content.copy(buffer, bufferSize);
 		buffer[content.size()] = '\0';
@@ -726,12 +725,40 @@ bool ObjectDrawer::DrawArbitratorField(const engine::Object& object, engine::Fie
 		return false;
 	}
 
+	auto fieldName = GetFieldName(field, attributes);
+	auto currentArbitratorOpt = field.GetValue(object);
 	int selected = 0;
-	auto currentArbitrator = field.GetValue(object);
-
-	if (ImGui::Combo("Arbitrator", &selected, arbitrators_names, arbitrators_names_count)) 
+	
+	if (currentArbitratorOpt.has_value()) 
 	{
+		auto currentArbitrator = currentArbitratorOpt.value();
+		auto currentArbitratorName = currentArbitrator.GetType().GetFullName();
 
+		for (selected = 1; selected < arbitrators_names_count; selected++) 
+		{
+			auto arbitratorName = arbitrators_names[selected];
+
+			if (currentArbitratorName == arbitratorName) 
+			{
+				break;
+			}
+		}
+	}
+
+	if (ImGui::Combo(fieldName.c_str(), &selected, arbitrators_names, arbitrators_names_count))
+	{
+		if (selected == 0) 
+		{
+			field.SetValue(object, nullptr);
+			return true;
+		}
+
+		auto& runtime = engine::Runtime::GetCurrentRuntime();
+		auto arbitratorName = arbitrators_names[selected];
+		auto arbitratorType = runtime.GetType(arbitratorName);
+		auto arbitrator = arbitratorType.Instantiate();
+		field.SetValue(object, arbitrator);
+		return true;
 	}
 	
 	return false;
@@ -813,43 +840,18 @@ bool ObjectDrawer::TryGetSliderConstraints(
 
 void ObjectDrawer::CacheArbitratorsNames()
 {
-	std::vector<std::string> arbitrators;
-	arbitrators.push_back("None");
 	auto& runtime = engine::Runtime::GetCurrentRuntime();
-	auto baseComponentType = runtime.GetType(engine::Types::kAIArbitrator);
-	auto typeNames = runtime.DumpTypeNames();
+	std::vector<std::string> arbitratorsNames = runtime.DumpNonAbstractSubclassesOf(engine::Types::kAIArbitrator);
+	arbitratorsNames.insert(arbitratorsNames.begin(), "None");
 
-	for (auto typeName : typeNames)
-	{
-		try
-		{
-			auto typeDeclarartion = engine::Types::ParseFullName(typeName);
-			auto type = engine::Runtime::GetCurrentRuntime().GetType(typeDeclarartion);
-
-			while (type.HasBaseType() && !type.IsAbstract())
-			{
-				if (type.IsDerivedFrom(baseComponentType))
-				{
-					arbitrators.push_back(typeName);
-					break;
-				}
-
-				type = type.GetBaseType();
-			}
-		}
-		catch (mono::mono_exception& ex)
-		{
-			continue;
-		}
-	}
-
-	arbitrators_names_count = arbitrators.size();
+	arbitrators_names_count = arbitratorsNames.size();
 	arbitrators_names = new char* [arbitrators_names_count];
 	char** temp = arbitrators_names;
 
-	for (auto arbitrator : arbitrators) 
+	for (auto arbitratorName : arbitratorsNames) 
 	{
-		CopyAsNullTerminated(*temp, arbitrator);
+		*temp = new char[arbitratorName.size() + 1];
+		CopyAsNullTerminated(*temp, arbitratorName);
 		std::advance(temp, 1);
 	}
 }

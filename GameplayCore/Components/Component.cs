@@ -1,6 +1,5 @@
 ﻿using System;
 using GameplayCore.Serialization;
-using Newtonsoft.Json;
 
 namespace GameplayCore.Components
 {

@@ -37,6 +37,7 @@
       },
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "RenderInGame": false,
         "_size": {
           "X": 10.0,
           "Y": 1.0,
@@ -127,6 +128,7 @@
       },
       {
         "Type": "GameplayCore.Components.CapsuleCollisionComponent",
+        "RenderInGame": false,
         "_height": 1.0,
         "_radius": 0.5,
         "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
@@ -230,6 +232,7 @@
       },
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "RenderInGame": false,
         "_size": {
           "X": 2.0,
           "Y": 2.0,
@@ -277,6 +280,7 @@
       },
       {
         "Type": "GameplayCore.Components.SphereCollisionComponent",
+        "RenderInGame": false,
         "_radius": 1.0,
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
@@ -306,6 +310,7 @@
       },
       {
         "Type": "GameplayCore.Components.BrainComponent",
+        "Arbitrator": "GameplayCore.AI.Enemy.EnemyArbitrator",
         "ActionsAsset": "838459dd-941f-4ade-bd43-6869fc83eb64",
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
@@ -350,6 +355,7 @@
       },
       {
         "Type": "GameplayCore.Components.SphereCollisionComponent",
+        "RenderInGame": false,
         "_radius": 1.0,
         "_gameObject": "251a4b6b-9f31-4c66-b5c4-1d22126f8323"
       },
@@ -410,6 +416,7 @@
       },
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "RenderInGame": false,
         "_size": {
           "X": 1.0,
           "Y": 4.0,
@@ -464,6 +471,7 @@
       },
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "RenderInGame": false,
         "_size": {
           "X": 1.0,
           "Y": 4.0,
@@ -518,6 +526,7 @@
       },
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "RenderInGame": false,
         "_size": {
           "X": 10.0,
           "Y": 4.0,
@@ -579,6 +588,7 @@
       },
       {
         "Type": "GameplayCore.Components.BoxCollisionComponent",
+        "RenderInGame": false,
         "_size": {
           "X": 10.0,
           "Y": 4.0,
@@ -627,6 +637,7 @@
       },
       {
         "Type": "GameplayCore.Components.SphereCollisionComponent",
+        "RenderInGame": true,
         "_radius": 0.5,
         "_gameObject": "9bc2e591-46e2-4a1d-9f7a-f38abc555bbe"
       },
