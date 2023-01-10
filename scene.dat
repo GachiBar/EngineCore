@@ -147,6 +147,7 @@
         "Sensivity": 1.0,
         "BulletImpulse": 50.0,
         "BulletLifeTime": 2.0,
+        "BulletMesh": "e37573e4-1f6c-4698-8348-bb72df9faf98",
         "Head": "4bbef915-bf19-4a4c-95bd-893de7c81afd",
         "_gameObject": "4bc85478-a2d3-419e-bb2d-d850b6f14421"
       }
@@ -306,6 +307,7 @@
         "BulletInitialPoint": "652d1a06-9589-4519-ad92-ebd53d659029",
         "BulletImpulse": 50.0,
         "BulletLifeTime": 2.0,
+        "BulletMesh": "e37573e4-1f6c-4698-8348-bb72df9faf98",
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {

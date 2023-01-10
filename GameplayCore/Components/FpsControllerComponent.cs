@@ -1,4 +1,5 @@
 ﻿using GameplayCore.Mathematics;
+using GameplayCore.Resources;
 
 namespace GameplayCore.Components
 {
@@ -20,6 +21,7 @@ namespace GameplayCore.Components
         public float Sensivity = 1.0f;
         public float BulletImpulse = 50.0f;
         public float BulletLifeTime = 2.0f;
+        public MeshAsset BulletMesh;
         public GameObject Head;
 
         public override void Update()
@@ -139,14 +141,16 @@ namespace GameplayCore.Components
         {
             var bullet = GameObject.Scene.CreateGameObject();
             var bulletTransform = bullet.AddComponent<TransformComponent>();
+            var bulletMesh = bullet.AddComponent<MeshRenderComponent>();
             var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
             var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
             var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
-            var projectile = bullet.AddComponent<ProjectileComponent>();
+            var projectile = bullet.AddComponent<ProjectileComponent>();            
 
             bulletTransform.Position = position;
+            bulletTransform.Scale = new Vector3(BulletRadius);
+            bulletMesh.MeshAsset = BulletMesh;
             bulletSphere.Radius = BulletRadius;
-            bulletSphere.RenderInGame = true;
             bulletTimer.Timer = BulletLifeTime;
             bulletRigidbody.Mass = 1.0f;
             bulletRigidbody.AddImpulse(direction * BulletImpulse);
