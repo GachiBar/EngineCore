@@ -306,7 +306,7 @@
       },
       {
         "Type": "GameplayCore.Components.BrainComponent",
-        "ActionsAsset": null,
+        "ActionsAsset": "838459dd-941f-4ade-bd43-6869fc83eb64",
         "_gameObject": "158e0f32-8ec6-455a-ac9a-6328cd8bd226"
       },
       {
