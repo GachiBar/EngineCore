@@ -1,4 +1,5 @@
 ﻿using GameplayCore.Mathematics;
+using GameplayCore.Resources;
 using System;
 
 namespace GameplayCore.Components
@@ -17,6 +18,7 @@ namespace GameplayCore.Components
         public GameObject BulletInitialPoint;
         public float BulletImpulse = 50.0f;
         public float BulletLifeTime = 2.0f;
+        public MeshAsset BulletMesh;
 
         public void MoveInDirection(Vector3 direction)
         {
@@ -153,13 +155,15 @@ namespace GameplayCore.Components
         {
             var bullet = GameObject.Scene.CreateGameObject();
             var bulletTransform = bullet.AddComponent<TransformComponent>();
+            var bulletMesh = bullet.AddComponent<MeshRenderComponent>();
             var bulletRigidbody = bullet.AddComponent<RigidbodyComponent>();
             var bulletSphere = bullet.AddComponent<SphereCollisionComponent>();
             var bulletTimer = bullet.AddComponent<TimerDestroyerComponent>();
 
             bulletTransform.Position = position;
+            bulletTransform.Scale = new Vector3(BulletRadius);
+            bulletMesh.MeshAsset = BulletMesh;
             bulletSphere.Radius = BulletRadius;
-            bulletSphere.RenderInGame = true;
             bulletTimer.Timer = BulletLifeTime;
             bulletRigidbody.Mass = 1.0f;
             bulletRigidbody.AddImpulse(direction * BulletImpulse);
