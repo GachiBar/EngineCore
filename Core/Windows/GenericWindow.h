@@ -167,7 +167,7 @@ public:
 
 	virtual void OnSizeChanged(int32 InWidth, int32 InHeight)
 	{
-		GetOwningApplication()->ResizeViewport(InWidth, InHeight);
+		GetOwningApplication()->ResizeBackBuffer(InWidth, InHeight);
 		WindowSizeChangedEvent.Broadcast(InWidth, InHeight);
 	}
 

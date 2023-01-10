@@ -157,6 +157,7 @@ int Application::Run(int argc, char* argv[])
 				layer->OnUpdate(engine_->kDt);
 			}
 
+			
 			engine_->BeginRender();
 			engine_->Render();
 
@@ -169,12 +170,11 @@ int Application::Run(int argc, char* argv[])
 			for (const auto layer : m_LayerStack)
 				layer->OnGuiRender();
 
-			for (const auto layer : m_LayerStack)
-				layer->OnPostRender();
-
-
 			engine_->Present();
 
+			for (const auto layer : m_LayerStack)
+				layer->OnPostRender();
+			
 			InputManager::getInstance().Flush();
 		}
 	}
