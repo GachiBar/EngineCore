@@ -22,9 +22,8 @@ namespace Renderer
 	class D3D11Renderer;
 }
 
-EditorLayer::EditorLayer(LayerStack* owner, EditorCamera& editor—amera)
+EditorLayer::EditorLayer(LayerStack* owner)
     : Layer(owner, "EditorLayer")
-    , editor_camera(editor—amera)
     , selected_go(nullptr)
 {
     CurrentInputMode = EEditorInputMode::Type::EditorOnlyMode;
@@ -32,7 +31,7 @@ EditorLayer::EditorLayer(LayerStack* owner, EditorCamera& editor—amera)
 
 void EditorLayer::OnAttach()
 {
-	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer(), editor_camera);
+	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer());
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     game_object_inspector = std::make_shared<GameObjectInspectorWindow>();
@@ -75,18 +74,7 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnUpdate(float const dt)
 {
 	Layer::OnUpdate(dt);
-
-    if (gvm->IsInCameraEditorInputMode()) 
-    {
-        editor_camera.Tick(dt);
-    }        
-    if (!gvm->IsPlaying())
-    {
-        editor_camera.UpdateProjectionMatrix();
-        editor_camera.UpdateEditorViewProjectionMatrix(dt);
-    }
-
-    gvm->Update();
+    gvm->Update(dt);
 }
 
 void EditorLayer::OnGuiRender()
@@ -262,6 +250,7 @@ void EditorLayer::OpenScene()
     GetApp()->GetEngine()->GetScene()->Deserialize(content);
     // Selected object is no more valid.
     game_object_inspector->SetGameObject(nullptr);
+    gvm->SetGameObject(nullptr);
 }
 
 void EditorLayer::SaveScene()

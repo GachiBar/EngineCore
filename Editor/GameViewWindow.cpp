@@ -25,9 +25,8 @@ void GameViewWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObjec
 	}
 }
 
-GameViewWindow::GameViewWindow(RenderDevice& renderer, EditorCamera& editorCamera)
+GameViewWindow::GameViewWindow(RenderDevice& renderer)
 	: renderer(renderer)
-	, editor_camera(editorCamera)
 	, selected_render_target("outTexture")
 	, texture(nullptr)
 	, is_playing(false)
@@ -36,28 +35,20 @@ GameViewWindow::GameViewWindow(RenderDevice& renderer, EditorCamera& editorCamer
 	, last_cursor_position{}
 {}
 
-void GameViewWindow::Update()
+void GameViewWindow::Update(float dt)
 {
-	if(is_in_focus && !IsInCameraEditorInputMode())
+	if (IsInCameraEditorInputMode())
 	{
-		const auto input = InputManager::getInstance().player_input;
+		editor_camera.Tick(dt);
+	}
+	else if (is_in_focus)
+	{
+		UpdateGuizmo();
+	}
 
-		if (input->WasJustPressed(EKeys::W)) 
-		{
-			current_gizmo_operation = ImGuizmo::TRANSLATE;
-		}			
-		if (input->WasJustPressed(EKeys::E))
-		{
-			current_gizmo_operation = ImGuizmo::ROTATE;
-		}			
-		if (input->WasJustPressed(EKeys::R)) 
-		{
-			current_gizmo_operation = ImGuizmo::SCALE;
-		}			
-		if (input->WasJustPressed(EKeys::C)) 
-		{
-			SwitchOperationMode();
-		}			
+	if (!is_playing)
+	{
+		SendCameraData(dt);
 	}
 }
 
@@ -99,6 +90,58 @@ void GameViewWindow::ResizeIfNeed()
 bool GameViewWindow::IsInCameraEditorInputMode() const
 {
 	return is_camera_input_mode && !is_playing;
+}
+
+void GameViewWindow::UpdateGuizmo()
+{
+	const auto input = InputManager::getInstance().player_input;
+
+	if (input->WasJustPressed(EKeys::W))
+	{
+		current_gizmo_operation = ImGuizmo::TRANSLATE;
+	}
+	if (input->WasJustPressed(EKeys::E))
+	{
+		current_gizmo_operation = ImGuizmo::ROTATE;
+	}
+	if (input->WasJustPressed(EKeys::R))
+	{
+		current_gizmo_operation = ImGuizmo::SCALE;
+	}
+	if (input->WasJustPressed(EKeys::C))
+	{
+		SwitchOperationMode();
+	}
+}
+
+void GameViewWindow::SendCameraData(float dt)
+{
+	view = editor_camera.GetViewMatrix();
+	projection = GetProjectionMatrix();
+	auto cameraPosition = editor_camera.GetPosition();
+
+	DirectX::SimpleMath::Vector4 position(
+		cameraPosition.x,
+		cameraPosition.y,
+		cameraPosition.z,
+		0.0f);
+
+	renderer.SetRenderData({ dt, view, projection, position });
+}
+
+DirectX::SimpleMath::Matrix GameViewWindow::GetProjectionMatrix()
+{
+	using namespace DirectX::SimpleMath;
+
+	auto currentTexture = renderer.GetRenderTargetTexture(selected_render_target.c_str());
+	float fow = DirectX::XMConvertToRadians(60.0f);
+	float width = (float)currentTexture.width;
+	float height = (float)currentTexture.height;
+	float aspectRatio = width / height;
+	float nearPlane = 0.01f;
+	float farPlane = 10000.0f;
+
+	return Matrix::CreatePerspectiveFieldOfView(fow, aspectRatio, nearPlane, farPlane);;
 }
 
 void GameViewWindow::SwitchOperationMode()
@@ -253,8 +296,8 @@ void GameViewWindow::DrawGizmo()
 	model *= Matrix::CreateTranslation(position);
 
 	auto isManipulated = Manipulate(
-		*editor_camera.View.m,
-		*editor_camera.Proj.m,
+		*view.m,
+		*projection.m,
 		current_gizmo_operation,
 		current_operation_mode,
 		*model.m);

@@ -1,72 +1,132 @@
 #include "EditorCamera.h"
-
 #include "InputManager.h"
-#include "../GameplaySystem/Engine.h"
-#include "../GameplaySystem/Component.h"
-#include "EditorLayer.h"
-#include "RenderEngine.h"
 #include "libs/MathUtility.h"
 
-void EditorCamera::UpdateProjectionMatrix()
+DirectX::SimpleMath::Vector3 EditorCamera::GetPosition()
 {
-	auto out_texture = owner_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture");
-	Proj = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(DirectX::XMConvertToRadians(60.f),
-		(float)out_texture.width/ (float)out_texture.height, .1f, 10000.f);
+	return position;
 }
 
-void EditorCamera::UpdateEditorViewProjectionMatrix(float dt) const
+DirectX::SimpleMath::Matrix EditorCamera::GetViewMatrix()
 {
-	DirectX::SimpleMath::Vector4 position(CameraPos.x, CameraPos.y, CameraPos.z, 0.0f);
-	owner_layer->GetApp()->GetEngine()->GetRenderer().SetRenderData({ dt,View,Proj,position });
+	return view;
 }
 
 void EditorCamera::Tick(float dt)
 {
 	using namespace DirectX::SimpleMath;
 
-	PlayerInput* const player_input = InputManager::getInstance().player_input.get();
+	UpdateYawPitch(dt);
+	UpdateSpeed();
+	UpdatePosition(dt);
+
+	view = Matrix::CreateLookAt(position, position + rotation.Forward(), rotation.Up());
+}
+
+void EditorCamera::UpdateYawPitch(float dt)
+{
+	using namespace DirectX::SimpleMath;
+
+	auto input = InputManager::getInstance().player_input.get();
+	const float dx = input->GetKeyValue(EKeys::MouseX);
+	const float dy = input->GetKeyValue(EKeys::MouseY);
+	const float angularSpeed = 0.1f;
+	const float weight = 0.003f;
+
+	yaw -= dx * weight * kMouseSensitivity;
+	pitch -= dy * weight * kMouseSensitivity;
+
+	if (input->IsPressed(EKeys::Left)) 
+	{
+		yaw += angularSpeed * dt;
+	}		
+	if (input->IsPressed(EKeys::Right))
+	{
+		yaw -= angularSpeed * dt;
+	}		
+	if (input->IsPressed(EKeys::Up))
+	{
+		pitch += angularSpeed * dt;
+	}		
+	if (input->IsPressed(EKeys::Down))
+	{
+		pitch -= angularSpeed * dt;
+	}
+
+	rotation = Matrix::CreateFromYawPitchRoll(yaw, pitch, 0);
+}
+
+void EditorCamera::UpdatePosition(float dt)
+{
+	auto axis = GetAxis();
+
+	if (axis.Length() != 0)
+	{
+		axis.Normalize();
+	}
 	
-	Yaw -= player_input->GetKeyValue(EKeys::MouseX) * 0.003f * mouse_sensitivity;
-	Pitch -= player_input->GetKeyValue(EKeys::MouseY) * 0.003f * mouse_sensitivity;
-	auto rotMat = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(Yaw, Pitch, 0);
+	auto direction =
+		rotation.Forward() * axis.x +
+		rotation.Right() * axis.z +
+		DirectX::SimpleMath::Vector3::Up * axis.y;
 
-	const float WheelAxisValue = player_input->GetKeyValue(EKeys::MouseWheelAxis);
-	if(WheelAxisValue >0.f)
+	if (direction.Length() != 0)
 	{
-		velocity_magnitude += 1;
+		direction.Normalize();
 	}
-	else if(WheelAxisValue < 0.f)
+
+	auto velocity = direction * speed;
+	position += velocity * dt;
+}
+
+void EditorCamera::UpdateSpeed()
+{
+	auto input = InputManager::getInstance().player_input.get();
+	const float wheelDelta = input->GetKeyValue(EKeys::MouseWheelAxis);
+
+	if (wheelDelta > 0.0f)
 	{
-		velocity_magnitude -= 1;
+		speed += 1;
 	}
-	velocity_magnitude = FMath::Clamp(velocity_magnitude, 1.f, 10.f);
-	auto velDirection = Vector3::Zero;
+	else if (wheelDelta < 0.0f)
+	{
+		speed -= 1;
+	}
 
-	if (player_input->IsPressed(EKeys::W)) velDirection += Vector3(1.f, 0.f, 0.f);
-	if (player_input->IsPressed(EKeys::S)) velDirection += Vector3(-1.f, 0.f, 0.f);
-	if (player_input->IsPressed(EKeys::A)) velDirection += Vector3(0.f, 0.f, -1.f);
-	if (player_input->IsPressed(EKeys::D)) velDirection += Vector3(0.f, 0.f, 1.f);
+	speed = FMath::Clamp(speed, 1.f, 10.f);
+}
 
-	if (player_input->IsPressed(EKeys::SpaceBar)) velDirection += Vector3(0.f, 1.f, 0.f);
-	if (player_input->IsPressed(EKeys::C)) velDirection += Vector3(0.f, -1.f, 0.f);
+DirectX::SimpleMath::Vector3 EditorCamera::GetAxis()
+{
+	using namespace DirectX::SimpleMath;
 
-	if (player_input->IsPressed(EKeys::NumPadFour)) Yaw += 0.1f * dt;
-	if (player_input->IsPressed(EKeys::NumPadSix)) Yaw -= 0.1f * dt;
-	if (player_input->IsPressed(EKeys::NumPadEight)) Pitch += 0.1f * dt;
-	if (player_input->IsPressed(EKeys::NumPadTwo)) Pitch -= 0.1f * dt;
+	auto input = InputManager::getInstance().player_input.get();
+	Vector3 axis = Vector3::Zero;
 
-	if (velDirection.Length() != 0)
-		velDirection.Normalize();
-
-	auto velDir = rotMat.Forward() * velDirection.x + Vector3::Up * velDirection.y + rotMat.Right() * velDirection.z;
-
-	if (velDir.Length() != 0)
-		velDir.Normalize();
-
-	CameraPos += velDir * velocity_magnitude * dt;
-
-	View = DirectX::SimpleMath::Matrix::CreateLookAt(CameraPos, CameraPos + rotMat.Forward(), rotMat.Up());
-	UpdateProjectionMatrix();
-
-	//UpdateEditorViewProjectionMatrix(dt);
+	if (input->IsPressed(EKeys::W)) 
+	{
+		axis += Vector3::UnitX;
+	}
+	if (input->IsPressed(EKeys::S)) 
+	{
+		axis -= Vector3::UnitX;
+	}
+	if (input->IsPressed(EKeys::A))
+	{
+		axis -= Vector3::UnitZ;
+	}
+	if (input->IsPressed(EKeys::D))
+	{
+		axis += Vector3::UnitZ;
+	}
+	if (input->IsPressed(EKeys::SpaceBar))
+	{
+		axis += Vector3::UnitY;
+	}
+	if (input->IsPressed(EKeys::C))
+	{
+		axis -= Vector3::UnitY;
+	}
+	
+	return axis;
 }

@@ -18,7 +18,7 @@ class AIEditorWindow;
 class EditorLayer final : public Layer
 {
 public:
-	EditorLayer(LayerStack* owner, EditorCamera& editor—amera);
+	EditorLayer(LayerStack* owner);
 	~EditorLayer() override = default;
 
 	virtual void OnAttach() override;
@@ -45,7 +45,6 @@ public:
 
 private:
 
-	EditorCamera& editor_camera;
 	std::shared_ptr<engine::GameObject> selected_go;
 
 	bool m_BlockEvents = true;
