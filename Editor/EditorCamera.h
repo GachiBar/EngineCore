@@ -2,28 +2,27 @@
 
 #include "SimpleMath.h"
 
-struct RenderDevice;
-class EditorLayer;
-
 class EditorCamera final
 {
 public:
-	DirectX::SimpleMath::Matrix View;
-	DirectX::SimpleMath::Matrix Proj;
-
-	float mouse_sensitivity = 1.f;
-
-	void UpdateEditorViewProjectionMatrix(float dt) const;
-	void UpdateProjectionMatrix();
-	EditorLayer* owner_layer;
+	const float kMouseSensitivity = 1.0f;
+	
+	DirectX::SimpleMath::Vector3 GetPosition();
+	DirectX::SimpleMath::Matrix GetViewMatrix();
 
 	void Tick(float dt);
 private:
+	DirectX::SimpleMath::Vector3 position;
+	DirectX::SimpleMath::Matrix rotation;
+	DirectX::SimpleMath::Matrix view;
 
-	DirectX::SimpleMath::Vector3 CameraPos;
+	float yaw = 0;
+	float pitch = 0;
+	float speed = 5.0f;
 
-	float Yaw = 0;
-	float Pitch = 0;
-	float velocity_magnitude = 5.f;
+	void UpdateYawPitch(float dt);	
+	void UpdatePosition(float dt);
+	void UpdateSpeed();
+	DirectX::SimpleMath::Vector3 GetAxis();
 };
 

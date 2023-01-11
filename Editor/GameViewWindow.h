@@ -30,13 +30,13 @@ public:
     std::shared_ptr<engine::GameObject> GetGameObject();
     void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
 
-    GameViewWindow(RenderDevice& renderer, EditorCamera& editorCamera);
+    GameViewWindow(RenderDevice& renderer);
 
-    void Update();
+    void Update(float dt);
     void Draw() override;
     void ResizeIfNeed();
 
-    void OnResizeViewport(int32 InWidth,int32 InHeight);      
+    void OnResizeViewport(int32 InWidth, int32 InHeight);      
 
     bool IsInCameraEditorInputMode() const;    
 
@@ -45,8 +45,10 @@ public:
 private:
     std::shared_ptr<engine::GameObject> game_object;
     std::shared_ptr<engine::Component> transform_component;
-    RenderDevice& renderer;
-    EditorCamera& editor_camera;
+    EditorCamera editor_camera;
+    RenderDevice& renderer;    
+    DirectX::SimpleMath::Matrix view;
+    DirectX::SimpleMath::Matrix projection;
     std::string selected_render_target;
     void* texture;
     bool is_playing;
@@ -59,6 +61,9 @@ private:
     ImGuizmo::MODE current_operation_mode = ImGuizmo::LOCAL;
     ImGuizmo::OPERATION current_gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
 
+    void UpdateGuizmo();
+    void SendCameraData(float dt);
+    DirectX::SimpleMath::Matrix GetProjectionMatrix();
     void SwitchOperationMode();
     void DrawMenu();
     void DrawViewport();

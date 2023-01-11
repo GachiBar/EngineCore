@@ -15,9 +15,6 @@ public:
 	void OnStart() override;
 
 	EEditorInputMode::Type GetCurrentInputMode() const override;
-
-	std::shared_ptr<EditorCamera> Camera;
-
 	
 private:
 	EEditorInputMode::Type editor_input_mode;
