@@ -43,15 +43,10 @@ void EditorLayer::OnAttach()
     explorer = std::make_shared<ExplorerWindow>(GetApp());
     log = std::make_shared<LogWindow>();
 
-    gvm.get()->ExitGameMode.AddLambda([&]()
-    {
-        OpenScene();
-        game_object_inspector->SetGameObject(nullptr);
-    });
-
 	hierarchy.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)
 	{
 		selected_go = go;
+        gvm->SetGameObject(go);
 	    property_window->SelectGameObject(go);
 	});
 
@@ -249,7 +244,7 @@ void EditorLayer::OnGuiRender()
 
 void EditorLayer::OnPostRender()
 {
-    gvm->resize(); 
+    gvm->ResizeIfNeed(); 
     Layer::OnPostRender();
 }
 
@@ -264,6 +259,8 @@ void EditorLayer::OpenScene()
     std::string content;
     getline(file, content, '\0');
     GetApp()->GetEngine()->GetScene()->Deserialize(content);
+    // Selected object is no more valid.
+    game_object_inspector->SetGameObject(nullptr);
 }
 
 void EditorLayer::SaveScene()

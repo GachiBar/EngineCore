@@ -41,11 +41,14 @@ EEditorInputMode::Type EditorApplication::GetCurrentInputMode() const
 void EditorApplication::OnEnterGameMode()
 {
 	editor_input_mode = EEditorInputMode::Type::GameOnlyMode;
+	engine_->GetScene()->Initialize();
 	game_layer->SetIsPlaying(true);
 }
 
 void EditorApplication::OnExitGameMode()
 {
 	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
-	game_layer->SetIsPlaying(false);	
+	engine_->GetScene()->Terminate();
+	game_layer->SetIsPlaying(false);
+	editor_layer->OpenScene();
 }

@@ -41,6 +41,7 @@ public:
 	std::shared_ptr<AIEditorWindow> ai_editor;
 
 	engine::GameObject* GetSelectedGo();
+	void OpenScene();
 
 private:
 
@@ -52,8 +53,7 @@ private:
 	bool m_ViewportFocused = false, m_ViewportHovered = false;
 	DirectX::SimpleMath::Vector2 m_ViewportSize = { 0.0f, 0.0f };
 	std::pair<DirectX::SimpleMath::Vector2, DirectX::SimpleMath::Vector2> m_ViewportBounds;
-
-	void OpenScene();
+		
 	void SaveScene();
 };
 
