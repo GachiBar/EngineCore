@@ -1,5 +1,6 @@
 ﻿using GameplayCore.Mathematics;
 using GameplayCore.Resources;
+using ImGuiNET;
 
 namespace GameplayCore.Components
 {
@@ -72,6 +73,13 @@ namespace GameplayCore.Components
             }
 
             _isJump = false;
+        }
+
+        public override void RenderGUI()
+        {
+            ImGui.BeginChild("HUD");
+            ImGui.Text("My HUD work!");
+            ImGui.EndChild();
         }
 
         protected override void OnAttach(GameObject gameObject)

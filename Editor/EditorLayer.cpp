@@ -22,15 +22,17 @@ namespace Renderer
 	class D3D11Renderer;
 }
 
-EditorLayer::EditorLayer(LayerStack* owner) : Layer(owner, "EditorLayer"), selected_go(nullptr)
+EditorLayer::EditorLayer(LayerStack* owner, EditorCamera& editor—amera)
+    : Layer(owner, "EditorLayer")
+    , editor_camera(editor—amera)
+    , selected_go(nullptr)
 {
     CurrentInputMode = EEditorInputMode::Type::EditorOnlyMode;
 }
 
 void EditorLayer::OnAttach()
 {
-	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture("outTexture").texture,this);
-    gvm->editor_layer = this;
+	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer(), editor_camera);
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     game_object_inspector = std::make_shared<GameObjectInspectorWindow>();
@@ -41,15 +43,10 @@ void EditorLayer::OnAttach()
     explorer = std::make_shared<ExplorerWindow>(GetApp());
     log = std::make_shared<LogWindow>();
 
-    gvm.get()->ExitGameMode.AddLambda([&]()
-    {
-        OpenScene();
-        game_object_inspector->SetGameObject(nullptr);
-    });
-
 	hierarchy.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)
 	{
 		selected_go = go;
+        gvm->SetGameObject(go);
 	    property_window->SelectGameObject(go);
 	});
 
@@ -79,23 +76,17 @@ void EditorLayer::OnUpdate(float const dt)
 {
 	Layer::OnUpdate(dt);
 
-	if(const auto EditorApp = static_cast<EditorApplication*>(GetApp()))
+    if (gvm->IsInCameraEditorInputMode()) 
     {
-        if(gvm->IsInCameraEditorInputMode())
-			EditorApp->Camera->Tick(dt);
-        if(!gvm->IsPlaying())
-        {
-            EditorApp->Camera->UpdateProjectionMatrix();
-            EditorApp->Camera->UpdateEditorViewProjectionMatrix(dt);
-        }
+        editor_camera.Tick(dt);
+    }        
+    if (!gvm->IsPlaying())
+    {
+        editor_camera.UpdateProjectionMatrix();
+        editor_camera.UpdateEditorViewProjectionMatrix(dt);
     }
 
-    if(InputManager::getInstance().player_input->WasJustPressed(EKeys::F11))
-    {
-        gvm->StopPlay();
-    }
-
-    gvm->update();
+    gvm->Update();
 }
 
 void EditorLayer::OnGuiRender()
@@ -239,10 +230,11 @@ void EditorLayer::OnGuiRender()
     ImGui::End();
 
     gvm->Draw();
-
-    ImGui::BeginDisabled(gvm->IsPlaying());
     hierarchy->Draw();
     property_window->Draw();
+
+    ImGui::BeginDisabled(gvm->IsPlaying());
+
     SettingsWindow->Draw();
     explorer->Draw();
     ImGui::EndDisabled();
@@ -253,7 +245,7 @@ void EditorLayer::OnGuiRender()
 
 void EditorLayer::OnPostRender()
 {
-    gvm->resize(); 
+    gvm->ResizeIfNeed(); 
     Layer::OnPostRender();
 }
 
@@ -268,6 +260,8 @@ void EditorLayer::OpenScene()
     std::string content;
     getline(file, content, '\0');
     GetApp()->GetEngine()->GetScene()->Deserialize(content);
+    // Selected object is no more valid.
+    game_object_inspector->SetGameObject(nullptr);
 }
 
 void EditorLayer::SaveScene()

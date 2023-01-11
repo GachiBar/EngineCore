@@ -1,5 +1,4 @@
 #include "GameViewWindow.h"
-
 #include "EditorApplication.h"
 #include "imgui/imgui.h"
 #include "libs/MathUtility.h"
@@ -9,251 +8,244 @@
 #include "libs/imgui_sugar.hpp"
 #include "../GameplaySystem/Component.h"
 #include "libs/magic_enum.hpp"
-#include <ranges>
-#include <iostream>
-
 #include "imgui/imgui_internal.h"
 
-GameViewWindow::GameViewWindow(void* InTexture, EditorLayer* InEditorLayer): Texture(InTexture),
-                                                                             editor_layer(InEditorLayer)
+std::shared_ptr<engine::GameObject> GameViewWindow::GetGameObject()
 {
-	SelectedRenderTarget = "outTexture";
-
-	LogManager::getInstance().ViewportMessageAdded.AddRaw(this, &GameViewWindow::OnLogMessageAdded);
-	LogManager::getInstance().ViewportMessageRemoved.AddRaw(this, &GameViewWindow::OnLogMessageRemoved);
+	return game_object;
 }
 
-void GameViewWindow::update()
+void GameViewWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObject)
 {
-	if(bInFocus && !IsInCameraEditorInputMode())
+	game_object = gameObject;
+
+	if (game_object != nullptr) 
 	{
-		const auto input = InputManager::getInstance().player_input;
-		if (input->WasJustPressed(EKeys::W))
-			CurrentGizmoOperation = ImGuizmo::TRANSLATE;
-		if (input->WasJustPressed(EKeys::E))
-			CurrentGizmoOperation = ImGuizmo::ROTATE;
-		if (input->WasJustPressed(EKeys::R))
-			CurrentGizmoOperation = ImGuizmo::SCALE;
-		if (input->WasJustPressed(EKeys::C))
-			SwitchOperationMode();
+		transform_component = game_object->GetComponent(engine::Types::kTransformComponent);
 	}
 }
 
+GameViewWindow::GameViewWindow(RenderDevice& renderer, EditorCamera& editorCamera)
+	: renderer(renderer)
+	, editor_camera(editorCamera)
+	, selected_render_target("outTexture")
+	, texture(nullptr)
+	, is_playing(false)
+	, is_in_focus(false)
+	, is_camera_input_mode(false)
+	, last_cursor_position{}
+{}
 
-static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs)            { return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); }
+void GameViewWindow::Update()
+{
+	if(is_in_focus && !IsInCameraEditorInputMode())
+	{
+		const auto input = InputManager::getInstance().player_input;
+
+		if (input->WasJustPressed(EKeys::W)) 
+		{
+			current_gizmo_operation = ImGuizmo::TRANSLATE;
+		}			
+		if (input->WasJustPressed(EKeys::E))
+		{
+			current_gizmo_operation = ImGuizmo::ROTATE;
+		}			
+		if (input->WasJustPressed(EKeys::R)) 
+		{
+			current_gizmo_operation = ImGuizmo::SCALE;
+		}			
+		if (input->WasJustPressed(EKeys::C)) 
+		{
+			SwitchOperationMode();
+		}			
+	}
+}
 
 void GameViewWindow::Draw()
 {
-	with_Window("Game Viewport", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse
-		| ImGuiWindowFlags_MenuBar)
+	ImGuiWindowFlags windowFlags = 
+		ImGuiWindowFlags_NoScrollbar | 
+		ImGuiWindowFlags_NoScrollWithMouse | 
+		ImGuiWindowFlags_MenuBar;
+
+	with_Window("Game Viewport", nullptr, windowFlags)
 	{
-		wsize = ImGui::GetWindowSize() ;
-		with_MenuBar
+		current_window_size = ImGui::GetWindowSize();
+		DrawMenu();
+		DrawViewport();
+
+		if(!is_playing)
 		{
-			if (ImGui::MenuItem("Play", "", bIsPlaying, !bIsPlaying))
-			{
-				editor_layer->GetApp()->GetEngine()->GetScene()->Initialize();
-				StartPlay();
-			}
-			if (ImGui::MenuItem("Stop", "", !bIsPlaying, bIsPlaying))
-			{
-				editor_layer->GetApp()->GetEngine()->GetScene()->Terminate();
-				StopPlay();
-			}
-		}
-
-		with_Child("GameRender", {}, false,  ImGuiWindowFlags_NoBackground)
-		{
-			{
-				if (Texture == nullptr)
-					Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
-						SelectedRenderTarget.c_str()).texture;
-
-				if (bIsPlaying) {
-					ImGui::GetWindowDrawList()->AddImage(Texture, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
-					editor_layer->GetApp()->DrawGameUI();
-				}
-				else {
-					ImGui::Image(Texture, ImGui::GetWindowSize());
-				}
-			}
-			
-			ImVec2 p0 = ImGui::GetItemRectMin();
-			const ImVec2 p1 = ImGui::GetItemRectMax();
-
-			ImDrawList* draw_list = ImGui::GetWindowDrawList();
-			ImGui::PushClipRect(p0, p1, true);
-
-			for (int i = 0; i < guid_verbosity_messages.size(); ++i)
-			{
-				auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(guid_verbosity_messages[i]));
-				draw_list->AddText(p0, IM_COL32(Color.x*255, Color.y * 255, Color.z * 255, Color.w * 255), std::get<2>(guid_verbosity_messages[i]).c_str());
-				p0.y += draw_list->_Data->FontSize;
-			}
-			ImGui::PopClipRect();
-
-
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-			{
-				bIsEditorInputMode = GetCursorPos(&LastCursorPos);
-				ShowCursor(!bIsEditorInputMode);
-			}
-
-			if (bIsEditorInputMode)
-			{
-				SetCursorPos(LastCursorPos.x, LastCursorPos.y);
-			}
-
-			if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
-			{
-				ShowCursor(true);
-				bIsEditorInputMode = false;
-			}
-
-			if (!bIsPlaying && editor_layer->GetSelectedGo() && editor_layer->GetSelectedGo()->GetComponent(engine::Types::kTransformComponent))
-			{
-				draw_gizmos();
-			}
-			bInFocus = ImGui::IsWindowFocused();
-			
-		}
-
-
-		/*
-		for (auto& Message : guid_verbosity_messages)
-		{
-			auto Color = LogManager::getInstance().GetLevelLogColor(std::get<1>(Message));
-
-			ImGui::TextColored({ Color.x,Color.y, Color.z, Color.w }, std::get<2>(Message).c_str());
-		}
-		*/
-		if(!bIsPlaying)
-		{
-			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
-				ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
-				ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-
-			ImVec2 window_pos = ImGui::GetWindowPos(), window_pos_pivot = {1.f, 0};
-			window_pos.y += 50;
-			window_pos.x += ImGui::GetWindowSize().x - 10.f;
-			ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-			window_flags |= ImGuiWindowFlags_NoMove;
-			ImGui::SetNextWindowBgAlpha(0.35f);
-
-			with_Window("Overlay", &bIsPlaying, window_flags)
-			{
-				const auto RenderTargets = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetsList();
-				if (ImGui::BeginCombo("###RenderTargetList", SelectedRenderTarget.c_str(),
-				                      ImGuiComboFlags_NoArrowButton))
-				{
-					for (const auto render_target : RenderTargets)
-					{
-						const bool is_selected = std::strcmp(render_target, SelectedRenderTarget.c_str()) == 0;
-
-						if (ImGui::Selectable(render_target, is_selected))
-						{
-							SelectedRenderTarget = render_target;
-							Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
-								SelectedRenderTarget.c_str()).texture;
-						}
-
-						if (is_selected)
-							ImGui::SetItemDefaultFocus();
-					}
-					ImGui::EndCombo();
-				}
-			}
+			DrawRenderTargetSelector();
 		}
 	}
 }
 
-void GameViewWindow::on_resize_viewport(int32 InWidth, int32 InHeight)
+void GameViewWindow::OnResizeViewport(int32 InWidth, int32 InHeight)
 {
-	Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(SelectedRenderTarget.c_str()).
-	                        texture;
+	texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
 }
 
-void GameViewWindow::resize()
+void GameViewWindow::ResizeIfNeed()
 {
-	if (!FMath::IsNearlyEqual(wsize.x, last_window_size.x) || !FMath::IsNearlyEqual(wsize.y, last_window_size.y))
+	if (!IsNearlyEqual(current_window_size, previous_window_size))
 	{
-		last_window_size = wsize;
-		editor_layer->GetApp()->GetEngine()->GetRenderer().ResizeViewport(last_window_size.x, last_window_size.y);
-		Texture = editor_layer->GetApp()->GetEngine()->GetRenderer().GetRenderTargetTexture(
-			SelectedRenderTarget.c_str()).texture;
+		previous_window_size = current_window_size;
+		renderer.ResizeViewport(previous_window_size.x, previous_window_size.y);
+		texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
 	}
 }
 
 bool GameViewWindow::IsInCameraEditorInputMode() const
 {
-	return bIsEditorInputMode && !bIsPlaying;
+	return is_camera_input_mode && !is_playing;
 }
 
 void GameViewWindow::SwitchOperationMode()
 {
-	CurrentOperationMode = CurrentOperationMode == ImGuizmo::WORLD ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
+	current_operation_mode = current_operation_mode == ImGuizmo::WORLD ? ImGuizmo::LOCAL : ImGuizmo::WORLD;
 }
 
 bool GameViewWindow::IsPlaying() const
 {
-	return bIsPlaying;
+	return is_playing;
 }
 
-void GameViewWindow::StartPlay()
+void GameViewWindow::DrawMenu()
 {
-	if (!bIsPlaying)
+	with_MenuBar
 	{
-		EnterGameMode.Broadcast();
-		bIsPlaying = true;
-		auto& io = ImGui::GetIO();
-		io.WantCaptureKeyboard = io.WantCaptureMouse = false;
-	}
-}
-
-void GameViewWindow::StopPlay()
-{
-	if (bIsPlaying)
-	{
-		ExitGameMode.Broadcast();
-		bIsPlaying = false;
-		auto& io = ImGui::GetIO();
-		io.WantCaptureKeyboard = io.WantCaptureMouse = true;
-	}
-}
-
-void GameViewWindow::OnLogMessageAdded(std::string const& message,loguru::Verbosity verbosity, std::string const& guid)
-{
-	guid_verbosity_messages.push_back({ guid,verbosity,message });
-}
-
-void GameViewWindow::OnLogMessageRemoved(std::string const& guid)
-{
-	static std::mutex remove_mutex;
-	const std::lock_guard<std::mutex> lock(remove_mutex);
-	std::erase_if(guid_verbosity_messages, [&guid](std::tuple<std::string, loguru::Verbosity, std::string> const& Value)
+		if (ImGui::MenuItem("Play", "", is_playing, !is_playing))
 		{
-			return std::get<0>(Value) == guid;
-		});
+			EnterGameMode.Broadcast();
+			is_playing = true;
+			ImGui::GetIO().WantCaptureMouse = false;
+		}
+		if (ImGui::MenuItem("Stop", "", !is_playing, is_playing))
+		{
+			ExitGameMode.Broadcast();
+			is_playing = false;
+			ImGui::GetIO().WantCaptureMouse = true;
+		}
+	}
 }
 
-void GameViewWindow::draw_gizmos() const
+void GameViewWindow::DrawViewport() 
 {
-	const auto Editor = static_cast<EditorApplication*>(editor_layer->GetApp());
+	with_Child("GameRender", {}, false, ImGuiWindowFlags_NoBackground)
+	{
+		if (texture == nullptr) 
+		{
+			texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
+		}
 
+		// This branch can contains child windows (it's necessary for HUD)
+		// but can not capture inputs (it's necessary for gizmo)
+		if (is_playing) 
+		{
+			auto size = ImGui::GetWindowSize();
+			auto min = ImGui::GetWindowPos();
+			auto max = ImGui::GetWindowPos();
+			max.x += size.x;
+			max.y += size.y;
+
+			ImGui::GetWindowDrawList()->AddImage(texture, min, max);
+		}
+		// This branch can capture inputs (it's necessary for gizmo)
+		// but can not contains child windows (it's bad for HUD)
+		else 
+		{
+			ImGui::Image(texture, ImGui::GetWindowSize());
+		}
+
+		ViewportPresented.Broadcast();
+
+		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+		{
+			is_camera_input_mode = GetCursorPos(&last_cursor_position);
+			ShowCursor(!is_camera_input_mode);
+		}
+
+		if (is_camera_input_mode)
+		{
+			SetCursorPos(last_cursor_position.x, last_cursor_position.y);
+		}
+
+		if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
+		{
+			ShowCursor(true);
+			is_camera_input_mode = false;
+		}
+
+		if (!is_playing && IsObjectWithTransformSelected())
+		{
+			DrawGizmo();
+		}
+
+		is_in_focus = ImGui::IsWindowFocused();
+	}
+}
+
+void GameViewWindow::DrawRenderTargetSelector() 
+{
+	ImGuiWindowFlags window_flags = 
+		ImGuiWindowFlags_NoDecoration | 
+		ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags_AlwaysAutoResize | 
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoFocusOnAppearing | 
+		ImGuiWindowFlags_NoNav |
+		ImGuiWindowFlags_NoMove;
+
+	ImVec2 windowPosition = ImGui::GetWindowPos(), window_position_pivot = { 1.f, 0 };
+	windowPosition.y += 50;
+	windowPosition.x += ImGui::GetWindowSize().x - 10.f;
+
+	ImGui::SetNextWindowPos(windowPosition, ImGuiCond_Always, window_position_pivot);
+	ImGui::SetNextWindowBgAlpha(0.35f);
+
+	with_Window("Overlay", &is_playing, window_flags)
+	{
+		const auto renderTargets = renderer.GetRenderTargetsList();
+
+		if (ImGui::BeginCombo("###RenderTargetList", selected_render_target.c_str(), ImGuiComboFlags_NoArrowButton))
+		{
+			for (const auto renderTarget : renderTargets)
+			{
+				const bool isSelected = renderTarget == selected_render_target;
+
+				if (ImGui::Selectable(renderTarget, isSelected))
+				{
+					selected_render_target = renderTarget;
+					texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
+				}
+
+				if (isSelected) 
+				{
+					ImGui::SetItemDefaultFocus();
+				}					
+			}
+
+			ImGui::EndCombo();
+		}
+	}
+}
+
+void GameViewWindow::DrawGizmo()
+{
 	ImGuizmo::SetOrthographic(false);
 	ImGuizmo::SetDrawlist();
 	ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
 
-	const auto transform_component = editor_layer->GetSelectedGo()->GetComponent(engine::Types::kTransformComponent);
-	const auto& transform_type = transform_component->GetType();
+	const auto& transformType = transform_component->GetType();
 
-	auto scale_property = transform_type.GetProperty("LocalScale");
-	auto rotation_property = transform_type.GetProperty("Rotation");
-	auto position_property = transform_type.GetProperty("Position");
+	auto scaleProperty = transformType.GetProperty("LocalScale");
+	auto rotationProperty = transformType.GetProperty("Rotation");
+	auto positionProperty = transformType.GetProperty("Position");
 
-	const auto scale = scale_property.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Vector3>();
-	const auto rotation = rotation_property.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Quaternion>();
-	const auto position = position_property.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Vector3>();
+	const auto scale = scaleProperty.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Vector3>();
+	const auto rotation = rotationProperty.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Quaternion>();
+	const auto position = positionProperty.GetValue(*transform_component).value().Unbox<DirectX::SimpleMath::Vector3>();
 
 	auto model = Matrix::Identity;
 	model *= Matrix::CreateScale(scale);
@@ -261,35 +253,42 @@ void GameViewWindow::draw_gizmos() const
 	model *= Matrix::CreateTranslation(position);
 
 	auto isManipulated = Manipulate(
-		*Editor->Camera->View.m, 
-		*Editor->Camera->Proj.m, 
-		CurrentGizmoOperation,	           
-		CurrentOperationMode, 
+		*editor_camera.View.m,
+		*editor_camera.Proj.m,
+		current_gizmo_operation,
+		current_operation_mode,
 		*model.m);
 
 	if (isManipulated && ImGuizmo::IsUsing())
 	{
-		DirectX::SimpleMath::Vector3 new_scale;
-		DirectX::SimpleMath::Quaternion new_rotation;
-		DirectX::SimpleMath::Vector3 new_position;
+		DirectX::SimpleMath::Vector3 newScale;
+		DirectX::SimpleMath::Quaternion newRotation;
+		DirectX::SimpleMath::Vector3 newPosition;
 
-		model.Decompose(new_scale, new_rotation, new_position);
+		model.Decompose(newScale, newRotation, newPosition);
 
-		if (CurrentGizmoOperation & ImGuizmo::TRANSLATE)
+		if (current_gizmo_operation & ImGuizmo::TRANSLATE)
 		{
-			position_property.SetValue(*transform_component, &new_position);
+			positionProperty.SetValue(*transform_component, &newPosition);
 		}			
-		else if (CurrentGizmoOperation & ImGuizmo::ROTATE)
+		else if (current_gizmo_operation & ImGuizmo::ROTATE)
 		{
-			rotation_property.SetValue(*transform_component, &new_rotation);
+			rotationProperty.SetValue(*transform_component, &newRotation);
 		}			
-		else if (CurrentGizmoOperation & ImGuizmo::SCALE)
+		else if (current_gizmo_operation & ImGuizmo::SCALE)
 		{			
-			scale_property.SetValue(*transform_component, &new_scale);
-		}			
-		else
-		{
-			return;
-		}			
+			scaleProperty.SetValue(*transform_component, &newScale);
+		}					
 	}
+}
+
+bool GameViewWindow::IsObjectWithTransformSelected()
+{
+	return game_object != nullptr && transform_component != nullptr;
+}
+
+bool GameViewWindow::IsNearlyEqual(ImVec2 lhs, ImVec2 rhs)
+{
+	return FMath::IsNearlyEqual(lhs.x, rhs.x)
+		&& FMath::IsNearlyEqual(lhs.y, rhs.y);
 }

@@ -1,69 +1,71 @@
 #pragma once
 
-#include <optional>
-#include <string>
-#include <tuple>
-
-#include "imgui/imgui.h"
-#include <Windows.h>
-
 #include "IEditorWindow.h"
+#include "EditorCamera.h"
+#include "RenderEngine.h"
+#include "imgui/imgui.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "../Core/Definitions.h"
 #include "../Core/libs/Delegates.h"
-#include "../Core/libs/loguru/loguru.hpp"
+#include "../GameplaySystem/GameObject.h"
+#include "../GameplaySystem/Component.h"
+
+#include <string>
+#include <Windows.h>
 
 class EditorLayer;
 
 class GameViewWindow : public IEditorWindow
 {
 public:
-	
-    GameViewWindow(void* InTexture, EditorLayer* InEditorLayer);
-
-    void update();
-
-    void Draw() override;
-
-    void on_resize_viewport(int32 InWidth,int32 InHeight);
-    void resize();
-    EditorLayer* editor_layer;
-
-    bool IsInCameraEditorInputMode() const;
-
-    void SwitchOperationMode();
-
     DECLARE_EVENT(EnterGameModeEvent, GameViewWindow)
     EnterGameModeEvent EnterGameMode;
 
     DECLARE_EVENT(ExitGameModeEvent, GameViewWindow)
-	ExitGameModeEvent ExitGameMode;
+    ExitGameModeEvent ExitGameMode;
+
+    DECLARE_EVENT(ViewportPresentedEvent, GameViewWindow)
+    ViewportPresentedEvent ViewportPresented;
+
+    std::shared_ptr<engine::GameObject> GetGameObject();
+    void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
+
+    GameViewWindow(RenderDevice& renderer, EditorCamera& editorCamera);
+
+    void Update();
+    void Draw() override;
+    void ResizeIfNeed();
+
+    void OnResizeViewport(int32 InWidth,int32 InHeight);      
+
+    bool IsInCameraEditorInputMode() const;    
 
     bool IsPlaying() const;
 
-    void StartPlay();
-    void StopPlay();
-
 private:
-    void OnLogMessageAdded(std::string const& message, loguru::Verbosity verbosity, std::string const& guid);
-    void OnLogMessageRemoved(std::string const& guid);
-private:
-    std::vector<std::tuple<std::string, loguru::Verbosity, std::string>> guid_verbosity_messages;
+    std::shared_ptr<engine::GameObject> game_object;
+    std::shared_ptr<engine::Component> transform_component;
+    RenderDevice& renderer;
+    EditorCamera& editor_camera;
+    std::string selected_render_target;
+    void* texture;
+    bool is_playing;
+    bool is_in_focus;
+    bool is_camera_input_mode;
+    ImVec2 previous_window_size;
+    ImVec2 current_window_size;
+    POINT last_cursor_position;
 
-    void* Texture;
-    bool bIsPlaying = false;
-    ImVec2 wsize;
+    ImGuizmo::MODE current_operation_mode = ImGuizmo::LOCAL;
+    ImGuizmo::OPERATION current_gizmo_operation = ImGuizmo::OPERATION::TRANSLATE;
 
-    bool bInFocus = false;
+    void SwitchOperationMode();
+    void DrawMenu();
+    void DrawViewport();
+    void DrawRenderTargetSelector();
+    void DrawGizmo();
+    bool IsObjectWithTransformSelected();
 
-    ImGuizmo::MODE CurrentOperationMode = ImGuizmo::LOCAL;
-    ImGuizmo::OPERATION CurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-
-    void draw_gizmos() const;
-    std::string SelectedRenderTarget;
-    POINT  LastCursorPos{};
-
-    bool bIsEditorInputMode = false;
-    ImVec2 last_window_size;
+    static bool IsNearlyEqual(ImVec2 lhs, ImVec2 rhs);
 };
 
