@@ -2,6 +2,7 @@
 
 #include "IEditorWindow.h"
 #include "EditorCamera.h"
+#include "RenderEngine.h"
 #include "imgui/imgui.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "../Core/Definitions.h"
@@ -23,16 +24,19 @@ public:
     DECLARE_EVENT(ExitGameModeEvent, GameViewWindow)
     ExitGameModeEvent ExitGameMode;
 
+    DECLARE_EVENT(ViewportPresentedEvent, GameViewWindow)
+    ViewportPresentedEvent ViewportPresented;
+
     std::shared_ptr<engine::GameObject> GetGameObject();
     void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
 
-    GameViewWindow(EditorLayer* editorLayer, EditorCamera& editorCamera);
+    GameViewWindow(RenderDevice& renderer, EditorCamera& editorCamera);
 
     void Update();
     void Draw() override;
     void ResizeIfNeed();
 
-    void on_resize_viewport(int32 InWidth,int32 InHeight);      
+    void OnResizeViewport(int32 InWidth,int32 InHeight);      
 
     bool IsInCameraEditorInputMode() const;    
 
@@ -41,7 +45,6 @@ public:
 private:
     std::shared_ptr<engine::GameObject> game_object;
     std::shared_ptr<engine::Component> transform_component;
-    EditorLayer* editor_layer;
     RenderDevice& renderer;
     EditorCamera& editor_camera;
     std::string selected_render_target;

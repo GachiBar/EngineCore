@@ -63,7 +63,10 @@ void GameLayer::OnUpdate(float const dt)
 
 void GameLayer::OnGuiRender()
 {
-	GetApp()->DrawGameUI();
+	//if (GetIsPlaying()) 
+	//{
+	//	GetApp()->DrawGameUI();
+	//}	
 }
 
 void GameLayer::OnPostRender()

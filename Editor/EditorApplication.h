@@ -17,13 +17,15 @@ public:
 	EEditorInputMode::Type GetCurrentInputMode() const override;
 
 	std::shared_ptr<EditorCamera> Camera;
-	
-	void OnEnterGameMode();
-	void OnExitGameMode();
+
 	
 private:
 	EEditorInputMode::Type editor_input_mode;
 
 	GameLayer* game_layer;
 	EditorLayer* editor_layer;
+
+	void OnEnterGameMode();
+	void OnExitGameMode();
+	void OnViewportPresented();
 };

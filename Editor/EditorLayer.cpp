@@ -32,7 +32,7 @@ EditorLayer::EditorLayer(LayerStack* owner, EditorCamera& editor—amera)
 
 void EditorLayer::OnAttach()
 {
-	gvm = std::make_shared<GameViewWindow>(this, editor_camera);
+	gvm = std::make_shared<GameViewWindow>(GetApp()->GetEngine()->GetRenderer(), editor_camera);
 
 	hierarchy = std::make_shared<SceneHierarchyWindow>();
     game_object_inspector = std::make_shared<GameObjectInspectorWindow>();
@@ -230,10 +230,11 @@ void EditorLayer::OnGuiRender()
     ImGui::End();
 
     gvm->Draw();
-
-    ImGui::BeginDisabled(gvm->IsPlaying());
     hierarchy->Draw();
     property_window->Draw();
+
+    ImGui::BeginDisabled(gvm->IsPlaying());
+
     SettingsWindow->Draw();
     explorer->Draw();
     ImGui::EndDisabled();

@@ -25,9 +25,8 @@ void GameViewWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObjec
 	}
 }
 
-GameViewWindow::GameViewWindow(EditorLayer* editorLayer, EditorCamera& editorCamera)
-	: editor_layer(editorLayer)
-	, renderer(editor_layer->GetApp()->GetEngine()->GetRenderer())
+GameViewWindow::GameViewWindow(RenderDevice& renderer, EditorCamera& editorCamera)
+	: renderer(renderer)
 	, editor_camera(editorCamera)
 	, selected_render_target("outTexture")
 	, texture(nullptr)
@@ -62,11 +61,6 @@ void GameViewWindow::Update()
 	}
 }
 
-static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs)            
-{ 
-	return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); 
-}
-
 void GameViewWindow::Draw()
 {
 	ImGuiWindowFlags windowFlags = 
@@ -87,7 +81,7 @@ void GameViewWindow::Draw()
 	}
 }
 
-void GameViewWindow::on_resize_viewport(int32 InWidth, int32 InHeight)
+void GameViewWindow::OnResizeViewport(int32 InWidth, int32 InHeight)
 {
 	texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
 }
@@ -145,16 +139,26 @@ void GameViewWindow::DrawViewport()
 			texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
 		}
 
+		// This branch can contains child windows (it's necessary for HUD)
+		// but can not capture inputs (it's necessary for gizmo)
 		if (is_playing) 
 		{
-			ImGui::GetWindowDrawList()->AddImage(texture, ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize());
-			// TODO: may be use callback, because, I think, it's not viewport responsibility.
-			editor_layer->GetApp()->DrawGameUI(); 
+			auto size = ImGui::GetWindowSize();
+			auto min = ImGui::GetWindowPos();
+			auto max = ImGui::GetWindowPos();
+			max.x += size.x;
+			max.y += size.y;
+
+			ImGui::GetWindowDrawList()->AddImage(texture, min, max);
 		}
+		// This branch can capture inputs (it's necessary for gizmo)
+		// but can not contains child windows (it's bad for HUD)
 		else 
 		{
 			ImGui::Image(texture, ImGui::GetWindowSize());
 		}
+
+		ViewportPresented.Broadcast();
 
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 		{

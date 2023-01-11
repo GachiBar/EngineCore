@@ -29,8 +29,9 @@ void EditorApplication::OnStart()
 	PushLayer(editor_layer);
 	editor_layer->gvm->EnterGameMode.AddRaw(this, &EditorApplication::OnEnterGameMode);
 	editor_layer->gvm->ExitGameMode.AddRaw(this, &EditorApplication::OnExitGameMode);
+	editor_layer->gvm->ViewportPresented.AddRaw(this, &EditorApplication::OnViewportPresented);
 
-	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::on_resize_viewport);
+	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::OnResizeViewport);
 }
 
 EEditorInputMode::Type EditorApplication::GetCurrentInputMode() const
@@ -51,4 +52,12 @@ void EditorApplication::OnExitGameMode()
 	engine_->GetScene()->Terminate();
 	game_layer->SetIsPlaying(false);
 	editor_layer->OpenScene();
+}
+
+void EditorApplication::OnViewportPresented()
+{
+	if (editor_layer->gvm->IsPlaying()) 
+	{
+		DrawGameUI();
+	}	
 }
