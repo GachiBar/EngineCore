@@ -13,8 +13,6 @@
 #include <string>
 #include <Windows.h>
 
-class EditorLayer;
-
 class GameViewWindow : public IEditorWindow
 {
 public:
@@ -36,10 +34,7 @@ public:
     void Draw() override;
     void ResizeIfNeed();
 
-    void OnResizeViewport(int32 InWidth, int32 InHeight);      
-
-    bool IsInCameraEditorInputMode() const;    
-
+    void OnResizeViewport(int32 InWidth, int32 InHeight);
     bool IsPlaying() const;
 
 private:
@@ -69,7 +64,8 @@ private:
     void DrawViewport();
     void DrawRenderTargetSelector();
     void DrawGizmo();
-    bool IsObjectWithTransformSelected();
+    bool IsInCameraEditorInputMode() const;
+    bool IsObjectWithTransformSelected() const;
 
     static bool IsNearlyEqual(ImVec2 lhs, ImVec2 rhs);
 };

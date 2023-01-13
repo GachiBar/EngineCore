@@ -1,14 +1,8 @@
 #include "GameViewWindow.h"
-#include "EditorApplication.h"
-#include "imgui/imgui.h"
-#include "libs/MathUtility.h"
-#include "EditorLayer.h"
 #include "InputManager.h"
-#include "ImGuizmo/ImGuizmo.h"
+#include "libs/MathUtility.h"
 #include "libs/imgui_sugar.hpp"
 #include "../GameplaySystem/Component.h"
-#include "libs/magic_enum.hpp"
-#include "imgui/imgui_internal.h"
 
 std::shared_ptr<engine::GameObject> GameViewWindow::GetGameObject()
 {
@@ -85,11 +79,6 @@ void GameViewWindow::ResizeIfNeed()
 		renderer.ResizeViewport(previous_window_size.x, previous_window_size.y);
 		texture = renderer.GetRenderTargetTexture(selected_render_target.c_str()).texture;
 	}
-}
-
-bool GameViewWindow::IsInCameraEditorInputMode() const
-{
-	return is_camera_input_mode && !is_playing;
 }
 
 void GameViewWindow::UpdateGuizmo()
@@ -325,7 +314,12 @@ void GameViewWindow::DrawGizmo()
 	}
 }
 
-bool GameViewWindow::IsObjectWithTransformSelected()
+bool GameViewWindow::IsInCameraEditorInputMode() const
+{
+	return is_camera_input_mode && !is_playing;
+}
+
+bool GameViewWindow::IsObjectWithTransformSelected() const
 {
 	return game_object != nullptr && transform_component != nullptr;
 }
