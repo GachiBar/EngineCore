@@ -34,7 +34,9 @@ void GameLayer::OnAttach()
 {
 	Layer::OnAttach();
 
-	auto method = scene->GetType().GetMethod("SetupImGui", 3);
+	auto& runtime = engine::Runtime::GetCurrentRuntime();
+	auto type = runtime.GetType(engine::Types::kImGuiApi);
+	auto method = type.GetMethod("SetupImGui", 3);
 
 	ImGuiMemAllocFunc memAllocFunc[1];
 	ImGuiMemFreeFunc memFreeFunc[1];
@@ -47,7 +49,7 @@ void GameLayer::OnAttach()
 	params[1] = &memAllocFunc;
 	params[2] = &memFreeFunc;
 
-	method.Invoke(*scene, params);
+	method.Invoke(params);
 	GetApp()->GetEngine()->SetScene(scene);
 }
 

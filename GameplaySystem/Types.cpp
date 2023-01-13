@@ -47,6 +47,7 @@ const TypeData Types::kSliderAttribute = Types::RegisterType("GameplayCore.Edito
 //Api
 const TypeData Types::kRenderApi = Types::RegisterType("GameplayCore.EngineApi", "RenderApi");
 const TypeData Types::kPhysicsApi = Types::RegisterType("GameplayCore.EngineApi", "PhysicsApi");
+const TypeData Types::kImGuiApi = Types::RegisterType("GameplayCore.EngineApi", "ImGuiApi");
 const TypeData Types::kTime = Types::RegisterType("GameplayCore", "Time");
 const TypeData Types::kScreen = Types::RegisterType("GameplayCore", "Screen");
 const TypeData Types::kInput = Types::RegisterType("GameplayCore", "Input");
