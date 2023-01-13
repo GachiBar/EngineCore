@@ -1,0 +1,71 @@
+[
+  {
+    "Guid": "7963a907-a879-4c57-80ea-c13e48ba9c7e",
+    "Name": "Light",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": -0.707106769,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 0.707106769
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 10.0,
+          "Y": 15.0,
+          "Z": 10.0
+        },
+        "_editorEuler": {
+          "X": -90.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "7963a907-a879-4c57-80ea-c13e48ba9c7e"
+      },
+      {
+        "Type": "GameplayCore.Components.DirectionalLightComponent",
+        "Intencity": 1.0,
+        "Color": {
+          "X": 255.0,
+          "Y": 255.0,
+          "Z": 255.0
+        },
+        "_gameObject": "7963a907-a879-4c57-80ea-c13e48ba9c7e"
+      },
+      {
+        "Type": "GameplayCore.Components.CameraComponent",
+        "FieldOfView": 90.0,
+        "Near": 0.1,
+        "Far": 100.0,
+        "Zoom": 10.0,
+        "Orthographic": true,
+        "_gameObject": "7963a907-a879-4c57-80ea-c13e48ba9c7e"
+      }
+    ]
+  },
+  {
+    "Guid": "911da3e3-cfb3-45e3-9f60-a124d93e3951",
+    "Name": "SnakeManager",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.SnakeComponent",
+        "Timeout": 1.0,
+        "CubeMesh": "97b8cd60-10dd-4b67-9b90-4b16a24ce6fd",
+        "GrayMaterial": "5010cc16-9e66-437b-b026-fe63246a640a",
+        "GreenLightMaterial": "1980e754-9625-4c2f-a486-798da7faecff",
+        "GreenDarkMaterial": "a06ee082-e560-425a-b276-556e8238025d",
+        "BlueMaterial": "93e532c1-3648-4581-b38a-51652cb1c679",
+        "RedMaterial": "69d456d1-b415-410c-95da-2c524f909e06",
+        "FieldSize": 10,
+        "_gameObject": "911da3e3-cfb3-45e3-9f60-a124d93e3951"
+      }
+    ]
+  }
+]

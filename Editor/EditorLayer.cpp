@@ -10,6 +10,7 @@
 #include "InputManager.h"
 #include "PropertyWindow.h"
 #include "AIEditorWindow.h"
+#include "winApiFileLoad.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
@@ -25,6 +26,7 @@ namespace Renderer
 EditorLayer::EditorLayer(LayerStack* owner)
     : Layer(owner, "EditorLayer")
     , selected_go(nullptr)
+    , scene_name(L"Default.dat")
 {
     CurrentInputMode = EEditorInputMode::Type::EditorOnlyMode;
 }
@@ -60,10 +62,7 @@ void EditorLayer::OnAttach()
 	auto& io = ImGui::GetIO();
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    // Now I just open our default scene. 
-    // When we will add explorer file selection we nead delete this code.
-    OpenScene(); 
+    SaveScene();
 }
 
 void EditorLayer::OnDetach()
@@ -242,9 +241,9 @@ engine::GameObject* EditorLayer::GetSelectedGo()
     return selected_go.get();
 }
 
-void EditorLayer::OpenScene()
+void EditorLayer::LoadScene() 
 {
-    std::fstream file("scene.dat", std::fstream::in);
+    std::fstream file(scene_name, std::fstream::in);
     std::string content;
     getline(file, content, '\0');
     GetApp()->GetEngine()->GetScene()->Deserialize(content);
@@ -253,10 +252,17 @@ void EditorLayer::OpenScene()
     gvm->SetGameObject(nullptr);
 }
 
+void EditorLayer::OpenScene()
+{
+    auto scenes_names = LoadFileFromExplorer(L"", L"Scene|*.dat");
+    scene_name = scenes_names[0];
+    LoadScene();
+}
+
 void EditorLayer::SaveScene()
 {
     std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
-    std::ofstream file_handler("scene.dat", std::ios::out | std::ios::trunc);
+    std::ofstream file_handler(scene_name, std::ios::out | std::ios::trunc);
     file_handler << json;
 }
 

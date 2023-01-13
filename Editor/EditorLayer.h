@@ -42,10 +42,12 @@ public:
 
 	engine::GameObject* GetSelectedGo();
 	void OpenScene();
+	void LoadScene();
 
 private:
 
 	std::shared_ptr<engine::GameObject> selected_go;
+	std::wstring scene_name;
 
 	bool m_BlockEvents = true;
 	bool m_ShowPhysicsColliders = false;
@@ -53,6 +55,6 @@ private:
 	DirectX::SimpleMath::Vector2 m_ViewportSize = { 0.0f, 0.0f };
 	std::pair<DirectX::SimpleMath::Vector2, DirectX::SimpleMath::Vector2> m_ViewportBounds;
 		
-	void SaveScene();
+	void SaveScene();	
 };
 

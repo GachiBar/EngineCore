@@ -49,7 +49,7 @@ void EditorApplication::OnExitGameMode()
 	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
 	engine_->GetScene()->Terminate();
 	game_layer->SetIsPlaying(false);
-	editor_layer->OpenScene();
+	editor_layer->LoadScene();
 }
 
 void EditorApplication::OnViewportPresented()
