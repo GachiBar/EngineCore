@@ -107,12 +107,8 @@ namespace GameplayCore.Resources
 
         public static void Write(Resource resource)
         {
-            FileStream file = File.OpenWrite(GetMetaPath(resource.FilePath));
-            StreamWriter writer = new StreamWriter(file);
             string data = Serialize(resource);
-            writer.Write(data);
-            writer.Dispose();
-            file.Close();
+            File.WriteAllText(GetMetaPath(resource.FilePath), data);
         }
 
         public static Resource TryGetByGuid(System.Guid guid)
@@ -146,12 +142,8 @@ namespace GameplayCore.Resources
             Console.WriteLine($"Material filename: {path}");
 
             // Write json in file
-            FileStream file = File.OpenWrite(path);
-            StreamWriter writer = new StreamWriter(file);
-            writer.Write(json);
-            writer.Dispose();
-            file.Close();
-            
+            File.WriteAllText(path, json);
+
             // Generate material metadata
             Create(path);
 

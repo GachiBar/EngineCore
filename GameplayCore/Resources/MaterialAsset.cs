@@ -69,13 +69,7 @@ namespace GameplayCore.Resources
         {
             // Serialize -> string json
             string json = JsonConvert.SerializeObject(material, CreateSerializeOptions());
-            
-            // Write json in file
-            FileStream file = File.OpenWrite(FilePath);
-            StreamWriter writer = new StreamWriter(file);
-            writer.Write(json);
-            writer.Dispose();
-            file.Close();
+            File.WriteAllText(FilePath, json);
         }
         
         public void Load()
