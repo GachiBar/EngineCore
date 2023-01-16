@@ -696,7 +696,8 @@ JPH::Vec3 Engine::Internal_GetLinearVelocity(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	return body_interface.GetLinearVelocity(body_id);
+	JPH::Vec3 velocity = body_interface.GetLinearVelocity(body_id);
+	return JPH::Vec3(velocity.GetX(), velocity.GetY(), velocity.GetZ());
 }
 
 void Engine::Internal_SetLinearVelocity(
