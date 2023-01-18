@@ -160,7 +160,7 @@ void EditorLayer::OnGuiRender()
 
             if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
             {
-                //SaveSceneAs();
+                SaveSceneAs();
             }
 
             if (ImGui::MenuItem("Exit"))
@@ -259,10 +259,25 @@ void EditorLayer::SaveScene()
 {
     if (scene_name.empty()) 
     {
-        auto scenes_names = LoadFileFromExplorer(L"", L"Scene|*.dat");
+        auto scenes_names = LoadFileFromExplorer(L"", L"Scene|*.dat", false);
+        if (scenes_names.size() == 0)
+            return;
         scene_name = scenes_names[0];
     }
 
+    std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
+    std::ofstream file_handler(scene_name, std::ios::out | std::ios::trunc);
+    file_handler << json;
+}
+
+void EditorLayer::SaveSceneAs()
+{
+  
+    auto scenes_names = LoadFileFromExplorer(L"", L"Scene|*.dat", false);
+    if (scenes_names.size() == 0)
+        return;
+    scene_name = scenes_names[0];
+    
     std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
     std::ofstream file_handler(scene_name, std::ios::out | std::ios::trunc);
     file_handler << json;

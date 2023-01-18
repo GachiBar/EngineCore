@@ -55,5 +55,6 @@ private:
 	std::pair<DirectX::SimpleMath::Vector2, DirectX::SimpleMath::Vector2> m_ViewportBounds;
 		
 	void SaveScene();	
+	void SaveSceneAs();
 };
 

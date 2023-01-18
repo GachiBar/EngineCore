@@ -9,285 +9,288 @@
 
 
 template<typename T>
-class TComPtr
-{
+class TComPtr {
 public:
-
-	typedef T PointerType;
+    typedef T PointerType;
 
 public:
+    /** Default constructor (initialized to null). */
+    TComPtr()
+        : RawPointer(NULL)
+    { }
 
-	/** Default constructor (initialized to null). */
-	TComPtr()
-		:	RawPointer(NULL)
-	{ }
+    /**
+     * Create and initialize a new instance.
+     *
+     * @param Object The object to point to.
+     */
+    TComPtr(PointerType* const Object)
+        : RawPointer(Object)
+    {
+        if (RawPointer)
+        {
+            RawPointer->AddRef();
+        }
+    }
 
-	/**
-	 * Create and initialize a new instance.
-	 *
-	 * @param Object The object to point to.
-	 */
-	TComPtr(PointerType* const Object)
-		: RawPointer(Object)
-	{
-		if (RawPointer)
-		{
-			RawPointer->AddRef();
-		}
-	}
+    /**
+     * Copy constructor.
+     *
+     * @param Other The instance to copy.
+     */
+    TComPtr(const TComPtr<PointerType>& Other)
+        : RawPointer(Other.RawPointer)
+    {
+        if (RawPointer)
+        {
+            RawPointer->AddRef();
+        }
+    }
 
-	/**
-	 * Copy constructor.
-	 *
-	 * @param Other The instance to copy.
-	 */
-	TComPtr(const TComPtr<PointerType>& Other)
-		: RawPointer(Other.RawPointer)
-	{
-		if (RawPointer)
-		{
-			RawPointer->AddRef();
-		}
-	}
+    /**
+     * Move constructor.
+     *
+     * @param Other The instance to move.
+     */
+    TComPtr(TComPtr<PointerType>&& Other)
+        : RawPointer(Other.RawPointer)
+    {
+        Other.RawPointer = NULL;
+    }
 
-	/**
-	 * Move constructor.
-	 *
-	 * @param Other The instance to move.
-	 */
-	TComPtr(TComPtr<PointerType>&& Other)
-		: RawPointer(Other.RawPointer)
-	{	
-		Other.RawPointer = NULL;
-	}	
+    /**
+     * Assignment operator.
+     *
+     * @param Object The object to point to.
+     */
+    TComPtr<PointerType>& operator=(PointerType* const Object)
+    {
+        if (RawPointer != Object)
+        {
+            if (Object)
+            {
+                Object->AddRef();
+            }
 
-	/**
-	 * Assignment operator.
-	 *
-	 * @param Object The object to point to.
-	 */
-	TComPtr<PointerType>& operator=(PointerType* const Object) 
-	{
-		if (RawPointer != Object)
-		{
-			if (Object)
-			{
-				Object->AddRef();
-			}
+            if (RawPointer)
+            {
+                RawPointer->Release();
+            }
 
-			if (RawPointer)
-			{
-				RawPointer->Release();
-			}
+            RawPointer = Object;
+        }
 
-			RawPointer = Object;
-		}
+        return *this;
+    }
 
-		return *this;
-	}
+    /**
+     * Copy assignment operator.
+     *
+     * @param Other The instance to copy.
+     */
+    TComPtr<PointerType>& operator=(const TComPtr<PointerType>& Other)
+    {
+        if (RawPointer != Other.RawPointer)
+        {
+            if (Other.RawPointer)
+            {
+                Other->AddRef();
+            }
 
-	/**
-	 * Copy assignment operator.
-	 *
-	 * @param Other The instance to copy.
-	 */
-	TComPtr<PointerType>& operator=(const TComPtr<PointerType>& Other) 
-	{
-		if (RawPointer != Other.RawPointer)
-		{
-			if (Other.RawPointer)
-			{
-				Other->AddRef();
-			}
+            if (RawPointer)
+            {
+                RawPointer->Release();
+            }
 
-			if (RawPointer)
-			{
-				RawPointer->Release();
-			}
+            RawPointer = Other.RawPointer;
+        }
 
-			RawPointer = Other.RawPointer;
-		}
+        return *this;
+    }
 
-		return *this;
-	}
+    /**
+     * Move assignment operator.
+     *
+     * @param Other The instance to move.
+     */
+    TComPtr<PointerType>& operator=(TComPtr<PointerType>&& Other)
+    {
+        if (RawPointer != Other.RawPointer)
+        {
+            if (RawPointer)
+            {
+                RawPointer->Release();
+            }
 
-	/**
-	 * Move assignment operator.
-	 *
-	 * @param Other The instance to move.
-	 */
-	TComPtr<PointerType>& operator=(TComPtr<PointerType>&& Other) 
-	{			
-		if (RawPointer != Other.RawPointer)
-		{
-			if (RawPointer)
-			{
-				RawPointer->Release();
-			}
+            RawPointer = Other.RawPointer;
+            Other.RawPointer = NULL;
+        }
 
-			RawPointer = Other.RawPointer;
-			Other.RawPointer = NULL;
-		}
+        return *this;
+    }
 
-		return *this;
-	}
-
-	/** Destructor. */
-	~TComPtr() 
-	{
-		if (RawPointer)
-		{
-			RawPointer->Release();
-		}
-	}
-
-public:
-
-	FORCEINLINE PointerType** operator&()
-	{
-		return &(RawPointer);
-	}
-
-	FORCEINLINE PointerType* operator->() const 
-	{
-		assert(RawPointer != NULL);
-		return RawPointer;
-	}
-
-	FORCEINLINE bool operator==(PointerType* const Object) const
-	{
-		return RawPointer == Object;
-	}
-
-	FORCEINLINE bool operator!=(PointerType* const Object) const
-	{
-		return RawPointer != Object;
-	}
-
-	FORCEINLINE operator PointerType*() const
-	{
-		return RawPointer;
-	}
+    /** Destructor. */
+    ~TComPtr()
+    {
+        if (RawPointer)
+        {
+            RawPointer->Release();
+        }
+    }
 
 public:
+    FORCEINLINE PointerType** operator&()
+    {
+        return &(RawPointer);
+    }
 
-	/**
-	 * Set the pointer without adding a reference.
-	 *
-	 * @param InRawPointer The object to point to.
-	 * @see Detach
-	 */
-	void Attach(PointerType* Object)
-	{
-		if (RawPointer)
-		{
-			RawPointer->Release();
-		}
+    FORCEINLINE PointerType* operator->() const
+    {
+        assert(RawPointer != NULL);
+        return RawPointer;
+    }
 
-		RawPointer = Object;
-	}
+    FORCEINLINE bool operator==(PointerType* const Object) const
+    {
+        return RawPointer == Object;
+    }
 
-	/**
-	 * Reset the pointer without releasing a reference.
-	 *
-	 * @see Attach
-	 */
-	void Detach()
-	{
-		RawPointer = NULL;
-	}
+    FORCEINLINE bool operator!=(PointerType* const Object) const
+    {
+        return RawPointer != Object;
+    }
 
-	/**
-	 * Initialize this pointer from a COM interface to be queried.
-	 *
-	 * @param Riid The ID of the interface to be queried.
-	 * @param Unknown The object to query the interface from.
-	 * @return The result code of the query.
-	 */
-	HRESULT FromQueryInterface(REFIID Riid, IUnknown* Unknown)
-	{
-		if (RawPointer)
-		{
-			RawPointer->Release();
-			RawPointer = NULL;
-		}
+    FORCEINLINE operator PointerType*() const
+    {
+        return RawPointer;
+    }
 
-		return Unknown->QueryInterface(Riid, reinterpret_cast<void**>(&(RawPointer)));
-	}
+public:
+    /**
+     * Set the pointer without adding a reference.
+     *
+     * @param InRawPointer The object to point to.
+     * @see Detach
+     */
+    void Attach(PointerType* Object)
+    {
+        if (RawPointer)
+        {
+            RawPointer->Release();
+        }
 
-	/**
-	 * Get raw pointer to the object pointed to.
-	 *
-	 * @return Pointer to the object, or NULL if not valid.
-	 * @see IsValid
-	 */
-	FORCEINLINE PointerType* Get() const
-	{
-		return RawPointer;
-	}
+        RawPointer = Object;
+    }
 
-	/**
-	 * Whether this pointer is pointing to an actual object.
-	 *
-	 * @return true if the pointer is valid, false otherwise.
-	 * @see Get
-	 */
-	FORCEINLINE const bool IsValid() const
-	{
-		return (RawPointer != NULL);
-	}
+    /**
+     * Reset the pointer without releasing a reference.
+     *
+     * @see Attach
+     */
+    void Detach()
+    {
+        RawPointer = NULL;
+    }
 
-	/** Reset this pointer to null. */
-	void Reset()
-	{
-		if (RawPointer)
-		{
-			RawPointer->Release();
-			RawPointer = NULL;
-		}
-	}
+    /**
+     * Initialize this pointer from a COM interface to be queried.
+     *
+     * @param Riid The ID of the interface to be queried.
+     * @param Unknown The object to query the interface from.
+     * @return The result code of the query.
+     */
+    HRESULT FromQueryInterface(REFIID Riid, IUnknown* Unknown)
+    {
+        if (RawPointer)
+        {
+            RawPointer->Release();
+            RawPointer = NULL;
+        }
+
+        return Unknown->QueryInterface(Riid, reinterpret_cast<void**>(&(RawPointer)));
+    }
+
+    /**
+     * Get raw pointer to the object pointed to.
+     *
+     * @return Pointer to the object, or NULL if not valid.
+     * @see IsValid
+     */
+    FORCEINLINE PointerType* Get() const
+    {
+        return RawPointer;
+    }
+
+    /**
+     * Whether this pointer is pointing to an actual object.
+     *
+     * @return true if the pointer is valid, false otherwise.
+     * @see Get
+     */
+    FORCEINLINE const bool IsValid() const
+    {
+        return (RawPointer != NULL);
+    }
+
+    /** Reset this pointer to null. */
+    void Reset()
+    {
+        if (RawPointer)
+        {
+            RawPointer->Release();
+            RawPointer = NULL;
+        }
+    }
 
 private:
-
-	/** Pointer to the actual object, if any. */
-	PointerType* RawPointer;
+    /** Pointer to the actual object, if any. */
+    PointerType* RawPointer;
 };
 
-std::vector<std::wstring> split (std::wstring s, std::wstring delimiter) {
-	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-	std::wstring token;
-	std::vector<std::wstring> res;
+std::vector<std::wstring> split(std::wstring s, std::wstring delimiter)
+{
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::wstring token;
+    std::vector<std::wstring> res;
 
-	while ((pos_end = s.find (delimiter, pos_start)) != std::wstring::npos) {
-		token = s.substr (pos_start, pos_end - pos_start);
-		pos_start = pos_end + delim_len;
-		res.push_back (token);
-	}
+    while ((pos_end = s.find(delimiter, pos_start)) != std::wstring::npos)
+    {
+        token = s.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back(token);
+    }
 
-	res.push_back (s.substr (pos_start));
-	return res;
+    res.push_back(s.substr(pos_start));
+    return res;
 };
 
 
 #define TEXT(s) L ## s
 
 std::vector<std::wstring> LoadFileFromExplorer(
-	const std::wstring& DefaultPath,
-	const std::wstring& FileTypes = L"All Files (*.geojson;*.json)|*.geojson;*.json|JSON Files (*.json)|*.json|GeoJSON Files (*.geojson)|*.geojson")
+    const std::wstring& DefaultPath,
+    const std::wstring& FileTypes = L"All Files (*.*)|*.*n|JSON Files (*.json)|*.json|GeoJSON Files (*.geojson)|*.geojson",
+    bool openFile = true)
 {
     std::vector<std::wstring> OutFilenames;
 
 
     IFileDialog* FileDialog;
-    if (SUCCEEDED(::CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_IFileOpenDialog, IID_PPV_ARGS_Helper(&FileDialog))))
+    if (
+        openFile
+            ? SUCCEEDED(::CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_IFileOpenDialog, IID_PPV_ARGS_Helper(&FileDialog)))
+            : SUCCEEDED(::CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_IFileSaveDialog, IID_PPV_ARGS_Helper(&FileDialog)))
+    )
     {
         // Set up common settings
         FileDialog->SetTitle(TEXT("Choose A File"));
+
+
         if (!DefaultPath.empty())
         {
             // SHCreateItemFromParsingName requires the given path be absolute and use \ rather than / as our normalized paths do
             std::wstring DefaultWindowsPath = DefaultPath;
-        	std::replace(DefaultWindowsPath.begin(), DefaultWindowsPath.end(),TEXT('/'), TEXT('\\'));
+            std::replace(DefaultWindowsPath.begin(), DefaultWindowsPath.end(),TEXT('/'), TEXT('\\'));
 
             TComPtr<IShellItem> DefaultPathItem;
             if (SUCCEEDED(::SHCreateItemFromParsingName(DefaultWindowsPath.c_str(), nullptr, IID_PPV_ARGS(&DefaultPathItem))))
@@ -295,7 +298,6 @@ std::vector<std::wstring> LoadFileFromExplorer(
                 FileDialog->SetFolder(DefaultPathItem);
             }
         }
-
         // Set-up the file type filters
         std::vector<std::wstring> UnformattedExtensions;
         std::vector<COMDLG_FILTERSPEC> FileDialogFilters;
@@ -308,14 +310,20 @@ std::vector<std::wstring> LoadFileFromExplorer(
                 FileDialogFilters.reserve(UnformattedExtensions.size() / 2);
                 for (int32 ExtensionIndex = 0; ExtensionIndex < UnformattedExtensions.size();)
                 {
-                	FileDialogFilters.push_back({});
-                    COMDLG_FILTERSPEC& NewFilterSpec = FileDialogFilters[FileDialogFilters.size()-1];
+                    FileDialogFilters.push_back({});
+                    COMDLG_FILTERSPEC& NewFilterSpec = FileDialogFilters[FileDialogFilters.size() - 1];
                     NewFilterSpec.pszName = UnformattedExtensions[ExtensionIndex++].c_str();
                     NewFilterSpec.pszSpec = UnformattedExtensions[ExtensionIndex++].c_str();
+                    if (!openFile && ExtensionIndex == 2)
+                    {
+                        if (SUCCEEDED(FileDialog->SetDefaultExtension(NewFilterSpec.pszSpec))){}
+                    }
                 }
             }
         }
         FileDialog->SetFileTypes(FileDialogFilters.size(), FileDialogFilters.data());
+
+
 
         // Show the picker
         if (SUCCEEDED(FileDialog->Show(NULL)))
@@ -328,12 +336,12 @@ std::vector<std::wstring> LoadFileFromExplorer(
 
             auto AddOutFilename = [&OutFilenames](const std::wstring& InFilename)
             {
-            	OutFilenames.push_back(InFilename);
+                OutFilenames.push_back(InFilename);
                 //std::wstring& OutFilename = OutFilenames[OutFilenames.size()-1];
                 //OutFilename = IFileManager::Get().ConvertToRelativePath(*OutFilename);
                 //FPaths::NormalizeFilename(OutFilename);
             };
-
+            if (openFile)
             {
                 IFileOpenDialog* FileOpenDialog = static_cast<IFileOpenDialog*>(FileDialog);
 
@@ -355,6 +363,23 @@ std::vector<std::wstring> LoadFileFromExplorer(
                             }
                         }
                     }
+                }
+            }
+            else
+            {
+                IFileSaveDialog* FileOpenDialog = static_cast<IFileSaveDialog*>(FileDialog);
+                IShellItem* pItem;
+                if (SUCCEEDED(FileOpenDialog->GetResult(&pItem)))
+                {
+                    PWSTR pszFilePath;
+                    // Display the file name to the user.
+                    if (SUCCEEDED(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath)))
+                    {
+                        std::wstring file = pszFilePath;
+                        AddOutFilename(file);
+                        ::CoTaskMemFree(pszFilePath);
+                    }
+                    pItem->Release();
                 }
             }
         }
