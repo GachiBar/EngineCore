@@ -45,7 +45,7 @@ struct TransferMaterial
     {
         MaterialData data = MaterialData();
 
-        data.diffuseData.color = TextureData::Color(diffuse_color.w, diffuse_color.x, diffuse_color.y, diffuse_color.z);
+        data.diffuseData.color = TextureData::Color(diffuse_color.w * 255.0f, diffuse_color.x * 255.0f, diffuse_color.y * 255.0f, diffuse_color.z * 255.0f);
         data.normalData.normal = normals_color;
         data.roughnessData.roughness = roughness_value;
         data.metallicData.metallic = metallic_value;

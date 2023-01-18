@@ -75,8 +75,14 @@ Type Runtime::GetType(const TypeData& type_data) const {
 	return GetType(type_data.GetNameSpace(), type_data.GetName());
 }
 
+#ifndef  _DEBUG
+#define KTRIP_MONO_DEBUG false
+#else
+#define KTRIP_MONO_DEBUG true
+#endif
+
 Runtime::Runtime(const std::string& mono_lib_path, const std::string& dll_path)
-	: jit_domain_(mono_lib_path, kRuntimeName)
+	: jit_domain_(mono_lib_path, kRuntimeName, KTRIP_MONO_DEBUG)
 	, domain_(kDomainName)
 	, assembly_(domain_.get_assembly(dll_path))
 {
