@@ -16,6 +16,7 @@ Method* Scene::render_ = nullptr;
 Method* Scene::editor_render_ = nullptr;
 Method* Scene::render_gui_ = nullptr;
 Method* Scene::invalidate_ = nullptr;
+Method* Scene::copy_ = nullptr;
 Method* Scene::serialize_ = nullptr;
 Method* Scene::deserialize_ = nullptr;
 
@@ -116,6 +117,14 @@ void Scene::Invalidate() {
     invalidate_->Invoke(*this);
 }
 
+std::shared_ptr<Scene> Scene::Copy()
+{
+    assert(copy_ != nullptr && kIsNotCachedErrorMessage);
+
+    Scene copy(copy_->Invoke(*this).value());
+    return std::make_shared<Scene>(std::move(copy));
+}
+
 std::string Scene::Serialize()
 {
     assert(serialize_ != nullptr && kIsNotCachedErrorMessage);
@@ -165,10 +174,11 @@ void Scene::CacheMethods(const Runtime& runtime) {
     editor_render_ = new Method(type, "EditorRender", 0);
     render_gui_ = new Method(type, "RenderGUI", 0);
     invalidate_ = new Method(type, "Invalidate", 0);
+    copy_ = new Method(type, "Copy", 0);
     create_game_object_ = new Method(type, "CreateGameObject", 0);
     delete_game_object_ = new Method(type, "DeleteGameObject", 1);
     serialize_ = new Method(type, "Serialize", 0);
-    deserialize_ = new Method(type, "Deserialize", 1);
+    deserialize_ = new Method(type, "Deserialize", 1);   
 }
 
 } // namespace engine

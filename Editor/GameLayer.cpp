@@ -1,9 +1,6 @@
 #include "GameLayer.h"
-#include "../GameplaySystem/GameObject.h"
 
 #include <iostream>
-
-#include "imgui/imgui_internal.h"
 
 bool GameLayer::GetIsPlaying() const {
 	return is_playing;
@@ -24,7 +21,6 @@ void GameLayer::SetIsPlaying(bool value) {
 
 GameLayer::GameLayer(LayerStack* owner)
 	: Layer(owner, "GameLayer")
-	, scene(new engine::Scene())
 	, is_playing(false)
 {
 	CurrentInputMode = EEditorInputMode::Type::GameOnlyMode;
@@ -33,24 +29,6 @@ GameLayer::GameLayer(LayerStack* owner)
 void GameLayer::OnAttach()
 {
 	Layer::OnAttach();
-
-	auto& runtime = engine::Runtime::GetCurrentRuntime();
-	auto type = runtime.GetType(engine::Types::kImGuiApi);
-	auto method = type.GetMethod("SetupImGui", 3);
-
-	ImGuiMemAllocFunc memAllocFunc[1];
-	ImGuiMemFreeFunc memFreeFunc[1];
-
-	void* userData;
-	ImGui::GetAllocatorFunctions(memAllocFunc, memFreeFunc, &userData);
-
-	void* params[3];
-	params[0] = &GImGui;
-	params[1] = &memAllocFunc;
-	params[2] = &memFreeFunc;
-
-	method.Invoke(params);
-	GetApp()->GetEngine()->SetScene(scene);
 }
 
 void GameLayer::OnUpdate(float const dt)
@@ -61,17 +39,4 @@ void GameLayer::OnUpdate(float const dt)
 	{
 		GetApp()->GetEngine()->RunFrame();
 	}	
-}
-
-void GameLayer::OnGuiRender()
-{
-	//if (GetIsPlaying()) 
-	//{
-	//	GetApp()->DrawGameUI();
-	//}	
-}
-
-void GameLayer::OnPostRender()
-{
-	Layer::OnPostRender();
 }

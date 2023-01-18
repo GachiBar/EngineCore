@@ -1,4 +1,5 @@
 ﻿using GameplayCore.Editor;
+using GameplayCore.Mathematics;
 using GameplayCore.Serialization;
 using System;
 
@@ -8,13 +9,13 @@ namespace GameplayCore.Components
     {
         [SerializeField]
         [InspectorName("MaxHealth")]
-        private float _maxHealth;
+        private float _maxHealth = 100.0f;
         [SerializeField]
         [InspectorName("Health")]
-        private float _healt;
+        private float _healt = 100.0f;
         [SerializeField]
         [InspectorName("RegenerationSpeed")]
-        private float _regenerationSpeed;
+        private float _regenerationSpeed = 0.0f;
 
         public float MaxHealth
         {
@@ -46,6 +47,7 @@ namespace GameplayCore.Components
             if (_healt > 0)
             {
                 _healt += _regenerationSpeed * Time.DeltaTime;
+                _healt = MathUtil.Clamp(_healt, 0, _maxHealth);
             }            
         }
     }

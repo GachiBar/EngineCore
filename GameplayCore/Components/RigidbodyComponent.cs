@@ -2,7 +2,6 @@
 using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
 using GameplayCore.Serialization;
-using System;
 
 namespace GameplayCore.Components
 {
@@ -34,7 +33,18 @@ namespace GameplayCore.Components
         [InspectorName("FreezeRotation")]
         public bool _freezeRotation = false;
 
-        public uint BodyId => _bodyId;
+        public uint BodyId
+        {
+            get
+            {
+                if (!IsBodyExist)
+                {
+                    CreateBody();
+                }
+
+                return _bodyId;
+            }
+        }
 
         public bool IsKinematic
         {
@@ -42,8 +52,12 @@ namespace GameplayCore.Components
             set
             {
                 _isKinematic = value;
-                PhysicsApi.SetMotionType(BodyId, _isKinematic ? MotionType.Kinematic : MotionType.Dynamic);
-                PhysicsApi.SetActive(BodyId, _isKinematic);
+
+                if (IsBodyExist)
+                {
+                    PhysicsApi.SetMotionType(BodyId, _isKinematic ? MotionType.Kinematic : MotionType.Dynamic);
+                    PhysicsApi.SetActive(BodyId, _isKinematic);
+                }
             }
         }
 
@@ -53,11 +67,15 @@ namespace GameplayCore.Components
             set
             {
                 _mass = value;
-                PhysicsApi.SetMass(BodyId, _mass);
 
-                if (_freezeRotation)
+                if (IsBodyExist)
                 {
-                    PhysicsApi.FreezeRotation(BodyId);
+                    PhysicsApi.SetMass(BodyId, _mass);
+
+                    if (_freezeRotation)
+                    {
+                        PhysicsApi.FreezeRotation(BodyId);
+                    }
                 }
             }
         }
@@ -69,13 +87,16 @@ namespace GameplayCore.Components
             {
                 _freezeRotation = value;
 
-                if (_freezeRotation)
+                if (IsBodyExist)
                 {
-                    PhysicsApi.FreezeRotation(BodyId);
-                }
-                else
-                {
-                    PhysicsApi.SetMass(BodyId, _mass);
+                    if (_freezeRotation)
+                    {
+                        PhysicsApi.FreezeRotation(BodyId);
+                    }
+                    else
+                    {
+                        PhysicsApi.SetMass(BodyId, _mass);
+                    }
                 }
             }
         }
@@ -84,6 +105,16 @@ namespace GameplayCore.Components
         {
             get => PhysicsApi.GetLinearVelocity(BodyId);
             set => PhysicsApi.SetLinearVelocity(BodyId, value);
+        }
+
+        public bool IsBodyExist => _bodyId != 0;
+
+        public override void Initialize()
+        {
+            if (!IsBodyExist)
+            {
+                CreateBody();
+            }
         }
 
         public override void FixedUpdate()
@@ -112,10 +143,9 @@ namespace GameplayCore.Components
 
         public override void Terminate()
         {
-            if (_bodyId != 0)
+            if (IsBodyExist)
             {
-                PhysicsApi.DestroyBody(_bodyId);
-                _bodyId = 0;
+                DestroyBody();
             }
         }
 
@@ -142,6 +172,9 @@ namespace GameplayCore.Components
                 case nameof(_isKinematic):
                     IsKinematic = _isKinematic;
                     break;
+                case nameof(_mass):
+                    Mass = _mass;
+                    break;
                 case nameof(_freezeRotation):
                     FreezeRotation = _freezeRotation;
                     break;
@@ -151,17 +184,6 @@ namespace GameplayCore.Components
         protected override void OnAttach(GameObject gameObject)
         {
             _transformComponent = GameObject.GetComponent<TransformComponent>();
-            _bodyId = PhysicsApi.CreateBody(
-                this,
-                _position, 
-                _rotation,
-                _isKinematic ? MotionType.Kinematic : MotionType.Dynamic);
-            PhysicsApi.SetMass(_bodyId, _mass);
-
-            if (_freezeRotation)
-            {
-                PhysicsApi.FreezeRotation(_bodyId);
-            }
 
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
@@ -169,12 +191,6 @@ namespace GameplayCore.Components
 
         protected override void OnDetach(GameObject gameObject)
         {
-            if (_bodyId != 0)
-            {
-                PhysicsApi.DestroyBody(_bodyId);
-                _bodyId = 0;
-            }
-
             gameObject.ComponentAdded -= OnComponentAdded;
             gameObject.ComponentRemoved -= OnComponentRemoved;            
         }
@@ -193,6 +209,28 @@ namespace GameplayCore.Components
             {
                 _transformComponent = null;
             }
+        }
+
+        private void CreateBody()
+        {
+            _bodyId = PhysicsApi.CreateBody(
+                this,
+                _position,
+                _rotation,
+                _isKinematic ? MotionType.Kinematic : MotionType.Dynamic);
+
+            PhysicsApi.SetMass(_bodyId, _mass);
+
+            if (_freezeRotation)
+            {
+                PhysicsApi.FreezeRotation(_bodyId);
+            }
+        }
+
+        private void DestroyBody()
+        {
+            PhysicsApi.DestroyBody(_bodyId);
+            _bodyId = 0;
         }
     }
 }

@@ -54,7 +54,7 @@ namespace GameplayCore.Components
             rigidbody.Velocity *= Vector3.Up;
         }
 
-        public void LoockInDirection(Vector3 direction)
+        public void LookInDirection(Vector3 direction)
         {
             var transform = GameObject.GetComponent<TransformComponent>();
 
@@ -172,7 +172,7 @@ namespace GameplayCore.Components
         private void OnDied(HealthComponent health)
         {
             // Now I just remove game object
-            GameObject.Scene.DeleteGameObject(GameObject);
+            DeleteGameObject(GameObject);
         }
 
         private static Quaternion GetRotation(Vector3 from, Vector3 to)

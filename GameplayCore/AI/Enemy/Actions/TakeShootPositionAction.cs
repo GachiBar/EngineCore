@@ -32,7 +32,7 @@ namespace GameplayCore.AI.Enemy.Actions
 
                 if (!IsAimInViewSector(enemyTransform.Forward, viewDirection, enemyController.ViewSector))
                 {
-                    enemyController.LoockInDirection(viewDirection);
+                    enemyController.LookInDirection(viewDirection);
                     isReadyToShoot = false;
                 }
 

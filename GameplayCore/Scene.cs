@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GameplayCore.Components;
 using GameplayCore.Serialization;
-using ImGuiNET;
 using Newtonsoft.Json;
 
 namespace GameplayCore
@@ -189,21 +187,39 @@ namespace GameplayCore
 
         public GameObject CreateGameObject()
         {            
-            var go = new GameObject(this, System.Guid.NewGuid());
-            _createdGameObjects.Add(go);
+            var gameObject = new GameObject(this, System.Guid.NewGuid());
+            _createdGameObjects.Add(gameObject);
 
             if (IsInitialized)
             {
-                go.Initialize();
+                gameObject.Initialize();
             }
             
-            return go;
+            return gameObject;
         }
 
-        public void DeleteGameObject(GameObject go)
+        public void DeleteGameObject(GameObject gameObject)
         {
-            _createdGameObjects.Remove(go);
-            _deletedGameObjects.Add(go);
+            _createdGameObjects.Remove(gameObject);
+            _deletedGameObjects.Add(gameObject);
+        }
+
+        public Scene Copy()
+        {
+            var sceneCopy = new Scene();
+
+            foreach (var gameObject in _gameObjects)
+            {
+                var gameObjectCopy = sceneCopy.CreateGameObject();
+
+                foreach (var component in gameObject)
+                {
+                    var componentCopy = component.Copy();
+                    gameObjectCopy.AddComponentInternal(componentCopy);
+                }
+            }
+
+            return sceneCopy;
         }
 
         internal void Invalidate()

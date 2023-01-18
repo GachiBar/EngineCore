@@ -1,12 +1,11 @@
-﻿using GameplayCore.Editor;
-using GameplayCore.EngineApi;
+﻿using GameplayCore.EngineApi;
 using GameplayCore.Mathematics;
-using GameplayCore.Serialization;
 
 namespace GameplayCore.Components
 {
     public abstract class CollisionComponent : Component
     {
+        private bool _isInitialized;
         private TransformComponent _transformComponent;
         private RigidbodyComponent _rigidbodyComponent;
 
@@ -17,6 +16,26 @@ namespace GameplayCore.Components
         public CollisionComponent()
         {
             RenderInGame = false;
+        }
+
+        public override void Initialize()
+        {
+            if (_rigidbodyComponent != null && _transformComponent != null)
+            {
+                CreateShape();               
+            }
+
+            _isInitialized = true;
+        }
+
+        public override void Terminate()
+        {
+            if (_rigidbodyComponent != null && _rigidbodyComponent.IsBodyExist)
+            {
+                DestroyShape();
+            }
+
+            _isInitialized = false;
         }
 
         public override void Render()
@@ -48,22 +67,12 @@ namespace GameplayCore.Components
             _rigidbodyComponent = GameObject.GetComponent<RigidbodyComponent>();
             _transformComponent = GameObject.GetComponent<TransformComponent>();
 
-            if (_rigidbodyComponent != null && _transformComponent != null)
-            {
-                CreateShape();
-            }
-
             gameObject.ComponentAdded += OnComponentAdded;
             gameObject.ComponentRemoved += OnComponentRemoved;
         }
 
         protected override void OnDetach(GameObject gameObject)
         {
-            if (_rigidbodyComponent != null)
-            {
-                DestroyShape();
-            }
-
             gameObject.ComponentAdded -= OnComponentAdded;
             gameObject.ComponentRemoved -= OnComponentRemoved;
         }
@@ -76,14 +85,23 @@ namespace GameplayCore.Components
         {
             if (component is RigidbodyComponent rigidbodyComponent)
             {
+                if (_isInitialized)
+                {
+                    DestroyShape();
+                }
+
                 _rigidbodyComponent = rigidbodyComponent;
-                CreateShape();
+
+                if (_isInitialized)
+                {
+                    CreateShape();
+                }                
             }
             if (component is TransformComponent transformComponent)
             {
                 _transformComponent = transformComponent;
 
-                if (_rigidbodyComponent != null)
+                if (_isInitialized && _rigidbodyComponent != null)
                 {
                     PhysicsApi.SetCollisionLayer(BodyId, CollisionLayer.Moving);
                 }
@@ -99,7 +117,11 @@ namespace GameplayCore.Components
             if (component is TransformComponent)
             {
                 _transformComponent = null;
-                PhysicsApi.SetCollisionLayer(BodyId, CollisionLayer.NoCollision);
+
+                if (_isInitialized)
+                {
+                    PhysicsApi.SetCollisionLayer(BodyId, CollisionLayer.NoCollision);
+                }                
             }
         }
 

@@ -24,7 +24,7 @@ namespace GameplayCore.AI.Enemy.Actions
             {
                 var viewDirection = GetViewDirection(aimTransform.Position, enemyTransform.Position);
                 enemyController.MoveInDirection(viewDirection);
-                enemyController.LoockInDirection(viewDirection);
+                enemyController.LookInDirection(viewDirection);
                 yield return AIExecutionState.InProgress;
             }
 
