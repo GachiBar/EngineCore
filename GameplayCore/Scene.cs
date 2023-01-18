@@ -143,19 +143,6 @@ namespace GameplayCore
 
         public void Deserialize(string data)
         {
-            // Remove all components from all game objects to trigger OnDetach method.
-            foreach (var gameObject in _gameObjects)
-            {
-                var componentsTypes = gameObject.Select(c => c.GetType()).ToList();
-
-                foreach (var componentType in componentsTypes)
-                {
-                    gameObject.RemoveComponent(componentType);
-                }
-
-                gameObject.Invalidate();
-            }
-
             GameObjectDefaultJsonConverter gameObjectConverter = new GameObjectDefaultJsonConverter(this);
             
             JsonSerializerSettings options = new JsonSerializerSettings()
@@ -202,24 +189,6 @@ namespace GameplayCore
         {
             _createdGameObjects.Remove(gameObject);
             _deletedGameObjects.Add(gameObject);
-        }
-
-        public Scene Copy()
-        {
-            var sceneCopy = new Scene();
-
-            foreach (var gameObject in _gameObjects)
-            {
-                var gameObjectCopy = sceneCopy.CreateGameObject();
-
-                foreach (var component in gameObject)
-                {
-                    var componentCopy = component.Copy();
-                    gameObjectCopy.AddComponentInternal(componentCopy);
-                }
-            }
-
-            return sceneCopy;
         }
 
         internal void Invalidate()

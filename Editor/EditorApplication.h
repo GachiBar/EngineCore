@@ -21,7 +21,7 @@ private:
 	GameLayer* game_layer;
 	EditorLayer* editor_layer;
 	std::shared_ptr<engine::Scene> scene;
-	std::shared_ptr<engine::Scene> scene_copy;
+	std::string serialized_scene;
 
 	void SetupGameImGui();
 	void OnEnterGameMode();

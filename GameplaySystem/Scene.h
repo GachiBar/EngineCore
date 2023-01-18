@@ -29,7 +29,6 @@ public:
 	void RenderGUI();
 	void Terminate();
 	void Invalidate();
-	std::shared_ptr<Scene> Copy();
 
 	std::string Serialize();
 	void Deserialize(const std::string& data);
@@ -51,7 +50,6 @@ private:
 	static Method* editor_render_;
 	static Method* render_gui_;
 	static Method* invalidate_;
-	static Method* copy_;
 	static Method* serialize_;
 	static Method* deserialize_;	
 

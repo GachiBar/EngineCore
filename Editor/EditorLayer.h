@@ -41,7 +41,6 @@ public:
 	std::shared_ptr<AIEditorWindow> ai_editor;
 
 	engine::GameObject* GetSelectedGo();
-	void OpenScene();
 	void LoadScene();
 
 private:

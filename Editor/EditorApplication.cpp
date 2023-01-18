@@ -67,7 +67,7 @@ void EditorApplication::SetupGameImGui()
 void EditorApplication::OnEnterGameMode()
 {
 	editor_input_mode = EEditorInputMode::Type::GameOnlyMode;
-	scene_copy = scene->Copy();
+	serialized_scene = scene->Serialize();
 	engine_->GetScene()->Initialize();
 	game_layer->SetIsPlaying(true);
 }
@@ -77,10 +77,7 @@ void EditorApplication::OnExitGameMode()
 	editor_input_mode = EEditorInputMode::Type::EditorOnlyMode;
 	game_layer->SetIsPlaying(false);
 	engine_->GetScene()->Terminate();
-	scene = scene_copy;
-	engine_->SetScene(scene);
-	editor_layer->hierarchy->SetScene(scene);
-	editor_layer->game_object_inspector->SetScene(scene);
+	scene->Deserialize(serialized_scene);
 }
 
 void EditorApplication::OnViewportPresented()

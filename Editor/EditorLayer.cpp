@@ -26,7 +26,6 @@ namespace Renderer
 EditorLayer::EditorLayer(LayerStack* owner)
     : Layer(owner, "EditorLayer")
     , selected_go(nullptr)
-    , scene_name(L"Default.dat")
 {
     CurrentInputMode = EEditorInputMode::Type::EditorOnlyMode;
 }
@@ -62,7 +61,6 @@ void EditorLayer::OnAttach()
 	auto& io = ImGui::GetIO();
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    SaveScene();
 }
 
 void EditorLayer::OnDetach()
@@ -152,7 +150,7 @@ void EditorLayer::OnGuiRender()
 
             if (ImGui::MenuItem("Open...", "Ctrl+O"))
             {
-                OpenScene();
+                LoadScene();
             }
 
             if (ImGui::MenuItem("Save", "Ctrl+S"))
@@ -243,24 +241,28 @@ engine::GameObject* EditorLayer::GetSelectedGo()
 
 void EditorLayer::LoadScene() 
 {
+    auto scenes_names = LoadFileFromExplorer(L"", L"Scene|*.dat");
+    scene_name = scenes_names[0];
+
     std::fstream file(scene_name, std::fstream::in);
     std::string content;
     getline(file, content, '\0');
+
     GetApp()->GetEngine()->GetScene()->Deserialize(content);
+
     // Selected object is no more valid.
     game_object_inspector->SetGameObject(nullptr);
     gvm->SetGameObject(nullptr);
 }
 
-void EditorLayer::OpenScene()
-{
-    auto scenes_names = LoadFileFromExplorer(L"", L"Scene|*.dat");
-    scene_name = scenes_names[0];
-    LoadScene();
-}
-
 void EditorLayer::SaveScene()
 {
+    if (scene_name.empty()) 
+    {
+        auto scenes_names = LoadFileFromExplorer(L"", L"Scene|*.dat");
+        scene_name = scenes_names[0];
+    }
+
     std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
     std::ofstream file_handler(scene_name, std::ios::out | std::ios::trunc);
     file_handler << json;
