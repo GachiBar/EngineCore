@@ -839,7 +839,7 @@ void Engine::Internal_Log_Implementation(
 	mono_free(raw_string);
 
 	//call log callback
-	LogManager::getInstance().Log(verbosity, raw_string);
+	LogManager::getInstance().Log(verbosity, message_string.c_str());
 
 	const auto guid_raw_string = mono_string_to_utf8(guid);
 	const std::string guid_string(guid_raw_string);
