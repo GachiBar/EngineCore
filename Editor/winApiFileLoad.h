@@ -269,7 +269,7 @@ std::vector<std::wstring> split(std::wstring s, std::wstring delimiter)
 
 std::vector<std::wstring> LoadFileFromExplorer(
     const std::wstring& DefaultPath,
-    const std::wstring& FileTypes = L"All Files (*.geojson;*.json)|*.geojson;*.json|JSON Files (*.json)|*.json|GeoJSON Files (*.geojson)|*.geojson")
+    const std::wstring& FileTypes)
 {
     std::vector<std::wstring> OutFilenames;
 
@@ -362,7 +362,8 @@ std::vector<std::wstring> LoadFileFromExplorer(
 
 std::vector<std::wstring> SaveFileToExplorer(
     const std::wstring& DefaultPath,
-    const std::wstring& FileTypes = L"All Files (*.*)|*.*n|JSON Files (*.json)|*.json|GeoJSON Files (*.geojson)|*.geojson")
+    const std::wstring& DefaultName,
+    const std::wstring& FileTypes)
 {
     std::vector<std::wstring> OutFilenames;
 
@@ -405,6 +406,7 @@ std::vector<std::wstring> SaveFileToExplorer(
                 }
             }
         }
+        FileDialog->SetFileName(DefaultName.data());
         FileDialog->SetFileTypes(FileDialogFilters.size(), FileDialogFilters.data());
 
         // Show the picker

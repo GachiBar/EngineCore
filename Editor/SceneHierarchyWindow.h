@@ -15,6 +15,9 @@ class SceneHierarchyWindow : public IEditorWindow
 public:
 	std::shared_ptr<engine::Scene> GetScene();
 	void SetScene(std::shared_ptr<engine::Scene> scene);
+	
+	std::string GetSceneName();
+	void SetSceneName(std::string scene_name);
 
 	SceneHierarchyWindow();
 
@@ -70,6 +73,7 @@ private:
 	int tree_level_id;
 	DragAndDropRequest drag_and_drop_request;
 
+	std::string scene_name;
 	std::shared_ptr<engine::Scene> scene;
 	std::shared_ptr<engine::GameObject> selected;
 
