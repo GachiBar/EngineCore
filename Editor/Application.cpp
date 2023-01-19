@@ -133,7 +133,6 @@ int Application::Run(int argc, char* argv[])
 		return exit_code_;
 
 	MSG msg = {};
-	//bool is_exit_requested = false;
 
 	while (!is_exit_requested)
 	{
@@ -200,11 +199,6 @@ void Application::Close()
 std::shared_ptr<FGenericWindow> Application::GetMainWindow()
 {
 	return wnds.at(0);
-}
-
-const engine::Runtime& Application::GetRuntime() const
-{
-	return runtime;
 }
 
 engine::Engine* Application::GetEngine() const

@@ -40,10 +40,15 @@ namespace GameplayCore.Components
         public virtual void Terminate() { }
 
         public virtual void OnCollisionEnter(RigidbodyComponent rigidbody) { }
-
         public virtual void OnCollisionStay(RigidbodyComponent rigidbody) { }
-
         public virtual void OnCollisionExit(RigidbodyComponent rigidbody) { }
+
+        internal Component Copy()
+        {
+            var componentCopy = (Component)MemberwiseClone();
+            componentCopy._gameObject = null;
+            return componentCopy;
+        }
 
         /// <summary>
         /// This method called by editor when some field was changed.

@@ -11,7 +11,7 @@ namespace GameplayCore
     [Serializable]
     public class GameObject : IReadOnlyList<Component>
     {        
-        private const int MaxNameSize = 16;
+        private const int MaxNameSize = 255;
 
         /// <summary>
         /// Global unique identifier of <see cref="Component"/>s. Initialized by scene.
@@ -108,7 +108,7 @@ namespace GameplayCore
             _removedComponents = new List<Component>();
             _isUpdatableComponentsInvalid = false;
             Scene = scene;
-            Name = $"GameObject({scene?.Count})";
+            Name = $"GameObject";
         }
 
         public void Initialize()
@@ -216,26 +216,11 @@ namespace GameplayCore
                     $"Not valid type. It should inherit from {typeof(Component)} and have default constructor.");
             }
 
-            if (_componentsMap.TryGetValue(componentType, out var component))
-            {
-                RemoveComponent(componentType);
-            }
-
-            _componentsMap[instance.GetType()] = instance;
-            instance.GameObject = this; // OnAttach
-
-            if (IsInitialized)
-            {
-                instance.Initialize();
-            }
-
-            ComponentAdded?.Invoke(this, instance);
-            _isUpdatableComponentsInvalid = true;
+            AddComponentInternal(instance);
             return instance;
         }
 
-        // For serialization
-        private void AddComponentSilent(Component instance)
+        internal void AddComponentInternal(Component instance)
         {
             if (_componentsMap.TryGetValue(instance.GetType(), out _))
             {
@@ -244,6 +229,12 @@ namespace GameplayCore
 
             _componentsMap[instance.GetType()] = instance;
             instance.GameObject = this;
+
+            if (IsInitialized)
+            {
+                instance.Initialize();
+            }
+
             ComponentAdded?.Invoke(this, instance);
             _isUpdatableComponentsInvalid = true;
         }
@@ -279,6 +270,21 @@ namespace GameplayCore
             }
 
             return null;
+        }
+
+        public GameObject Copy()
+        {
+            var gameObjectCopy = Scene.CreateGameObject();
+            gameObjectCopy._name = _name;
+            
+            foreach (var component in _componentsMap.Values)
+            {
+                var componentCopy = component.Copy();
+                gameObjectCopy.AddComponentInternal(componentCopy);
+            }
+
+            gameObjectCopy.Invalidate();
+            return gameObjectCopy;
         }
 
         internal void Invalidate()

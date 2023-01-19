@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GameplayCore.Components;
 using GameplayCore.Serialization;
-using ImGuiNET;
 using Newtonsoft.Json;
 
 namespace GameplayCore
@@ -145,19 +143,6 @@ namespace GameplayCore
 
         public void Deserialize(string data)
         {
-            // Remove all components from all game objects to trigger OnDetach method.
-            foreach (var gameObject in _gameObjects)
-            {
-                var componentsTypes = gameObject.Select(c => c.GetType()).ToList();
-
-                foreach (var componentType in componentsTypes)
-                {
-                    gameObject.RemoveComponent(componentType);
-                }
-
-                gameObject.Invalidate();
-            }
-
             GameObjectDefaultJsonConverter gameObjectConverter = new GameObjectDefaultJsonConverter(this);
             
             JsonSerializerSettings options = new JsonSerializerSettings()
@@ -189,21 +174,21 @@ namespace GameplayCore
 
         public GameObject CreateGameObject()
         {            
-            var go = new GameObject(this, System.Guid.NewGuid());
-            _createdGameObjects.Add(go);
+            var gameObject = new GameObject(this, System.Guid.NewGuid());
+            _createdGameObjects.Add(gameObject);
 
             if (IsInitialized)
             {
-                go.Initialize();
+                gameObject.Initialize();
             }
             
-            return go;
+            return gameObject;
         }
 
-        public void DeleteGameObject(GameObject go)
+        public void DeleteGameObject(GameObject gameObject)
         {
-            _createdGameObjects.Remove(go);
-            _deletedGameObjects.Add(go);
+            _createdGameObjects.Remove(gameObject);
+            _deletedGameObjects.Add(gameObject);
         }
 
         internal void Invalidate()
@@ -227,14 +212,6 @@ namespace GameplayCore
             }
 
             _createdGameObjects.Clear();
-        }
-
-        internal unsafe void SetupImGui(IntPtr context, IntPtr allocFunc, IntPtr freeFunc)
-        {
-            Log.PrintMessage("Hello", Duration: 0);
-
-            ImGui.SetCurrentContext(context);
-            ImGui.SetAllocatorFunctions(allocFunc, freeFunc);
         }
     }
 }

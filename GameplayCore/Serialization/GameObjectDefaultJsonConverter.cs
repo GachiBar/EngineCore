@@ -175,7 +175,7 @@ namespace GameplayCore.Serialization
             gameObject.Name = name;
 
             MethodInfo addComponent = gameObject.GetType()
-                .GetMethod("AddComponentSilent", BindingFlags.Instance | BindingFlags.NonPublic);
+                .GetMethod("AddComponentInternal", BindingFlags.Instance | BindingFlags.NonPublic);
 
             foreach (var component in components)
             {

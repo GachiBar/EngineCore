@@ -51,7 +51,7 @@ private:
 	static Method* render_gui_;
 	static Method* invalidate_;
 	static Method* serialize_;
-	static Method* deserialize_;
+	static Method* deserialize_;	
 
 	static Method* create_game_object_;
 	static Method* delete_game_object_;

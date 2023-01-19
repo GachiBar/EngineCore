@@ -168,7 +168,7 @@ void Scene::CacheMethods(const Runtime& runtime) {
     create_game_object_ = new Method(type, "CreateGameObject", 0);
     delete_game_object_ = new Method(type, "DeleteGameObject", 1);
     serialize_ = new Method(type, "Serialize", 0);
-    deserialize_ = new Method(type, "Deserialize", 1);
+    deserialize_ = new Method(type, "Deserialize", 1);   
 }
 
 } // namespace engine

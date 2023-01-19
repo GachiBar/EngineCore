@@ -53,11 +53,12 @@ namespace GameplayCore.EngineApi
             }
         }
 
-        public static void SetViewProjection(float ellapsed, Matrix view, Matrix projection)
+        public static void SetViewProjection(float ellapsed, Matrix view, Matrix projection, Vector3 viewPosition)
         {
             unsafe
             {
-                Internal_SetViewProjection(Renderer, ellapsed, view, projection);
+                Vector4 inViewPosition = new Vector4(viewPosition, 0);
+                Internal_SetViewProjection(Renderer, ellapsed, view, projection, inViewPosition);
             }
         }
 
@@ -147,7 +148,7 @@ namespace GameplayCore.EngineApi
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawCurve(void* renderer, Vector3[] points, Vector3 color, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe void Internal_SetViewProjection(void* renderer, float ellapsed, Matrix view, Matrix projection);
+        extern private static unsafe void Internal_SetViewProjection(void* renderer, float ellapsed, Matrix view, Matrix projection, Vector4 viewPosition);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe bool Internal_IsIdUsed(void* renderer, ulong id);
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -89,6 +89,7 @@ public:
 	// Api
 	static const TypeData kRenderApi;
 	static const TypeData kPhysicsApi;
+	static const TypeData kImGuiApi;
 	static const TypeData kTime;
 	static const TypeData kScreen;
 	static const TypeData kInput;

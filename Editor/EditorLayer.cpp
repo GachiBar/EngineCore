@@ -1,21 +1,20 @@
 #include "EditorLayer.h"
-
 #include "Application.h"
 #include "LayerStack.h"
-#include <fstream>
-
 #include "AIEditorWindow.h"
 #include "Resources/ExplorerWindow.h"
 #include "EditorApplication.h"
 #include "InputManager.h"
 #include "PropertyWindow.h"
 #include "AIEditorWindow.h"
+#include "winApiFileLoad.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
 #include "imgui/imgui.h"
 #include "Resources/MaterialsEditor.h"
 
+#include <fstream>
 
 namespace Renderer
 {
@@ -60,10 +59,6 @@ void EditorLayer::OnAttach()
 	auto& io = ImGui::GetIO();
 
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    // Now I just open our default scene. 
-    // When we will add explorer file selection we nead delete this code.
-    OpenScene(); 
 }
 
 void EditorLayer::OnDetach()
@@ -148,22 +143,39 @@ void EditorLayer::OnGuiRender()
         {
             if (ImGui::MenuItem("New", "Ctrl+N"))
             {
-                //NewScene();
+                std::wstring copyPath;
+
+                if (SaveSceneAs(copyPath))
+                {                
+                    scene_path = copyPath;
+                    DeserializeScene(scene_path);
+                }
             }
 
             if (ImGui::MenuItem("Open...", "Ctrl+O"))
             {
-                OpenScene();
+                if (LoadScene())
+                {
+                    game_object_inspector->SetGameObject(nullptr);
+                    gvm->SetGameObject(nullptr);
+                    auto sceneName = GetSceneName(scene_path);
+                    hierarchy->SetSceneName(sceneName);
+                }
             }
 
             if (ImGui::MenuItem("Save", "Ctrl+S"))
             {
-                SaveScene();
+                if (SaveScene())
+                {
+                    auto sceneName = GetSceneName(scene_path);
+                    hierarchy->SetSceneName(sceneName);
+                }
             }
 
             if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
             {
-                //SaveSceneAs();
+                std::wstring copyPath;
+                SaveSceneAs(copyPath);
             }
 
             if (ImGui::MenuItem("Exit"))
@@ -242,21 +254,86 @@ engine::GameObject* EditorLayer::GetSelectedGo()
     return selected_go.get();
 }
 
-void EditorLayer::OpenScene()
-{
-    std::fstream file("scene.dat", std::fstream::in);
-    std::string content;
-    getline(file, content, '\0');
-    GetApp()->GetEngine()->GetScene()->Deserialize(content);
-    // Selected object is no more valid.
-    game_object_inspector->SetGameObject(nullptr);
-    gvm->SetGameObject(nullptr);
-}
-
-void EditorLayer::SaveScene()
+void EditorLayer::SerializeScene(std::wstring path)
 {
     std::string json = GetApp()->GetEngine()->GetScene()->Serialize();
-    std::ofstream file_handler("scene.dat", std::ios::out | std::ios::trunc);
+    std::ofstream file_handler(path, std::ios::out | std::ios::trunc);
     file_handler << json;
 }
 
+void EditorLayer::DeserializeScene(std::wstring path)
+{
+    std::fstream file(path, std::fstream::in);
+    std::string json;
+    getline(file, json, '\0');
+    GetApp()->GetEngine()->GetScene()->Deserialize(json);
+}
+
+bool EditorLayer::LoadScene()
+{
+    auto scenes_names = LoadFileFromExplorer(L"Scenes", L"Scene|*.dat");
+
+    if (scenes_names.empty()) 
+    {
+        return false;
+    }
+
+    scene_path = scenes_names[0];
+    DeserializeScene(scene_path);
+    return true;
+}
+
+bool EditorLayer::SaveScene()
+{
+    if (scene_path.empty())
+    {
+        auto scenes_names = SaveFileToExplorer(L"Scenes", L"Default.dat", L"Scene|*.dat");
+        
+        if (scenes_names.empty())
+        {
+            return false;
+        }
+            
+        scene_path = scenes_names[0];
+    }
+
+    SerializeScene(scene_path);
+    return true;
+}
+
+bool EditorLayer::SaveSceneAs(std::wstring& copyPath_out)
+{  
+    auto scenes_names = SaveFileToExplorer(L"Scenes", L"Default.dat", L"Scene|*.dat");
+    
+    if (scenes_names.empty())
+    {
+        return false;
+    }
+       
+    copyPath_out = scenes_names[0];
+    SerializeScene(copyPath_out);
+    return true;
+}
+
+std::string EditorLayer::GetSceneName(std::wstring scene_path)
+{
+    auto name = RemoveExtension(BaseName(scene_path));
+    return ws2s(name);
+}
+
+std::wstring EditorLayer::BaseName(const std::wstring& path, const std::wstring& delims)
+{
+    return path.substr(path.find_last_of(delims) + 1);
+}
+
+std::wstring EditorLayer::RemoveExtension(const std::wstring& filename)
+{
+    typename std::wstring::size_type const p(filename.find_last_of('.'));
+    return p > 0 && p != std::wstring::npos ? filename.substr(0, p) : filename;
+}
+
+std::string EditorLayer::ws2s(const std::wstring& wstr)
+{
+    // TODO: It's not a solution, but ok...
+    return std::string(wstr.begin(), wstr.end());
+}

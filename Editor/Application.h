@@ -46,7 +46,6 @@ public:
     ILayer* GetCurrentUpdateLayer() override;
     EEditorInputMode::Type GetCurrentInputMode() const override;
 
-    const engine::Runtime& GetRuntime() const;
     virtual WNDPROC GetWndProc() override;
 
     virtual ~Application() = default;

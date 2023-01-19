@@ -28,7 +28,7 @@ namespace GameplayCore.AI.Enemy.Actions
                     var axis = Vector3.UnitX + Vector3.UnitZ;
                     var direction = (aimTransform.Position - enemyTransform.Position) * axis;
                     direction.Normalize();
-                    enemyController.LoockInDirection(direction);
+                    enemyController.LookInDirection(direction);
                 }
 
                 enemyController.Reload(timer, reloadingTime);

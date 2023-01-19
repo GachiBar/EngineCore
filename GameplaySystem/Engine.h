@@ -144,7 +144,8 @@ private:
 		RenderDevice* renderer, 
 		float ellapsed, 
 		DirectX::SimpleMath::Matrix view, 
-		DirectX::SimpleMath::Matrix projection);
+		DirectX::SimpleMath::Matrix projection,
+		DirectX::SimpleMath::Vector4 view_position);
 
 	static bool Internal_IsIdUsed(
 		RenderDevice* renderer,

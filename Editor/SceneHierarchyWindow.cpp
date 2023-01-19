@@ -18,13 +18,25 @@ void SceneHierarchyWindow::SetScene(std::shared_ptr<engine::Scene> scene)
     this->scene = scene;
 }
 
+std::string SceneHierarchyWindow::GetSceneName()
+{
+    return scene_name;
+}
+
+void SceneHierarchyWindow::SetSceneName(std::string scene_name)
+{
+    this->scene_name = scene_name;
+}
+
 SceneHierarchyWindow::SceneHierarchyWindow()
     : tree_level_id(0)
+    , scene_name("Default")
 {}
 
 void SceneHierarchyWindow::Draw()
 {
     ImGui::Begin("Scene Hierarchy");
+    ImGui::Text(std::format("Scene: {}", scene_name.c_str()).c_str());
 
     if (scene != nullptr) 
     {

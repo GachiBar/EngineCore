@@ -40,19 +40,29 @@ public:
 	std::shared_ptr<MaterialsEditor> resourceDrawer;
 	std::shared_ptr<AIEditorWindow> ai_editor;
 
-	engine::GameObject* GetSelectedGo();
-	void OpenScene();
+	engine::GameObject* GetSelectedGo();	
 
 private:
 
 	std::shared_ptr<engine::GameObject> selected_go;
+	std::wstring scene_path;
 
 	bool m_BlockEvents = true;
 	bool m_ShowPhysicsColliders = false;
 	bool m_ViewportFocused = false, m_ViewportHovered = false;
 	DirectX::SimpleMath::Vector2 m_ViewportSize = { 0.0f, 0.0f };
 	std::pair<DirectX::SimpleMath::Vector2, DirectX::SimpleMath::Vector2> m_ViewportBounds;
-		
-	void SaveScene();
+	
+	void SerializeScene(std::wstring path);
+	void DeserializeScene(std::wstring path);
+
+	bool LoadScene();
+	bool SaveScene();	
+	bool SaveSceneAs(std::wstring& copyPath_out);
+
+	std::string GetSceneName(std::wstring scene_path);
+	std::wstring BaseName(const std::wstring& path, const std::wstring& delims = L"/\\");
+	std::wstring RemoveExtension(const std::wstring& filename);
+	std::string ws2s(const std::wstring& wstr);
 };
 
