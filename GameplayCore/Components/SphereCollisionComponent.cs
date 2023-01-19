@@ -22,19 +22,6 @@ namespace GameplayCore.Components
             }
         }
 
-        internal override void Invalidate(string fieldName)
-        {
-            base.Invalidate(fieldName);
-
-            switch (fieldName)
-            {
-                case nameof(_radius):
-                    SetShape();
-                    PhysicsApi.SetActive(BodyId, true);
-                    break;
-            }
-        }
-
         protected override void SetShape()
         {
             PhysicsApi.SetSphereShape(BodyId, _radius);

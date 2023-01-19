@@ -37,19 +37,6 @@ namespace GameplayCore.Components
             }
         }
 
-        internal override void Invalidate(string fieldName)
-        {
-            switch (fieldName)
-            {
-                case nameof(_height):
-                    Height = _height;
-                    break;
-                case nameof(_radius):
-                    Radius = _radius;
-                    break;
-            }
-        }
-
         protected override void SetShape()
         {
             float halfHeight = _height / 2;

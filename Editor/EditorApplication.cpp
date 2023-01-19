@@ -78,6 +78,7 @@ void EditorApplication::OnExitGameMode()
 	game_layer->SetIsPlaying(false);
 	engine_->GetScene()->Terminate();
 	scene->Deserialize(serialized_scene);
+	editor_layer->game_object_inspector->SetGameObject(nullptr);
 }
 
 void EditorApplication::OnViewportPresented()

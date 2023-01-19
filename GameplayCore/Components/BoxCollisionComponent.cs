@@ -11,18 +11,16 @@ namespace GameplayCore.Components
         [InspectorName("Size")]
         private Vector3 _size = Vector3.One;
 
-        internal override void Invalidate(string fieldName)
+        public Vector3 Size
         {
-            base.Invalidate(fieldName);
-
-            switch (fieldName)
+            get => _size;
+            set
             {
-                case nameof(_size):
-                    SetShape();
-                    PhysicsApi.SetActive(BodyId, true);
-                    break;
+                _size = value;
+                SetShape();
+                PhysicsApi.SetActive(BodyId, true);
             }
-        }
+        } 
 
         protected override void SetShape()
         {
