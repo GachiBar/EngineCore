@@ -89,6 +89,7 @@ private:
 	void DrawWithoutTransform(const std::vector<std::shared_ptr<engine::GameObject>>& transformless);
 
 	bool IsSelected(std::shared_ptr<engine::GameObject> gameObject);
+	std::shared_ptr<engine::GameObject> CopyHierarchy(engine::GameObject& gameObject);
 	void DeleteHierarchy(engine::Component& transform);
 
 	void SetupDragSource(std::shared_ptr<engine::GameObject> gameObject);
