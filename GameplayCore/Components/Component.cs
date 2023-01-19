@@ -43,7 +43,7 @@ namespace GameplayCore.Components
         public virtual void OnCollisionStay(RigidbodyComponent rigidbody) { }
         public virtual void OnCollisionExit(RigidbodyComponent rigidbody) { }
 
-        internal Component Copy()
+        internal virtual Component Copy()
         {
             var componentCopy = (Component)MemberwiseClone();
             componentCopy._gameObject = null;

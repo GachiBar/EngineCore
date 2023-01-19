@@ -18,13 +18,6 @@ namespace GameplayCore.Components
         public BrainComponent()
         {
             _state = new AIState();
-            _state.SetGameObjectValue("Aim", null);
-            _state.SetBoolValue("HasAim", false);
-            _state.SetBoolValue("CanShoot", false);
-            _state.SetBoolValue("NeedReloading", false);
-            _state.SetBoolValue("NeedFlee", false);
-            _state.SetFloatValue("ReloadingTime", 0.75f);
-
             _planner = new AIPlanner();
         }
 
@@ -35,6 +28,7 @@ namespace GameplayCore.Components
                 return;
             }
 
+            Arbitrator.InitState(_state);
             ActionsAsset.Load();
 
             if (ActionsAsset.Actions.Count == 0)

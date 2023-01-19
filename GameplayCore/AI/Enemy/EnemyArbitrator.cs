@@ -1,10 +1,21 @@
 ﻿using GameplayCore.AI.Enemy.Goals;
 using GameplayCore.Components;
+using System;
 
 namespace GameplayCore.AI.Enemy
 {
     public class EnemyArbitrator : AIArbitrator
     {
+        public override void InitState(AIState state)
+        {
+            state.SetGameObjectValue("Aim", null);
+            state.SetBoolValue("HasAim", false);
+            state.SetBoolValue("CanShoot", false);
+            state.SetBoolValue("NeedReloading", false);
+            state.SetBoolValue("NeedFlee", false);
+            state.SetFloatValue("ReloadingTime", 0.75f);
+        }
+
         public override AIGoal ChooseGoal(GameObject gameObject, AIState state)
         {
             UpdateState(gameObject, state);

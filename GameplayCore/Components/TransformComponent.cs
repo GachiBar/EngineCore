@@ -302,6 +302,14 @@ namespace GameplayCore.Components
                     _children.Add(component);
             }
         }
-        
+
+        internal override Component Copy()
+        {
+            var copy = (TransformComponent) base.Copy();
+            copy.Parent = null;
+            copy._children = new List<TransformComponent>();
+            return copy;
+        }
+
     }
 }
