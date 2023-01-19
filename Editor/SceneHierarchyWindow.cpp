@@ -111,6 +111,11 @@ void SceneHierarchyWindow::DrawWithTransformPopup(std::shared_ptr<engine::GameOb
 {
     if (ImGui::BeginPopupContextItem())
     {
+        if (ImGui::Selectable("Copy")) 
+        {
+            CopyHierarchy(*gameObject);
+        }
+
         if (ImGui::Selectable("Delete"))
         {
             auto transform = gameObject->GetComponent(engine::Types::kTransformComponent);
@@ -141,6 +146,11 @@ void SceneHierarchyWindow::DrawWithoutTransformPopup(std::shared_ptr<engine::Gam
 {
     if (ImGui::BeginPopupContextItem())
     {
+        if (ImGui::Selectable("Copy"))
+        {
+            gameObject->Copy();
+        }
+
         if (ImGui::Selectable("Delete"))
         {
             scene->DeleteGameObject(gameObject);
@@ -244,6 +254,41 @@ bool SceneHierarchyWindow::IsSelected(std::shared_ptr<engine::GameObject> gameOb
     return selected != nullptr && *gameObject == *selected;
 }
 
+std::shared_ptr<engine::GameObject> SceneHierarchyWindow::CopyHierarchy(engine::GameObject& gameObject)
+{
+    auto transform = gameObject.GetComponent(engine::Types::kTransformComponent);
+
+    auto copy = gameObject.Copy();
+    auto copyTransform = copy->GetComponent(engine::Types::kTransformComponent);   
+
+    auto transformType = engine::Runtime::GetCurrentRuntime().GetType(engine::Types::kTransformComponent);
+    auto parentProperty = transformType.GetProperty("Parent");
+    auto childrenCountProperty = transformType.GetProperty("ChildrenCount");
+    auto gameObjectProperty = transformType.GetProperty("GameObject");
+    auto getChildMethod = transformType.GetMethod("GetChild", 1);
+
+    auto childrenCountObject = childrenCountProperty.GetValue(*transform).value();
+    auto childrenCount = childrenCountObject.Unbox<size_t>(); 
+
+    for (size_t i = 0; i < childrenCount; ++i) 
+    {
+        void* params[1];
+        params[0] = &i;
+
+        auto childTransformObject = getChildMethod.Invoke(*transform, params).value();
+        engine::Component childTransform(std::move(childTransformObject));
+
+        auto childObject = gameObjectProperty.GetValue(childTransform).value();
+        engine::GameObject child(std::move(childObject));
+
+        auto childCopy = CopyHierarchy(child);        
+        auto childCopyTransform = childCopy->GetComponent(engine::Types::kTransformComponent);
+        parentProperty.SetValue(*childCopyTransform, *copyTransform);
+    }
+
+    return copy;
+}
+
 void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
 {
     auto gameObject = transform.GameObject();
@@ -257,8 +302,8 @@ void SceneHierarchyWindow::DeleteHierarchy(engine::Component& transform)
         void* params[1];
         params[0] = &i;
 
-        auto childObject = getChildMethod.Invoke(transform, params).value();
-        engine::Component childTransform(std::move(childObject));
+        auto childTransformObject = getChildMethod.Invoke(transform, params).value();
+        engine::Component childTransform(std::move(childTransformObject));
         DeleteHierarchy(childTransform);
     }
 

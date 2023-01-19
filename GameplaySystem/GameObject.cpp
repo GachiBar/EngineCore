@@ -19,6 +19,7 @@ Method* GameObject::fixed_update_ = nullptr;
 Method* GameObject::update_ = nullptr;
 Method* GameObject::render_ = nullptr;
 Method* GameObject::editor_render_ = nullptr;
+Method* GameObject::copy_ = nullptr;
 Method* GameObject::invalidate_ = nullptr;
 
 const char kIsNotCachedErrorMessage[] = "GameObject methods are not cached.";
@@ -163,6 +164,12 @@ void GameObject::Invalidate() {
     invalidate_->Invoke(*this);
 }
 
+std::shared_ptr<GameObject> GameObject::Copy() {
+    assert(copy_ != nullptr && kIsNotCachedErrorMessage);
+
+    return std::make_shared<GameObject>(std::move(copy_->Invoke(*this).value()));
+}
+
 std::shared_ptr<Component> GameObject::operator[](size_t index) const {
     assert(get_item_ != nullptr && kIsNotCachedErrorMessage);
 
@@ -190,6 +197,7 @@ void GameObject::CacheMethods(const Runtime& runtime) {
     update_ = new Method(type, "Update", 0);
     render_ = new Method(type, "Render", 0);
     editor_render_ = new Method(type, "EditorRender", 0);
+    copy_ = new Method(type, "Copy", 0);
     invalidate_ = new Method(type, "Invalidate", 0);
 }
 
