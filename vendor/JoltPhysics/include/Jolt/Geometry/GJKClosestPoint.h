@@ -34,7 +34,7 @@ private:
 	{
 #ifdef JPH_GJK_DEBUG
 		for (int i = 0; i < mNumPoints; ++i)
-			Trace("y[%d] = [%s], |y[%d]| = %g", i, ConvertToString(mY[i]).c_str(), i, mY[i].Length());
+			Trace("y[%d] = [%s], |y[%d]| = %g", i, ConvertToString(mY[i]).c_str(), i, (double)mY[i].Length());
 #endif
 
 		uint32 set;
@@ -69,7 +69,7 @@ private:
 		}
 
 #ifdef JPH_GJK_DEBUG
- 		Trace("GetClosest: set = 0b%s, v = [%s], |v| = %g", NibbleToBinary(set), ConvertToString(v).c_str(), v.Length());
+ 		Trace("GetClosest: set = 0b%s, v = [%s], |v| = %g", NibbleToBinary(set), ConvertToString(v).c_str(), (double)v.Length());
 #endif
 
 		float v_len_sq = v.LengthSq();
@@ -110,6 +110,10 @@ private:
 			}
 		mNumPoints = num_points;
 	}
+
+	// GCC 11.3 thinks the assignments to mP, mQ and mY below may use uninitialized variables
+	JPH_SUPPRESS_WARNING_PUSH
+	JPH_GCC_SUPPRESS_WARNING("-Wmaybe-uninitialized")
 
 	// Remove points that are not in the set, only updates mP
 	void		UpdatePointSetP(uint32 inSet)
@@ -152,6 +156,8 @@ private:
 			}
 		mNumPoints = num_points;
 	}
+
+	JPH_SUPPRESS_WARNING_POP
 
 	// Calculate closest points on A and B
 	void		CalculatePointAAndB(Vec3 &outPointA, Vec3 &outPointB) const
@@ -434,7 +440,7 @@ public:
 
 			// If v is very small compared to the length of y, we also consider this a collision
 #ifdef JPH_GJK_DEBUG
-			Trace("Check v small compared to y: %g <= %g", v_len_sq, FLT_EPSILON * GetMaxYLengthSq());
+			Trace("Check v small compared to y: %g <= %g", (double)v_len_sq, (double)(FLT_EPSILON * GetMaxYLengthSq()));
 #endif
 			if (v_len_sq <= FLT_EPSILON * GetMaxYLengthSq())
 			{
@@ -452,7 +458,7 @@ public:
 
 			// If the squared length of v is not changing enough, we've converged and there is no collision
 #ifdef JPH_GJK_DEBUG
-			Trace("Check v not changing enough: %g <= %g", prev_v_len_sq - v_len_sq, FLT_EPSILON * prev_v_len_sq);
+			Trace("Check v not changing enough: %g <= %g", (double)(prev_v_len_sq - v_len_sq), (double)(FLT_EPSILON * prev_v_len_sq));
 #endif
 			JPH_ASSERT(prev_v_len_sq >= v_len_sq);
 			if (prev_v_len_sq - v_len_sq <= FLT_EPSILON * prev_v_len_sq)
@@ -470,7 +476,7 @@ public:
 		CalculatePointAAndB(outPointA, outPointB);
 
 #ifdef JPH_GJK_DEBUG
-		Trace("Return: v = [%s], |v| = %g", ConvertToString(ioV).c_str(), ioV.Length());
+		Trace("Return: v = [%s], |v| = %g", ConvertToString(ioV).c_str(), (double)ioV.Length());
 
 		// Draw -ioV to show the closest point to the origin from the previous simplex
 		DebugRenderer::sInstance->DrawArrow(mOffset, mOffset - ioV, Color::sOrange, 0.05f);
@@ -539,14 +545,14 @@ public:
 
 			float v_dot_w = v.Dot(w);
 #ifdef JPH_GJK_DEBUG
-			Trace("v . w = %g", v_dot_w);
+			Trace("v . w = %g", (double)v_dot_w);
 #endif
 			if (v_dot_w > 0.0f)
 			{
 				// If ray and normal are in the same direction, we've passed A and there's no collision
 				float v_dot_r = v.Dot(inRayDirection);
 #ifdef JPH_GJK_DEBUG
-				Trace("v . r = %g", v_dot_r);
+				Trace("v . r = %g", (double)v_dot_r);
 #endif
 				if (v_dot_r >= 0.0f)
 					return false;
@@ -556,7 +562,7 @@ public:
 				float old_lambda = lambda;
 				lambda -= delta;
 #ifdef JPH_GJK_DEBUG
-				Trace("lambda = %g, delta = %g", lambda, delta);
+				Trace("lambda = %g, delta = %g", (double)lambda, (double)delta);
 #endif
 
 				// If lambda didn't change, we cannot converge any further and we assume a hit
@@ -743,14 +749,14 @@ public:
 			// So to v . w we have to add: v . (-(inConvexRadiusA + inConvexRadiusB) * v / |v|) = -(inConvexRadiusA + inConvexRadiusB) * |v|
 			float v_dot_w = v.Dot(w) - sum_convex_radius * v.Length();
 #ifdef JPH_GJK_DEBUG
-			Trace("v . w = %g", v_dot_w);
+			Trace("v . w = %g", (double)v_dot_w);
 #endif
 			if (v_dot_w > 0.0f)
 			{
 				// If ray and normal are in the same direction, we've passed A and there's no collision
 				float v_dot_r = v.Dot(inDirection);
 #ifdef JPH_GJK_DEBUG
-				Trace("v . r = %g", v_dot_r);
+				Trace("v . r = %g", (double)v_dot_r);
 #endif
 				if (v_dot_r >= 0.0f)
 					return false;
@@ -760,7 +766,7 @@ public:
 				float old_lambda = lambda;
 				lambda -= delta;
 #ifdef JPH_GJK_DEBUG
-				Trace("lambda = %g, delta = %g", lambda, delta);
+				Trace("lambda = %g, delta = %g", (double)lambda, (double)delta);
 #endif
 
 				// If lambda didn't change, we cannot converge any further and we assume a hit
@@ -912,32 +918,32 @@ private:
 	/// Draw state of algorithm
 	void		DrawState()
 	{
-		Mat44 origin = Mat44::sTranslation(mOffset);
+		RMat44 origin = RMat44::sTranslation(mOffset);
 
 		// Draw origin
 		DebugRenderer::sInstance->DrawCoordinateSystem(origin, 1.0f);
 
 		// Draw the hull
-		DebugRenderer::sInstance->DrawGeometry(origin, mGeometry->mBounds, mGeometry->mBounds.GetExtent().LengthSq(), Color::sYellow, mGeometry);
+		DebugRenderer::sInstance->DrawGeometry(origin, mGeometry->mBounds.Transformed(origin), mGeometry->mBounds.GetExtent().LengthSq(), Color::sYellow, mGeometry);
 
 		// Draw Y
 		for (int i = 0; i < mNumPoints; ++i)
 		{
 			// Draw support point
-			Vec3 y_i = origin * mY[i];
+			RVec3 y_i = origin * mY[i];
 			DebugRenderer::sInstance->DrawMarker(y_i, Color::sRed, 1.0f);
 			for (int j = i + 1; j < mNumPoints; ++j)
 			{
 				// Draw edge
-				Vec3 y_j = origin * mY[j];
+				RVec3 y_j = origin * mY[j];
 				DebugRenderer::sInstance->DrawLine(y_i, y_j, Color::sRed);
 				for (int k = j + 1; k < mNumPoints; ++k)
 				{
 					// Make sure triangle faces the origin
-					Vec3 y_k = origin * mY[k];
-					Vec3 center = (y_i + y_j + y_k) / 3.0f;
-					Vec3 normal = (y_j - y_i).Cross(y_k - y_i);
-					if (normal.Dot(center) < 0.0f)
+					RVec3 y_k = origin * mY[k];
+					RVec3 center = (y_i + y_j + y_k) / Real(3);
+					RVec3 normal = (y_j - y_i).Cross(y_k - y_i);
+					if (normal.Dot(center) < Real(0))
 						DebugRenderer::sInstance->DrawTriangle(y_i, y_j, y_k, Color::sLightGrey);
 					else
 						DebugRenderer::sInstance->DrawTriangle(y_i, y_k, y_j, Color::sLightGrey);
@@ -957,7 +963,7 @@ private:
 
 #ifdef JPH_GJK_DEBUG
 	DebugRenderer::GeometryRef	mGeometry;	///< A visualization of the minkowski difference for state drawing
-	Vec3		mOffset = Vec3::sZero();	///< Offset to use for state drawing
+	RVec3		mOffset = RVec3::sZero();	///< Offset to use for state drawing
 #endif
 };
 

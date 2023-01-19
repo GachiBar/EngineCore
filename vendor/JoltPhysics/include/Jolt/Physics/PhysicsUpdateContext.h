@@ -52,7 +52,7 @@ public:
 
 			Vec3			mDeltaPosition;											///< Desired rotation step
 			Vec3			mContactNormal;											///< World space normal of closest hit (only valid if mFractionPlusSlop < 1)
-			Vec3			mContactPointOn2;										///< World space contact point on body 2 of closest hit (only valid if mFractionPlusSlop < 1)
+			RVec3			mContactPointOn2;										///< World space contact point on body 2 of closest hit (only valid if mFractionPlusSlop < 1)
 			BodyID			mBodyID1;												///< Body 1 (the body that is performing collision detection)
 			BodyID			mBodyID2;												///< Body 2 (the body of the closest hit, only valid if mFractionPlusSlop < 1)
 			float			mFraction = 1.0f;										///< Fraction at which the hit occurred
@@ -146,7 +146,7 @@ public:
 		JobHandle			mStartNextStep;											///< Job that kicks the next step (empty for the last step)
 	};
 
-	using Steps = vector<Step, STLTempAllocator<Step>>;
+	using Steps = std::vector<Step, STLTempAllocator<Step>>;
 
 	/// Maximum amount of concurrent jobs on this machine
 	int						GetMaxConcurrency() const								{ const int max_concurrency = PhysicsUpdateContext::cMaxConcurrency; return min(max_concurrency, mJobSystem->GetMaxConcurrency()); } ///< Need to put max concurrency in temp var as min requires a reference

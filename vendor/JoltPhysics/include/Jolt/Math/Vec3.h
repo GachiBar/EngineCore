@@ -11,7 +11,7 @@ JPH_NAMESPACE_BEGIN
 
 /// 3 component vector (stored as 4 vectors). 
 /// Note that we keep the 4th component the same as the 3rd component to avoid divisions by zero when JPH_FLOATING_POINT_EXCEPTIONS_ENABLED defined
-class [[nodiscard]] alignas(16) Vec3
+class [[nodiscard]] alignas(JPH_VECTOR_ALIGNMENT) Vec3
 {
 public:
 	JPH_OVERRIDE_NEW_DELETE
@@ -24,6 +24,9 @@ public:
 #else
 	using Type = Vec4::Type;
 #endif
+
+	// Argument type
+	using ArgType = Vec3Arg;
 
 	/// Constructor
 								Vec3() = default; ///< Intentionally not initialized for performance reasons
@@ -99,7 +102,7 @@ public:
 	static JPH_INLINE Vec3		sUnitSpherical(float inTheta, float inPhi);
 
 	/// A set of vectors uniformly spanning the surface of a unit sphere, usable for debug purposes
-	static const vector<Vec3>	sUnitSphere;
+	static const std::vector<Vec3> sUnitSphere;
 
 	/// Get random unit vector
 	template <class Random>

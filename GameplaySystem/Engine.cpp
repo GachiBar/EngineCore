@@ -175,8 +175,8 @@ void Engine::InitPhysicsSystem()
 		kMaxBodyPairs,
 		kMaxContactConstraints,
 		layer_interface_,
-		BroadPhaseLayers::IsCanCollide,
-		CollisionLayers::IsCanCollide);
+		broadPhaseLayers,
+		collisionLayers);
 
 	physics_system_.SetContactListener(&contact_listener_);
 }
@@ -490,7 +490,7 @@ JPH::uint32 Engine::Internal_CreateBody(
 	JPH::EMotionType motion_type) 
 {
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON);
+	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON + 1);
 	JPH::BodyCreationSettings body_settings(sphere_shape, position, rotation, motion_type, CollisionLayers::kNoCollision);
 	body_settings.mAllowDynamicOrKinematic = true;
 	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
@@ -721,13 +721,10 @@ bool Engine::Internal_CastRay(
 	// TODO: what is broad phase and object layers?
 	const JPH::NarrowPhaseQuery& narrow_phase_query = physics_system->GetNarrowPhaseQuery();
 
-	JPH::RayCast ray{ origin, direction };
+	JPH::RRayCast ray{ origin, direction };
 	JPH::RayCastResult hit;
-	JPH::BroadPhaseLayerFilter bp_layer_filter;
-	JPH::ObjectLayerFilter object_layer_filter;
-	JPH::BodyFilter body_filter;
 		
-	if (narrow_phase_query.CastRay(ray, hit, bp_layer_filter, object_layer_filter, body_filter)) {
+	if (narrow_phase_query.CastRay(ray, hit)) {
 		body_id = hit.mBodyID.GetIndexAndSequenceNumber();
 		return true;
 	}

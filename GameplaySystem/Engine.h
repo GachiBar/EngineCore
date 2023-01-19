@@ -70,6 +70,9 @@ private:
 	JPH::JobSystemThreadPool job_system_;
 	BPLayerInterfaceImplementation layer_interface_;
 	EngineContactListener contact_listener_;
+
+	BroadPhaseLayers broadPhaseLayers{};
+	CollisionLayers  collisionLayers{}; 
 	JPH::PhysicsSystem physics_system_;
 
 	std::shared_ptr<Scene> scene_;

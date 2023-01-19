@@ -149,6 +149,7 @@ xcopy $(SolutionDir)vendor\mono\bin\$(Configuration)\* $(SolutionDir) /y </Comma
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)vendor\JoltPhysics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
