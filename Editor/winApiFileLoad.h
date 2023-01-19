@@ -269,28 +269,21 @@ std::vector<std::wstring> split(std::wstring s, std::wstring delimiter)
 
 std::vector<std::wstring> LoadFileFromExplorer(
     const std::wstring& DefaultPath,
-    const std::wstring& FileTypes = L"All Files (*.*)|*.*n|JSON Files (*.json)|*.json|GeoJSON Files (*.geojson)|*.geojson",
-    bool openFile = true)
+    const std::wstring& FileTypes = L"All Files (*.geojson;*.json)|*.geojson;*.json|JSON Files (*.json)|*.json|GeoJSON Files (*.geojson)|*.geojson")
 {
     std::vector<std::wstring> OutFilenames;
 
 
     IFileDialog* FileDialog;
-    if (
-        openFile
-            ? SUCCEEDED(::CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_IFileOpenDialog, IID_PPV_ARGS_Helper(&FileDialog)))
-            : SUCCEEDED(::CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_IFileSaveDialog, IID_PPV_ARGS_Helper(&FileDialog)))
-    )
+    if (SUCCEEDED(::CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_IFileOpenDialog, IID_PPV_ARGS_Helper(&FileDialog))))
     {
         // Set up common settings
         FileDialog->SetTitle(TEXT("Choose A File"));
-
-
         if (!DefaultPath.empty())
         {
             // SHCreateItemFromParsingName requires the given path be absolute and use \ rather than / as our normalized paths do
             std::wstring DefaultWindowsPath = DefaultPath;
-            std::replace(DefaultWindowsPath.begin(), DefaultWindowsPath.end(),TEXT('/'), TEXT('\\'));
+            std::replace(DefaultWindowsPath.begin(), DefaultWindowsPath.end(), TEXT('/'), TEXT('\\'));
 
             TComPtr<IShellItem> DefaultPathItem;
             if (SUCCEEDED(::SHCreateItemFromParsingName(DefaultWindowsPath.c_str(), nullptr, IID_PPV_ARGS(&DefaultPathItem))))
@@ -298,6 +291,7 @@ std::vector<std::wstring> LoadFileFromExplorer(
                 FileDialog->SetFolder(DefaultPathItem);
             }
         }
+
         // Set-up the file type filters
         std::vector<std::wstring> UnformattedExtensions;
         std::vector<COMDLG_FILTERSPEC> FileDialogFilters;
@@ -313,17 +307,11 @@ std::vector<std::wstring> LoadFileFromExplorer(
                     FileDialogFilters.push_back({});
                     COMDLG_FILTERSPEC& NewFilterSpec = FileDialogFilters[FileDialogFilters.size() - 1];
                     NewFilterSpec.pszName = UnformattedExtensions[ExtensionIndex++].c_str();
-                    NewFilterSpec.pszSpec = UnformattedExtensions[ExtensionIndex++].c_str();
-                    if (!openFile && ExtensionIndex == 2)
-                    {
-                        if (SUCCEEDED(FileDialog->SetDefaultExtension(NewFilterSpec.pszSpec))){}
-                    }
+                    NewFilterSpec.pszSpec = UnformattedExtensions[ExtensionIndex++].c_str();                   
                 }
             }
         }
         FileDialog->SetFileTypes(FileDialogFilters.size(), FileDialogFilters.data());
-
-
 
         // Show the picker
         if (SUCCEEDED(FileDialog->Show(NULL)))
@@ -341,7 +329,7 @@ std::vector<std::wstring> LoadFileFromExplorer(
                 //OutFilename = IFileManager::Get().ConvertToRelativePath(*OutFilename);
                 //FPaths::NormalizeFilename(OutFilename);
             };
-            if (openFile)
+
             {
                 IFileOpenDialog* FileOpenDialog = static_cast<IFileOpenDialog*>(FileDialog);
 
@@ -365,9 +353,80 @@ std::vector<std::wstring> LoadFileFromExplorer(
                     }
                 }
             }
-            else
+        }
+    }
+    FileDialog->Release();
+
+    return OutFilenames;
+};
+
+std::vector<std::wstring> SaveFileToExplorer(
+    const std::wstring& DefaultPath,
+    const std::wstring& FileTypes = L"All Files (*.*)|*.*n|JSON Files (*.json)|*.json|GeoJSON Files (*.geojson)|*.geojson")
+{
+    std::vector<std::wstring> OutFilenames;
+
+
+    IFileDialog* FileDialog;
+    if (SUCCEEDED(::CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_IFileSaveDialog, IID_PPV_ARGS_Helper(&FileDialog)))    )
+    {
+        // Set up common settings
+        FileDialog->SetTitle(TEXT("Choose A File"));
+        if (!DefaultPath.empty())
+        {
+            // SHCreateItemFromParsingName requires the given path be absolute and use \ rather than / as our normalized paths do
+            std::wstring DefaultWindowsPath = DefaultPath;
+            std::replace(DefaultWindowsPath.begin(), DefaultWindowsPath.end(),TEXT('/'), TEXT('\\'));
+
+            TComPtr<IShellItem> DefaultPathItem;
+            if (SUCCEEDED(::SHCreateItemFromParsingName(DefaultWindowsPath.c_str(), nullptr, IID_PPV_ARGS(&DefaultPathItem))))
+            {
+                FileDialog->SetFolder(DefaultPathItem);
+            }
+        }
+
+        // Set-up the file type filters
+        std::vector<std::wstring> UnformattedExtensions;
+        std::vector<COMDLG_FILTERSPEC> FileDialogFilters;
+        {
+            const std::wstring DefaultFileTypes = FileTypes;
+            UnformattedExtensions = split(DefaultFileTypes, TEXT("|"));
+
+            if (UnformattedExtensions.size() % 2 == 0)
+            {
+                FileDialogFilters.reserve(UnformattedExtensions.size() / 2);
+                for (int32 ExtensionIndex = 0; ExtensionIndex < UnformattedExtensions.size();)
+                {
+                    FileDialogFilters.push_back({});
+                    COMDLG_FILTERSPEC& NewFilterSpec = FileDialogFilters[FileDialogFilters.size() - 1];
+                    NewFilterSpec.pszName = UnformattedExtensions[ExtensionIndex++].c_str();
+                    NewFilterSpec.pszSpec = UnformattedExtensions[ExtensionIndex++].c_str();
+                    FileDialog->SetDefaultExtension(NewFilterSpec.pszSpec);
+                }
+            }
+        }
+        FileDialog->SetFileTypes(FileDialogFilters.size(), FileDialogFilters.data());
+
+        // Show the picker
+        if (SUCCEEDED(FileDialog->Show(NULL)))
+        {
+            int32 OutFilterIndex = 0;
+            if (SUCCEEDED(FileDialog->GetFileTypeIndex((UINT*)&OutFilterIndex)))
+            {
+                OutFilterIndex -= 1; // GetFileTypeIndex returns a 1-based index
+            }
+
+            auto AddOutFilename = [&OutFilenames](const std::wstring& InFilename)
+            {
+                OutFilenames.push_back(InFilename);
+                //std::wstring& OutFilename = OutFilenames[OutFilenames.size()-1];
+                //OutFilename = IFileManager::Get().ConvertToRelativePath(*OutFilename);
+                //FPaths::NormalizeFilename(OutFilename);
+            };
+
             {
                 IFileSaveDialog* FileOpenDialog = static_cast<IFileSaveDialog*>(FileDialog);
+
                 IShellItem* pItem;
                 if (SUCCEEDED(FileOpenDialog->GetResult(&pItem)))
                 {

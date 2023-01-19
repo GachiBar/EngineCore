@@ -1,0 +1,12 @@
+[
+  {
+    "Guid": "a1e4b046-9235-4bd0-8f2f-9d7ed542706b",
+    "Name": "GameObject",
+    "Components": []
+  },
+  {
+    "Guid": "40c3c33c-791f-40c0-ab6d-2121fc61963b",
+    "Name": "GameObject",
+    "Components": []
+  }
+]

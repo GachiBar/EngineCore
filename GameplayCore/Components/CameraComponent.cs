@@ -52,13 +52,13 @@ namespace GameplayCore.Components
                 if (Orthographic)
                 {
                     var projection = Matrix.OrthoRH(Screen.Width / Zoom, Screen.Height / Zoom, Near, Far);
-                    EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection);
+                    EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection, eye);
                 }
                 else
                 {
                     float aspect = (float)Screen.Width / Screen.Height;
                     var projection = Matrix.PerspectiveFovRH(fow, aspect, Near, Far);
-                    EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection);
+                    EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection, eye);
                 }                
             }
         }
