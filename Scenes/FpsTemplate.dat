@@ -686,5 +686,113 @@
         "_gameObject": "652d1a06-9589-4519-ad92-ebd53d659029"
       }
     ]
+  },
+  {
+    "Guid": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b",
+    "Name": "Enemy",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": null,
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 1.510598,
+          "Y": 1.49173319,
+          "Z": -3.4092176
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b"
+      },
+      {
+        "Type": "GameplayCore.Components.SphereCollisionComponent",
+        "RenderInGame": false,
+        "_radius": 1.0,
+        "_gameObject": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b"
+      },
+      {
+        "Type": "GameplayCore.Components.RigidbodyComponent",
+        "_freezeRotation": true,
+        "_isKinematic": false,
+        "_mass": 1.0,
+        "_gameObject": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b"
+      },
+      {
+        "Type": "GameplayCore.Components.MeshRenderComponent",
+        "_meshAsset": "e37573e4-1f6c-4698-8348-bb72df9faf98",
+        "_materialAsset": "30872d3d-cc41-4bad-9fe3-0e9cd86833de",
+        "_gameObject": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b"
+      },
+      {
+        "Type": "GameplayCore.Components.RangeEnemyControllerComponent",
+        "Speed": 2.0,
+        "AngularSpeed": 4.0,
+        "Range": 4.0,
+        "ViewSector": 20.0,
+        "BulletInitialPoint": "764c02a4-0475-4282-ba74-82a08cb6bb46",
+        "BulletImpulse": 50.0,
+        "BulletLifeTime": 2.0,
+        "BulletMesh": "e37573e4-1f6c-4698-8348-bb72df9faf98",
+        "_gameObject": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b"
+      },
+      {
+        "Type": "GameplayCore.Components.BrainComponent",
+        "Arbitrator": "GameplayCore.AI.Enemy.EnemyArbitrator",
+        "ActionsAsset": "838459dd-941f-4ade-bd43-6869fc83eb64",
+        "_gameObject": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b"
+      },
+      {
+        "Type": "GameplayCore.Components.HealthComponent",
+        "_maxHealth": 100.0,
+        "_healt": 100.0,
+        "_regenerationSpeed": 5.0,
+        "_gameObject": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b"
+      }
+    ]
+  },
+  {
+    "Guid": "764c02a4-0475-4282-ba74-82a08cb6bb46",
+    "Name": "Mazzle",
+    "Components": [
+      {
+        "Type": "GameplayCore.Components.TransformComponent",
+        "_parent": "d68a5f0e-91dd-4da1-94b4-491e8bd2247b",
+        "_localRotation": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "W": 1.0
+        },
+        "_localScale": {
+          "X": 1.0,
+          "Y": 1.0,
+          "Z": 1.0
+        },
+        "_localPosition": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": -1.5
+        },
+        "_editorEuler": {
+          "X": 0.0,
+          "Y": 0.0,
+          "Z": 0.0
+        },
+        "_gameObject": "764c02a4-0475-4282-ba74-82a08cb6bb46"
+      }
+    ]
   }
 ]

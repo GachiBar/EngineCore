@@ -45,8 +45,9 @@ public:
     void Render();
     void EditorRender();
     void Terminate();
+    std::shared_ptr<GameObject> Copy();
     void Invalidate();
-
+    
     std::shared_ptr<Component> operator[](size_t index) const;
 
     static void CacheMethods(const Runtime& runtime);
@@ -66,7 +67,7 @@ private:
     static Method* render_;
     static Method* editor_render_;
     static Method* terminate_;
-
+    static Method* copy_;
     static Method* invalidate_;    
 };
 
