@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #pragma once
+#include <Jolt/Math/MathTypes.h>
 
 JPH_NAMESPACE_BEGIN
 
