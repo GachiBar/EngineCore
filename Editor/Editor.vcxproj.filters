@@ -224,5 +224,8 @@
     <ClInclude Include="winApiFileLoad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FilePathsHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

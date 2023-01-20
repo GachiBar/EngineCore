@@ -175,6 +175,7 @@
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="FilePathsHelper.h" />
     <ClInclude Include="ProjectSettingsWindow.h" />
     <ClInclude Include="PropertyWindow.h" />
     <ClInclude Include="Resources\ExplorerWindow.h" />

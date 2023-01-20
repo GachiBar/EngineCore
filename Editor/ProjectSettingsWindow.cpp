@@ -7,6 +7,21 @@
 #include "InputCoreSystem/InputSettings.h"
 #include "libs/imgui_sugar.hpp"
 #include "winApiFileLoad.h"
+#include "FilePathsHelper.h"
+#include "ConfigReaderWriterFactory.h"
+#include <format>
+#include <filesystem>
+
+ProjectSettingsWindow::ProjectSettingsWindow()
+{
+	ConfigReaderWriterFactory factory;
+	config_reader_writer = factory.Create();
+}
+
+ProjectSettingsWindow::~ProjectSettingsWindow()
+{
+	delete config_reader_writer;
+}
 
 void ProjectSettingsWindow::Draw()
 {
@@ -39,16 +54,41 @@ void ProjectSettingsWindow::Draw()
 				if(bWasChanges)
 				{
 					InputManager::getInstance().input_settings->SaveKeyMappingsToFile();
-				}
-				
+				}				
 			}
 
 			with_CollapsingHeader("Game settings", ImGuiTreeNodeFlags_None)
-			{
+			{			
+				const size_t nameSize = 256;
+				char name[nameSize] = {};
+
+				auto fromConfigPath = config_reader_writer->GetValue<std::string>("Game settings", "Default name");
+				auto configName = fromConfigPath.value_or("");
+
+				strncpy_s(name, configName.data(), nameSize);
+
+				if (ImGui::InputText("##Default name", name, nameSize, ImGuiInputTextFlags_ReadOnly))
+				{
+					config_reader_writer->SetValue("Game settings", "Default name", name);
+				}
+
+				ImGui::SameLine();
+
 				if (ImGui::Button("..."))
 				{
-					auto paths = LoadFileFromExplorer(L"Scenes", L"Scenes|*.dat");
+					auto inConfigPaths = LoadFileFromExplorer(L"Scenes", L"Scenes|*.dat");
+
+					if (inConfigPaths.empty()) 
+					{
+						return;
+					}
+			
+					auto inConfigPath = std::filesystem::relative(inConfigPaths[0], std::filesystem::current_path());
+					config_reader_writer->SetValue("Game settings", "Default name", inConfigPath.generic_string());
 				}
+
+				ImGui::SameLine();
+				ImGui::LabelText("Default name", "Default name");
 			}
 		}
 	}
