@@ -381,8 +381,13 @@ void Engine::Internal_DrawModel(
 	DirectX::SimpleMath::Matrix model_matrix) 
 {
 	MaterialData material =  GetMaterialData(material_id);
+
+	uint32_t objectId = 0;
+	
 	OpaqueModelDrawData opaque_model_draw_data{
-		id, model_matrix, model_matrix, 1.0f, 1.0f, material, {}
+		id, model_matrix, model_matrix, 1.0f, 1.0f, material,
+		objectId,
+		{}
 	};
 	
 	renderer->DrawOpaqueModel(opaque_model_draw_data);
