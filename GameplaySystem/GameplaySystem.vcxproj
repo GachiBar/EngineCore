@@ -76,7 +76,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\;$(SolutionDir)vendor\JoltPhysics\include\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -86,7 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\;$(SolutionDir)JoltLib\</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -126,11 +126,11 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;NOMINMAX;JPH_PROFILE_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;NOMINMAX;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)vendor\JoltPhysics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)JoltLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -153,11 +153,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUGPH_FLOATING_POINT_EXCEPTIONS_ENABLED;NDEBUG;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)vendor\JoltPhysics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -230,6 +232,9 @@
     </ProjectReference>
     <ProjectReference Include="..\InputSystem\InputSystem.vcxproj">
       <Project>{4f8b6eb6-d028-4c38-9d69-227347502957}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\JoltLib\Jolt.vcxproj">
+      <Project>{9add0606-1b70-3179-836e-12f9d4bafe35}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Logger\Logger.vcxproj">
       <Project>{4be9d43d-0651-4bae-b946-bc4395adc7cd}</Project>
