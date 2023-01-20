@@ -13,6 +13,9 @@
 class SceneHierarchyWindow : public IEditorWindow
 {
 public:
+	std::shared_ptr<engine::GameObject> GetSelected();
+	void SetSelected(std::shared_ptr<engine::GameObject> selected);
+
 	std::shared_ptr<engine::Scene> GetScene();
 	void SetScene(std::shared_ptr<engine::Scene> scene);
 	

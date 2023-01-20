@@ -8,6 +8,16 @@
 #include <iostream>
 #include <imgui/imgui_internal.h>
 
+std::shared_ptr<engine::GameObject> SceneHierarchyWindow::GetSelected()
+{
+    return selected;
+}
+
+void SceneHierarchyWindow::SetSelected(std::shared_ptr<engine::GameObject> selected)
+{
+    this->selected = selected;
+}
+
 std::shared_ptr<engine::Scene> SceneHierarchyWindow::GetScene()
 {
     return scene;
