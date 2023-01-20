@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "libs/imgui_sugar.hpp"
+#include "winApiFileLoad.h"
 
 void ProjectSettingsWindow::Draw()
 {
@@ -40,6 +41,14 @@ void ProjectSettingsWindow::Draw()
 					InputManager::getInstance().input_settings->SaveKeyMappingsToFile();
 				}
 				
+			}
+
+			with_CollapsingHeader("Game settings", ImGuiTreeNodeFlags_None)
+			{
+				if (ImGui::Button("..."))
+				{
+					auto paths = LoadFileFromExplorer(L"Scenes", L"Scenes|*.dat");
+				}
 			}
 		}
 	}
