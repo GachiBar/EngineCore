@@ -24,6 +24,7 @@
     <ProjectGuid>{7d22e2d2-85f7-4744-be7d-2afe0c33ded3}</ProjectGuid>
     <RootNamespace>monowrapper</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>wrapermonowrapper</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
