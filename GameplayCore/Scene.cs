@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GameplayCore.Components;
@@ -212,6 +213,21 @@ namespace GameplayCore
             }
 
             _createdGameObjects.Clear();
+        }
+
+        internal GameObject FindGameObjectById(uint id)
+        {
+            foreach(var gameObject in _gameObjects)
+            {
+                var gameObjectId = BitConverter.ToUInt32(gameObject.Guid.ToByteArray(), 0);
+
+                if (gameObjectId == id)
+                {
+                    return gameObject;                    
+                }
+            }
+
+            return null;
         }
     }
 }
