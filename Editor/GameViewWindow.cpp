@@ -3,6 +3,7 @@
 #include "libs/MathUtility.h"
 #include "libs/imgui_sugar.hpp"
 #include "../GameplaySystem/Component.h"
+#include <iostream>
 
 std::shared_ptr<engine::GameObject> GameViewWindow::GetGameObject()
 {
@@ -130,7 +131,7 @@ DirectX::SimpleMath::Matrix GameViewWindow::GetProjectionMatrix()
 	float nearPlane = 0.01f;
 	float farPlane = 10000.0f;
 
-	return Matrix::CreatePerspectiveFieldOfView(fow, aspectRatio, nearPlane, farPlane);;
+	return matrix::CreatePerspectiveFieldOfView(fow, aspectRatio, nearPlane, farPlane);;
 }
 
 void GameViewWindow::SwitchOperationMode()
@@ -188,6 +189,18 @@ void GameViewWindow::DrawViewport()
 		else 
 		{
 			ImGui::Image(texture, ImGui::GetWindowSize());
+			if (ImGui::IsMouseClicked(0))
+			{
+
+				ImVec2 mouse_pos = ImGui::GetMousePos();
+				ImVec2 window_pos = ImGui::GetWindowPos();
+				ImVec2 real_pos;
+				real_pos.x = mouse_pos.x - window_pos.x;
+				real_pos.y = mouse_pos.y - window_pos.y;
+				
+				std::cout << this->renderer.GetObjectId((uint)real_pos.x, (uint)real_pos.y) << std::endl << std::flush;
+			}
+
 		}
 
 		ViewportPresented.Broadcast();
