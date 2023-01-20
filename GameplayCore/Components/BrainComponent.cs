@@ -6,7 +6,7 @@ namespace GameplayCore.Components
 {
     public class BrainComponent : Component
     {
-        private AIState _state;
+        public AIState _state;
         private AIPlanner _planner;
         private AIGoal _goal;
         private AIPlan _plan;

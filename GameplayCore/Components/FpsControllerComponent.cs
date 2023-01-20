@@ -1,4 +1,5 @@
-﻿using GameplayCore.Mathematics;
+﻿using System;
+using GameplayCore.Mathematics;
 using GameplayCore.Resources;
 using ImGuiNET;
 using System;
@@ -9,9 +10,9 @@ namespace GameplayCore.Components
     {
         private const float Weight = 0.03f;
         private const float BulletRadius = 0.3f;
-
         private RigidbodyComponent _rigidbodyComponent;
         private CapsuleCollisionComponent _capsuleCollisionComponent;
+        private RigidbodyComponent ohter = null;
 
         private Vector3 _axis;
         private float _yaw = 0.0f;
@@ -40,12 +41,20 @@ namespace GameplayCore.Components
                 _pitch = MathUtil.Clamp(_pitch, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
                 _axis = GetAxis();
 
+
+                bool res = Physics.CastRay(headTransform.Position + headTransform.Forward * 0.55f, headTransform.Forward, out ohter);
+                //Log.PrintMessage(res.ToString(), false, true, 2);
+                /*if (ohter != null)
+                    Console.WriteLine(ohter.GameObject.Name);
+                else Console.WriteLine("null");*/
+
                 var rotation = Quaternion.RotationYawPitchRoll(_yaw, _pitch, 0);
                 headTransform.LocalRotation = rotation;
 
                 if (Input.WasJustPressed(Keys.LeftMouseButton))
                 {
                     ThrowBullet(headTransform.Position + headTransform.Forward * 0.5f, headTransform.Forward);
+                    
                 }
 
                 _isJump |= Input.WasJustPressed(Keys.SpaceBar);
@@ -79,7 +88,8 @@ namespace GameplayCore.Components
         public override void RenderGUI()
         {
             ImGui.BeginChild("HUD");
-            ImGui.Text("My HUD work!");
+            ImGui.Text(_isJump.ToString());
+            
             ImGui.EndChild();
         }
 

@@ -1,4 +1,6 @@
-﻿namespace GameplayCore.Components
+﻿using System;
+
+namespace GameplayCore.Components
 {
     public class RemoveOnTouchComponent : Component
     {
@@ -10,6 +12,8 @@
             }
 
             Log.PrintMessage("Pickuped!", Duration: 0.0f);
+            Console.WriteLine("PUp");
+
             DeleteGameObject(GameObject);
         }
     }

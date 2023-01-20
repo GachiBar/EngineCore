@@ -13,6 +13,8 @@ namespace GameplayCore.Components
         public float Far = 100.0f;
         public float Zoom = 10.0f;
         public bool Orthographic;
+        public float Velocity = 5.0f;
+        
 
         private static readonly Vector3[] NearPlain;
         private static readonly Vector3[] FarPlain;
@@ -41,6 +43,15 @@ namespace GameplayCore.Components
 
         public override void Update()
         {
+            var axis = GetAxis();
+            var direction =
+                axis.X * _transformComponent.Right +
+                axis.Y * Vector3.Up +
+                axis.Z * _transformComponent.Up;
+
+            direction.Normalize();
+            _transformComponent.Position += direction * Velocity * Time.DeltaTime;
+
             if (_transformComponent != null)
             {
                 var fow = MathUtil.DegreesToRadians(FieldOfView);
@@ -61,6 +72,45 @@ namespace GameplayCore.Components
                     EngineApi.RenderApi.SetViewProjection(Time.EllapsedTime, view, projection, eye);
                 }                
             }
+        }
+
+        public override void FixedUpdate()
+        {
+            
+
+            //Console.WriteLine(_transformComponent.Position.ToString());
+        }
+
+        private Vector3 GetAxis()
+        {
+            var direction = Vector3.Zero;
+
+            if (Input.IsPressed(Keys.A))
+            {
+                direction -= Vector3.UnitX;
+            }
+            if (Input.IsPressed(Keys.D))
+            {
+                direction += Vector3.UnitX;
+            }
+            if (Input.IsPressed(Keys.W))
+            {
+                direction += Vector3.UnitZ;
+            }
+            if (Input.IsPressed(Keys.S))
+            {
+                direction -= Vector3.UnitZ;
+            }
+            if (Input.IsPressed(Keys.SpaceBar))
+            {
+                direction += Vector3.UnitY;
+            }
+            if (Input.IsPressed(Keys.LeftShift))
+            {
+                direction -= Vector3.UnitY;
+            }
+
+            return direction;
         }
 
         public override void EditorRender()

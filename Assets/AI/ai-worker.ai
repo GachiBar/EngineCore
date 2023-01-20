@@ -1,0 +1,8 @@
+{
+  "Actions": [
+    "GameplayCore.AI.CaravanAI.Actions.getToCaravan",
+    "GameplayCore.AI.CaravanAI.Actions.HideGoldAction",
+    "GameplayCore.AI.CaravanAI.Actions.CollectGoldAction",
+    "GameplayCore.AI.CaravanAI.Actions.RetreatAction"
+  ]
+}

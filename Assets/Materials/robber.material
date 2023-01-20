@@ -1,0 +1,19 @@
+{
+  "diffuseColor": {
+    "Red": 0.0,
+    "Green": 0.0,
+    "Blue": 0.0,
+    "Alpha": 0.0
+  },
+  "diffuseTexture": "71b1253b-a002-4e7c-b895-ff8e205bc6e0",
+  "normalsColor": {
+    "Red": 0.0,
+    "Green": 0.0,
+    "Blue": 0.0
+  },
+  "normalsTexture": null,
+  "roughnessValue": 0.0,
+  "roughnessTexture": null,
+  "metallicValue": 0.0,
+  "metallicTexture": null
+}

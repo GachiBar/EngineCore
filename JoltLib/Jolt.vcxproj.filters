@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(ProjectDir)Jolt.dir\cmake_pch.cxx" />
     <ClCompile Include="$(ProjectDir)Jolt\AABBTree\AABBTreeBuilder.cpp" />
     <ClCompile Include="$(ProjectDir)Jolt\Core\Color.cpp" />
     <ClCompile Include="$(ProjectDir)Jolt\Core\Factory.cpp" />
@@ -402,15 +401,6 @@
     <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterLongestAxis.h" />
     <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterMean.h" />
     <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterMorton.h" />
-    <ClInclude Include="$(ProjectDir)Jolt\Build\VS2022_CL\CMakeFiles\Jolt.dir\Debug\cmake_pch.hxx" />
-    <ClInclude Include="$(ProjectDir)Jolt\Build\VS2022_CL\CMakeFiles\Jolt.dir\Release\cmake_pch.hxx" />
-    <ClInclude Include="$(ProjectDir)Jolt\Build\VS2022_CL\CMakeFiles\Jolt.dir\Distribution\cmake_pch.hxx" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="$(ProjectDir)Build\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(ProjectDir)Jolt\Jolt.natvis" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ProjectDir)Jolt\Jolt.cmake" />

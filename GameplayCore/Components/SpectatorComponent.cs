@@ -9,7 +9,7 @@ namespace GameplayCore.Components
         private float _yaw = 0.0f;
         private float _pitch = 0.0f;
 
-        public float Velocity = 2.0f;
+        public float Velocity = 10.0f;
         public float Sensivity = 1.0f;
 
         public override void Update()
