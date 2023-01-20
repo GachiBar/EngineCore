@@ -490,8 +490,13 @@ JPH::uint32 Engine::Internal_CreateBody(
 	JPH::EMotionType motion_type) 
 {
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON + 1);
-	JPH::BodyCreationSettings body_settings(sphere_shape, position, rotation, motion_type, CollisionLayers::kNoCollision);
+	JPH::SphereShape* sphere_shape = new JPH::SphereShape(FLT_EPSILON);
+	JPH::BodyCreationSettings body_settings;
+	body_settings.SetShape(sphere_shape);
+	body_settings.mPosition = JPH::Vec3(position.GetX(),position.GetY(),position.GetZ());
+	body_settings.mRotation = JPH::Quat(rotation.GetX(),rotation.GetY(),rotation.GetZ(),rotation.GetW())/*TODO*/ ;
+	body_settings.mMotionType = motion_type;
+	body_settings.mObjectLayer = CollisionLayers::kNoCollision;
 	body_settings.mAllowDynamicOrKinematic = true;
 	JPH::BodyID body_id = body_interface.CreateAndAddBody(body_settings, JPH::EActivation::DontActivate);
 	return body_id.GetIndexAndSequenceNumber();
@@ -545,7 +550,7 @@ void Engine::Internal_SetBoxShape(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	JPH::BoxShape* box_shape = new JPH::BoxShape(half_extent);
+	JPH::BoxShape* box_shape = new JPH::BoxShape(JPH::Vec3{half_extent.GetX(), half_extent.GetY(), half_extent.GetZ()});
 	body_interface.SetShape(body_id, box_shape, false, JPH::EActivation::DontActivate);
 }
 
@@ -603,7 +608,8 @@ JPH::Vec3 Engine::Internal_GetBodyPosition(
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	return body_interface.GetPosition(body_id);
 }
-
+#define JOLT_GOVNA_V3(position) JPH::Vec3{position.GetX(), position.GetY(), position.GetZ()}
+#define JOLT_GOVNA_Q(position) JPH::Quat{position.GetX(), position.GetY(), position.GetZ(), position.GetW()}
 void Engine::Internal_SetBodyPosition(
 	JPH::PhysicsSystem* physics_system,
 	JPH::uint32 id,
@@ -611,7 +617,7 @@ void Engine::Internal_SetBodyPosition(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.SetPosition(body_id, position, JPH::EActivation::DontActivate);
+	body_interface.SetPosition(body_id, JOLT_GOVNA_V3(position), JPH::EActivation::DontActivate);
 }
 
 JPH::Quat Engine::Internal_GetBodyRotation(
@@ -630,7 +636,7 @@ void Engine::Internal_SetBodyRotation(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.SetRotation(body_id, rotation.Normalized(), JPH::EActivation::DontActivate);
+	body_interface.SetRotation(body_id, JOLT_GOVNA_Q(rotation).Normalized(), JPH::EActivation::DontActivate);
 }
 
 void Engine::Internal_FreezeRotation(
@@ -678,7 +684,7 @@ void Engine::Internal_AddForce(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.AddForce(body_id, force);
+	body_interface.AddForce(body_id, JOLT_GOVNA_V3(force));
 }
 
 void Engine::Internal_AddImpulse(
@@ -688,7 +694,7 @@ void Engine::Internal_AddImpulse(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.AddImpulse(body_id, impulse);
+	body_interface.AddImpulse(body_id, JOLT_GOVNA_V3(impulse));
 }
 
 JPH::Vec3 Engine::Internal_GetLinearVelocity(
@@ -698,7 +704,7 @@ JPH::Vec3 Engine::Internal_GetLinearVelocity(
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
 	JPH::Vec3 velocity = body_interface.GetLinearVelocity(body_id);
-	return JPH::Vec3(velocity.GetX(), velocity.GetY(), velocity.GetZ());
+	return JOLT_GOVNA_V3(velocity);
 }
 
 void Engine::Internal_SetLinearVelocity(
@@ -708,7 +714,7 @@ void Engine::Internal_SetLinearVelocity(
 {
 	JPH::BodyID body_id(id);
 	JPH::BodyInterface& body_interface = physics_system->GetBodyInterface();
-	body_interface.SetLinearVelocity(body_id, velocity);
+	body_interface.SetLinearVelocity(body_id, JOLT_GOVNA_V3(velocity));
 }
 
 bool Engine::Internal_CastRay(
@@ -721,7 +727,7 @@ bool Engine::Internal_CastRay(
 	// TODO: what is broad phase and object layers?
 	const JPH::NarrowPhaseQuery& narrow_phase_query = physics_system->GetNarrowPhaseQuery();
 
-	JPH::RRayCast ray{ origin, direction };
+	JPH::RRayCast ray{ JOLT_GOVNA_V3(origin), JOLT_GOVNA_V3(direction) };
 	JPH::RayCastResult hit;
 		
 	if (narrow_phase_query.CastRay(ray, hit)) {

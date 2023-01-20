@@ -86,7 +86,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\;$(SolutionDir)vendor\JoltPhysics\include\</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\DX11RenderEngine\DX11RenderEngine\include\;$(SolutionDir)..\DX11RenderEngine\GachiRenderSystem\include\;$(SolutionDir)..\DX11RenderEngine\SimpleMath\include\;$(SolutionDir)JoltLib\</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -130,7 +130,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)vendor\JoltPhysics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)JoltLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -232,6 +232,9 @@
     </ProjectReference>
     <ProjectReference Include="..\InputSystem\InputSystem.vcxproj">
       <Project>{4f8b6eb6-d028-4c38-9d69-227347502957}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\JoltLib\Jolt.vcxproj">
+      <Project>{9add0606-1b70-3179-836e-12f9d4bafe35}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Logger\Logger.vcxproj">
       <Project>{4be9d43d-0651-4bae-b946-bc4395adc7cd}</Project>

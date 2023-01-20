@@ -123,7 +123,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)vendor\JoltPhysics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)JoltLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
@@ -131,7 +131,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)vendor\mono\lib\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Jolt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib;assimp-vc143-mt.lib;DirectXTex.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib;assimp-vc143-mt.lib;DirectXTex.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)GameplayCore\bin\$(Configuration)\net472\* $(SolutionDir) /y 
@@ -147,7 +147,7 @@ xcopy $(SolutionDir)vendor\mono\bin\$(Configuration)\* $(SolutionDir) /y </Comma
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)vendor\JoltPhysics\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\DirectXTex\include;$(SolutionDir)vendor\assimp\include;$(SolutionDir)vendor\mono\include;$(SolutionDir)JoltLib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
     </ClCompile>
@@ -157,7 +157,7 @@ xcopy $(SolutionDir)vendor\mono\bin\$(Configuration)\* $(SolutionDir) /y </Comma
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)vendor\DirectXTex\lib\$(Configuration);$(SolutionDir)vendor\assimp\lib;$(SolutionDir)vendor\mono\lib\$(Configuration);$(SolutionDir)vendor\JoltPhysics\lib\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Jolt.lib;$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib;assimp-vc143-mt.lib;DirectXTex.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);mono-2.0-sgen.lib;assimp-vc143-mt.lib;DirectXTex.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy $(SolutionDir)GameplayCore\bin\Debug\net472\GameplayCore.dll $(SolutionDir) /y</Command>
@@ -178,6 +178,9 @@ xcopy $(SolutionDir)vendor\mono\bin\$(Configuration)\* $(SolutionDir) /y </Comma
     </ProjectReference>
     <ProjectReference Include="..\GameplaySystem\GameplaySystem.vcxproj">
       <Project>{7afbd61b-fc45-42b8-9895-4a68cdcb3359}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\JoltLib\Jolt.vcxproj">
+      <Project>{9add0606-1b70-3179-836e-12f9d4bafe35}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
