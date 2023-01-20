@@ -208,6 +208,11 @@ void GameViewWindow::DrawViewport()
 				uint realPositionY = mousePosition.y - windowPosition.y;
 				uint id = renderer.GetObjectId(realPositionX, realPositionY);
 
+				if (id == 0) 
+				{
+					return;
+				}
+
 				SetGameObject(scene->FindGameObjectById(id));
 				GameObjectSelected.Broadcast(game_object);
 			}
