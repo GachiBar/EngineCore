@@ -70,6 +70,9 @@ private:
 	JPH::JobSystemThreadPool job_system_;
 	BPLayerInterfaceImplementation layer_interface_;
 	EngineContactListener contact_listener_;
+
+	BroadPhaseLayers broadPhaseLayers{};
+	CollisionLayers  collisionLayers{}; 
 	JPH::PhysicsSystem physics_system_;
 
 	std::shared_ptr<Scene> scene_;
@@ -126,6 +129,7 @@ private:
 		RenderDevice* renderer,
 		size_t id,
 		size_t material_id,
+		uint32_t object_id,
 		DirectX::SimpleMath::Matrix model_matrix);
 
 	static void Internal_DrawDirectionalLight(

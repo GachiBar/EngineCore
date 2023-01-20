@@ -2,7 +2,7 @@
 #include "InputManager.h"
 #include "libs/MathUtility.h"
 #include "libs/imgui_sugar.hpp"
-#include "../GameplaySystem/Component.h"
+#include <iostream>
 
 std::shared_ptr<engine::GameObject> GameViewWindow::GetGameObject()
 {
@@ -17,6 +17,16 @@ void GameViewWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObjec
 	{
 		transform_component = game_object->GetComponent(engine::Types::kTransformComponent);
 	}
+}
+
+std::shared_ptr<engine::Scene> GameViewWindow::GetScene() 
+{
+	return scene;
+}
+
+void GameViewWindow::SetScene(std::shared_ptr<engine::Scene> scene)
+{
+	this->scene = scene;
 }
 
 GameViewWindow::GameViewWindow(RenderDevice& renderer)
@@ -130,7 +140,7 @@ DirectX::SimpleMath::Matrix GameViewWindow::GetProjectionMatrix()
 	float nearPlane = 0.01f;
 	float farPlane = 10000.0f;
 
-	return Matrix::CreatePerspectiveFieldOfView(fow, aspectRatio, nearPlane, farPlane);;
+	return matrix::CreatePerspectiveFieldOfView(fow, aspectRatio, nearPlane, farPlane);;
 }
 
 void GameViewWindow::SwitchOperationMode()
@@ -187,7 +197,25 @@ void GameViewWindow::DrawViewport()
 		// but can not contains child windows (it's bad for HUD)
 		else 
 		{
-			ImGui::Image(texture, ImGui::GetWindowSize());
+			ImGui::Image(texture, ImGui::GetWindowSize());			
+
+			if (!ImGuizmo::IsOver() && ImGui::IsMouseClicked(0))
+			{
+				ImVec2 mousePosition = ImGui::GetMousePos();
+				ImVec2 windowPosition = ImGui::GetWindowPos();
+
+				uint realPositionX = mousePosition.x - windowPosition.x;
+				uint realPositionY = mousePosition.y - windowPosition.y;
+				uint id = renderer.GetObjectId(realPositionX, realPositionY);
+
+				if (id == 0) 
+				{
+					return;
+				}
+
+				SetGameObject(scene->FindGameObjectById(id));
+				GameObjectSelected.Broadcast(game_object);
+			}
 		}
 
 		ViewportPresented.Broadcast();

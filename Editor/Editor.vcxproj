@@ -46,7 +46,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -120,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mono\include;$(SolutionDir)Core;$(SolutionDir)InputSystem;$(SolutionDir)vendor\JoltPhysics\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mono\include;$(SolutionDir)Core;$(SolutionDir)InputSystem;$(SolutionDir)JoltLib</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -141,6 +141,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\mono\include;$(SolutionDir)Core;$(SolutionDir)InputSystem;$(SolutionDir)JoltLib\</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -172,6 +175,7 @@
     <ClInclude Include="LogWindow.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="MenuBar.h" />
+    <ClInclude Include="FilePathsHelper.h" />
     <ClInclude Include="ProjectSettingsWindow.h" />
     <ClInclude Include="PropertyWindow.h" />
     <ClInclude Include="Resources\ExplorerWindow.h" />
@@ -241,6 +245,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="winApiFileLoad.cpp" />
     <ClInclude Include="winApiFileLoad.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,6 +2,8 @@
 #include "InputManager.h"
 #include "InputCoreSystem/InputSettings.h"
 #include "Windows/GenericWindow.h"
+#include "ConfigReaderWriterFactory.h"
+#include "FilePathsHelper.h"
 
 #include <imgui/imgui_internal.h>
 
@@ -11,7 +13,15 @@ EditorApplication::EditorApplication()
 	, game_layer(nullptr)
 	, editor_layer(nullptr)
 	, scene(new engine::Scene())
-{}
+{
+	ConfigReaderWriterFactory factory;
+	config_reader_writer = factory.Create();
+}
+
+EditorApplication::~EditorApplication()
+{
+	delete config_reader_writer;
+}
 
 void EditorApplication::OnSetup()
 {
@@ -37,11 +47,35 @@ void EditorApplication::OnStart()
 	editor_layer->gvm->ViewportPresented.AddRaw(this, &EditorApplication::OnViewportPresented);
 
 	GetMainWindow()->WindowSizeChangedEvent.AddRaw(editor_layer->gvm.get(), &GameViewWindow::OnResizeViewport);
+	TryLoadDefaultScene();
 }
 
 EEditorInputMode::Type EditorApplication::GetCurrentInputMode() const
 {
 	return editor_input_mode;
+}
+
+bool EditorApplication::TryLoadDefaultScene()
+{
+	auto pathOpt = config_reader_writer->GetValue<std::string>("Game settings", "Default name");
+
+	if (pathOpt.has_value())
+	{
+		auto path = pathOpt.value();
+		std::fstream file(path, std::fstream::in);
+
+		if (!file.fail())
+		{
+			std::string json;
+			getline(file, json, '\0');
+			scene->Deserialize(json);
+			auto default_scene_name = FilePahtsHelper::RemoveExtension(FilePahtsHelper::BaseName(path));
+			editor_layer->SetScenePath(FilePahtsHelper::s2ws(path));
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void EditorApplication::SetupGameImGui()

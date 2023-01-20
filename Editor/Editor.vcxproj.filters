@@ -99,10 +99,19 @@
     <ClCompile Include="Resources\MetadataReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\ResourceDrawer.cpp">
+    <ClCompile Include="ObjectDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectDrawer.cpp">
+    <ClCompile Include="AIEditorWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\MaterialsEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="winApiFileLoad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -194,10 +203,28 @@
     <ClInclude Include="Resources\MetadataReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\ResourceDrawer.h">
+    <ClInclude Include="ObjectDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectDrawer.h">
+    <ClInclude Include="AIEditorWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="coroutine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\TransferMaterial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\MaterialsEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="winApiFileLoad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FilePathsHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

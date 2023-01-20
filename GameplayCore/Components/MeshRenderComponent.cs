@@ -1,6 +1,7 @@
 ﻿using GameplayCore.Editor;
 using GameplayCore.Resources;
 using GameplayCore.Serialization;
+using System;
 
 namespace GameplayCore.Components
 {
@@ -50,6 +51,7 @@ namespace GameplayCore.Components
             EngineApi.RenderApi.DrawModel(
                 _meshId,
                 _materialId,
+                BitConverter.ToUInt32(GameObject.Guid.ToByteArray(), 0),
                 _transformComponent.ModelMatrix);
         }
 

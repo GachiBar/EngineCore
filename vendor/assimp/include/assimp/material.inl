@@ -44,6 +44,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #pragma once
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
 
 #ifdef __GNUC__
 #   pragma GCC system_header

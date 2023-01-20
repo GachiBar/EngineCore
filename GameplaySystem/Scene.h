@@ -33,6 +33,8 @@ public:
 	std::string Serialize();
 	void Deserialize(const std::string& data);
 
+	std::shared_ptr<GameObject> FindGameObjectById(uint32_t id);
+
 	std::shared_ptr<GameObject> operator[](size_t index) const;
 
 	static void CacheMethods(const Runtime& runtime);
@@ -51,7 +53,8 @@ private:
 	static Method* render_gui_;
 	static Method* invalidate_;
 	static Method* serialize_;
-	static Method* deserialize_;	
+	static Method* deserialize_;
+	static Method* find_game_object_by_id_;
 
 	static Method* create_game_object_;
 	static Method* delete_game_object_;

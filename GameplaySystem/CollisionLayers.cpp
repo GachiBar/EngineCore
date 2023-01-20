@@ -5,7 +5,7 @@
 
 namespace engine {
 
-bool CollisionLayers::IsCanCollide(JPH::ObjectLayer object_layer_1, JPH::ObjectLayer object_layer_2) {
+bool CollisionLayers::ShouldCollide(JPH::ObjectLayer object_layer_1, JPH::ObjectLayer object_layer_2) {
 	switch (object_layer_1) {
 		case CollisionLayers::kNoCollision: {
 			return false;

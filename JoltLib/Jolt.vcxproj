@@ -1,0 +1,1127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Distribution|x64">
+      <Configuration>Distribution</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9ADD0606-1B70-3179-836E-12F9D4BAFE35}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>Jolt</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)Build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Jolt.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Jolt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)Build\VS2022_CL\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Jolt.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Jolt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">$(ProjectDir)Build\VS2022_CL\Distribution\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">Jolt.dir\Distribution\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">Jolt</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ExternalIncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</ExternalIncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:__cplusplus</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>Classic</DiagnosticsFormat>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(ProjectDir)Jolt.dir/Debug/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)Jolt.dir/Debug/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;_DEBUG;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Build\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(ProjectDir)Build\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:__cplusplus</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>Classic</DiagnosticsFormat>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>$(ProjectDir)Jolt.dir/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(ProjectDir)Jolt.dir/Release/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;NDEBUG;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;JPH_FLOATING_POINT_EXCEPTIONS_ENABLED;NDEBUG;JPH_PROFILE_ENABLED;JPH_DEBUG_RENDERER;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Build\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(ProjectDir)Build\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)Build\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /Zc:__cplusplus</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DiagnosticsFormat>Classic</DiagnosticsFormat>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;CMAKE_INTDIR="Distribution"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JPH_USE_SSE4_1;JPH_USE_SSE4_2;JPH_USE_LZCNT;JPH_USE_TZCNT;JPH_USE_F16C;JPH_USE_FMADD;CMAKE_INTDIR=\"Distribution\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Build\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(ProjectDir)Build\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ProjectDir)Jolt\AABBTree\AABBTreeBuilder.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\AABBTree\AABBTreeBuilder.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\AABBTree\AABBTreeToBuffer.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\AABBTree\NodeCodec\NodeCodecQuadTreeHalfFloat.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\AABBTree\TriangleCodec\TriangleCodecIndexed8BitPackSOA4Flags.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\ARMNeon.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Atomics.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\ByteBuffer.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\Color.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Color.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Core.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\Factory.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Factory.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\FixedSizeFreeList.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\FixedSizeFreeList.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\FPControlWord.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\FPException.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\FPFlushDenormals.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\HashCombine.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\InsertionSort.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\IssueReporting.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\IssueReporting.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\JobSystem.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\JobSystem.inl" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\JobSystemThreadPool.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\JobSystemThreadPool.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\LinearCurve.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\LinearCurve.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\LockFreeHashMap.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\LockFreeHashMap.inl" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\Memory.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Memory.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Mutex.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\MutexArray.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\NonCopyable.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\Profiler.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Profiler.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Profiler.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\QuickSort.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Reference.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\Result.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\RTTI.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\RTTI.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\StaticArray.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\StreamIn.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\StreamOut.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\StreamWrapper.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\StringTools.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\StringTools.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\STLAlignedAllocator.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\STLAllocator.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\STLTempAllocator.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\TempAllocator.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Core\TickCounter.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Core\TickCounter.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\UnorderedMap.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Core\UnorderedSet.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\AABox.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\AABox4.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\ClipPoly.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\ClosestPoint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Geometry\ConvexHullBuilder.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\ConvexHullBuilder.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Geometry\ConvexHullBuilder2D.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\ConvexHullBuilder2D.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\ConvexSupport.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\Ellipse.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\EPAConvexHullBuilder.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\EPAPenetrationDepth.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\GJKClosestPoint.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\IndexedTriangle.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Geometry\Indexify.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\Indexify.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\MortonCode.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Geometry\OrientedBox.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\OrientedBox.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\Plane.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\RayAABox.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\RayAABox8.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\RayCapsule.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\RayCylinder.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\RaySphere.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\RayTriangle.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\RayTriangle8.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\Sphere.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Geometry\Triangle.h" />
+    <None Include="$(ProjectDir)Jolt\Jolt.cmake">
+    </None>
+    <ClInclude Include="$(ProjectDir)Jolt\Jolt.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\DMat44.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\DMat44.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Double3.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\DVec3.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\DVec3.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\DynMatrix.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\EigenValueSymmetric.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\FindRoot.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Float2.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Float3.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Float4.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\GaussianElimination.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\HalfFloat.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Mat44.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Mat44.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Math.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\MathTypes.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Matrix.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Quat.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Quat.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Real.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Swizzle.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Trigonometry.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Math\UVec4.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Math\UVec4.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\UVec4.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\UVec8.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\UVec8.inl" />
+    <ClCompile Include="$(ProjectDir)Jolt\Math\Vec3.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Vec3.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Vec3.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Vec4.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Vec4.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Vec8.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Vec8.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Math\Vector.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\GetPrimitiveTypeOfType.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\ObjectStream.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStream.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamBinaryIn.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamBinaryIn.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamBinaryOut.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamBinaryOut.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamIn.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamIn.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamOut.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamOut.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamTextIn.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamTextIn.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamTextOut.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamTextOut.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\ObjectStreamTypes.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\SerializableAttribute.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\SerializableAttributeEnum.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\SerializableAttributeTyped.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\SerializableObject.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\SerializableObject.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\ObjectStream\TypeDeclarations.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\ObjectStream\TypeDeclarations.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Body\Body.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\Body.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\Body.inl" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Body\BodyAccess.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyAccess.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyActivationListener.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Body\BodyCreationSettings.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyCreationSettings.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyFilter.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyID.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Body\BodyInterface.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyInterface.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyLock.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyLockInterface.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyLockMulti.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Body\BodyManager.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyManager.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\BodyPair.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Body\MassProperties.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\MassProperties.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Body\MotionProperties.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\MotionProperties.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\MotionProperties.inl" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\MotionQuality.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Body\MotionType.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Character\Character.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Character\Character.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Character\CharacterBase.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Character\CharacterBase.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Character\CharacterVirtual.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Character\CharacterVirtual.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\AABoxCast.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\ActiveEdgeMode.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\ActiveEdges.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\BackFaceMode.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhase.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhase.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhaseBruteForce.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhaseBruteForce.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhaseLayer.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhaseQuadTree.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhaseQuadTree.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\BroadPhaseQuery.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\QuadTree.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\BroadPhase\QuadTree.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\CastConvexVsTriangles.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CastConvexVsTriangles.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\CastSphereVsTriangles.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CastSphereVsTriangles.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CastResult.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollectFacesMode.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\CollideConvexVsTriangles.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollideConvexVsTriangles.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollidePointResult.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollideShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\CollideSphereVsTriangles.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollideSphereVsTriangles.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollisionCollector.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollisionCollectorImpl.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\CollisionDispatch.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollisionDispatch.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\CollisionGroup.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\CollisionGroup.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\ContactListener.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\GroupFilter.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\GroupFilter.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\GroupFilterTable.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\GroupFilterTable.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\ManifoldBetweenTwoFaces.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\ManifoldBetweenTwoFaces.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\NarrowPhaseQuery.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\NarrowPhaseQuery.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\NarrowPhaseStats.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\NarrowPhaseStats.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\ObjectLayer.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\PhysicsMaterial.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\PhysicsMaterial.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\PhysicsMaterialSimple.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\PhysicsMaterialSimple.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\RayCast.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\BoxShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\BoxShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\CapsuleShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\CapsuleShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\CompoundShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\CompoundShape.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\CompoundShapeVisitors.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\ConvexHullShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\ConvexHullShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\ConvexShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\ConvexShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\CylinderShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\CylinderShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\DecoratedShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\DecoratedShape.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\GetTrianglesContext.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\HeightFieldShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\HeightFieldShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\MeshShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\MeshShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\MutableCompoundShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\MutableCompoundShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\OffsetCenterOfMassShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\OffsetCenterOfMassShape.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\PolyhedronSubmergedVolumeCalculator.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\RotatedTranslatedShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\RotatedTranslatedShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\ScaledShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\ScaledShape.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\ScaleHelpers.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\Shape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\Shape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\SphereShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\SphereShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\StaticCompoundShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\StaticCompoundShape.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\SubShapeID.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\SubShapeIDPair.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\TaperedCapsuleShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <None Include="$(ProjectDir)Jolt\Physics\Collision\Shape\TaperedCapsuleShape.gliffy">
+    </None>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\TaperedCapsuleShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\Shape\TriangleShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\Shape\TriangleShape.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\ShapeCast.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\ShapeFilter.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\SortReverseAndStore.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Collision\TransformedShape.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Collision\TransformedShape.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\ConeConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConeConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\Constraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\Constraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintManager.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintManager.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\AngleConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\AxisConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\DualAxisConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\GearConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\HingeRotationConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\IndependentAxisConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\PointConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\RackAndPinionConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\RotationEulerConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\RotationQuatConstraintPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\SpringPart.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ConstraintPart\SwingTwistConstraintPart.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\ContactConstraintManager.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\ContactConstraintManager.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\DistanceConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\DistanceConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\FixedConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\FixedConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\GearConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\GearConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\HingeConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\HingeConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\MotorSettings.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\MotorSettings.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\PathConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\PathConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\PathConstraintPath.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\PathConstraintPath.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\PathConstraintPathHermite.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\PathConstraintPathHermite.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\PointConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\PointConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\PulleyConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\PulleyConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\RackAndPinionConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\RackAndPinionConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\SixDOFConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\SixDOFConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\SliderConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\SliderConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\SwingTwistConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\SwingTwistConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Constraints\TwoBodyConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Constraints\TwoBodyConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\DeterminismLog.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\DeterminismLog.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\EActivation.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\IslandBuilder.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\IslandBuilder.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\PhysicsLock.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\PhysicsLock.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\PhysicsScene.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\PhysicsScene.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\PhysicsSettings.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\PhysicsStepListener.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\PhysicsSystem.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\PhysicsSystem.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\PhysicsUpdateContext.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\PhysicsUpdateContext.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Ragdoll\Ragdoll.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Ragdoll\Ragdoll.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\StateRecorder.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\StateRecorderImpl.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\StateRecorderImpl.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\TrackedVehicleController.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\TrackedVehicleController.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleAntiRollBar.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleAntiRollBar.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleCollisionTester.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleCollisionTester.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleConstraint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleConstraint.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleController.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleController.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleDifferential.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleDifferential.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleEngine.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleEngine.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleTrack.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleTrack.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleTransmission.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\VehicleTransmission.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\Wheel.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\Wheel.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Physics\Vehicle\WheeledVehicleController.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Physics\Vehicle\WheeledVehicleController.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\RegisterTypes.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\RegisterTypes.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Renderer\DebugRenderer.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Renderer\DebugRenderer.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Renderer\DebugRendererPlayback.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Renderer\DebugRendererPlayback.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Renderer\DebugRendererRecorder.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Renderer\DebugRendererRecorder.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Skeleton\SkeletalAnimation.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Skeleton\SkeletalAnimation.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Skeleton\Skeleton.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Skeleton\Skeleton.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Skeleton\SkeletonMapper.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Skeleton\SkeletonMapper.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\Skeleton\SkeletonPose.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\Skeleton\SkeletonPose.h" />
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleGrouper\TriangleGrouper.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleGrouper\TriangleGrouperClosestCentroid.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleGrouper\TriangleGrouperClosestCentroid.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleGrouper\TriangleGrouperMorton.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleGrouper\TriangleGrouperMorton.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitter.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitter.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterBinning.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterBinning.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterFixedLeafSize.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterFixedLeafSize.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterLongestAxis.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterLongestAxis.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterMean.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterMean.h" />
+    <ClCompile Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterMorton.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Distribution|x64'">%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="$(ProjectDir)Jolt\TriangleSplitter\TriangleSplitterMorton.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

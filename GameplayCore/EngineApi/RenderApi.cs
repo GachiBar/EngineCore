@@ -28,11 +28,11 @@ namespace GameplayCore.EngineApi
             }           
         }
 
-        public static void DrawModel(ulong id, ulong material_id, Matrix modelMatrix)
+        public static void DrawModel(ulong id, ulong materialId, uint objectId, Matrix modelMatrix)
         {
             unsafe
             {
-                Internal_DrawModel(Renderer, id, material_id, modelMatrix);
+                Internal_DrawModel(Renderer, id, materialId, objectId, modelMatrix);
             }            
         }
 
@@ -142,7 +142,7 @@ namespace GameplayCore.EngineApi
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_RegisterTexture(void* renderer, ulong id, string path);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, ulong material_id, Matrix modelMatrix);
+        extern private static unsafe void Internal_DrawModel(void* renderer, ulong id, ulong materialId, uint objectId, Matrix modelMatrix);
         [MethodImpl(MethodImplOptions.InternalCall)]
         extern private static unsafe void Internal_DrawDirectionalLight(void* renderer, Vector3 direction, float itencity, Vector4 color);
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -9,6 +9,7 @@
 #include "../Core/libs/Delegates.h"
 #include "../GameplaySystem/GameObject.h"
 #include "../GameplaySystem/Component.h"
+#include "../GameplaySystem/Scene.h"
 
 #include <string>
 #include <Windows.h>
@@ -25,8 +26,14 @@ public:
     DECLARE_EVENT(ViewportPresentedEvent, GameViewWindow)
     ViewportPresentedEvent ViewportPresented;
 
+    DECLARE_EVENT(GameObjectSelectedEvent, GameViewWindow, std::shared_ptr<engine::GameObject>)
+    GameObjectSelectedEvent GameObjectSelected;
+
     std::shared_ptr<engine::GameObject> GetGameObject();
     void SetGameObject(std::shared_ptr<engine::GameObject> gameObject);
+
+    std::shared_ptr<engine::Scene> GetScene();
+    void SetScene(std::shared_ptr<engine::Scene> scene);
 
     GameViewWindow(RenderDevice& renderer);
 
@@ -38,6 +45,7 @@ public:
     bool IsPlaying() const;
 
 private:
+    std::shared_ptr<engine::Scene> scene;
     std::shared_ptr<engine::GameObject> game_object;
     std::shared_ptr<engine::Component> transform_component;
     EditorCamera editor_camera;
