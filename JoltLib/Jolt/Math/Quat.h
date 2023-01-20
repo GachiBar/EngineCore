@@ -4,6 +4,7 @@
 #pragma once
 
 #include <Jolt/Math/MathTypes.h>
+#include <Jolt/Math/Math.h>
 #include <Jolt/Math/Vec3.h>
 #include <Jolt/Math/Vec4.h>
 
