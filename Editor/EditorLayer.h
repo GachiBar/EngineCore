@@ -18,6 +18,9 @@ class AIEditorWindow;
 class EditorLayer final : public Layer
 {
 public:
+	const std::wstring& GetScenePath();
+	void SetScenePath(std::wstring path);
+
 	EditorLayer(LayerStack* owner);
 	~EditorLayer() override = default;
 
@@ -61,8 +64,5 @@ private:
 	bool SaveSceneAs(std::wstring& copyPath_out);
 
 	std::string GetSceneName(std::wstring scene_path);
-	std::wstring BaseName(const std::wstring& path, const std::wstring& delims = L"/\\");
-	std::wstring RemoveExtension(const std::wstring& filename);
-	std::string ws2s(const std::wstring& wstr);
 };
 

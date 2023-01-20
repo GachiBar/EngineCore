@@ -7,18 +7,30 @@
 #include "InputManager.h"
 #include "PropertyWindow.h"
 #include "AIEditorWindow.h"
-#include "winApiFileLoad.h"
 #include "../GameplaySystem/Component.h"
 #include "ImGuizmo/ImGuizmo.h"
 #include "libs/imgui_sugar.hpp"
 #include "imgui/imgui.h"
 #include "Resources/MaterialsEditor.h"
+#include "winApiFileLoad.h"
+#include "FilePathsHelper.h"
 
 #include <fstream>
 
 namespace Renderer
 {
 	class D3D11Renderer;
+}
+
+const std::wstring& EditorLayer::GetScenePath()
+{
+    return scene_path;
+}
+
+void EditorLayer::SetScenePath(std::wstring path)
+{
+    scene_path = std::move(path);
+    hierarchy->SetSceneName(GetSceneName(scene_path));
 }
 
 EditorLayer::EditorLayer(LayerStack* owner)
@@ -324,23 +336,6 @@ bool EditorLayer::SaveSceneAs(std::wstring& copyPath_out)
 
 std::string EditorLayer::GetSceneName(std::wstring scene_path)
 {
-    auto name = RemoveExtension(BaseName(scene_path));
-    return ws2s(name);
-}
-
-std::wstring EditorLayer::BaseName(const std::wstring& path, const std::wstring& delims)
-{
-    return path.substr(path.find_last_of(delims) + 1);
-}
-
-std::wstring EditorLayer::RemoveExtension(const std::wstring& filename)
-{
-    typename std::wstring::size_type const p(filename.find_last_of('.'));
-    return p > 0 && p != std::wstring::npos ? filename.substr(0, p) : filename;
-}
-
-std::string EditorLayer::ws2s(const std::wstring& wstr)
-{
-    // TODO: It's not a solution, but ok...
-    return std::string(wstr.begin(), wstr.end());
+    auto name = FilePahtsHelper::RemoveExtension(FilePahtsHelper::BaseName(scene_path));
+    return FilePahtsHelper::ws2s(name);
 }
