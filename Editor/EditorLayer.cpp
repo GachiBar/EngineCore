@@ -48,6 +48,12 @@ void EditorLayer::OnAttach()
 	    property_window->SelectGameObject(go);
 	});
 
+    gvm.get()->GameObjectSelected.AddLambda([&](std::shared_ptr<engine::GameObject> go)
+    {
+        hierarchy->SetSelected(go);
+        property_window->SelectGameObject(go);
+    });
+
     explorer.get()->FileSelected.AddLambda([&](const std::filesystem::path& path)
     {
         property_window->SelectResource(path);
@@ -55,6 +61,7 @@ void EditorLayer::OnAttach()
 
     hierarchy->SetScene(GetApp()->GetEngine()->GetScene());
     game_object_inspector->SetScene(GetApp()->GetEngine()->GetScene());
+    gvm->SetScene(GetApp()->GetEngine()->GetScene());
 
 	auto& io = ImGui::GetIO();
 
