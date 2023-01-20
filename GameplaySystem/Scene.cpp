@@ -18,6 +18,7 @@ Method* Scene::render_gui_ = nullptr;
 Method* Scene::invalidate_ = nullptr;
 Method* Scene::serialize_ = nullptr;
 Method* Scene::deserialize_ = nullptr;
+Method* Scene::find_game_object_by_id_ = nullptr;
 
 Method* Scene::create_game_object_ = nullptr;
 Method* Scene::delete_game_object_ = nullptr;
@@ -140,6 +141,21 @@ void Scene::Deserialize(const std::string& data)
     // Call method deserialize
 }
 
+std::shared_ptr<GameObject> Scene::FindGameObjectById(uint32_t id) {
+    assert(find_game_object_by_id_ != nullptr && kIsNotCachedErrorMessage);
+
+    void* args[1];
+    args[0] = &id;
+
+    auto game_object_opt = find_game_object_by_id_->Invoke(*this, args);
+
+    if (game_object_opt.has_value()) {
+        return std::make_shared<GameObject>(std::move(game_object_opt.value()));
+    } else {
+        return nullptr;
+    }
+}
+
 std::shared_ptr<GameObject> Scene::operator[](size_t index) const {
     assert(get_item_ != nullptr && kIsNotCachedErrorMessage);
 
@@ -169,6 +185,7 @@ void Scene::CacheMethods(const Runtime& runtime) {
     delete_game_object_ = new Method(type, "DeleteGameObject", 1);
     serialize_ = new Method(type, "Serialize", 0);
     deserialize_ = new Method(type, "Deserialize", 1);   
+    find_game_object_by_id_ = new Method(type, "FindGameObjectById", 1);
 }
 
 } // namespace engine

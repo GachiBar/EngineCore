@@ -2,7 +2,6 @@
 #include "InputManager.h"
 #include "libs/MathUtility.h"
 #include "libs/imgui_sugar.hpp"
-#include "../GameplaySystem/Component.h"
 #include <iostream>
 
 std::shared_ptr<engine::GameObject> GameViewWindow::GetGameObject()
@@ -18,6 +17,16 @@ void GameViewWindow::SetGameObject(std::shared_ptr<engine::GameObject> gameObjec
 	{
 		transform_component = game_object->GetComponent(engine::Types::kTransformComponent);
 	}
+}
+
+std::shared_ptr<engine::Scene> GameViewWindow::GetScene() 
+{
+	return scene;
+}
+
+void GameViewWindow::SetScene(std::shared_ptr<engine::Scene> scene)
+{
+	this->scene = scene;
 }
 
 GameViewWindow::GameViewWindow(RenderDevice& renderer)
@@ -188,19 +197,20 @@ void GameViewWindow::DrawViewport()
 		// but can not contains child windows (it's bad for HUD)
 		else 
 		{
-			ImGui::Image(texture, ImGui::GetWindowSize());
-			if (ImGui::IsMouseClicked(0))
+			ImGui::Image(texture, ImGui::GetWindowSize());			
+
+			if (!ImGuizmo::IsOver() && ImGui::IsMouseClicked(0))
 			{
+				ImVec2 mousePosition = ImGui::GetMousePos();
+				ImVec2 windowPosition = ImGui::GetWindowPos();
 
-				ImVec2 mouse_pos = ImGui::GetMousePos();
-				ImVec2 window_pos = ImGui::GetWindowPos();
-				ImVec2 real_pos;
-				real_pos.x = mouse_pos.x - window_pos.x;
-				real_pos.y = mouse_pos.y - window_pos.y;
-				
-				std::cout << this->renderer.GetObjectId((uint)real_pos.x, (uint)real_pos.y) << std::endl << std::flush;
+				uint realPositionX = mousePosition.x - windowPosition.x;
+				uint realPositionY = mousePosition.y - windowPosition.y;
+				uint id = renderer.GetObjectId(realPositionX, realPositionY);
+
+				SetGameObject(scene->FindGameObjectById(id));
+				GameObjectSelected.Broadcast(game_object);
 			}
-
 		}
 
 		ViewportPresented.Broadcast();
