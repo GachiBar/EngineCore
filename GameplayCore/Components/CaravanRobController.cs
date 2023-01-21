@@ -7,8 +7,8 @@ using static GameplayCore.Components.RobbersUnitController.RobberType;
 using static GameplayCore.Components.RobbersUnitController;
 using System.Security.Cryptography;
 using ImGuiNET;
-
-
+using GameplayCore.AI.CaravanAI.Actions;
+using System.Xml.Linq;
 
 namespace GameplayCore.Components
 {
@@ -24,10 +24,12 @@ namespace GameplayCore.Components
         private int _caravanStepCounter = 0;
         private List<GameObject> _body;
         private List<GameObject> robbers;
+        private List<GameObject> guards;
         private int gold = 15;
         private int score = 0;
         private int totalWorkers = 0;
         private int totalWarriors = 0;
+        private int totalGuards = 0;
         private bool _isGameOver = false;
         private bool isEnhanceActive = false;
         private float enhanceTimer = 15;
@@ -36,16 +38,21 @@ namespace GameplayCore.Components
         private float awareRadiusCaravan = 6;
         private bool isCaravanAttacked = false;
         private bool needToGetToBase = false;
+        private int maxGuards = 10;
 
         public int FieldSizeX = 11;
         public int FieldSizeZ = 11;
         public MeshAsset cubeMesh;
         public MaterialAsset guardMaterial;
+        public MaterialAsset guard1Material;
+        public MaterialAsset guard2Material;
         public MaterialAsset caravanMaterial;
         public MaterialAsset grassMaterial;
         public MaterialAsset roadMaterial;
         public MaterialAsset blockpostMaterial;
         public MaterialAsset robberMaterial;
+        public MaterialAsset robber1Material;
+        public MaterialAsset robber2Material;
         public MaterialAsset workerMaterial;
         
         public int caravanSize = 5;
@@ -60,13 +67,14 @@ namespace GameplayCore.Components
         public int workerReturnedGold = 1;
         public int robberDiedPenalty = 3;
         public int workerDiedPenalty = 10;
-
+        public int goldBringAmount = 2;
 
         public override void Initialize()
         {
             BuildMap();
             _caravanHead = CreateCaravan("head");
             _timer = 0;
+            _timer2 = caravanReachTimer;
             _direction = Vector3.Right;
             _body = new List<GameObject>();
             while (_body.Count < caravanSize - 1)
@@ -75,6 +83,7 @@ namespace GameplayCore.Components
                 _body.Add(newSegment);
             }
             robbers = new List<GameObject>();
+            guards = new List<GameObject>();
         }
 
         private void BuildMap() {
@@ -91,6 +100,7 @@ namespace GameplayCore.Components
                     {
                         var blockpost = InstantiateFieldCube(tempPos, blockpostMaterial, "blockpost_" + x + "_" + z);
                         blockpost.Name = "blockpost_" + i;
+                        blockpost.AddComponent<BlockpostComponent>();
                         i++;
                     }
                     else if ((z == 1 || z == 14) && (x > 1 && x < 14))
@@ -142,6 +152,15 @@ namespace GameplayCore.Components
                 if (enhanceTimer <= 0) { 
                     isEnhanceActive = false;
                     enhanceTimer = enhanceDuration;
+                    foreach(var item in robbers)
+                    {
+                        var controller = item.GetComponent<RobbersUnitController>();
+                        controller.speedMul= 1.0f;  
+                        if(controller.RobberTypeVal == WARRIOR)
+                        {
+                            controller.damage = 1; 
+                        } 
+                    }
                 }
             }
             if (_isGameOver)
@@ -160,9 +179,6 @@ namespace GameplayCore.Components
             }
             else {
                 _timer = caravanSpeed;
-                if (!needToGetToBase) { 
-                    _timer2= caravanReachTimer;
-                }
             }
             if (needToGetToBase) {
                 _timer2 -= Time.DeltaTime;
@@ -171,7 +187,7 @@ namespace GameplayCore.Components
                     callGuards();
                     _timer2 = caravanReachTimer;
                 }
-            }
+            } 
             checkSpawnUnits();
             if (areRobbersNearCaravan())
             {
@@ -210,6 +226,7 @@ namespace GameplayCore.Components
             ImGui.TextColored(new System.Numerics.Vector4(0, 255, 0, 255), "Active units: ");
             ImGui.Text(String.Format("Thieves: {0}", totalWorkers));
             ImGui.Text(String.Format("Murderers: {0}", totalWarriors));
+            ImGui.TextColored(new System.Numerics.Vector4(255, 0, 0, 255), String.Format("Guards: {0}", totalGuards));
             ImGui.EndChild();
 
             ImGui.SetNextWindowBgAlpha(0.65f);
@@ -256,7 +273,10 @@ namespace GameplayCore.Components
                     isEnhanceActive = true;
                     foreach (var item in robbers)
                     {
-                        //TODO warriors = 1hp, speed of workers++
+                        var controller = item.GetComponent<RobbersUnitController>();
+                        if (controller.RobberTypeVal == WORKER)
+                            controller.speedMul = 1.5f;
+                        else controller.speedMul = 0.8f;
                     }
                 }
                 if (ImGui.Button("Strength") && gold > 2)
@@ -265,7 +285,10 @@ namespace GameplayCore.Components
                     isEnhanceActive= true;
                     foreach (var item in robbers)
                     {
-                        //TODO warr dmg +1, speed of workers--
+                        var controller = item.GetComponent<RobbersUnitController>();
+                        if (controller.RobberTypeVal == WORKER)
+                            controller.speedMul = 0.7f;
+                        else controller.damage = 2;
                     }
                 }
                 if (gold < 3)
@@ -297,6 +320,9 @@ namespace GameplayCore.Components
                 float y = _direction.X * sn + _direction.Z * cs;
                 _direction = new Vector3(x, _direction.Y, y);
                 needToGetToBase = false;
+                Random r = new Random();
+                var res = r.Next(2) + 2;
+                spawnGuards(res, 2);
             }
         }
 
@@ -325,7 +351,7 @@ namespace GameplayCore.Components
             }
             if (Input.IsPressed(Keys.BackSpace))
             {
-                deleteAllUnits();
+                spawnGuards(1, 3);
             }
         }
 
@@ -353,7 +379,8 @@ namespace GameplayCore.Components
 
             unit.Name = name;
             ruController.setDefaults(type);
-            
+            ruController.setMaterial1W(robber1Material);
+            ruController.setMaterial2W(robber2Material);
             return unit;
         }
 
@@ -386,7 +413,11 @@ namespace GameplayCore.Components
 
         private void callUnitsBack()
         {
-            //TODO: AI to go back; give gold back and small pts
+            foreach(var robber in robbers)
+            {
+                robber.GetComponent<BrainComponent>()._state.SetBoolValue("reachedBase", false);
+                robber.GetComponent<BrainComponent>()._state.SetBoolValue("isRetreating", true);
+            }
         }
 
         private bool checkGameIsRunning() {
@@ -394,22 +425,11 @@ namespace GameplayCore.Components
         }
 
         private void callGuards() {
-            Console.WriteLine("GUARDS!!!");
-            //TODO Spawn guards with more HP
-        }
-
-        private void deleteAllUnits() { 
-            foreach(var unit in robbers)
-            {
-                unit.Scene.DeleteGameObject(unit);
-            }
-            robbers.RemoveAll(go => true);
-            Console.WriteLine("deleted: {0} units in list", robbers.Count);
-            totalWorkers = 0;
-            totalWarriors= 0;
+            spawnGuards(4, 3);
         }
 
         public void unitReturnToBase(GameObject unit) {
+            Console.WriteLine("Ret");
             var controller = unit.GetComponent<RobbersUnitController>();
             switch (controller.RobberTypeVal) {
                 case WARRIOR:
@@ -424,13 +444,102 @@ namespace GameplayCore.Components
                     break;
             }
             robbers.Remove(unit);
-            unit.Scene.DeleteGameObject(unit);
+            DeleteGameObject(unit);
+            foreach (var guard in guards)
+            {
+                guard.GetComponent<GuardComponent>().TargetGO = null;
+            }
         }
 
         public GameObject getCaravanPosition()
         {
-            return _caravanHead;
-            //TODO do random part
+            Random r = new Random();
+            int c = r.Next(_body.Count) - 1;
+            Console.WriteLine(c + ":", false);
+            if (c < 0)
+                return _caravanHead;
+            else return _body[c];
+        }
+
+        public void addGold() {
+            gold += goldBringAmount;
+            score += 10;
+        }
+
+        public void killUnit(GameObject killedUnit, RobbersUnitController controller)
+        {
+            switch (controller.RobberTypeVal)
+            {
+                case WARRIOR: score -= robberDiedPenalty; totalWarriors--; break;
+                case WORKER: score -= workerDiedPenalty; totalWorkers--;  break; 
+            }
+            robbers.Remove(killedUnit);
+            DeleteGameObject(killedUnit);
+            foreach(var guard in guards)
+            {
+                guard.GetComponent<GuardComponent>().TargetGO = null;
+            }
+        }
+
+        public void killGuard(GameObject killedUnit, GuardComponent controller) {
+            totalGuards--;
+            guards.Remove(killedUnit);
+            DeleteGameObject(killedUnit);
+            foreach (var robber in robbers)
+            {
+                if(robber.GetComponent<RobbersUnitController>().RobberTypeVal == WARRIOR)
+                    robber.GetComponent<RobbersUnitController>().TargetGO = null;
+            }
+        }
+
+        public void spawnGuards(int count, int hp) {
+            Random r = new Random();
+            var locC = count;
+            while (totalGuards < maxGuards && locC > 0)
+            {
+                var guard = CreateGameObject();
+                var gController = guard.AddComponent<GuardComponent>();
+                var gRB = guard.AddComponent<RigidbodyComponent>();
+                var gTransform = guard.AddComponent<TransformComponent>();
+                var mesh = guard.AddComponent<MeshRenderComponent>();
+                gRB.IsKinematic = true;
+
+                mesh.MeshAsset = cubeMesh;
+                if (hp == 2)
+                    mesh.MaterialAsset = guard2Material;
+                if (hp == 3)
+                    mesh.MaterialAsset = guardMaterial;
+
+                var baseObjects = guard.Scene.OfType<GameObject>().Where(go => go.GetComponent<BlockpostComponent>() != null);
+                var baseObject = baseObjects.ToList<GameObject>()[0];
+                foreach (var baseTile in baseObjects)
+                {
+                    if (distanceTo(_caravanHead, baseObject) > distanceTo(_caravanHead, baseTile))
+                    {
+                        baseObject = baseTile;
+                    }
+                }
+                var baseTransform = baseObject.GetComponent<TransformComponent>();
+                gTransform.Position = new Vector3(baseTransform.Position.X + r.Next(2) * 0.33f, 1.51f, baseTransform.Position.Z * r.Next(3) * 0.12f);
+                //Debug spawn unit
+                //transform.Position = new Vector3(2, 1.51f, 2);
+
+                gTransform.Scale = Vector3.One * 0.66f;
+
+                guard.Name = "guard";
+                gController.setDefaults(hp);
+                totalGuards++;
+                locC--;
+                guards.Add(guard);
+            }
+        }
+
+        public List<GameObject> getRobbers() { return robbers; }
+        public List<GameObject> getGuards() { return guards; }
+
+        private float distanceTo(GameObject unit, GameObject target)
+        {
+            return (getPosProjectionXZ(unit) - getPosProjectionXZ(target)).Length();
         }
     }
 }

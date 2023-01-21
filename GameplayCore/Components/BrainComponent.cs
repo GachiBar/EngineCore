@@ -55,6 +55,7 @@ namespace GameplayCore.Components
 
             _goal = Arbitrator.ChooseGoal(GameObject, _state);
             _plan = _planner.MakePlan(GameObject, _state, _goal, ActionsAsset.Actions);
+            //if(_plan != null)
             _executionState = _plan.Execute(GameObject, _state).GetEnumerator();
         }
 

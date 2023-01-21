@@ -1,5 +1,4 @@
 ﻿using GameplayCore.AI.CaravanAI.Goals;
-using GameplayCore.AI.Enemy.Goals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,25 +7,27 @@ using System.Threading.Tasks;
 
 namespace GameplayCore.AI
 {
-    public class RobberArbitrator : AIArbitrator
+    public class WarriorArbitrator : AIArbitrator
     {
         public override AIGoal ChooseGoal(GameObject gameObject, AIState state)
         {
-            if (state.GetBoolValue("isRetreating") == true && !state.GetBoolValue("reachedBase"))
+            if (state.GetBoolValue("isRetreating"))
             {
                 return new RetreatGoal();
             }
-            if(state.GetBoolValue("collectedGold") ==  true)
-                return new HideGoldGoal();
-            return new CollectGoldGoal();
+            if (state.GetBoolValue("hasTarget"))
+                return new AttackGoal();
+            return new IdleGoal();
         }
 
         public override void InitState(AIState state)
         {
+            state.SetBoolValue("isIdle", true);
+            state.SetBoolValue("hasTarget", false);
+            state.SetBoolValue("isNearTarget", false);
             state.SetBoolValue("isRetreating", false);
-            state.SetBoolValue("reachedBase", false);
             state.SetBoolValue("isNearCaravan", false);
-            state.SetBoolValue("collectedGold", false);
+            state.SetBoolValue("reachedBase", false);
         }
     }
 }

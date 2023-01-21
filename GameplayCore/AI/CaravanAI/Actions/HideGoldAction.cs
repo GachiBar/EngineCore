@@ -22,13 +22,21 @@ namespace GameplayCore.AI.CaravanAI.Actions
             var enemyController = gameObject.GetComponent<RobbersUnitController>();
             GameObject goBase = gameObject.Scene.First<GameObject>(go => go.GetComponent<BaseComponent>() != null);
 
-            while (distanceToBase(gameObject, goBase) > 3f)
+            while (distanceToBase(gameObject, goBase) > 0.3f)
             {
                 enemyController.MoveInDirection(getPosProjectionXZ(goBase));
                 yield return AIExecutionState.InProgress;
             }
             var rb = gameObject.GetComponent<RigidbodyComponent>();
             rb.Velocity = Vector3.Zero;
+            for (float timer = 0; timer < 1.5; timer += Time.FixedDeltaTime)
+            {
+                if (!state.GetBoolValue("isRetreating"))
+                    yield return AIExecutionState.InProgress;
+                else yield return AIExecutionState.Interrupted;
+            }
+            var gameController = gameObject.Scene.First<GameObject>(go => go.GetComponent<CaravanRobController>() != null).GetComponent<CaravanRobController>();
+            gameController.addGold();
             state.SetBoolValue("collectedGold", false);
             state.SetBoolValue("isNearCaravan", false);
             state.SetBoolValue("reachedBase", true);

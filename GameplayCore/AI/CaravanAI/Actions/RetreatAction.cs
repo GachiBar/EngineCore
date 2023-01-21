@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace GameplayCore.AI.CaravanAI.Actions
 {
-    internal class RetreatAction : AIAction
+    public class RetreatAction : AIAction
     {
+        public event Action<GameObject> Retreated;
         public override bool CheckPreconditions(GameObject gameObject, AIState state)
         {
             return state.GetBoolValue("isRetreating") && !state.GetBoolValue("reachedBase");
@@ -21,16 +22,27 @@ namespace GameplayCore.AI.CaravanAI.Actions
             var enemyController = gameObject.GetComponent<RobbersUnitController>();
             GameObject goBase = gameObject.Scene.First<GameObject>(go => go.GetComponent<BaseComponent>() != null);
 
-            while (distanceToBase(gameObject, goBase) > 3f)
+            while (distanceToBase(gameObject, goBase) > 0.5f)
             {
                 enemyController.MoveInDirection(getPosProjectionXZ(goBase));
                 yield return AIExecutionState.InProgress;
             }
             var rb = gameObject.GetComponent<RigidbodyComponent>();
             rb.Velocity = Vector3.Zero;
+
+            var gameController = gameObject.Scene.First<GameObject>(go => go.GetComponent<CaravanRobController>() != null).GetComponent<CaravanRobController>();
+            if (state.TryGetBoolValue("collectedGold", out var res))
+            {
+                if (state.GetBoolValue("collectedGold"))
+                {
+                    gameController.addGold();
+                }
+            }
+            //Retreated?.Invoke(gameObject);
+            gameController.unitReturnToBase(gameObject);
             state.SetBoolValue("reachedBase", true);
             state.SetBoolValue("isRetreating", false);
-            //TODO: remove unit that reached base in flee mode 
+            state.SetBoolValue("collectedGold", false);
             yield return AIExecutionState.Finished;
         }
 
@@ -38,6 +50,7 @@ namespace GameplayCore.AI.CaravanAI.Actions
         {
             state.SetBoolValue("reachedBase", true);
             state.SetBoolValue("isRetreating", false);
+            state.SetBoolValue("collectedGold", false);
         }
 
         private float distanceToBase(GameObject unit, GameObject baseObj)

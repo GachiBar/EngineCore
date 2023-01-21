@@ -19,13 +19,14 @@ namespace GameplayCore.AI.CaravanAI.Actions
 
             //var enemyTransform = gameObject.GetComponent<TransformComponent>();
 
-            for (float timer = 0; timer < 1.5; timer += Time.FixedDeltaTime)
+            for (float timer = 0; timer < 2; timer += Time.FixedDeltaTime)
             {
-                Console.WriteLine("Get Gold in progress: {0:0.00}", timer/1.5 * 100);
-
-                yield return AIExecutionState.InProgress;
+                //Console.WriteLine("Get Gold in progress: {0:0.00}", timer/1.5 * 100);
+                if (!state.GetBoolValue("isRetreating"))
+                    yield return AIExecutionState.InProgress;
+                else yield return AIExecutionState.Interrupted;
             }
-            state.SetBoolValue("collectedGold", true);
+            if (!state.GetBoolValue("isRetreating")) state.SetBoolValue("collectedGold", true);
             yield return AIExecutionState.Finished;
         }
 

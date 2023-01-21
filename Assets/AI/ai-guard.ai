@@ -1,0 +1,7 @@
+{
+  "Actions": [
+    "GameplayCore.AI.CaravanAI.Actions.GuardAttackAction",
+    "GameplayCore.AI.CaravanAI.Actions.GuardIdleAction",
+    "GameplayCore.AI.CaravanAI.Actions.GuardMoveToAction"
+  ]
+}

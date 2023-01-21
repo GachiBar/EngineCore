@@ -1,0 +1,8 @@
+{
+  "Actions": [
+    "GameplayCore.AI.CaravanAI.Actions.AttackAction",
+    "GameplayCore.AI.CaravanAI.Actions.IdleRoamAction",
+    "GameplayCore.AI.CaravanAI.Actions.MoveToTargetAction",
+    "GameplayCore.AI.CaravanAI.Actions.RetreatAction"
+  ]
+}
